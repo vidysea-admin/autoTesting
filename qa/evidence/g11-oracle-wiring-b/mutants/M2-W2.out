@@ -1,0 +1,46 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M2-W2\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_role_port_mail.py::test_w2_an_unreadable_mailbox_is_never_read_as_absence_or_as_a_clean_run
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 11.85s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+__ test_w2_an_unreadable_mailbox_is_never_read_as_absence_or_as_a_clean_run ___
+
+wired_port = Wired(app=PortApp(port=59282, server=<http.server.ThreadingHTTPServer object at 0x000002C5113C3110>, sessions={'301bff...SS', tenant_label=None, mailbox_ref=None, user_persona_ref=None, provided_by=<AccountOrigin.ONBOARDER: 'onboarder'>)]))
+
+    def test_w2_an_unreadable_mailbox_is_never_read_as_absence_or_as_a_clean_run(
+            wired_port: Wired) -> None:
+        def refuse(_host: str, _port: int, _timeout: float) -> imaplib.IMAP4:
+            raise ConnectionRefusedError("mailbox down; this text must not be copied")
+    
+        blind = copy.copy(wired_port.port)
+        blind._mail_connector = refuse
+        absent = _drive(wired_port, _mail_scenario(Expectation.ABSENT, "invoice"), blind, "blind-a")
+        present = _drive(wired_port, _mail_scenario(Expectation.PRESENT), blind, "blind-p")
+>       assert absent.assertions[0].verdict.value == "failed"      # absence was not proven
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'passed' == 'failed'
+E         
+E         - failed
+E         + passed
+
+tests\test_role_port_mail.py:61: AssertionError
+============================== warnings summary ===============================
+tests/test_role_port_mail.py::test_w2_an_unreadable_mailbox_is_never_read_as_absence_or_as_a_clean_run
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_port_mail.py::test_w2_an_unreadable_mailbox_is_never_read_as_absence_or_as_a_clean_run
+1 failed, 1 warning in 11.93s

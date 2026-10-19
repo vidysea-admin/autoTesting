@@ -4,8 +4,8 @@ One job: walk each declared paid path (`schema/payment_path.py`) through the ses
 for every path whether the gateway page was reached and whether the coupon applied, and turn a
 path that broke into a `PAYMENT_PATH` finding. Interface: `run(context)`
 (`schema/oracle_context.py`, "HOW TO WRITE AN ORACLE"). The declaration is
-`<run_dir>/payment_paths.json`; a states-only report is written beside it as
-`payment_report.json`.
+`context.declarations.payment_paths`, else `<run_dir>/payment_paths.json`; a states-only report is
+written to the run directory as `payment_report.json`.
 
 THE NO-CHARGE RULE (MPI4: a real-money charge is never completed). The gateway marker is looked at
 after EVERY step, in every phase, and the walk stops the moment it shows: nothing is performed on
@@ -184,7 +184,8 @@ def _write_report(run_dir: str, reports: list[PathReport]) -> None:
 def payment_findings(context: OracleContext,
                      declaration: PaymentDeclaration | None = None) -> list[MultiRoleFinding]:
     """Walk every declared path; findings for proven breaks, error if unseen and nothing proven."""
-    declaration = declaration or load_declaration(context.run_dir)
+    declaration = (declaration or context.declarations.payment_paths
+                   or load_declaration(context.run_dir))
     if declaration.paths and context.port is None:
         raise PaymentUnobservedError("no session port to walk the paths with")
     findings: list[MultiRoleFinding] = []

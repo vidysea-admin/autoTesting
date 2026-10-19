@@ -4,9 +4,9 @@ One job: probe each declared create or reset form with one synthetic password pe
 each breaking exactly that rule, and report every rule the product accepted a breach of; and read
 the mailbox assertions the scenario already decided, reporting a mail that carried credential-shaped
 tokens it was not declared to carry. Interface: `run(context)` (`schema/oracle_context.py`, "HOW TO
-WRITE AN ORACLE"). The declaration is `<run_dir>/credential_policy.json`
-(`schema/credential_policy.py`); without it the oracle raises `PolicyNotDeclaredError`, so the
-registry shows `errored` rather than a clean `ran`.
+WRITE AN ORACLE"). The declaration is `context.declarations.credential_policy`, else
+`<run_dir>/credential_policy.json` (`schema/credential_policy.py`); with neither the oracle raises
+`PolicyNotDeclaredError`, so the registry shows `errored` rather than a clean `ran`.
 
 Rules this module holds:
   * A finding names the RULE, never a value. The probe value lives only in the step handed to the
@@ -192,7 +192,7 @@ def _mail_findings(policy: CredentialPolicy, context: OracleContext,
 def credential_findings(context: OracleContext,
                         policy: CredentialPolicy | None = None) -> list[MultiRoleFinding]:
     """All weak-credential findings; raises `CredentialProbeError` when nothing was decided."""
-    policy = policy or load_policy(context.run_dir)
+    policy = policy or context.declarations.credential_policy or load_policy(context.run_dir)
     findings: list[MultiRoleFinding] = []
     decided, incomplete = 0, False
     for flow in policy.flows:

@@ -1,0 +1,85 @@
+........................................................................ [ 26%]
+........................................................................ [ 53%]
+........................................................................ [ 80%]
+............................F.....FF...............F.                    [100%]
+================================== FAILURES ===================================
+_ test_mp22_polling_every_200ms_against_a_1s_budget_is_a_finding_with_the_numbers _
+
+    def test_mp22_polling_every_200ms_against_a_1s_budget_is_a_finding_with_the_numbers() -> None:
+        log = log_for(_polls("https://app.test/api/status", 6, 0.2))
+        [finding] = budget_findings([log], BUDGET)
+        assert finding.finding_class is FindingClass.REQUEST_BUDGET
+        assert finding.oracle is OracleName.REQUEST_BUDGET
+        assert finding.count == 6
+        assert "0.20 s" in finding.title and "1.00 s" in finding.title and "GET" in finding.title
+>       assert finding.url_template == "https://app.test/api/status"
+E       AssertionError: assert 'https://app.test/api/{id}' == 'https://app.test/api/status'
+E         
+E         - https://app.test/api/status
+E         ?                      ^^^^^^
+E         + https://app.test/api/{id}
+E         ?                      ^^^^
+
+tests\test_network_oracles.py:138: AssertionError
+______ test_mp22_only_the_fast_endpoint_is_flagged_when_polls_interleave ______
+
+    def test_mp22_only_the_fast_endpoint_is_flagged_when_polls_interleave() -> None:
+        fast = _polls("https://app.test/api/fast", 6, 0.2)
+        slow = _polls("https://app.test/api/slow", 3, 2.0)
+        findings = budget_findings([log_for(fast + slow)], BUDGET)
+>       assert [f.url_template for f in findings] == ["https://app.test/api/fast"]
+E       AssertionError: assert ['https://app.test/api/{id}'] == ['https://app.test/api/fast']
+E         
+E         At index 0 diff: 'https://app.test/api/{id}' != 'https://app.test/api/fast'
+E         Use -v to get more diff
+
+tests\test_network_oracles.py:160: AssertionError
+____ test_mp22_the_same_endpoint_with_different_ids_is_one_polled_endpoint ____
+
+    def test_mp22_the_same_endpoint_with_different_ids_is_one_polled_endpoint() -> None:
+        rows = [("GET", f"https://app.test/api/items/{1000 + i}", 200, i * 0.2) for i in range(4)]
+        [finding] = budget_findings([log_for(rows)], BUDGET)
+>       assert finding.url_template == "https://app.test/api/items/{id}" and finding.count == 4
+E       AssertionError: assert ('https://app....api/{id}/{id}' == 'https://app....pi/items/{id}'
+E         
+E         - https://app.test/api/items/{id}
+E         ?                       ^^^^
+E         + https://app.test/api/{id}/{id}
+E         ?                      + ^^)
+
+tests\test_network_oracles.py:166: AssertionError
+______ test_no_direct_page_or_playwright_access_outside_browser_package _______
+
+    def test_no_direct_page_or_playwright_access_outside_browser_package() -> None:
+        offenders = []
+        for path in _python_files_outside_browser():
+            text = path.read_text(encoding="utf-8")
+            for line_number, line in enumerate(text.splitlines(), start=1):
+                if _PATTERN.search(line):
+                    offenders.append(f"{path.relative_to(_SRC)}:{line_number}: {line.strip()}")
+>       assert not offenders, "raw browser access outside browser/:\n" + "\n".join(offenders)
+E       AssertionError: raw browser access outside browser/:
+E         stages\platform_links.py:120: return request.is_navigation_request() and request.frame == self.page.main_frame
+E         stages\platform_links.py:149: self.page.route("**/*", self._guard)
+E         stages\platform_links.py:150: self.page.on("request", self._on_request)
+E         stages\platform_links.py:151: self.page.on("response", self._on_response)
+E         stages\platform_links.py:154: self.page.remove_listener("request", self._on_request)
+E         stages\platform_links.py:155: self.page.remove_listener("response", self._on_response)
+E         stages\platform_links.py:156: self.page.unroute("**/*", self._guard)
+E         stages\platform_links.py:184: session.page.goto("about:blank")  # never leave a role's browser on a stray site
+E       assert not ['stages\\platform_links.py:120: return request.is_navigation_request() and request.frame == self.page.main_frame', 's...t", self._on_request)', 'stages\\platform_links.py:155: self.page.remove_listener("response", self._on_response)', ...]
+
+tests\test_actuator_chokepoint.py:32: AssertionError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_network_oracles.py::test_mp22_polling_every_200ms_against_a_1s_budget_is_a_finding_with_the_numbers
+FAILED tests/test_network_oracles.py::test_mp22_only_the_fast_endpoint_is_flagged_when_polls_interleave
+FAILED tests/test_network_oracles.py::test_mp22_the_same_endpoint_with_different_ids_is_one_polled_endpoint
+FAILED tests/test_actuator_chokepoint.py::test_no_direct_page_or_playwright_access_outside_browser_package
+4 failed, 265 passed, 1 warning in 235.91s (0:03:55)
+done=1

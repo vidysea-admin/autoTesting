@@ -1,0 +1,39 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M4-W4\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_role_port_escalation.py::test_w4_an_accepted_assign_is_a_p0_finding_and_is_reverted_in_the_same_run
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 19.53s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_w4_an_accepted_assign_is_a_p0_finding_and_is_reverted_in_the_same_run __
+
+wired_port = Wired(app=PortApp(port=54774, server=<http.server.ThreadingHTTPServer object at 0x00000168D67D8D50>, sessions={'3f312b...SS', tenant_label=None, mailbox_ref=None, user_persona_ref=None, provided_by=<AccountOrigin.ONBOARDER: 'onboarder'>)]))
+probed_port = (OracleRunSummary(statuses=[OracleStatus(oracle=<OracleName.MAILBOX: 'mailbox'>, module='autotester.stages.oracle_mail...e)], WindowsPath('D:/autoTesting/.work/tmp/ow-b-mut/M4-W4/.work/pytest-tmp/r7612-1792373773/g11wire0/probe-run'), 5, 3)
+
+    def test_w4_an_accepted_assign_is_a_p0_finding_and_is_reverted_in_the_same_run(
+            wired_port: Wired, probed_port) -> None:
+        _, findings, run_dir, *_ = probed_port
+        (assigned,) = [f for f in findings if f.finding_id == "authz-priv-admin-make-admin"]
+>       assert "reverted in run" in assigned.title
+E       AssertionError: assert 'reverted in run' in 'Privilege: alice-app assigned a role via make-admin (NOT reverted, undo by hand)'
+E        +  where 'Privilege: alice-app assigned a role via make-admin (NOT reverted, undo by hand)' = MultiRoleFinding(finding_id='authz-priv-admin-make-admin', finding_class=<FindingClass.PRIVILEGE_ESCALATION: 'privileg...steps=['login alice-app', 'click make-admin'], count=1, oracle=<OracleName.PRIVILEGE: 'privilege'>, leak_evidence=None).title
+
+tests\test_role_port_escalation.py:43: AssertionError
+============================== warnings summary ===============================
+tests/test_role_port_escalation.py::test_w4_an_accepted_assign_is_a_p0_finding_and_is_reverted_in_the_same_run
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_port_escalation.py::test_w4_an_accepted_assign_is_a_p0_finding_and_is_reverted_in_the_same_run
+1 failed, 1 warning in 22.45s

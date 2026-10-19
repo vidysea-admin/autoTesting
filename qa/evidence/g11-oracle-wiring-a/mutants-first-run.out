@@ -1,0 +1,30 @@
+{"id": "W1", "node": "tests/test_oracle_declarations.py::test_w1_declarations_are_never_serialised_with_the_context", "green_before_rc": 0, "mutant_rc": 1}
+  GREEN: 1 passed, 1 warning in 0.24s
+  MUT  :   D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_oracle_declarations.py::test_w1_declarations_are_never_serialised_with_the_context
+1 failed, 1 warning in 0.85s
+{"id": "W2", "node": "tests/test_role_port_mail.py::test_w2_a_mail_that_arrived_is_observed_through_the_read_only_reader", "green_before_rc": 0, "mutant_rc": 1}
+  GREEN: 1 passed, 1 warning in 7.42s
+  MUT  :   D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_port_mail.py::test_w2_a_mail_that_arrived_is_observed_through_the_read_only_reader
+1 failed, 1 warning in 9.24s
+{"id": "W3", "node": "tests/test_role_port_authz.py::test_w3_a_url_off_the_platform_is_never_requested", "green_before_rc": 0, "mutant_rc": 1}
+  GREEN: 1 passed, 1 warning in 6.48s
+  MUT  :   D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_role_port_authz.py::test_w3_a_url_off_the_platform_is_never_requested
+1 failed, 1 warning in 6.43s
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Temp\claude\d--autoTesting\e46c0e51-15e9-4a31-a0b0-cf49de9d445f\scratchpad\check-g11-ow-a\mut.py", line 29, in <module>
+    assert old in s, (cid, "pattern missing")
+           ^^^^^^^^
+AssertionError: ('W4', 'pattern missing')
+finished

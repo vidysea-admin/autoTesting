@@ -110,7 +110,7 @@ def test_mp19_a_clean_app_reports_nothing(sc: Scaffold) -> None:
 def _controls(sc: Scaffold) -> None:
     sc.plan(_plan(_probe(read_urls=[], controls=[_control("promote"), _control("invite")])))
     sc.app.accepts = {"promote": True, "invite": False}
-    sc.grant(4)
+    sc.grant(6)                      # 2 controls x (look + attempt + revert)
 
 
 def test_mp19_a_successful_role_assign_is_p0_and_reverted_in_the_same_run(sc: Scaffold) -> None:
@@ -184,6 +184,22 @@ def test_mp19_a_port_that_cannot_escalate_names_the_controls_unprobed(sc: Scaffo
     assert [u.reason for u in _log(sc).unprobed] == [StopReason.NO_ESCALATION_TRANSPORT]
 
 
+def test_mp19_a_transport_that_cannot_tell_if_a_control_is_reachable_names_it_unprobed(
+        sc: Scaffold) -> None:
+    """g11-oracle-wiring W4: an error from `can_reach` is "could not tell", never "refused"."""
+    class Unsure(type(sc.app)):  # type: ignore[misc]
+        def can_reach(self, role_id: str, control: RoleAssignControl) -> bool:
+            raise RuntimeError("no binding; this text must not be reported")
+
+    port = Unsure()
+    sc.plan(_plan(_probe(read_urls=[OPEN], controls=[_control("promote")])))
+    sc.grant(4)
+    _run(sc, port=port)
+    assert [(u.item, u.reason) for u in _log(sc).unprobed] == [
+        ("privilege:admin-area:control_promote", StopReason.TRANSPORT_ERROR)]
+    assert port.assigns == [] and "must not be reported" not in sc.tree_text()
+
+
 # --- MP20 / MPI4 bounds on this oracle -------------------------------------------------------
 
 def test_mp20_the_cap_reserves_room_for_the_revert_so_it_is_never_exceeded(sc: Scaffold) -> None:
@@ -192,10 +208,30 @@ def test_mp20_the_cap_reserves_room_for_the_revert_so_it_is_never_exceeded(sc: S
                   request_cap=3))
     findings = _run(sc)
     assert len(findings) == 1
-    assert sc.app.calls == 2  # promote: assign + revert; invite needs 2 but only 1 is left
+    assert sc.app.calls == 2  # promote: assign + revert; invite needs 3 and none is left
     log = _log(sc)
-    assert log.sent == 2 and [(u.item, u.reason) for u in log.unprobed] == [
+    # the reach look is paid too: promote = look + assign + revert = 3, so invite sends nothing
+    assert log.sent == 3 and [(u.item, u.reason) for u in log.unprobed] == [
         ("privilege:admin-area:control_invite", StopReason.REQUEST_CAP)]
+
+
+def test_mp20_the_run_stops_at_the_signed_max_probes_even_if_the_plan_asks_for_more(
+        sc: Scaffold) -> None:
+    """Real scenario: a resumed run. The tenant oracle already spent 2 of the 3 probes the signed
+    approval covers; the plan's own `request_cap` (30) is far above that, but only 1 more request
+    may leave, because `RunApproval.max_probes` is the bound the operator signed (MP20)."""
+    from autotester.stages.authz_probe import write_log
+    sc.app.serve("teacher", OPEN, data=rows("u", 1))
+    sc.plan(_plan(_probe(read_urls=[OPEN, SHUT, "/api/admin/logs"])))
+    sc.grant(3)
+    write_log(sc.run_dir, ProbeLog(oracle=OracleName.TENANT, platform_id="primary", planned=2,
+                                   sent=2, elapsed_s=0.0, findings=0))
+    _run(sc)
+    assert len(sc.app.reads) == 1
+    log = _log(sc)
+    assert log.sent == 1 and [(u.item, u.reason) for u in log.unprobed] == [
+        ("privilege:admin-area:read_2", StopReason.REQUEST_CAP),
+        ("privilege:admin-area:read_3", StopReason.REQUEST_CAP)]
 
 
 def test_mp20_replayed_reads_stop_at_the_cap_and_the_rest_is_named(sc: Scaffold) -> None:
@@ -226,11 +262,13 @@ def test_the_two_oracles_share_one_platform_cap_through_their_logs(sc: Scaffold)
 
 
 def test_the_approval_gate_covers_reads_and_both_attempt_and_revert(sc: Scaffold) -> None:
-    from autotester.stages.authz_probe import plan_size
+    from autotester.stages.authz_probe import plan_size, privilege_cost
     plan = _plan(_probe(read_urls=[OPEN], controls=[_control("promote")]))
-    assert plan_size(plan) == 3  # one read + (attempt + possible revert)
+    assert plan_size(plan) == 4  # one read + (look + attempt + possible revert)
+    assert privilege_cost(_probe(read_urls=[OPEN, SHUT], controls=[
+        _control("promote"), _control("invite")])) == 8  # 2 reads + 2 x 3: the look is priced
     sc.plan(plan)
-    sc.grant(2)
+    sc.grant(3)
     from autotester.core.consent import ApprovalRequired
     with pytest.raises(ApprovalRequired):
         _run(sc)

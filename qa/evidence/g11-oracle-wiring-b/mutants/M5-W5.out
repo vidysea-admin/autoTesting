@@ -1,0 +1,38 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M5-W5\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+..\..\..\..\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 1.72s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+__ test_w5_a_recorded_p0_leak_opens_the_report_with_the_banner_and_its_repro __
+
+root = WindowsPath('D:/autoTesting/.work/tmp/ow-b-mut/M5-W5/.work/pytest-tmp/r39752-1792373806/test_w5_a_recorded_p0_leak_ope0')
+
+    def test_w5_a_recorded_p0_leak_opens_the_report_with_the_banner_and_its_repro(root) -> None:
+        store = _run(root)
+        _scenario_run(store.paths.run_dir("rel1"), LEAK)
+        html = unified_html(store, "rel1")
+>       assert html.index('id="release-blocker"') < html.index("<h1>")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: substring not found
+
+tests\test_report_findings_wiring.py:62: ValueError
+============================== warnings summary ===============================
+..\..\..\..\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_report_findings_wiring.py::test_w5_a_recorded_p0_leak_opens_the_report_with_the_banner_and_its_repro
+1 failed, 1 warning in 0.48s

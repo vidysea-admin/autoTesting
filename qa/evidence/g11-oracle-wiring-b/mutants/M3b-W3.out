@@ -1,0 +1,48 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+src\autotester\browser\click_recovery.py:19
+  D:\autoTesting\.work\tmp\ow-b-mut\M3b-W3\src\autotester\browser\click_recovery.py:19: DeprecationWarning: invalid escape sequence '\s'
+    _FIND_EXPANDER = f"""el => {{
+
+tests/test_oracle_privilege.py::test_mp20_the_run_stops_at_the_signed_max_probes_even_if_the_plan_asks_for_more
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 0.53s
+
+=====MUTATED=====
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_mp20_the_run_stops_at_the_signed_max_probes_even_if_the_plan_asks_for_more _
+
+sc = <authz_fakes.Scaffold object at 0x000001F45EE061D0>
+
+    def test_mp20_the_run_stops_at_the_signed_max_probes_even_if_the_plan_asks_for_more(
+            sc: Scaffold) -> None:
+        """Real scenario: a resumed run. The tenant oracle already spent 2 of the 3 probes the signed
+        approval covers; the plan's own `request_cap` (30) is far above that, but only 1 more request
+        may leave, because `RunApproval.max_probes` is the bound the operator signed (MP20)."""
+        from autotester.stages.authz_probe import write_log
+        sc.app.serve("teacher", OPEN, data=rows("u", 1))
+        sc.plan(_plan(_probe(read_urls=[OPEN, SHUT, "/api/admin/logs"])))
+        sc.grant(3)
+        write_log(sc.run_dir, ProbeLog(oracle=OracleName.TENANT, platform_id="primary", planned=2,
+                                       sent=2, elapsed_s=0.0, findings=0))
+        _run(sc)
+>       assert len(sc.app.reads) == 1
+E       AssertionError: assert 3 == 1
+E        +  where 3 = len([('teacher', '/api/admin/users'), ('teacher', '/api/admin/settings'), ('teacher', '/api/admin/logs')])
+E        +    where [('teacher', '/api/admin/users'), ('teacher', '/api/admin/settings'), ('teacher', '/api/admin/logs')] = <authz_fakes.FakeApp object at 0x000001F45EDD7650>.reads
+E        +      where <authz_fakes.FakeApp object at 0x000001F45EDD7650> = <authz_fakes.Scaffold object at 0x000001F45EE061D0>.app
+
+tests\test_oracle_privilege.py:230: AssertionError
+============================== warnings summary ===============================
+tests/test_oracle_privilege.py::test_mp20_the_run_stops_at_the_signed_max_probes_even_if_the_plan_asks_for_more
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_oracle_privilege.py::test_mp20_the_run_stops_at_the_signed_max_probes_even_if_the_plan_asks_for_more
+1 failed, 1 warning in 0.39s

@@ -87,11 +87,12 @@ def _revert(esc: EscalationTransport, role_id: str, control: RoleAssignControl) 
         return False
 
 
-def _reaches(esc: EscalationTransport, role_id: str, control: RoleAssignControl) -> bool:
+def _reaches(esc: EscalationTransport, role_id: str, control: RoleAssignControl) -> bool | None:
+    """True/False when the transport knows; None when it could not tell (never read as refused)."""
     try:
         return bool(esc.can_reach(role_id, control))
     except Exception:
-        return False
+        return None
 
 
 def _record_revert(probe: PrivilegeProbe, control: RoleAssignControl, prep: ProbeSession,
@@ -133,7 +134,11 @@ def _role_assigns(probe: PrivilegeProbe, prep: ProbeSession, esc: EscalationTran
             unprobed.append(UnprobedItem(item=item, reason=StopReason.WRITE_POLICY))
         elif esc is None:
             unprobed.append(UnprobedItem(item=item, reason=StopReason.NO_ESCALATION_TRANSPORT))
-        elif _reaches(esc, probe.lower_role_id, control):
+        elif (stop := prep.budget.take(reserve=3)) is not None:  # the look, the attempt, the undo
+            unprobed.append(UnprobedItem(item=item, reason=stop))
+        elif (reach := _reaches(esc, probe.lower_role_id, control)) is None:
+            unprobed.append(UnprobedItem(item=item, reason=StopReason.TRANSPORT_ERROR))
+        elif reach:
             stop = prep.budget.take(reserve=2)
             if stop is not None:
                 unprobed.append(UnprobedItem(item=item, reason=stop))

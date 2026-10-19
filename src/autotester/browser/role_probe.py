@@ -34,6 +34,9 @@ HISTORY = 2000
 MAX_TEXT = 200_000
 MAX_CONTROLS = 500
 LOOK_TIMEOUT_MS = 1500
+READ_TIMEOUT_MS = 10_000
+MAX_READ_BYTES = 1_000_000
+MAX_HOPS = 5
 Row = tuple[str, str, int, float]
 
 _LAYOUT_JS = """() => {
@@ -185,6 +188,11 @@ def look(session: Any, target: str) -> tuple[bool, str]:
     return True, " ".join(loc.first.inner_text(timeout=LOOK_TIMEOUT_MS).split())
 
 
+def path_of(session: Any) -> str:
+    """The path of the page the session is on now."""
+    return urlsplit(str(session.page.url)).path
+
+
 def appears(session: Any, target: str, timeout_ms: int = 3000) -> bool:
     """Wait up to `timeout_ms` for `target` to become visible."""
     try:
@@ -192,6 +200,40 @@ def appears(session: Any, target: str, timeout_ms: int = 3000) -> bool:
     except Exception:
         return False
     return True
+
+
+class RawReply(NamedTuple):
+    """One answer to `http_get`: final status, final URL and the (bounded) body text.
+
+    `off_platform` is True when a redirect pointed at a URL `allowed` refused: that URL was NOT
+    requested, and `status` is the redirect's own."""
+
+    status: int
+    url: str
+    text: str
+    off_platform: bool = False
+
+
+def http_get(session: Any, url: str, allowed: Callable[[str], bool]) -> RawReply:
+    """GET `url` with the role's own cookies, following redirects only to URLs `allowed` accepts.
+
+    A read made beside the page (not a navigation), so it is never the product's own traffic and
+    never counts toward a request budget. Each redirect hop is checked BEFORE it is requested."""
+    client = session.page.context.request
+    for _hop in range(MAX_HOPS + 1):
+        response = client.get(url, timeout=READ_TIMEOUT_MS, max_redirects=0)
+        try:
+            status, final = int(response.status), str(response.url)
+            where = response.headers.get("location") if 300 <= status < 400 else None
+            body = response.body()[:MAX_READ_BYTES].decode("utf-8", "replace")
+        finally:
+            response.dispose()
+        if not where:
+            return RawReply(status, final, body)
+        url = urljoin(final, where)
+        if not allowed(url):
+            return RawReply(status, final, "", off_platform=True)
+    return RawReply(status, final, "")
 
 
 def page_snapshot(session: Any, success_selectors: Sequence[str], log: ResponseLog) -> PageSnapshot:

@@ -5,7 +5,8 @@ wraps an OPEN `RoleSessions` (one isolated, persistent browser context per accou
 thread) and implements `schema/oracle_context.py::RoleSessionPort` (`perform`, `observe`) plus the
 optional capabilities the oracle units defined in their own schema files and asked for: typing
 (`stages/oracle_negative_input.py::FormInputPort`), `TextSurface` and `LayoutSurface`
-(`schema/lint_rule.py`) and `NetworkLogPort` (`schema/request_budget.py`). The protocols are
+(`schema/lint_rule.py`), `NetworkLogPort` (`schema/request_budget.py`) and the mailbox and
+authz capabilities. The protocols are
 imported, never redefined. Thread rule: every page touch runs through `RoleSessions.run_as`.
 
 Rules held here, each tested against a real Chromium:
@@ -17,13 +18,18 @@ Rules held here, each tested against a real Chromium:
   * A role whose sign-in did not reach `RoleSignIn.signed_in_target` is `failed`: every later step,
     look or whole-run read raises, so the registry reports the oracle `errored`, never clean.
   * Steps: `login <role>`, `goto <url>`, `click|submit <locator>`, `fill <locator> {{SECRET:KEY}}`,
-    `select <locator> <value>`. A mailbox assertion raises `ChannelUnavailable` (T-212's seam).
+        `select <locator> <value>`.
+  * A mailbox assertion reads the role's declared mailbox read-only (`stages/role_port_mail.py`);
+    no `mailbox_ref` raises `ChannelUnavailable`, an unreadable mailbox is never "absent".
+  * The authz capabilities (`ReadTransport`, `EscalationTransport`) come from
+    `stages/role_port_authz.py`; the T-213 gate stays on the path in `stages/authz_probe.py`.
 """
 
 from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from urllib.parse import urljoin
 
@@ -37,13 +43,16 @@ from autotester.schema.leak_evidence import contains_personal_shape
 from autotester.schema.multi_role_enums import AssertChannel
 from autotester.schema.multi_role_finding import ReproVerb, parse_repro_step
 from autotester.schema.request_budget import RequestBudget, StepNetworkLog
+from autotester.schema.role_control import ControlBinding
 from autotester.schema.role_signin import RoleSignIn
 from autotester.schema.role_step import RoleStep
+from autotester.sources.imap_mailbox import Connector, ssl_connector
 from autotester.stages.multi_role_session import PlatformScopeError, RoleSessions, host_in_platform
+from autotester.stages.role_port_authz import AuthzMixin
+from autotester.stages.role_port_mail import MailMixin
 from autotester.stages.role_port_network import NetworkMixin, load_budget
 from autotester.stages.role_port_state import (
     WITHHELD_DETAIL,
-    ChannelUnavailable,
     RoleLoginFailed,
     RoleState,
     ScreenRecord,
@@ -54,19 +63,30 @@ from autotester.stages.role_port_surface import SurfaceMixin
 _BRACES = re.compile(r"\{([a-z_][a-z0-9_]*)\}")
 _VALUE_TAIL = re.compile(r"^(?P<loc>.*\S)\s+(?P<val>\S+)$")
 _ABSOLUTE = re.compile(r"^https?://", re.IGNORECASE)
+MAIL_SKEW = timedelta(seconds=30)
+"""A mail dated just before the port was built still counts: mail clocks disagree by seconds."""
 
 
-class LiveRolePort(SurfaceMixin, NetworkMixin):
+class LiveRolePort(SurfaceMixin, NetworkMixin, AuthzMixin, MailMixin):
     """Drive open `RoleSessions` as the oracles' port. Close the sessions yourself (or `close`)."""
 
     def __init__(self, roles: RoleSessions, logins: Sequence[RoleSignIn] = (), *,
                  success_selectors: Sequence[str] = (), request_budget: RequestBudget | None = None,
-                 bindings: Mapping[str, str] | None = None) -> None:
+                 bindings: Mapping[str, str] | None = None,
+                 controls: Sequence[ControlBinding] = (), mail_connector: Connector = ssl_connector,
+                 mail_since: datetime | None = None,
+                 mail_recipients: Mapping[str, str] | None = None) -> None:
+        if len({c.control_id for c in controls}) != len(controls):
+            raise ValueError("two control bindings share one control_id")
         self.roles = roles
         self._logins = {login.platform_id: login for login in logins}
         self._success = tuple(success_selectors)
         self._budget = request_budget or load_budget(roles.run_dir)
         self._bindings = dict(bindings or {})
+        self._controls = {c.control_id: c for c in controls}
+        self._mail_connector = mail_connector
+        self._mail_since = mail_since or datetime.now(UTC) - MAIL_SKEW
+        self._mail_recipients = dict(mail_recipients or {})
         self._redactor = roles.secrets.redactor()
         self._policy = SafetyPolicy()
         self._logs: list[StepNetworkLog] = []
@@ -135,7 +155,7 @@ class LiveRolePort(SurfaceMixin, NetworkMixin):
         elif assertion.channel is AssertChannel.API:
             matched, text = self.roles.run_as(role_id, lambda _s: state.log.seen(assertion.target))
         else:
-            raise ChannelUnavailable(f"channel {assertion.channel.value} is not wired on this port")
+            return self._observe_mailbox(assertion)
         return Observation(matched=matched, detail=self._detail(text))
 
     def fill_field(self, role_id: str, field: str, value: str) -> None:

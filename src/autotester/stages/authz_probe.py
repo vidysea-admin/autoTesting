@@ -77,8 +77,8 @@ def tenant_cost(probe: TenantProbe) -> int:
 
 
 def privilege_cost(probe: PrivilegeProbe) -> int:
-    """Reads, plus two per role-assign control (the attempt and its possible revert)."""
-    return len(probe.read_urls) + 2 * len(probe.controls)
+    """Reads, plus three per role-assign control: the reach look, the attempt and its revert."""
+    return len(probe.read_urls) + 3 * len(probe.controls)
 
 
 def plan_size(plan: AuthzPlan) -> int:
@@ -246,10 +246,11 @@ def open_session(context: OracleContext, oracle: OracleName, *, clock: Callable[
     if project is None or platform is None:
         raise AdversarialBlocked("the plan names a project or platform that does not exist")
     redactor = SecretStore.load(project, store.paths.env_file, strict=False).redactor()
-    gate(store=store, project=project, platform=platform, plan=plan, redactor=redactor,
-         now=now or datetime.now(UTC))
+    approval = gate(store=store, project=project, platform=platform, plan=plan,
+                    redactor=redactor, now=now or datetime.now(UTC))
     sent, used = prior_usage(run_dir, platform.id, oracle)
-    budget = Budget(cap=min(plan.request_cap, PROBE_CEILING), wall_clock_s=plan.wall_clock_s,
+    cap = min(plan.request_cap, PROBE_CEILING, approval.max_probes)  # the signed bound binds
+    budget = Budget(cap=cap, wall_clock_s=plan.wall_clock_s,
                     interval_s=plan.request_interval_s, clock=clock, sleep=sleep,
                     sent=sent, used_s=used)
     return ProbeSession(project, platform, plan, context.port, budget, run_dir, store)

@@ -184,6 +184,7 @@
 | `schema/negative_input_form.py` | A form to probe with negative input, once per role account that reaches it (MP32). |
 | `schema/observation.py` | A vision model's raw reading of one video — INGEST's input material. |
 | `schema/oracle_context.py` | The oracle interface: what an oracle is handed, what the run reports about each oracle (MP15). |
+| `schema/oracle_declarations.py` | The declarations a runner hands to the oracles that need one (T-217 CORE-REQUEST, MP27, MP28). |
 | `schema/payment_path.py` | The paid paths a project declares, and what the payment oracle reports about each (MP28). |
 | `schema/platform.py` | One product surface inside a multi-platform project (MP1). |
 | `schema/platform_link.py` | A declared hop from one platform to another (MP1). |
@@ -195,6 +196,7 @@
 | `schema/request_budget.py` | What the network oracles read: captured requests per step and the request budget (MP21, MP22). |
 | `schema/review_recall.py` | The TA16 evidence record: a video review measured against an oracle, in numbers (T-206). |
 | `schema/role_account.py` | One signed-in identity on one platform, held as KEYS only (MP2, MPI5). |
+| `schema/role_control.py` | How a live role port drives one role-assign control, so MP19's escalation can be tried (MP19). |
 | `schema/role_signin.py` | How one platform's sign-in page is driven, so a live role port can sign its accounts in (MP11). |
 | `schema/role_step.py` | One role-tagged step of a cross-role scenario, and how it went (MP13). |
 | `schema/run.py` | What EXECUTE observed. Deliberately contains no judgement — see verdict.py. |
@@ -351,6 +353,8 @@
 | `stages/review.py` | FlowSpec review gate: nothing generates cases from an unreviewed understanding |
 | `stages/review_recall.py` | Score stored video reviews against an oracle corpus into a `ReviewRecall` (TA16). |
 | `stages/role_onboarding.py` | Validate N role accounts across M platforms at onboarding time (T-208, MP4-MP5). |
+| `stages/role_port_authz.py` | The live role port's authorisation capabilities: `ReadTransport`, `EscalationTransport`. |
+| `stages/role_port_mail.py` | The mailbox channel of the live role port (MP13-MP17, MPI5). |
 | `stages/role_port_network.py` | The network-log capability of the live role port: `NetworkLogPort` (MP21, MP22). |
 | `stages/role_port_state.py` | The per-role state and shared guards of the live role port (MP11, MP15). |
 | `stages/role_port_surface.py` | The surface capabilities of the live role port: `TextSurface` and `LayoutSurface` (MP25, MP26). |
@@ -385,6 +389,7 @@
 | `stages/tracker_binding.py` | TRACKER BINDING: propose a project's column mapping from a header row, and keep it per project. |
 | `stages/tracker_export.py` | TRACKER EXPORT: BugStore bugs as CSV / xlsx bytes in the Tracker sheet's layout (TB15). |
 | `stages/unified_report.py` | The damage-control report's loaders and assembly (T-168, `damage-control-report.md` DC1-DC4). |
+| `stages/unified_report_findings.py` | The multi-role findings a run recorded, loaded for the unified report (AT-1038, MP8). |
 | `stages/unified_report_render.py` | Draws a `UnifiedReport` as ONE self-contained HTML file (T-168, DC1-DC3). |
 | `stages/ux_advisory.py` | The advisory UX pass: read a finished run's evidence as a persona, record findings (T-190). |
 | `stages/ux_wiring.py` | Run the advisory UX pass after a run is saved, and never let it touch the run (AT-794). |
@@ -732,6 +737,7 @@
 | `OracleStatus` (`schema/oracle_context.py`) | One oracle's line in the run summary. |
 | `OracleRunSummary` (`schema/oracle_context.py`) | Every G11 oracle exactly once; an omitted oracle is a validation error (MP15). |
 | `OracleContext` (`schema/oracle_context.py`) | What one oracle run is handed. Serialisable fields only, plus the live port. |
+| `OracleDeclarations` (`schema/oracle_declarations.py`) | Per-oracle declarations; an oracle whose field is `None` falls back to its run-dir file. |
 | `GatewayState` (`schema/payment_path.py`) | `unobserved` is never read as "not reached": the page could not be looked at. |
 | `CouponState` (`schema/payment_path.py`) | `not_reached` means the path never got as far as the coupon step. |
 | `PaymentPath` (`schema/payment_path.py`) | One paid path, declared as four phases that the oracle performs in order. |
@@ -776,6 +782,7 @@
 | `OracleRef` (`schema/review_recall.py`) | Where the denominator came from. Never a claim of independence. |
 | `ReviewRecall` (`schema/review_recall.py`) | `recall.json`. `k` and `unconfirmed_count` must be re-derivable from the id lists. |
 | `RoleAccount` (`schema/role_account.py`) | A test account for one role. Its scope is the account's own permissions (D-018). |
+| `ControlBinding` (`schema/role_control.py`) | The press-and-prove recipe for one role-assign control and its undo. |
 | `RoleSignIn` (`schema/role_signin.py`) | The sign-in recipe of one platform; every account on the platform uses it. |
 | `StepState` (`schema/role_step.py`) | How one step ended. `not_run` is a step skipped because an earlier one failed. |
 | `RoleStep` (`schema/role_step.py`) | An action performed as one named role account. |

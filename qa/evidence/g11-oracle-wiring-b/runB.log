@@ -1,0 +1,739 @@
+........................................................................ [ 17%]
+........................................................................ [ 35%]
+.....................................F....F............................. [ 52%]
+..............................F.....FF.............................FFFFF [ 70%]
+FFFFFFFFF.......FF...........F.FF....................................... [ 87%]
+.....F.............................F...............                      [100%]
+================================== FAILURES ===================================
+__________________ test_revised_goal_contract_is_registered ___________________
+
+    def test_revised_goal_contract_is_registered() -> None:
+        data = json.loads(GOAL.read_text(encoding="utf-8"))
+        by_id = {task["id"]: task for task in data["tasks"]}
+        tests = "tests/"
+        expected = {
+            # AT-638: this node id moved with the test's file split (own done_check, kept accurate).
+            "T-160": (["T-134"], tests + "test_goal_contract_registration.py::"
+                      "test_revised_goal_contract_is_registered"),
+            "T-161": (["T-100", "T-160"], tests + "test_ui_project_intake.py"),
+            "T-162": (["T-161"], tests + "test_source_adapters.py "
+                      "tests/test_source_adapters_audio.py "
+                      "tests/test_source_adapters_email.py "
+                      "tests/test_source_adapters_drive.py"),
+            "T-163": (["T-135", "T-162"], tests + "test_orchestrate.py "
+                      "tests/test_orchestrate_runners.py"),
+            "T-164": (["T-163"], tests + "test_portal_persona.py"),
+            "T-165": (["T-163", "T-144"], tests + "test_explore_completeness.py "
+                      "tests/test_explore_traversal.py tests/test_persona_changes.py"),
+            "T-166": (["T-125", "T-164", "T-165", "T-170"], tests + "test_eval_compiler.py"),
+            "T-170": (["T-163"], tests + "test_network_assertions.py"),
+            "T-171": (["T-165"], tests + "test_permission_coverage.py"),
+            "T-172": (["T-163"], tests + "test_run_trace.py"),
+            "T-173": (["T-163"], tests + "test_parallel_run.py"),
+            "T-174": (["T-125"], tests + "test_cli_mcp.py"),
+            "T-175": ([], tests + "test_prompt_skills.py"),
+            "T-176": (["T-165"], tests + "test_script_replay.py"),
+            "T-177": (["T-176"], tests + "test_agent_fallback.py"),
+            "T-178": (["T-125"], tests + "test_failure_bundle.py"),
+            "T-167": (["T-166", "T-110"], tests + "test_regression_trigger.py"),
+            "T-168": (["T-164", "T-165", "T-167"], tests + "test_unified_report.py"),
+            "T-169": (["T-136", "T-145", "T-168"], tests + "test_generic_acceptance.py"),
+            # D-042: T-179..T-181
+            "T-179": (["T-170", "T-172", "T-175"], tests + "test_agent_layer.py"),
+            "T-180": (["T-179"], tests + "test_agent_subagents.py"),
+            "T-181": (["T-180"], tests + "test_agent_gain.py"),
+            "T-182": ([], tests + "test_viewport_locale_enact.py"),
+            "T-183": ([], tests + "test_report_export_reason.py"),
+            "T-184": ([], tests + "test_pinned_regression.py"),
+        }
+        # No CLI `-q`: pyproject.toml's addopts already sets it, and stacking a second one makes
+        # pytest -qq, which prints no summary line at all (AT-503/AT-522, measured 2026-09-18).
+        expected = {key: (deps, f"uv run pytest {spec}") for key, (deps, spec) in expected.items()}
+        actual = {key: (by_id[key]["deps"], by_id[key]["done_check"]["cmd"]) for key in expected}
+        assert actual == expected
+        progress = data["progress"]
+        # D-040: T-170, T-171; D-041: T-172..T-178; D-042: T-179..T-181; D-045: T-182..T-184
+        #
+        # No longer pinned to a literal count (AT-638/ISS-at638-remainder-2). `== 70` broke when
+        # `f9e7d406` registered T-185..T-195 -- ordinary ad hoc issue-fix tasks (AT-453, AT-583,
+        # AT-617, ...), never part of "the revised goal contract" this test pins (no D-0NN chain
+        # comment, `deps: []`, absent from `expected` above) -- for a reason unrelated to whether
+        # T-160..T-184 are still correctly registered (`actual == expected` already proves that).
+        # A repo that keeps registering ad hoc work is healthy; re-bumping a magic count on every
+        # unrelated task would make the assertion noise. What must never drift is the file's own
+        # bookkeeping, so that self-consistency stays and the literal number is dropped.
+        assert progress["total"] == len(data["tasks"])
+        for key in ("done", "in_progress", "pending", "blocked"):
+            assert progress[key] == sum(task["status"] == key for task in data["tasks"])
+        assert progress["percent"] == round(100 * progress["done"] / progress["total"])
+        contract = data["north_star"] + (REPO_ROOT / "plan.md").read_text(encoding="utf-8")
+        phrases = ("Google Drive", "breadth-first", "Portal Persona", "API", "HTML",
+                   "Excel", "screenshots", "## 9. Revised product layer")
+        assert all(phrase in contract for phrase in phrases)
+        decisions = (REPO_ROOT / "docs" / "DECISIONS.md").read_text(encoding="utf-8")
+        assert "## D-023 | 2026-09-10 | type: decision | status: ACTIVE" in decisions
+        dashboard = (REPO_ROOT / ".goal" / "dashboard.html").read_text(encoding="utf-8")
+        facts = (f'{progress["done"]}/{progress["total"]} tasks',
+                 f'{progress["percent"]}%', f'Remaining ({progress["pending"]})', data["north_star"])
+>       assert all(value in dashboard for value in facts)
+E       assert False
+E        +  where False = all(<generator object test_revised_goal_contract_is_registered.<locals>.<genexpr> at 0x000002310BD2D9A0>)
+
+tests\test_goal_contract_registration.py:90: AssertionError
+____________ test_the_collector_reports_what_it_could_not_resolve _____________
+
+    def test_the_collector_reports_what_it_could_not_resolve() -> None:
+        """A hole that returns an empty list looks exactly like a clean scan, which
+        is how AT-176 and AT-192 each survived a guard written to catch them. If
+        this ever fails, the answer is to resolve the name — not to widen the
+        filter until the report is empty again."""
+>       assert unresolved_in_source(SRC) == []
+E       AssertionError: assert [(WindowsPath...al.py'), 184)] == []
+E         
+E         Left contains one more item: (WindowsPath('ui/routes_crawl_approval.py'), 184)
+E         Use -v to get more diff
+
+tests\test_cli_advice_resolves.py:151: AssertionError
+_ test_mp22_polling_every_200ms_against_a_1s_budget_is_a_finding_with_the_numbers _
+
+    def test_mp22_polling_every_200ms_against_a_1s_budget_is_a_finding_with_the_numbers() -> None:
+        log = log_for(_polls("https://app.test/api/status", 6, 0.2))
+        [finding] = budget_findings([log], BUDGET)
+        assert finding.finding_class is FindingClass.REQUEST_BUDGET
+        assert finding.oracle is OracleName.REQUEST_BUDGET
+        assert finding.count == 6
+        assert "0.20 s" in finding.title and "1.00 s" in finding.title and "GET" in finding.title
+>       assert finding.url_template == "https://app.test/api/status"
+E       AssertionError: assert 'https://app.test/api/{id}' == 'https://app.test/api/status'
+E         
+E         - https://app.test/api/status
+E         ?                      ^^^^^^
+E         + https://app.test/api/{id}
+E         ?                      ^^^^
+
+tests\test_network_oracles.py:138: AssertionError
+______ test_mp22_only_the_fast_endpoint_is_flagged_when_polls_interleave ______
+
+    def test_mp22_only_the_fast_endpoint_is_flagged_when_polls_interleave() -> None:
+        fast = _polls("https://app.test/api/fast", 6, 0.2)
+        slow = _polls("https://app.test/api/slow", 3, 2.0)
+        findings = budget_findings([log_for(fast + slow)], BUDGET)
+>       assert [f.url_template for f in findings] == ["https://app.test/api/fast"]
+E       AssertionError: assert ['https://app.test/api/{id}'] == ['https://app.test/api/fast']
+E         
+E         At index 0 diff: 'https://app.test/api/{id}' != 'https://app.test/api/fast'
+E         Use -v to get more diff
+
+tests\test_network_oracles.py:160: AssertionError
+____ test_mp22_the_same_endpoint_with_different_ids_is_one_polled_endpoint ____
+
+    def test_mp22_the_same_endpoint_with_different_ids_is_one_polled_endpoint() -> None:
+        rows = [("GET", f"https://app.test/api/items/{1000 + i}", 200, i * 0.2) for i in range(4)]
+        [finding] = budget_findings([log_for(rows)], BUDGET)
+>       assert finding.url_template == "https://app.test/api/items/{id}" and finding.count == 4
+E       AssertionError: assert ('https://app....api/{id}/{id}' == 'https://app....pi/items/{id}'
+E         
+E         - https://app.test/api/items/{id}
+E         ?                       ^^^^
+E         + https://app.test/api/{id}/{id}
+E         ?                      + ^^)
+
+tests\test_network_oracles.py:166: AssertionError
+___ test_mp24_all_correct_answers_yield_the_documented_score_so_no_finding ____
+
+    def test_mp24_all_correct_answers_yield_the_documented_score_so_no_finding():
+        port = QuizPort()
+>       assert check_key(make_key(), port) == []
+                         ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_______ test_answers_are_given_as_the_key_role_in_order_then_submitted ________
+
+    def test_answers_are_given_as_the_key_role_in_order_then_submitted():
+        port = QuizPort()
+>       check_key(make_key(), port)
+                  ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+______ test_mp24_a_product_showing_the_wrong_score_is_an_answer_mismatch ______
+
+    def test_mp24_a_product_showing_the_wrong_score_is_an_answer_mismatch():
+>       found = check_key(make_key(), QuizPort(ignore_weights=True))   # 4/10 instead of 7/10
+                          ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+________ test_each_off_by_one_display_is_a_mismatch[Your score: 6/10] _________
+
+shown = 'Your score: 6/10'
+
+    @pytest.mark.parametrize("shown", ["Your score: 6/10", "8/10", "7/9", "7 of 12", "no score today"])
+    def test_each_off_by_one_display_is_a_mismatch(shown):
+>       assert len(check_key(make_key(), QuizPort(show=shown))) == 1
+                             ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+______________ test_each_off_by_one_display_is_a_mismatch[8/10] _______________
+
+shown = '8/10'
+
+    @pytest.mark.parametrize("shown", ["Your score: 6/10", "8/10", "7/9", "7 of 12", "no score today"])
+    def test_each_off_by_one_display_is_a_mismatch(shown):
+>       assert len(check_key(make_key(), QuizPort(show=shown))) == 1
+                             ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_______________ test_each_off_by_one_display_is_a_mismatch[7/9] _______________
+
+shown = '7/9'
+
+    @pytest.mark.parametrize("shown", ["Your score: 6/10", "8/10", "7/9", "7 of 12", "no score today"])
+    def test_each_off_by_one_display_is_a_mismatch(shown):
+>       assert len(check_key(make_key(), QuizPort(show=shown))) == 1
+                             ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_____________ test_each_off_by_one_display_is_a_mismatch[7 of 12] _____________
+
+shown = '7 of 12'
+
+    @pytest.mark.parametrize("shown", ["Your score: 6/10", "8/10", "7/9", "7 of 12", "no score today"])
+    def test_each_off_by_one_display_is_a_mismatch(shown):
+>       assert len(check_key(make_key(), QuizPort(show=shown))) == 1
+                             ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_________ test_each_off_by_one_display_is_a_mismatch[no score today] __________
+
+shown = 'no score today'
+
+    @pytest.mark.parametrize("shown", ["Your score: 6/10", "8/10", "7/9", "7 of 12", "no score today"])
+    def test_each_off_by_one_display_is_a_mismatch(shown):
+>       assert len(check_key(make_key(), QuizPort(show=shown))) == 1
+                             ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_________ test_equivalent_displays_of_the_documented_score_pass[7/10] _________
+
+shown = '7/10'
+
+    @pytest.mark.parametrize("shown", ["7/10", "Score 7 / 10", "7 of 10", "7"])
+    def test_equivalent_displays_of_the_documented_score_pass(shown):
+>       assert check_key(make_key(), QuizPort(show=shown)) == []
+                         ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_____ test_equivalent_displays_of_the_documented_score_pass[Score 7 / 10] _____
+
+shown = 'Score 7 / 10'
+
+    @pytest.mark.parametrize("shown", ["7/10", "Score 7 / 10", "7 of 10", "7"])
+    def test_equivalent_displays_of_the_documented_score_pass(shown):
+>       assert check_key(make_key(), QuizPort(show=shown)) == []
+                         ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_______ test_equivalent_displays_of_the_documented_score_pass[7 of 10] ________
+
+shown = '7 of 10'
+
+    @pytest.mark.parametrize("shown", ["7/10", "Score 7 / 10", "7 of 10", "7"])
+    def test_equivalent_displays_of_the_documented_score_pass(shown):
+>       assert check_key(make_key(), QuizPort(show=shown)) == []
+                         ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+__________ test_equivalent_displays_of_the_documented_score_pass[7] ___________
+
+shown = '7'
+
+    @pytest.mark.parametrize("shown", ["7/10", "Score 7 / 10", "7 of 10", "7"])
+    def test_equivalent_displays_of_the_documented_score_pass(shown):
+>       assert check_key(make_key(), QuizPort(show=shown)) == []
+                         ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+___________ test_a_score_that_is_not_shown_is_a_mismatch_not_a_pass ___________
+
+    def test_a_score_that_is_not_shown_is_a_mismatch_not_a_pass():
+>       found = check_key(make_key(), QuizPort(hide=True))
+                          ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_________ test_a_deliberately_wrong_answer_lowers_the_expected_score __________
+
+    def test_a_deliberately_wrong_answer_lowers_the_expected_score():
+        items = [{"id": "q1", "answer_action": "select #q1 B", "points": 3},
+                 {"id": "q2", "answer_action": "select #q2 A", "points": 4, "is_correct": False}]
+>       key = make_key(items=items, documented_score=7)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {'items': [{'id': 'q1', 'answer_action': 'select #q1 B', 'points': 3}, {'id': 'q2', 'answer_action': 'select #q2 A', 'points': 4, 'is_correct': False}], 'documented_score': 7}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+____________________ test_a_key_with_no_source_is_refused _____________________
+
+    def test_a_key_with_no_source_is_refused():
+>       data = make_key().model_dump(mode="json")
+               ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+___________________ test_product_docs_sources_are_accepted ____________________
+
+    def test_product_docs_sources_are_accepted():
+>       assert make_key().source.ref == "docs/product/quiz-scoring.md"
+               ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+________________________ test_run_reads_the_keys_file _________________________
+
+tmp_path = WindowsPath('D:/autoTesting/.worktrees/g11-oracle-wiring/.work/pytest-tmp/r14324-1792373337/test_run_reads_the_keys_file0')
+
+    def test_run_reads_the_keys_file(tmp_path):
+>       _write_keys(tmp_path, make_key().model_dump(mode="json"))
+                              ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+___ test_a_key_file_that_cites_a_finding_makes_the_oracle_errored_not_clean ___
+
+tmp_path = WindowsPath('D:/autoTesting/.worktrees/g11-oracle-wiring/.work/pytest-tmp/r14324-1792373337/test_a_key_file_that_cites_a_f0')
+
+    def test_a_key_file_that_cites_a_finding_makes_the_oracle_errored_not_clean(tmp_path):
+>       bad = make_key().model_dump(mode="json")
+              ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_______________ test_through_the_registry_a_mismatch_is_counted _______________
+
+tmp_path = WindowsPath('D:/autoTesting/.worktrees/g11-oracle-wiring/.work/pytest-tmp/r14324-1792373337/test_through_the_registry_a_mi0')
+
+    def test_through_the_registry_a_mismatch_is_counted(tmp_path):
+>       _write_keys(tmp_path, make_key().model_dump(mode="json"))
+                              ^^^^^^^^^^
+
+tests\test_oracle_answer_key.py:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+over = {}
+
+    def make_key(**over) -> AnswerKey:
+        items = [{"id": k, "answer_action": f"select #{k} B", "points": v} for k, v in POINTS.items()]
+        data = {"id": "quiz1", "platform_id": "portal", "role_id": "student",
+                "url_template": "/quiz/{id}", "source": SOURCE, "open_action": "goto /quiz/{id}",
+                "items": items, "submit_action": "click #submit", "score_selector": "#score",
+                "documented_score": 7, "max_score": 10}
+>       return AnswerKey(**{**data, **over})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for AnswerKey
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error, input_value={'id': 'quiz1', 'platform...re': 7, 'max_score': 10}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests\test_oracle_answer_key.py:35: ValidationError
+_____________ test_mail_bodies_are_linted_and_cited_as_a_message ______________
+
+tmp_path = WindowsPath('D:/autoTesting/.worktrees/g11-oracle-wiring/.work/pytest-tmp/r14324-1792373337/test_mail_bodies_are_linted_an0')
+
+    def test_mail_bodies_are_linted_and_cited_as_a_message(tmp_path: Path) -> None:
+        mail = text("welcome-mail", "Dear parent, TODO insert name", kind=TextOrigin.MAIL, url=None)
+>       found = run_lint(tmp_path, [mail])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_oracle_copy_lint.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_oracle_copy_lint.py:47: in run_lint
+    return lint.run(context(run_dir, SurfacePort(texts)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\oracle_copy_lint.py:167: in run_copy_lint
+    return lint_texts(rules, context.port.surface_texts())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\oracle_copy_lint.py:157: in lint_texts
+    return [f for src in texts for rule in rules for f in _lint_one(rule, src)]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\oracle_copy_lint.py:157: in <listcomp>
+    return [f for src in texts for rule in rules for f in _lint_one(rule, src)]
+                                                          ^^^^^^^^^^^^^^^^^^^^
+src\autotester\stages\oracle_copy_lint.py:148: in _lint_one
+    return [_finding(rule, src, "forbidden string present", n)] if n else []
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rule = LintRule(id='forbid-1', kind=<LintKind.FORBIDDEN_STRING: 'forbidden_string'>, value='TODO', case_sensitive=None)
+src = SurfaceText(kind=<TextOrigin.MAIL: 'mail'>, label='welcome-mail', role_id='parent', platform_id='parent', url=None, text='Dear parent, TODO insert name')
+phrase = 'forbidden string present', count = 1, variant = ''
+
+    def _finding(rule: LintRule, src: SurfaceText, phrase: str, count: int, variant: str = "",
+                 ) -> MultiRoleFinding:
+        ident = "|".join((rule.id, src.kind.value, src.label, src.role_id, variant))
+        if src.kind is TextOrigin.MAIL:
+            template = "/mail/{id}"
+        else:
+            template = templatise_url(src.url) if src.url else "/"
+        steps = [f"login {src.role_id}", f"goto {template}"]
+>       return MultiRoleFinding(
+            finding_id="cl-" + hashlib.sha1(ident.encode("utf-8")).hexdigest()[:12],
+            finding_class=FindingClass.COPY_OR_BRANDING, oracle=OracleName.COPY_LINT,
+            title=f"{rule.id}: {phrase} on {_slug(src.label)} ({src.kind.value})",
+            role=src.role_id, platform_id=src.platform_id, url_template=template, steps=steps,
+            count=count)
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for MultiRoleFinding
+E         Value error, url_template path holds an id-like segment; use {id} [type=value_error]
+E           For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+src\autotester\stages\oracle_copy_lint.py:133: ValidationError
+__ test_without_a_masking_engine_the_screenshot_is_withheld_not_written_raw ___
+
+tmp_path = WindowsPath('D:/autoTesting/.worktrees/g11-oracle-wiring/.work/pytest-tmp/r14324-1792373337/test_without_a_masking_engine_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002310AD1CF90>
+
+    def test_without_a_masking_engine_the_screenshot_is_withheld_not_written_raw(
+            tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(privacy.shutil, "which", lambda name: None)
+        found = sweep(tmp_path, SurfacePort(layouts={375: [layout("grades", 520)]}), 375)
+>       assert len(found) == 1 and "screenshot withheld (local_ocr_unavailable)" in found[0].title
+E       AssertionError: assert (1 == 1 and 'screenshot withheld (local_ocr_unavailable)' in '375px mobile viewport: page 520px wide on grades; screenshot withheld (no_recognized_text)')
+E        +  where 1 = len([MultiRoleFinding(finding_id='rl-7b8a66a2d67e', finding_class=<FindingClass.RESPONSIVE_LAYOUT: 'responsive_layout'>, t...s', steps=['login parent', 'goto /grades'], count=1, oracle=<OracleName.RESPONSIVE: 'responsive'>, leak_evidence=None)])
+E        +  and   '375px mobile viewport: page 520px wide on grades; screenshot withheld (no_recognized_text)' = MultiRoleFinding(finding_id='rl-7b8a66a2d67e', finding_class=<FindingClass.RESPONSIVE_LAYOUT: 'responsive_layout'>, ti...es', steps=['login parent', 'goto /grades'], count=1, oracle=<OracleName.RESPONSIVE: 'responsive'>, leak_evidence=None).title
+
+tests\test_oracle_responsive.py:109: AssertionError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\g11-oracle-wiring\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+<unknown>:19: 3 warnings
+tests/test_cli_advice_resolves.py: 16 warnings
+  <unknown>:19: DeprecationWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_goal_contract_registration.py::test_revised_goal_contract_is_registered
+FAILED tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve
+FAILED tests/test_network_oracles.py::test_mp22_polling_every_200ms_against_a_1s_budget_is_a_finding_with_the_numbers
+FAILED tests/test_network_oracles.py::test_mp22_only_the_fast_endpoint_is_flagged_when_polls_interleave
+FAILED tests/test_network_oracles.py::test_mp22_the_same_endpoint_with_different_ids_is_one_polled_endpoint
+FAILED tests/test_oracle_answer_key.py::test_mp24_all_correct_answers_yield_the_documented_score_so_no_finding
+FAILED tests/test_oracle_answer_key.py::test_answers_are_given_as_the_key_role_in_order_then_submitted
+FAILED tests/test_oracle_answer_key.py::test_mp24_a_product_showing_the_wrong_score_is_an_answer_mismatch
+FAILED tests/test_oracle_answer_key.py::test_each_off_by_one_display_is_a_mismatch[Your score: 6/10]
+FAILED tests/test_oracle_answer_key.py::test_each_off_by_one_display_is_a_mismatch[8/10]
+FAILED tests/test_oracle_answer_key.py::test_each_off_by_one_display_is_a_mismatch[7/9]
+FAILED tests/test_oracle_answer_key.py::test_each_off_by_one_display_is_a_mismatch[7 of 12]
+FAILED tests/test_oracle_answer_key.py::test_each_off_by_one_display_is_a_mismatch[no score today]
+FAILED tests/test_oracle_answer_key.py::test_equivalent_displays_of_the_documented_score_pass[7/10]
+FAILED tests/test_oracle_answer_key.py::test_equivalent_displays_of_the_documented_score_pass[Score 7 / 10]
+FAILED tests/test_oracle_answer_key.py::test_equivalent_displays_of_the_documented_score_pass[7 of 10]
+FAILED tests/test_oracle_answer_key.py::test_equivalent_displays_of_the_documented_score_pass[7]
+FAILED tests/test_oracle_answer_key.py::test_a_score_that_is_not_shown_is_a_mismatch_not_a_pass
+FAILED tests/test_oracle_answer_key.py::test_a_deliberately_wrong_answer_lowers_the_expected_score
+FAILED tests/test_oracle_answer_key.py::test_a_key_with_no_source_is_refused
+FAILED tests/test_oracle_answer_key.py::test_product_docs_sources_are_accepted
+FAILED tests/test_oracle_answer_key.py::test_run_reads_the_keys_file - pydant...
+FAILED tests/test_oracle_answer_key.py::test_a_key_file_that_cites_a_finding_makes_the_oracle_errored_not_clean
+FAILED tests/test_oracle_answer_key.py::test_through_the_registry_a_mismatch_is_counted
+FAILED tests/test_oracle_copy_lint.py::test_mail_bodies_are_linted_and_cited_as_a_message
+FAILED tests/test_oracle_responsive.py::test_without_a_masking_engine_the_screenshot_is_withheld_not_written_raw
+26 failed, 385 passed, 20 warnings in 156.49s (0:02:36)
+EXIT=1
