@@ -415,6 +415,11 @@ Report: `qa/verdicts/sweep-2026-10-01-bounded-goal-triage.md`. Preserve all olde
 
 AT-113 cycle3 STALLED + FAIL remains held on `qa/gates/at113-cycle3-recovery.md` (Decision pending). No additional cycle, contract weakening or release. T-165 pending makes T-176/T-166/T-168 dependent, not free. T-171 is already done with checked-PASS cycle2; missing done_check/ledger metadata is separate debt, NOT a task-resume instruction. Other independent work continues; the whole reusable platform/two-target acceptance objective is unchanged. Uncovered sweep dimensions are listed in the report.
 
+## Candidates (human picks) — 2026-10-19 crawl-redact-timestamp close-out (checker, dual-check PROPOSED-ISSUE lines)
+
+- AT-1349 priority: security — crawl.json coverage.holes persisted unscrubbed (pre-existing). Needs approval to build.
+- AT-1350 — crawl guard leaves crawl 'running' when _finish's prelude raises.
+
 ## Candidates (human picks) — 2026-10-12 close-out: at887, t205, t201a, t197, t199b, at774 (checker, from the PROPOSED-ISSUE lines of their PASS verdicts)
 
 Never built until a human moves one out of this section with `approved: <date>`. AT-952..AT-993 are minted now. AT-890 and AT-774 are now `fixed`; AT-887 stays open (its clause 2, the pre-run reachability warning, is unbuilt). No S1/S2 row; the security and data-write rows are listed first. AT-830 (URL-encoded email), AT-920 and AT-921 already cover three more findings of these verdicts and were not duplicated. AT-958 and AT-991 need an owner answer first. Process, wording and informational rows are ledger-only unless a human picks them.

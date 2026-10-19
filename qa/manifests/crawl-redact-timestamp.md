@@ -1,6 +1,6 @@
 # Manifest - crawl-redact-timestamp (T-136 live r5: a short numeric .env secret corrupted crawl timestamps and the crawl stayed running)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual, cycle 0: qa/verdicts/crawl-redact-timestamp-A.md 1f3934f9, -B.md 6e94d128; merged to int/1019)
 **Fix cycle:** 0
 **Contract:** qa/contracts/explore.md (X11), qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
 **Goal task:** T-136 (live run r5, `.work/t136-live-report-r5.md`)
