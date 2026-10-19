@@ -82,6 +82,9 @@ def test_the_crawl_really_typed_and_really_replayed(
 
 
 class _Redactor:
+    def scrub(self, text):
+        return text
+
     def scrub_obj(self, obj):
         return obj
 
