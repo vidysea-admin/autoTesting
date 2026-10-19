@@ -39,3 +39,9 @@ Environment of the run: Windows, `TMP`/`TEMP=D:/autoTesting/.work/tmp` (inside t
 - `tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads` (hash a9a7ccacc7a4): green on fcedc9f4,
   red on d9a70882. `AUTOTESTER_TESSERACT` is read at `src/autotester/core/image_privacy.py:36` (commit d6ab9e30,
   image-privacy-mask) and is missing from `.env.example`.
+
+## r7 note (2026-10-19, base d25227c3)
+
+All 14 baseline reds above were re-shown red on a real detached worktree of d25227c3 (`.worktrees/int-6c-base-d25227c3`) and on head 5223173b.
+`test_revised_goal_contract_is_registered` now fails at `assert all(value in dashboard for value in facts)` (goal.json progress counts vs
+`.goal/dashboard.html`, AT-743) rather than `92 == 106`; the message drifts as goal.json changes, the cause is unchanged.
