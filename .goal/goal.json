@@ -4,15 +4,15 @@
   "north_star": "A reusable AI testing platform where an operator submits any project URL, domain-scoped test-account credential references, and optional evals, conditions, use cases, video, audio, documents, text, email or Google Drive sources. AutoTester learns from supplied evidence or logs in and performs bounded breadth-first exploration, preserves a durable Portal Persona, compiles traceable best/worst/edge evals, reruns them after developer releases in a real visible browser, and reports workflow/API regressions through clear HTML, Excel, text and screenshots. First acceptance targets: Vidysea ERP and Pathlynks.",
   "status": "active",
   "created": "2026-09-03T07:26:17",
-  "updated": "2026-10-18T03:33:06",
+  "updated": "2026-10-20T01:02:32",
   "progress": {
     "total": 106,
-    "done": 90,
+    "done": 101,
     "in_progress": 0,
     "blocked": 0,
-    "pending": 16,
+    "pending": 5,
     "current": "T-136",
-    "percent": 85
+    "percent": 95
   },
   "tasks": [
     {
@@ -1813,7 +1813,7 @@
     {
       "id": "T-208",
       "title": "G11-2 Onboarding form: N role accounts across M platforms on a NEW project, keys only, scope-checked (O17)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-207"
       ],
@@ -1824,14 +1824,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-208-g11-onboarding.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/role_onboarding.py, ui/routes_role_accounts.py, ui/role_accounts_view.py; E ui/routers.py. Reuses ui/env_editor.py, ui/credential_guard.py. Refuses a SecretRef wider than its platform (suffix-match trap). | Parallel-safe with (no file overlap): T-209. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/role_onboarding.py, ui/routes_role_accounts.py, ui/role_accounts_view.py; E ui/routers.py. Reuses ui/env_editor.py, ui/credential_guard.py. Refuses a SecretRef wider than its platform (suffix-match trap). | Parallel-safe with (no file overlap): T-209. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t208-role-onboarding.md (+ .b.md), dual PASS cycle 1, merge 4db3fe76.",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:24"
     },
     {
       "id": "T-209",
       "title": "G11-3 MultiRoleFinding, LeakEvidence, P0 rule and the release-blocking report banner (O19)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-207"
       ],
@@ -1842,14 +1843,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-209-g11-severity-banner.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N schema/multi_role_finding.py, schema/leak_evidence.py, stages/finding_priority.py, stages/leak_evidence.py, stages/report_banner.py; E stages/unified_report_render.py only (stages/unified_report.py is 297 lines and is not edited). Leak/privilege always P0; HMAC ids, masked screenshots, no PII on disk. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N schema/multi_role_finding.py, schema/leak_evidence.py, stages/finding_priority.py, stages/leak_evidence.py, stages/report_banner.py; E stages/unified_report_render.py only (stages/unified_report.py is 297 lines and is not edited). Leak/privilege always P0; HMAC ids, masked screenshots, no PII on disk. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t209-leak-severity.md (+ .b.md), dual PASS cycle 1, merge e35e100c.",
       "criticality": "critical",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-210",
       "title": "G11-4 Multi-role session runner: one isolated context per role account, platform links followed and reported (O16, O18)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-207",
         "T-209"
@@ -1861,14 +1863,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-210-g11-session-runner.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/multi_role_session.py, stages/platform_links.py. Reuses browser/session.py, stages/parallel_run.py isolation, stages/manual_login.py. Off-platform hop = finding. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/multi_role_session.py, stages/platform_links.py. Reuses browser/session.py, stages/parallel_run.py isolation, stages/manual_login.py. Off-platform hop = finding. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t210-session.md, PASS, merge a6dca9e0.",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-211",
       "title": "G11-5 CrossRoleScenario runner: role-tagged steps, 'role B sees or receives X within T' assertions, oracle registry (O18, O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-210"
       ],
@@ -1879,9 +1882,10 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-211-g11-cross-role-runner.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N schema/cross_role_scenario.py, schema/role_step.py, schema/cross_role_assertion.py, schema/oracle_context.py, stages/cross_role_runner.py, stages/oracle_registry.py. Registry names every oracle module up front (incl. oracle_negative_input, oracle_state_after); unbuilt oracle reports 'not built'. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N schema/cross_role_scenario.py, schema/role_step.py, schema/cross_role_assertion.py, schema/oracle_context.py, stages/cross_role_runner.py, stages/oracle_registry.py. Registry names every oracle module up front (incl. oracle_negative_input, oracle_state_after); unbuilt oracle reports 'not built'. | Parallel-safe with (no file overlap): T-208. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t211-crossrole.md, PASS cycle 0, merge 2a41a524.",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-212",
@@ -1897,14 +1901,14 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-212-g11-mailbox-oracle.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N sources/imap_mailbox.py, stages/oracle_mailbox.py, schema/mail_observation.py. Reuses sources/email.py parsing. HUMAN_GATE: IMAP host + per-role mailbox keys; source-adapters.md has no IMAP today (checker fold). | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N sources/imap_mailbox.py, stages/oracle_mailbox.py, schema/mail_observation.py. Reuses sources/email.py parsing. HUMAN_GATE: IMAP host + per-role mailbox keys; source-adapters.md has no IMAP today (checker fold). | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | 2026-10-20: code PASS; live leg waits on role credentials/IMAP in root .env.",
       "criticality": "critical",
       "created": "2026-10-16T00:00:00"
     },
     {
       "id": "T-213",
       "title": "G11-7 Authz oracles: cross-tenant probe, vertical privilege, role-assign escalation, bounded (O19)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211",
         "T-209"
@@ -1916,14 +1920,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-213-g11-authz-oracles.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/oracle_tenant.py, stages/oracle_privilege.py. Reuses the T-154 bounded-pass pattern (RunApproval probe count via core/consent.py::require_project_approval, code-side probe ceiling, refusals.jsonl), network_capture, permission surface; no second probe concept. Deterministic, no model sees leaked content; successful escalation reverted in-run. | Parallel-safe with (no file overlap): T-212, T-214, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/oracle_tenant.py, stages/oracle_privilege.py. Reuses the T-154 bounded-pass pattern (RunApproval probe count via core/consent.py::require_project_approval, code-side probe ceiling, refusals.jsonl), network_capture, permission surface; no second probe concept. Deterministic, no model sees leaked content; successful escalation reverted in-run. | Parallel-safe with (no file overlap): T-212, T-214, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t213-authz.md (+ .b.md), PASS cycle 1 (r0-1 FAIL superseded), merge e66d9851.",
       "criticality": "critical",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-214",
       "title": "G11-8 Network oracles: API error hidden by the UI, request-rate and polling budget (O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211"
       ],
@@ -1934,14 +1939,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-214-g11-network-oracles.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_api_error.py, stages/oracle_request_budget.py, schema/request_budget.py. Reuses stages/network_capture.py. | Parallel-safe with (no file overlap): T-212, T-213, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_api_error.py, stages/oracle_request_budget.py, schema/request_budget.py. Reuses stages/network_capture.py. | Parallel-safe with (no file overlap): T-212, T-213, T-215, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t214-network.md, PASS cycle 0, merge 550b9ea8.",
       "criticality": "medium",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-215",
       "title": "G11-9 Cross-role consistency and answer-key scoring oracles (O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211"
       ],
@@ -1952,14 +1958,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-215-g11-consistency-answer-key.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_consistency.py, stages/oracle_answer_key.py, schema/entity_reading.py, schema/answer_key.py. Answer keys come from product docs, never from benchmark findings (contamination rule). | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_consistency.py, stages/oracle_answer_key.py, schema/entity_reading.py, schema/answer_key.py. Answer keys come from product docs, never from benchmark findings (contamination rule). | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-216, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t215-consist.md, PASS cycle 0, merge 49ed6fc1.",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-216",
       "title": "G11-10 Surface oracles: copy/branding/timezone lint and responsive sweep (O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211"
       ],
@@ -1970,14 +1977,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-216-g11-surface-oracles.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_copy_lint.py, stages/oracle_responsive.py, schema/lint_rule.py. Reuses CaseClass.VIEWPORT_MOBILE, ux_advisory evidence reading. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_copy_lint.py, stages/oracle_responsive.py, schema/lint_rule.py. Reuses CaseClass.VIEWPORT_MOBILE, ux_advisory evidence reading. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-217, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t216-surface.md, PASS, merge 97467446.",
       "criticality": "medium",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:31"
     },
     {
       "id": "T-217",
       "title": "G11-11 Credential-policy and payment-flow-presence oracles (O19, O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211",
         "T-212"
@@ -1989,9 +1997,10 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-217-g11-credential-payment-oracles.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size S. Files: N stages/oracle_credential_policy.py, stages/oracle_payment.py. Password in mail recorded as token-present only; payment stops at the gateway page unless provider test mode. | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size S. Files: N stages/oracle_credential_policy.py, stages/oracle_payment.py. Password in mail recorded as token-present only; payment stops at the gateway page unless provider test mode. | Parallel-safe with (no file overlap): T-213, T-214, T-215, T-216, T-219, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t217-cred-pay.md, PASS cycle 0, merge 23ceca34.",
       "criticality": "critical",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:32"
     },
     {
       "id": "T-218",
@@ -2015,14 +2024,14 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-218-g11-ceo-benchmark.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/ceo_benchmark.py (maps private atomic list to BenchCorpus like known_bugs.py). Reuses bench.py, acceptance_comparison.py. Scorecard prints one recall line per CEO detection technique with its owning unit; an owner that did not run reads 'not run'. HUMAN_GATE: atomic split + hash pinned before run; FP adjudication; CEO active hours. | Parallel-safe with (no file overlap): none (final). Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size L. Files: N stages/ceo_benchmark.py (maps private atomic list to BenchCorpus like known_bugs.py). Reuses bench.py, acceptance_comparison.py. Scorecard prints one recall line per CEO detection technique with its owning unit; an owner that did not run reads 'not run'. HUMAN_GATE: atomic split + hash pinned before run; FP adjudication; CEO active hours. | Parallel-safe with (no file overlap): none (final). Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | 2026-10-20: code PASS; live leg waits on role credentials/IMAP in root .env.",
       "criticality": "critical",
       "created": "2026-10-16T00:00:00"
     },
     {
       "id": "T-219",
       "title": "G11-13 Negative-input oracle per role: expand's input classes run once per role account (O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211"
       ],
@@ -2033,14 +2042,15 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-219-g11-negative-input-oracle.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_negative_input.py. Reuses stages/expand.py CaseClass INPUT_EMPTY, INPUT_BOUNDARY, INPUT_UNICODE_OVERSIZE, DOUBLE_SUBMIT (expand.py not edited), stages/case_expectation.py, FieldConstraints. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-216, T-217, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_negative_input.py. Reuses stages/expand.py CaseClass INPUT_EMPTY, INPUT_BOUNDARY, INPUT_UNICODE_OVERSIZE, DOUBLE_SUBMIT (expand.py not edited), stages/case_expectation.py, FieldConstraints. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-216, T-217, T-220. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t219-neginput.md, PASS cycle 0, merge ebdb33b0.",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:32"
     },
     {
       "id": "T-220",
       "title": "G11-14 State-after-action oracle: before/after/reload counters read as each named role (O18, O20)",
-      "status": "pending",
+      "status": "done",
       "deps": [
         "T-211"
       ],
@@ -2051,9 +2061,10 @@
         "cmd": "uv run python scripts/check_deliverable.py --exists qa/verdicts/t-220-g11-state-after-oracle.md",
         "expect_exit": 0
       },
-      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_state_after.py, schema/state_probe.py. Reuses schema/flowspec.py::ExpectedState, cross_role_runner handles, network_capture. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-216, T-217, T-219. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md).",
+      "note": "Group 11 design (docs/features/multi-role-platform/intent.md; qa/manifests/g11-multirole-design.md). Size M. Files: N stages/oracle_state_after.py, schema/state_probe.py. Reuses schema/flowspec.py::ExpectedState, cross_role_runner handles, network_capture. | Parallel-safe with (no file overlap): T-212, T-213, T-214, T-215, T-216, T-217, T-219. Held on the G11 decision draft approval (qa/manifests/g11-decision-draft.md). | Closed 2026-10-20 on checker PASS: qa/verdicts/t220-state.md, PASS cycle 0, merge 2f2564a8.",
       "criticality": "high",
-      "created": "2026-10-16T00:00:00"
+      "created": "2026-10-16T00:00:00",
+      "completed": "2026-10-20T01:02:32"
     }
   ],
   "decisions": [],
