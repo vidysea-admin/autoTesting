@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-208 [high] G11-2 Onboarding form: N role accounts across M platforms on a NEW project, keys only, scope-checked (O17)
 - T-209 [high] G11-3 MultiRoleFinding, LeakEvidence, P0 rule and the release-blocking report banner (O19)
 ## Last decisions (computed status)
-- D-101 2026-10-15 decision ACTIVE
 - D-102 2026-10-15 fix ACTIVE
 - D-103 2026-10-17 decision ACTIVE
 - D-104 2026-10-17 decision ACTIVE
 - D-105 2026-10-18 decision ACTIVE
+- D-106 2026-10-19 decision ACTIVE
