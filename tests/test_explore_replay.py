@@ -82,6 +82,10 @@ def test_the_crawl_really_typed_and_really_replayed(
 
 
 class _Redactor:
+    def scrub(self, text):
+        # explore_summary.scrubbed masks string values one by one with Redactor.scrub
+        return text
+
     def scrub_obj(self, obj):
         return obj
 
