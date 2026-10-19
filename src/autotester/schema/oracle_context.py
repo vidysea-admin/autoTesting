@@ -90,7 +90,10 @@ class OracleRunSummary(BaseModel):
 class OracleContext(BaseModel):
     """What one oracle run is handed. Serialisable fields only, plus the live port."""
 
-    model_config = ConfigDict(extra="forbid", arbitrary_types_allowed=True)
+    # `declarations` may hold a `{{SECRET:KEY}}` placeholder or a canary: a validation error on the
+    # context must not echo the offending input.
+    model_config = ConfigDict(
+        extra="forbid", arbitrary_types_allowed=True, hide_input_in_errors=True)
 
     project_slug: str = Field(min_length=1, max_length=64)
     run_dir: str = Field(min_length=1)

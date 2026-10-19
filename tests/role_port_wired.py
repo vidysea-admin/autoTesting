@@ -177,6 +177,7 @@ def probed_port(wired_port: Wired):
     store = wired_port.store("g11probe")
     wired_port.grant(store, PLANNED)
     run_dir = wired_port.run_dir("probe-run")
-    before = len(wired_port.app.reads)
+    before, loads_before = len(wired_port.app.reads), len(wired_port.app.loads)
     summary, findings = run_oracles(wired_port.context("g11probe", run_dir), AUTHZ)
-    return summary, findings, run_dir, len(wired_port.app.reads) - before
+    return (summary, findings, run_dir, len(wired_port.app.reads) - before,
+            len(wired_port.app.loads) - loads_before)       # api reads, then /assign* page loads

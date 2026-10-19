@@ -38,7 +38,7 @@ from autotester.stages.role_session_port import LiveRolePort
 
 def test_w4_an_accepted_assign_is_a_p0_finding_and_is_reverted_in_the_same_run(
         wired_port: Wired, probed_port) -> None:
-    _, findings, run_dir, _ = probed_port
+    _, findings, run_dir, *_ = probed_port
     (assigned,) = [f for f in findings if f.finding_id == "authz-priv-admin-make-admin"]
     assert "reverted in run" in assigned.title
     assert assigned.finding_class is FindingClass.PRIVILEGE_ESCALATION
@@ -127,6 +127,31 @@ def test_w4_a_press_whose_outcome_is_not_shown_is_still_undone_and_recorded(
     record = json.loads((run_dir / "authz" / "reverts.jsonl").read_text(encoding="utf-8"))
     assert record["control_id"] == "unproven" and record["reverted"] is True
     assert wired_port.app.roles["alice"] == "user"
+
+
+def test_w4_an_assign_that_raises_mid_flight_after_the_click_took_is_still_undone(
+        wired_port: Wired, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Real scenario: the press lands (alice becomes admin) and the browser then dies (any error
+    that is not `AssignUnproven`). The oracle must still run the undo and record that it held."""
+    real_assign = type(wired_port.port).assign
+
+    def press_then_die(role_id, control):
+        real_assign(wired_port.port, role_id, control)
+        assert wired_port.app.roles["alice"] == "admin"            # the press really took
+        raise RuntimeError("browser connection lost")
+
+    monkeypatch.setattr(wired_port.port, "assign", press_then_die)
+    plan = AuthzPlan(platform_id="app", privilege_probes=[PrivilegeProbe(
+        id="admin", higher_role_id=BOB, lower_role_id=ALICE,
+        controls=[RoleAssignControl(id="make-admin", url="/assign")])])
+    wired_port.grant(wired_port.store("g11midflight"), 3)
+    run_dir = wired_port.run_dir("midflight", plan)
+    summary, findings = run_oracles(wired_port.context("g11midflight", run_dir),
+                                    [OracleName.PRIVILEGE])
+    assert _status(summary, OracleName.PRIVILEGE).state is OracleState.RAN and findings == []
+    record = json.loads((run_dir / "authz" / "reverts.jsonl").read_text(encoding="utf-8"))
+    assert record["control_id"] == "make-admin" and record["reverted"] is True
+    assert wired_port.app.roles["alice"] == "user"                  # back where it was
 
 
 def test_w4_two_bindings_for_one_control_are_refused_not_silently_merged() -> None:

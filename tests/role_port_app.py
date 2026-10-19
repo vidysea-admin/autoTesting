@@ -55,6 +55,7 @@ class PortApp:
     persist: bool = True
     roles: dict[str, str] = field(default_factory=lambda: {"alice": "user", "bob": "admin"})
     reads: list[str] = field(default_factory=list)
+    loads: list[str] = field(default_factory=list)   # /assign* page loads (the role-assign look)
     offsite_hits: int = 0
 
     def url(self, path: str = "/") -> str:
@@ -176,6 +177,8 @@ def _handler_for(app: dict) -> type[http.server.BaseHTTPRequestHandler]:
             if not self.headers.get("Host", "").startswith(HOST):  # left the platform
                 handle.offsite_hits += 1
                 return self._send("{}")
+            if path.startswith("/assign"):
+                handle.loads.append(f"{user}:{path}")
             if user is None:
                 return self._send("", 302, {"Location": "/login"})
             if path == "/orders":

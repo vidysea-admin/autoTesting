@@ -134,6 +134,8 @@ def _role_assigns(probe: PrivilegeProbe, prep: ProbeSession, esc: EscalationTran
             unprobed.append(UnprobedItem(item=item, reason=StopReason.WRITE_POLICY))
         elif esc is None:
             unprobed.append(UnprobedItem(item=item, reason=StopReason.NO_ESCALATION_TRANSPORT))
+        elif (stop := prep.budget.take(reserve=3)) is not None:  # the look, the attempt, the undo
+            unprobed.append(UnprobedItem(item=item, reason=stop))
         elif (reach := _reaches(esc, probe.lower_role_id, control)) is None:
             unprobed.append(UnprobedItem(item=item, reason=StopReason.TRANSPORT_ERROR))
         elif reach:

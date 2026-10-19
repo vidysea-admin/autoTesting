@@ -25,6 +25,7 @@ from autotester.schema.authz_probe import (
     ProbeLog,
     ProbeReply,
     ReadTransport,
+    RoleAssignControl,
 )
 from autotester.schema.multi_role_enums import (
     FindingClass,
@@ -42,7 +43,7 @@ def test_w3_the_live_port_is_the_probe_transport_the_gate_asks_for(wired_port: W
 
 
 def test_w3_the_tenant_oracle_finds_the_planted_cross_tenant_row(probed_port) -> None:
-    summary, findings, _, _ = probed_port
+    summary, findings, *_ = probed_port
     assert _status(summary, OracleName.TENANT).state is OracleState.RAN
     (leak,) = [f for f in findings if f.finding_class is FindingClass.DATA_LEAK]
     assert leak.role == ALICE and leak.count == 1
@@ -58,10 +59,56 @@ def test_w3_the_privilege_oracle_finds_the_read_the_lower_role_should_not_have(p
 
 
 def test_w3_every_probe_stays_inside_the_planned_count(wired_port: Wired, probed_port) -> None:
-    *_, requests = probed_port
+    requests = probed_port[3]
     assert 0 < requests <= PLANNED
     log = json.loads((probed_port[2] / "authz" / "tenant_log.json").read_text(encoding="utf-8"))
     assert ProbeLog.model_validate(log).sent <= PLANNED
+
+
+def test_w3_every_request_the_run_made_is_counted_including_the_role_assign_page_loads(
+        wired_port: Wired, probed_port) -> None:
+    """The full authz run on the fixture app: the api reads AND the /assign* pages that
+    `can_reach` and `assign` load must all be inside what the two oracles paid the budget."""
+    _, _, run_dir, reads, loads = probed_port
+    sent = sum(ProbeLog.model_validate_json((run_dir / "authz" / f"{o.value}_log.json").read_text(
+        encoding="utf-8")).sent for o in AUTHZ)
+    assert loads >= 3, "the fixture must have seen the role-assign page loads"
+    assert reads + loads <= sent
+
+
+def _tight_plan(cap: int) -> AuthzPlan:
+    return AuthzPlan(platform_id="app", request_cap=cap, privilege_probes=[PrivilegeProbe(
+        id="admin", higher_role_id=BOB, lower_role_id=ALICE,
+        controls=[RoleAssignControl(id="make-admin", url="/assign"),
+                  RoleAssignControl(id="locked", url="/assign-locked")])])
+
+
+def test_w3_nothing_is_sent_once_the_request_cap_is_spent(wired_port: Wired) -> None:
+    """Real scenario: a cap of 3 pays for the first control's look, press and undo, so the second
+    control's page must not be loaded at all, and is listed unprobed for `request_cap`."""
+    wired_port.grant(wired_port.store("g11cap3"), 4)
+    run_dir, before = wired_port.run_dir("cap3", _tight_plan(3)), len(wired_port.app.loads)
+    summary, _ = run_oracles(wired_port.context("g11cap3", run_dir), [OracleName.PRIVILEGE])
+    assert _status(summary, OracleName.PRIVILEGE).state is OracleState.RAN
+    assert wired_port.app.loads[before:] == ["alice:/assign", "alice:/assign"]   # look, press
+    log = ProbeLog.model_validate_json(
+        (run_dir / "authz" / "privilege_log.json").read_text(encoding="utf-8"))
+    assert log.sent == 3 and [(u.item, u.reason.value) for u in log.unprobed] == [
+        ("privilege:admin:control_locked", "request_cap")]
+    assert wired_port.app.roles["alice"] == "user"
+
+
+def test_w3_a_cap_too_small_for_a_press_and_its_undo_sends_not_even_the_look(
+        wired_port: Wired) -> None:
+    """Real scenario: cap 2 cannot cover look + press + undo, so no /assign* page is loaded."""
+    wired_port.grant(wired_port.store("g11cap2"), 4)
+    run_dir, before = wired_port.run_dir("cap2", _tight_plan(2)), len(wired_port.app.loads)
+    run_oracles(wired_port.context("g11cap2", run_dir), [OracleName.PRIVILEGE])
+    assert wired_port.app.loads[before:] == []
+    log = ProbeLog.model_validate_json(
+        (run_dir / "authz" / "privilege_log.json").read_text(encoding="utf-8"))
+    assert log.sent == 0 and {u.reason.value for u in log.unprobed} == {"request_cap"}
+    assert wired_port.app.roles["alice"] == "user"
 
 
 def test_w3_no_foreign_row_or_secret_reaches_disk(wired_port: Wired, probed_port) -> None:

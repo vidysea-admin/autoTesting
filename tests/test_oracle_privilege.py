@@ -208,9 +208,10 @@ def test_mp20_the_cap_reserves_room_for_the_revert_so_it_is_never_exceeded(sc: S
                   request_cap=3))
     findings = _run(sc)
     assert len(findings) == 1
-    assert sc.app.calls == 2  # promote: assign + revert; invite needs 2 but only 1 is left
+    assert sc.app.calls == 2  # promote: assign + revert; invite needs 3 and none is left
     log = _log(sc)
-    assert log.sent == 2 and [(u.item, u.reason) for u in log.unprobed] == [
+    # the reach look is paid too: promote = look + assign + revert = 3, so invite sends nothing
+    assert log.sent == 3 and [(u.item, u.reason) for u in log.unprobed] == [
         ("privilege:admin-area:control_invite", StopReason.REQUEST_CAP)]
 
 

@@ -125,3 +125,12 @@ def test_w1_declarations_are_never_serialised_with_the_context() -> None:
     """A declaration can hold a {{SECRET:KEY}} placeholder; the context dump must not carry it."""
     dumped = _ctx(None, "run", credential_policy=_policy()).model_dump_json()
     assert "reset-pw" not in dumped and "declarations" not in dumped
+
+
+def test_w1_a_bad_declaration_dict_on_the_context_does_not_echo_the_input() -> None:
+    """A runner builds the context with a declaration dict holding a canary; the error names the
+    field but never the offending value (OracleContext carries `hide_input_in_errors`)."""
+    with pytest.raises(ValidationError) as err:
+        OracleContext(project_slug="p", run_dir="r", scenario_id="s", declarations={
+            "payment_paths": {"paths": [{"id": "canary-secret-value"}]}})
+    assert "canary-secret-value" not in str(err.value)
