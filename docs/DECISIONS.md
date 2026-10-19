@@ -2720,3 +2720,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (chat 2026-10-18: "haan, docs update kar").
 
 **Links:** T-207; T-208..T-220; D-104; D-018; D-053; qa/contracts/multi-role-platform.md; docs/features/multi-role-platform/intent.md; qa/manifests/g11-decision-draft.md; .work/g11-wave-plan.md
+
+## D-106 | 2026-10-19 | type: decision | status: ACTIVE
+
+**What:** (1) T-136 takes route (b) of qa/gates/live-acceptance-runs.md: crawl issues that a live run records (4xx/5xx responses, console errors, dead links, broken pages) count as findings, through one deduplicated crawl-issue -> finding converter, so the acceptance comparison computes a false-positive rate instead of stopping INCOMPLETE on 0 findings; T-169 and T-206 use the same comparison path. (2) A negative-path case whose deterministic assertion is met may PASS: the C12 note guard no longer downgrades it for failure words that describe the expected rejection; positive-path cases keep the guard unchanged. (3) case_efaed2c0eb91, case_7a978722a38c and case_093f5070df79 get deterministic expected assertions taken from recorded run evidence. (4) The human bug list comes from Umesh (source B), later and non-blocking. (5) T-218's first live run leaves mailbox checks for accounts created during the run out of scope.
+
+**Why:** Live runs r3 and r4 found 0 findings, so the T-136 comparison exited 1 (false_positive_rate unavailable) and blocked T-136, T-169 and T-206; the r4 run also showed that a correct rejection could never PASS and that three cases had nothing to assert. Umesh, chat 2026-10-19: "go with the best way possible and with your recommendtation", accepting the maker's recommended defaults on the decision sheet.
+
+**Result:** Two maker units (t136-route-b, t136-negpath-assert) are built and checked; T-136/T-169/T-206 are then re-run live under the existing signed RunApprovals (D-081). Recall vs an independent human stays "unavailable until the human list arrives" (D-089, D-090); D-094's labelling of the Karunn review is unchanged.
+
+**Changes-authorized:** none of ARCHITECTURE.md prose or enforcement paths; product code and case data under maker units with /checker verdicts.
+
+**Approved-by:** Umesh (maker session chat, 2026-10-19, quoted above).
+
+**Links:** T-136; T-169; T-206; T-218; D-089; D-090; D-094; D-104; qa/gates/t136-route-after-r4.md; qa/gates/t136-independent-human-list.md; qa/gates/umesh-decisions-2026-10-19.md; qa/gates/live-acceptance-runs.md
