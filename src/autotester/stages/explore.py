@@ -227,7 +227,7 @@ def _finish(rt: ExploreRuntime, status: CrawlStatus) -> Crawl:
         "coverage": crawl_coverage.of_run(rt, status),  # V7
     })
     rt.crawl = crawl
-    rt.store.save_crawl(crawl)
+    explore_summary.save_crawl(rt, crawl)
     rt.store.save_frontier(crawl.id, rt.frontier)
     explore_summary.write(rt, crawl)
     return crawl

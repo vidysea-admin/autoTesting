@@ -80,6 +80,19 @@ def scrubbed(rt: ExploreRuntime, model: ModelT) -> ModelT:
     return type(model).model_validate(_scrub_text(redactor, model.model_dump(mode="python")))
 
 
+def save_crawl(rt: ExploreRuntime, crawl: Crawl) -> None:
+    """AT-1349: persist the crawl envelope with the fields that carry page text masked.
+    `coverage` (holes: selector, link name, url_template), `noise_counts` hosts and `stop_reason`
+    go through `scrubbed`; config and counters are not text. In memory `crawl` is unchanged."""
+    redactor = rt.session.secrets.redactor()
+    update: dict[str, Any] = {
+        "noise_counts": [scrubbed(rt, n) for n in crawl.noise_counts],
+        "stop_reason": None if crawl.stop_reason is None else redactor.scrub(crawl.stop_reason)}
+    if crawl.coverage is not None:
+        update["coverage"] = scrubbed(rt, crawl.coverage)
+    rt.store.save_crawl(crawl.model_copy(update=update))
+
+
 def _split_paths(rt: ExploreRuntime) -> tuple[list[str], list[str]]:
     """(visited, never visited) url templates. Path templates only: no host, query or content."""
     done = {NodeStatus.EXPLORED, NodeStatus.SKIPPED_UNCHANGED}
