@@ -1,6 +1,6 @@
 # Manifest — bench-inputs-ui
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Unit:** bench-inputs-ui — a person marks AutoTester findings "real bug" / "false positive" from the crawl and run pages (T-136), and uploads the private benchmark answer list from a project page (T-218). Umesh 2026-10-21: he will rule on the T-136 findings "from the product myself" and supply the CEO findings list "tool mai se".
 **Contract:** `qa/contracts/bench.md` K3 (`BenchTrial.score` is the only scorer; adjudication added there, not a second scorer) · `qa/contracts/core-invariants.md`
