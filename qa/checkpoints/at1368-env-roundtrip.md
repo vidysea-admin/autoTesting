@@ -12,3 +12,16 @@ Relevant blobs: src/autotester/core/env.py, src/autotester/ui/env_editor.py, tes
 | route probe | TestClient POST /settings/providers in a copy | accepted 303 loaded == typed; refused 400 value-free, .env unchanged |
 | falsification x3 | copies rowA, rowB, rowC (PYTHONPATH to the copy's src) | green-before, red-after each |
 | lint | ruff check src tests scripts; autotester doctor | clean |
+
+# Cycle 1 (repair check, coordinator A)
+
+Source: e70ecf95 (code state 8d0d2215; repair base 692adbcd). Attribution: claude-sonnet-subagent checker A, verdict qa/verdicts/at1368-env-roundtrip.md.
+Relevant blobs: tests/test_ui_credential_safety_project.py at 8d0d2215; src/** and tests/test_env_loading.py identical to d39837eb (git diff d39837eb..HEAD -- src tests = that one test file); lock unchanged; env win32, worktree .venv.
+C1 evidence from cycle 0 (probe, differential, route probe) reused by identity: inputs unchanged.
+
+| Check | Command / scope | Result |
+|---|---|---|
+| affected set | uv run pytest test_ui_credential_safety_project test_env_loading test_ui_env_editor test_ui_settings test_server_settings test_container_redaction test_image_privacy test_approval_prod_gate test_ui_auth_envkeys | 220 passed, 2 skipped |
+| lint | ruff check src tests scripts | clean |
+| falsification C2 | copy falsA1368: _render_value never refuses | red (DID NOT RAISE), restored green |
+| added-assertion probe | copy: refusal message echoes value | red on value-not-in-message, restored green |

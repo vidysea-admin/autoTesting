@@ -1,39 +1,43 @@
-# Verdict: at1368-env-roundtrip (coordinator A, dual check, cycle 0)
+# Verdict: at1368-env-roundtrip (coordinator A, dual check, REPAIR check, cycle 1)
 
-Date: 2026-10-21 · Bound to D:/autoTesting/.worktrees/at1368-env-roundtrip · checked code d39837eb (clean tree) · base 83e8f71e (= merge-base with int/1019)
-Policy-Version: proportional-verification/2026-10-19.17 · Cycle checked: 0 · Checkpoint: qa/checkpoints/at1368-env-roundtrip.md
+Date: 2026-10-21 - Bound to D:/autoTesting/.worktrees/at1368-env-roundtrip - checked HEAD e70ecf95 (clean tree; code state 8d0d2215) - Repair base 692adbcd - base 83e8f71e
+Policy-Version: proportional-verification/2026-10-19.17 - Cycle checked: 1 - Checkpoint: qa/checkpoints/at1368-env-roundtrip.md
+(The cycle 0 verdict of this path is in git history at ff2fc39b; this file replaces it for cycle 1.)
 
-## Check plan (step 0)
-Logic + credential handling (L, dual-trigger src/autotester/core/env.py:84, cited in manifest): affected tests, an independent exhaustive round-trip probe, the falsification floor in copies, a security read of the changed lines, a redaction differential, and a route probe for the refusal message. Mode D not run: no template/CSS/JS/markup changed; `ui/env_editor.py` is a writer helper whose only visible effect (the 400 refusal text) was driven through the real route with TestClient.
+## Check plan (repair scope)
+Failed-criteria list for my side: none (cycle 0 PASS). Repair diff 692adbcd..HEAD read in full: the only non-qa file is
+tests/test_ui_credential_safety_project.py (protected test change, declared in the manifest). Whole-unit diff 83e8f71e..HEAD scanned:
+7 non-qa files (core/env.py, core/image_privacy.py, core/redact_cli.py, providers/litellm_provider.py, ui/env_editor.py, tests/test_env_loading.py,
+the credential-safety test), all declared in the manifest. `git diff d39837eb..HEAD -- src tests` = that one test file only, so product code and
+C1's inputs are byte-identical to what I PASSed at cycle 0; C1 keeps its recorded evidence (round-trip probe, redaction differential, route probe).
+
+## Protected test change judgement
+- Old input `a"b'c` was pinned as refused. The unit makes it storable; I confirmed on the current code that `set_env_value` stores it and BOTH
+  `parse_env` and `read_dotenv` read it back identical. Keeping it as a refusal pin would assert a lie, so changing the input is required, not weakening.
+- New input `p@ss #1 "q" 'r'` is still refused: double form stops at the next quote in parse_env, single form likewise, bare form loses ` #1 ...` as a comment;
+  `_render_value` (env_editor.py:28-52, read) falls through to `InvalidEnvValue`. It passes the newline gate (line 76-78), so the refusal is the quoting one, not an unrelated one.
+- Assertions: `pytest.raises(InvalidEnvValue)` kept; added `.env` bytes unchanged and message does not echo the value. Nothing removed, no skip/xfail, no threshold. Not weakened.
+
+## Evidence (my own runs)
+- uv run pytest tests/test_ui_credential_safety_project.py tests/test_env_loading.py tests/test_ui_env_editor.py tests/test_ui_settings.py tests/test_server_settings.py
+  tests/test_container_redaction.py tests/test_image_privacy.py tests/test_approval_prod_gate.py tests/test_ui_auth_envkeys.py -> 220 passed, 2 skipped (73 s)
+- ruff check src tests scripts -> All checks passed
+- Falsification (.8-4, one per repaired criterion C2), copy D:/autoTesting/.work/tmp/falsA1368, PYTHONPATH to the copy's src (module path confirmed):
+  green-before (1 passed); mutation A (`_render_value` always returns the double-quoted form, never refuses) -> test RED "DID NOT RAISE InvalidEnvValue";
+  restored -> green. Extra probe of the added assertion: refusal message prefixed with the value -> RED on `assert value not in str(refused.value)`; restored -> green.
+- C2 other parts (property test temp dir only, values never echoed): unchanged files, evidence reused from cycle 0 by identity; the test run above is green at HEAD.
+- Not run: full suite (unit check); suite_lock wrapper (its CLI takes no --slots here; single small pytest process).
+
+## Findings
+No FAILURES. PROPOSED-ISSUE lines: none new for this cycle (cycle 0's three low proposals stand as filed in that verdict).
 
 VERDICT: PASS
-SCOREBOARD: 2/2 criteria met (C1, C2); ui-settings invariants (one write path, 0600, newline reject) and browser-and-secrets unchanged and covered by the green affected set
-TIER: L (security: credential value handling, src/autotester/core/env.py:84 read_dotenv and src/autotester/ui/env_editor.py:28 _render_value; both read in this check)
-
-## Evidence (all run by me; scratch logs in D:/autoTesting/.work/tmp/chkA1368/)
-- Step 3, C1+C2: `uv run pytest` over the 6 manifest test files -> 171 passed, 2 skipped (same as the maker's Pre-check). Reference-hit tests the maker did not list (`shard_suite.py --list --candidates`: test_approval_prod_gate, test_failure_bundle, test_real_acceptance, test_role_port_authz, test_ui_auth_envkeys, plus test_litellm_guard for the changed `_env_secret_values`) -> 110 passed.
-- C1 independent probe (not the maker's 40 values): real writer `set_env_value` -> `load_repo_env`, plus `parse_env` on the file text, over every string of length 1-4 on an 11-char alphabet (double quote, single quote, backslash, `#`, `$`, braces, space, `n`, `x`, `=`), 4000 random 5-14 char strings (tab, unicode, emoji, punctuation), and `${HOME}`, `$X`, `a${HOME}b`, backslash-n literal (HOME/X/Y exported as sentinels). 20111 cases: 18661 stored, 1450 refused, 0 altered as read by the loader, 0 altered as read by `parse_env`, 0 file writes on a refusal.
-- Refusing-not-altering is acceptable against C1: every one of the 1450 refusals raised InvalidEnvValue before any write, none was stored altered, and the admin is told. The message is value-free: 0 of 1450 messages (str and repr) contain the value; route probe: POST /settings/providers with a refused value -> 400, body lacks the value, `.env` bytes unchanged; the python-dotenv parse warning names only a line number. Accepted values via the route: 303, loaded == typed, never echoed on the settings page.
-- Redaction/login (readers switched): for values `a${HOME}b`, `${X}`, `p@ss #1`, backslash-n literal, doubled backslash and `has"dq` written by the writer, `SecretStore.resolve` (what login types) equals the value, `redact_cli.env_values` contains it, the `read_dotenv` list that `litellm_provider._env_secret_values` uses contains it, and `SecretStore.redactor` masks it: all True. Differential old reader (interpolate=True) vs `read_dotenv` over 24 realistic .env lines (plain, quoted, URL `#`, export, empty, `$X`, `$$`, backslash-n in both quote kinds, tab, unicode, multiline): only the 6 lines containing `${` differ; nothing else loads differently.
-- Step 4c diff scope: 5 src files + 1 test + manifest, all in "What changed"; no function, export, test or config key removed or renamed (`--diff-filter=DR` empty); only the InvalidEnvValue message text changed and no test pins the old text (git grep). env.py 151 and env_editor.py 171 lines (<300). ruff: All checks passed; `autotester doctor`: clean.
-- Security read: `read_dotenv` takes a Path or a stream, logs nothing, puts no value in any raised text; `_reads_back` parses a StringIO only; `_validated_updates` still rejects newline/CR and bad keys before any write; the atomic 0600 write path is untouched.
-
-## Falsification (floor 1 per criterion; copies chkA1368/rowA..rowC, green-before then red-after; bound tree never edited)
-- C1: `read_dotenv` interpolate=False -> True: green (2 passed), then RED cases [6, 22] (`a${HOME}b`, `${X}${Y}`).
-- C1: `_reads_back` reduced to parse_env only: green, then RED cases [9, 10, 18, 23, 25, 35, 36, 39, 40] (backslash/quote values the loader decodes).
-- C2: `_render_value` returns a double-quoted value instead of raising: green, then RED in test_a_value_no_quoting_can_store_exactly_is_refused_never_stored_altered.
-- C2 echo rule: assertion messages print case indexes only (`cases {bad} of ROUNDTRIP_VALUES ...`), pytest addopts is `-q` with no `-l`, tests use tmp_path; the real `.env` was never opened by the test or by me.
-
-## Non-blocking findings
-PROPOSED-ISSUE: {"sev":"low","type":"process","title":"AT-1368 residual class is wider than the manifest and refusal text say","detail":"Refused set (probed, 1450 of 20111) also includes values that need quoting (space-hash or edge whitespace) AND hold both quote kinds, e.g. p@ss #1 \"q\" 'r' (400 via the route). parse_env cannot unquote these at all, same as before this unit (AT-082). The manifest lists only start-with-quote and ends-with-backslash; the message says 'typically'. Wording only."}
-PROPOSED-ISSUE: {"sev":"low","type":"behaviour","title":"Writer now refuses some values the old writer stored and SecretStore read correctly","detail":"Shapes such as a leading quote plus trailing backslash, or edge whitespace plus backslash, were stored by the old writer and typed correctly via parse_env, but the dotenv reader (loader, redaction) cannot read them, so they are refused for every key. Project keys are never loaded by load_repo_env, so for them the refusal is stricter than needed. Very rare shapes; closing needs a human choice (decode dotenv escapes in parse_env, or scope the both-readers rule to server keys)."}
-PROPOSED-ISSUE: {"sev":"low","type":"coverage","title":"Other readers of the repo .env still interpolate","detail":"scripts/bench_trial.py:109, scripts/regression_proof.py:171, scripts/run_pathlynks_first_cases.py:146, scripts/agent_live_comparison.py:39 call load_dotenv (interpolate=True) and docker/compose.prod.yml:13 uses env_file, so a provider key containing ${X} still loads altered there. Login values are unaffected (they come from SecretStore). Outside C1, which is scoped to load_repo_env. Also a stale docstring at src/autotester/core/redact_cli.py:34 ('as dotenv_values reads it')."}
-NOTE (not a finding): the real repo .env was not opened (brief), so whether an existing real value contains `${`, which now loads literally instead of interpolated, is unproven; a count-only `grep -c '\${' .env` by Umesh settles it. The manifest has no `## Test selection (haiku)` or `Sibling:` lines; 0 of 443 manifests in this repo have them, so this is a process note, not a FAIL, and the missed reference-hit tests were run by me and are green.
-
+SCOREBOARD: 2/2 criteria met (C1, C2), invariants unchanged
+TIER: L (security: credential value handling, dual-trigger src/autotester/core/env.py:84; protected test change)
 FAILURES: none
-CAPABILITY-COVERAGE: 3/3 falsification rows reproduced (green-before in copy, red-after)
-LIVE-BROWSER: not-applicable (ui/env_editor.py is a backend writer; route driven with TestClient, no markup changed)
-ISSUES-WRITTEN: none (dual check: PROPOSED-ISSUE lines above)
+CAPABILITY-COVERAGE: not-applicable (writer/reader logic, no UI change)
+LIVE-BROWSER: not-applicable (changed paths: tests/test_ui_credential_safety_project.py only this cycle)
+ISSUES-WRITTEN: none (dual check: no side effects)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-EXPLANATION: Both criteria hold: an independent 20k-case writer-to-loader probe found 0 altered values, and every refusal is raised before any write with a value-free message; the interpolation and both-readers mutants each turn the property test red. The manifest's residual class is under-described and the backslash shapes are slightly stricter than the old writer, but refusing instead of altering is consistent with C1 and is logged as low items.
-Metrics: start=2026-10-21T10:48:00Z end=2026-10-21T11:12:00Z wall_min=24 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=3 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 check_s=1440 mutants=1 defects_unit=0 defects_6c=0
+EXPLANATION: The repair changes one stale test input, from a value the unit now stores exactly to one that still has no safe quoting; it is still refused, the assertions are a strict superset, and no product code moved since my cycle 0 PASS. The C2 falsification (writer never refuses) turns the repaired test red, and the affected set is green at HEAD.
+Metrics: start=2026-10-21T11:14:00Z end=2026-10-21T11:23:00Z wall_min=9 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=2 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 check_s=540 mutants=0 defects_unit=0 defects_6c=0
