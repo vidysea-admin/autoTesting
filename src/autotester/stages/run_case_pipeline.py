@@ -296,4 +296,5 @@ def grade_errored_result(
     run, so an ERRORED case is still gradeable against its real rubric, not a
     placeholder."""
     rubric = rubric_for_case(case, store)
-    return grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id))
+    return grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
+                 mask_limit=project_mask_limit(store))

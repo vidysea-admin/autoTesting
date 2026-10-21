@@ -1,42 +1,35 @@
-# Verdict - at1384-mask-band (coordinator B, blind dual check, repair cycle)
+# Verdict - at1384-mask-band (coordinator B) - cycle 3
+Date 2026-10-21 · bound to D:/autoTesting/.worktrees/at1384-fix2 · head 01f111de (wave/at1384-fix2) · base c437d3a5 · repair base 2655c047 (ancestor of HEAD, verified) · Cycle checked: 3
+Policy-Version: proportional-verification/2026-10-19.17 · prior cycle-2 verdict archived as at1384-mask-band.r2.b.md
 
-Date: 2026-10-21 · Bound root: D:/autoTesting/.worktrees/at1384-mask-band · Base c437d3a5 (= merge-base with int/1019) · Head judged 1515721a (product code identical to 714720db) · Repair base 6b2a679c (ancestor of HEAD, verified)
-Cycle checked: 1
-Policy-Version: proportional-verification/2026-10-19.17
-Checkpoint: qa/checkpoints/at1384-mask-band.b.md
+## Check plan
+Logic change in privacy/grading call chain (security control, tier L): (1) read the repair diff 2655c047..01f111de in full; (2) my own `git grep` enumeration of every grade / judge_images / sanitized_images caller in src and scripts and every test double in tests; (3) re-run the failed criterion and affected tests; (4) one falsification per repaired item in a throwaway copy outside the bound root; (5) security read, invalid-limit probe, golden decision. C2-C4 identities are read from my own checkpoint.
+
+## Result per criterion
+- C1 PASS. Repair diff = 3 scripts (bench_trial.py:104, regression_proof.py:147, run_pathlynks_first_cases.py:142/198) + run_case_pipeline.py:299 + 6 test files; no assertion removed or weakened (additive signature/keyword changes, one new verdict assertion, two new tests). My enumeration (git grep over src and scripts) matches the manifest's Sibling lines: every grade( caller with a Project or store in scope passes its limit (run_case_pipeline.py:226,269,299; orchestrate_downstream.py:160; agents/tools.py:160; the three scripts via session.project / headed_project); sanitized_images callers: grade_images.py:51 and run_artifacts.py:49 forward the limit. Callers left on the default have no Project in scope: ai_judge.py:171,227 (AiCapture/RepoDocs/paths only), leak_evidence.py:97 and oracle_responsive.py:69 (OracleContext is slug-only; oracle_tenant passes no screenshot), video_frames.py:91, vision_probe.py:75 (provider level). All keep the stricter 0.75 (fail closed). Test doubles: every `grade` monkeypatch in tests/ now accepts mask_limit explicitly or via *args/**kwargs; the `sanitized_images` double in test_vision_probe.py:269 is widened.
+- C2 PASS (identity kept): `git diff --name-only c437d3a5 714720db` file set, diffed 714720db..HEAD, differs only in run_case_pipeline.py (+2/-1, the :299 wiring); core/image_privacy.py, schema, project.py, grade*.py, projects/pathlynks/project.json are byte-unchanged since 714720db, so the checkpoint measurement (0.8224 max kept, six at 1.0, 0.85 chosen) stands. Note: `git diff 714720db..01f111de -- src scripts projects` also lists other units merged via int/1019 (env.py, access_log_scrub.py, ...); those are not this unit's files.
+- C3 PASS: privacy engine/reocr/withhold tests green (377 passed, below); invalid limits probed on the bound tree: nan, 0, -1, 0.91, inf, True all raise invalid_mask_limit (withhold) and are rejected by Project; None/0.75/0.85/0.9 accepted.
+- C4 PASS: test_at1384_a_screenshot_above_the_project_limit_still_grades_inconclusive and test_g2_pass_is_held_when_a_dashboard_screenshot_is_withheld_for_mask_size green; visual_decision untouched.
+- Golden tests/golden/pre_g11_project.json (+1 line `"image_mask_limit": 0.75`): not a weakening and justified. The test is a byte-identical write_json round trip (test_multi_role_schema.py:195); the new defaulted field is always serialised, so the golden must carry it. The pre-G11 guarantee (no platforms/platform_links/role_accounts) is unchanged and test_every_committed_project_loads_without_the_new_fields still loads key-less files. Nothing removed or changed.
+
+## Commands re-run (own runs, final SHA)
+- `uv run pytest -o addopts= tests/test_ui_runs*.py tests/test_at1384_mask_limit_wiring.py tests/test_run_pathlynks_first_cases.py tests/test_regression_proof.py tests/test_bench.py tests/test_bench_from_run.py tests/test_bench_marks.py tests/test_acceptance_comparison.py tests/test_crawl_findings.py tests/test_run_record.py tests/test_ui_bench_inputs.py tests/test_run_case_pipeline.py tests/test_video_evidence.py tests/test_vision_probe.py` -> 240 passed, 1 skipped (test_ui_runs_serial_entry_mix_live.py:64, RAM-gated live Chromium, untouched file).
+- Privacy + wiring + siblings (14 files: test_image_privacy*, test_grade_visual, test_project_schema_team, test_multi_role_schema, test_orchestrate_downstream, test_run_failure_artifacts, test_video_frames, test_agent_loop, test_agent_fallback, test_agent_tools, test_ai_capture, test_grade_evidence) -> 377 passed.
+- `uv run ruff check src tests scripts` -> All checks passed. `uv run autotester doctor` -> 2 violations (the pre-existing docs/SNAPSHOT.md pair), none in this unit's files.
+
+## Falsification (git archive HEAD, one isolated copy per mutant under .work/tmp/chkB3, import verified from the copy, bound tree never touched)
+Control 58 passed. M1 run_one_case grade drops mask_limit -> RED (1 failed, the new script test). M2 main() drops the limit -> RED (same test). M3 grade_errored_result drops the limit -> RED (new crash-path test). M6 F1 double rejects mask_limit again -> RED (verdict assertion in test_entry_and_ordinary_case_screenshots_never_collide_on_disk). M4 bench_trial and M5 regression_proof drop the limit -> no test goes red (M4's one red, test_ui_bench_inputs c2, fails in the unmutated copy too: no .git in an archive). Those two sites are behaviour-neutral today (the regression-demo Project uses the default limit), so no criterion is affected; see P1.
+
+PROPOSED-ISSUE: {"severity":"low","category":"test","title":"No test pins the mask_limit wiring at scripts/bench_trial.py:104 and scripts/regression_proof.py:147 (mutants dropping it survive; behaviour-neutral while the demo Project keeps the default limit)","found_by":"at1384-mask-band-B cycle 3"}
+PROPOSED-ISSUE: {"severity":"low","category":"product","title":"Responsive-oracle screenshots (oracle_responsive.py:69 via store_masked_screenshot) and leak-evidence screenshots keep the stricter 0.75 because OracleContext carries only a slug; a Pathlynks mobile layout screenshot masked 0.75-0.85 is withheld as mask_exceeds_limit. Fail-closed, candidate for a later unit.","found_by":"at1384-mask-band-B cycle 3"}
 
 VERDICT: PASS
-SCOREBOARD: 4/4 criteria met (C1 per-project limit, default unchanged, wired at every project-scoped site; C2 0.85 from measured fractions; C3 masking and withhold intact; C4 INCONCLUSIVE rule), 1/1 invariants hold (core-invariants C12 fail closed)
-TIER: L (privacy masking is a security control: src/autotester/core/image_privacy.py:152 limit comparison; unchanged in this cycle)
+SCOREBOARD: 4/4 criteria met (C1-C4), invariant C12 holds
+TIER: L (privacy masking is a security control, src/autotester/core/image_privacy.py:152; dual-trigger line present)
 FAILURES: none
-CAPABILITY-COVERAGE: 5/5 repaired rows reproduced (one falsification per production site, a full-tree copy per mutant, green control first)
-LIVE-BROWSER: not-applicable (changed paths: tests/test_at1384_mask_limit_wiring.py and qa/manifests only; no UI surface)
-ISSUES-WRITTEN: none (dual check: PROPOSED-ISSUE lines only)
+CAPABILITY-COVERAGE: not-applicable (no UI surface; Mode D not run)
+LIVE-BROWSER: not-applicable (changed paths: scripts/*, src/autotester/stages/run_case_pipeline.py, tests)
+ISSUES-WRITTEN: none (dual check: PROPOSED-ISSUE lines above)
 EXECUTOR: claude-sonnet-subagent (checker: claude-sonnet-subagent)
-
-## Check plan (step 0)
-Repair diff 6b2a679c..1515721a (minus verdicts and checkpoints) is 1 new test file (132 lines) plus the manifest; zero product, golden or project-file lines. My cycle-0 side had no failed criteria, so: re-validate by evidence identity, re-run C1 (its test inputs changed: a new wiring file), one falsification per repaired row, read the repair diff in full, scan the whole-unit diff (16 files, all named in the manifest What-changed), grep every sanitiser caller, security read of the changed lines. Tier L, one coordinator on this side.
-
-## Evidence
-- Repair diff read in full: tests/test_at1384_mask_limit_wiring.py only. Each of the 5 tests stubs the callee (grade or sanitized_images) and asserts it received 0.85, with "dropped" as the sentinel for a missing kwarg.
-- Product identity: `git diff 714720db..1515721a -- src projects tests/golden` is empty, so my cycle-0 results for C2, C3, C4 and C12 (checkpoint rows, head 6b2a679c) keep their evidence identity and are not repeated.
-- Manifest verify set (11 files + the wiring file, my own run): 256 passed. `ruff check src tests scripts`: All checks passed. `autotester doctor`: 2 violations, both docs/SNAPSHOT.md stale-generated and stale-committed (pre-existing, not this unit's files).
-- Falsification (floor 1 per repaired criterion; I ran one per site, 5 of the L cap 10). Control = unmutated full-tree copy, 5 passed. Each mutant ran in its own full-tree copy under D:/autoTesting/.work/tmp/chkB1/mut_M<k>, import path printed from the mutant tree; the bound tree was never touched (git status clean).
-  - run_case_pipeline.py:227 -> mask_limit=None: 1 failed (ui_run_path), 4 passed
-  - run_case_pipeline.py:270 -> None: 1 failed (parallel_run_path), 4 passed
-  - orchestrate_downstream.py:162 -> None: 1 failed (downstream_stage), 4 passed
-  - run_artifacts.py:93 -> None: 1 failed (failure_bundle), 4 passed
-  - agents/tools.py:163 -> None: 1 failed (lead_agent_tool), 4 passed
-  Each red names the test written for that site, so each test isolates its own site. My first attempt copied only src/ and every mutant survived because pytest loaded the unmutated copy; that run is discarded and is not evidence.
-- Invalid limits fail closed (read-only probe in the bound venv, no edit): _check_mask_area raises invalid_mask_limit for NaN, 0, -1, 0.91, inf and True; None, 0.9, 0.85, 0.75 are accepted. Project(image_mask_limit=...) rejects NaN, 0, -0.1, 0.95, inf; accepts 0.9 and 0.85; default 0.75.
-
-## Judgement items
-- Call sites (git grep over src and scripts): every production caller with a Project in scope passes the project's limit: run_case_pipeline.py:227 and :270 (project_mask_limit(store)), orchestrate_downstream.py:162, agents/tools.py:163, run_artifacts.py:93 (-> _assemble_case -> sanitized_images). Callers left on the default have no Project object or no screenshot to judge: ai_judge.py:171/:227 (text AiCapture evidence), grade_errored_result (run_case_pipeline.py:299; the ERRORED shortcut returns before any image), video_frames.py:91 and vision_probe.py:75 (provider level), leak_evidence.py:97 and oracle_responsive.py:69 (project_slug string only). None is a silent default under a project in scope, and all of them err on the stricter side. C1 holds.
-- Security read of the changed lines: the limit only decides when a mostly-text image is withheld; every detected band is masked before and independent of it (_text_boxes, _leftover_boxes and the re-read loop are untouched; text_remains_after_mask unchanged). The validity check runs on every _mask call, including blank images, so a bad limit withholds instead of delivering. The 0.9 ceiling is enforced in the schema (le=) and in the engine. _SAFE_COPIES caches by scratch path inside a deleted tempdir and holds fully masked output whatever limit produced it, so there is no cross-limit leak. A failing store.load_project() in project_mask_limit aborts the grade (or INCONCLUSIVEs on the resilient path), never PASSes.
-- tests/golden/pre_g11_project.json (+1 line, "image_mask_limit": 0.75): a golden loaded at test runtime, so not test-only, but not a weakening. test_pre_g11_fixture_is_byte_identical_after_round_trip asserts read-then-write bytes are equal; Project now serialises the new default field, so the golden must carry it for byte identity. No key removed or changed, and old files without the key still load to 0.75 (test_every_committed_project_loads_without_the_new_fields, green in my run). Justified.
-- Whole-unit scan c437d3a5..1515721a: 16 files, all in the manifest What-changed; no deletion or rename of an existing function, class, test or config key.
-- Real screenshots: none copied or committed; the new tests use Image.new synthetic images and stubs only.
-
-PROPOSED-ISSUE: {"severity":"low","category":"product","title":"scripts/run_pathlynks_first_cases.py and the leak/oracle screenshot paths (leak_evidence.store_masked_screenshot, oracle_responsive) still sanitise at the 0.75 default, so Pathlynks dashboards stay withheld there","detail":"run_pathlynks_first_cases.py:139 calls grade() with no mask_limit although main() loads the project; the leak/oracle paths receive only project_slug. Stricter than the project's 0.85, never unsafe; thread the limit only if Umesh wants those screenshots kept.","found_by":"at1384-mask-band coordinator B cycle 1"}
-
-Metrics: start=2026-10-21T14:47:34Z end=2026-10-21T14:58:00Z wall_min=11 agent_min=11 blocked_min=0 suite_runs=0 repeat_runs=0 mutations=5 cycle=1 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 check_s=630 mutants=4 defects_unit=0 defects_6c=0
+EXPLANATION: The cycle-2 finding (run_pathlynks_first_cases.py:139 graded the Pathlynks dashboard with no limit) is fixed and pinned by a test that I made red by dropping the argument at both the call and main(); my own enumeration of grade/judge_images/sanitized_images callers and test doubles agrees with the manifest, and every caller left on the default has no Project in scope and fails closed. Product code of the privacy core is unchanged since 714720db, so C2-C4 evidence identities stand and their tests are green again.
+Metrics: start=2026-10-21T16:49:22Z end=2026-10-21T16:58:18Z wall_min=9 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=6 cycle=3 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 check_s=548 mutants=5 defects_unit=0 defects_6c=0

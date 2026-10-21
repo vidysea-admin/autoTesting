@@ -101,7 +101,8 @@ def run_and_grade(case: Case, session: BrowserSession, judge, run_id: str, selec
     session._record(EvidenceKind.DOM, f"{selector} text: {text!r}")
     result.evidence = list(session.state.evidence[start:])
     expect = "Login successful" if selector == "#result" else "Welcome to the demo site"
-    verdict = grade(make_rubric(case, expect), result, run_id, judge)
+    verdict = grade(make_rubric(case, expect), result, run_id, judge,
+                    mask_limit=session.project.image_mask_limit)  # AT-1384
     return result, verdict, text
 
 

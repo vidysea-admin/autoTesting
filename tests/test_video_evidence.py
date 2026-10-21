@@ -97,7 +97,7 @@ def test_video_is_recorded_and_kept_only_for_fail_and_inconclusive_never_pass(
     is already captured."""
     # V2 exercises retention for each verdict independently of grading's privacy
     # downgrade: screenshot-bearing mock PASS is now correctly INCONCLUSIVE.
-    def controlled_grade(rubric, raw, run_id, provider, **_kwargs):
+    def controlled_grade(rubric, raw, run_id, provider, mask_limit=None, **_kwargs):
         judgment = provider.judge("controlled video-retention verdict", Judgment)
         return Verdict(run_id=run_id, case_id=raw.case_id, rubric_hash=rubric.fingerprint,
                        grader_provider=provider.id, **judgment.model_dump(exclude={

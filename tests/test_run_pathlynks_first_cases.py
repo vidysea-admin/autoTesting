@@ -9,13 +9,17 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import run_pathlynks_first_cases as runner_mod
 
 from autotester.core.redact import PLACEHOLDER_RE
-from autotester.schema.enums import CaseClass, CaseKind
+from autotester.schema.enums import CaseClass, CaseKind, Outcome, Result
+from autotester.schema.project import Project
+from autotester.schema.run import RawResult
+from autotester.schema.verdict import Verdict
 
 BASE_URL = "https://pathlynks.vidysea.com/signin"
 
@@ -79,3 +83,68 @@ def test_script_main_records_wall_clock_and_prints_run_id() -> None:
            / "run_pathlynks_first_cases.py").read_text(encoding="utf-8")
     assert "record_run(" in src and "run_id_lines(" in src
     assert "Run(id=" not in src  # no un-timestamped Run construction left
+
+
+class _FakeSession:
+    """Enough of a BrowserSession for `main()`: the page has already left the sign-in page."""
+
+    def __init__(self, project, secrets, run_dir, paths) -> None:
+        self.project, self.secrets = project, secrets
+        self.state = SimpleNamespace(evidence=[])
+        self.page = SimpleNamespace(url="https://pathlynks.vidysea.com/dashboard",
+                                    wait_for_timeout=lambda ms: None)
+
+    def start(self):
+        return self
+
+    def close(self) -> None:
+        pass
+
+    def goto(self, url: str) -> None:
+        pass
+
+    def screenshot(self, label: str) -> None:
+        pass
+
+    def _record(self, *args, **kwargs) -> None:
+        pass
+
+
+def _stub_main_collaborators(monkeypatch, tmp_path: Path, project: Project) -> None:
+    store = SimpleNamespace(load_project=lambda: project, add_case=lambda case: case,
+                            save_result=lambda *a: None, save_verdict=lambda *a: None)
+    paths = SimpleNamespace(env_file=tmp_path / ".env", run_dir=lambda run_id: tmp_path / run_id,
+                            profile_dir=tmp_path / "profile")
+    secrets = SimpleNamespace(redactor=lambda: SimpleNamespace(scrub=lambda text: text))
+    monkeypatch.setattr(sys, "argv", ["run_pathlynks_first_cases.py"])
+    monkeypatch.setattr(runner_mod, "load_dotenv", lambda *a, **k: None)
+    monkeypatch.setattr(runner_mod, "ProjectStore", lambda slug: store)
+    monkeypatch.setattr(runner_mod, "ProjectPaths", lambda slug: paths)
+    monkeypatch.setattr(runner_mod.SecretStore, "load", lambda project, env_file: secrets)
+    monkeypatch.setattr(runner_mod, "BrowserSession", _FakeSession)
+    monkeypatch.setattr(runner_mod, "LangChainFallbackProvider",
+                        lambda: SimpleNamespace(available=lambda: True))
+    monkeypatch.setattr(runner_mod, "run_case", lambda case, session: RawResult(
+        case_id=case.id, outcome=Outcome.COMPLETED))
+    monkeypatch.setattr(runner_mod, "record_run", lambda *a, **k: None)
+
+
+def test_pathlynks_first_run_script_grades_the_dashboard_with_the_project_limit(
+        tmp_path: Path, monkeypatch) -> None:
+    """AT-1384 F2: docs/ARCHITECTURE.md names this script as the Pathlynks first-run path. A
+    `grade()` call here without the project's `image_mask_limit` judges the dashboard at the
+    stricter default, withholds it, and the case reads INCONCLUSIVE. Every case must be graded
+    with the project's own 0.85."""
+    project = Project(slug="pathlynks", name="Pathlynks", base_url=BASE_URL,
+                      allowed_domains=["vidysea.com"], headed=False, image_mask_limit=0.85)
+    _stub_main_collaborators(monkeypatch, tmp_path, project)
+    seen: list = []
+
+    def fake_grade(rubric, result, run_id, judge, *args, **kwargs):
+        seen.append(kwargs.get("mask_limit", "dropped"))
+        return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
+                       grader_provider="mask-limit-probe")
+
+    monkeypatch.setattr(runner_mod, "grade", fake_grade)
+    runner_mod.main()
+    assert seen == [0.85, 0.85, 0.85]

@@ -89,7 +89,7 @@ def test_run_and_grade_case_builds_and_persists_a_default_rubric_when_none_exist
                         lambda path, **_: Image.new("RGB", (8, 8), "black").save(path))
     seen = []
 
-    def controlled_grade(rubric, raw, run_id, provider, *, run_dir, **_kwargs):
+    def controlled_grade(rubric, raw, run_id, provider, *, run_dir, mask_limit=None, **_kwargs):
         expected = default_rubric(case, f"rub_{case.id}")
         actual = rubric.model_dump(exclude={"created_at"})
         assert actual == expected.model_dump(exclude={"created_at"})
