@@ -1,0 +1,72 @@
+W=24 R=10 readers=0: write statuses {303: 240}; acknowledged-but-missing 0; reader statuses {}
+W=24 R=10 readers=10: write statuses {303: 239, 500: 1}; acknowledged-but-missing 0; reader statuses {200: 196}
+Exception in thread Thread-48 (<lambda>):
+Traceback (most recent call last):
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 136, in handle_request
+    raise exc
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 106, in handle_request
+    ) = self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 177, in _receive_response_headers
+    event = self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 217, in _receive_event
+    data = self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 126, in read
+    with map_exceptions(exc_map):
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError: [WinError 10054] An existing connection was forcibly closed by the remote host
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\qa\evidence\bench-inputs-ui-A\c1-probe7.py", line 20, in <lambda>
+    ws = [threading.Thread(target=lambda c=c,k=k: res.append((k, c.post("/projects/demo/bench/marks", data={"finding":k,"verdict":"real"}, headers=H).status_code))) for c,k in zip(clients, keys)]
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_client.py", line 1144, in post
+    return self.request(
+           ^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "C:\Users\Lenovo\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError: [WinError 10054] An existing connection was forcibly closed by the remote host
+W=60 R=5 readers=20: write statuses {303: 297, 500: 2}; acknowledged-but-missing 0; reader statuses {200: 357, 500: 1}

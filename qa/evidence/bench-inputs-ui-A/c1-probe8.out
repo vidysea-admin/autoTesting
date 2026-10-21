@@ -1,0 +1,15 @@
+exactly MAX bytes valid: 303 size 262144
+MAX+1: 413 {"detail":"That upload is larger than the 256 KiB limit the administrator set. S
+name 'a.exe' -> 400 {"detail":"choose the atomic answer list as a .json file"}
+name 'a.json.exe' -> 400 {"detail":"choose the atomic answer list as a .json file"}
+name 'noext' -> 400 {"detail":"choose the atomic answer list as a .json file"}
+name 'a.JSON' -> 303 
+name '..\\..\\x.json' -> 303 
+name 'a.json ' -> 400 {"detail":"choose the atomic answer list as a .json file"}
+viewer upload: 403
+anon upload: 401
+evil origin: 403
+12 concurrent uploads statuses: [303] | list sha == pin sha: True
+every uploaded hash recorded (replaced+current): True missing 0 | pre-hash kept: True
+files in .work/ceo-bench/demo: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+staging leftovers: []
