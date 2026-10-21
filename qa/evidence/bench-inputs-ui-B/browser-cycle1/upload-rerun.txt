@@ -1,0 +1,2 @@
+('exe refused', True, 'AT | AutoTester | Projects | My profile | My reports | editor@chk.test | Sign out | PROJECTS | Demo <b>X</b> | 400 Bad Request |  | choose the atomic answer lis')
+('good upload via keyboard Enter: sha shown, ids not shown', True, 'http://localhost:8791/projects/demo/bench')

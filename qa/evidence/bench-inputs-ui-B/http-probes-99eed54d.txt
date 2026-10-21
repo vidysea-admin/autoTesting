@@ -1,0 +1,91 @@
+anon GET bench html 302 /auth/login?next=/projects/demo/bench
+anon GET bench json 401
+anon POST marks 401
+anon POST upload 401 stored: []
+pending GET bench 403
+pending POST upload 403 stored: []
+viewer GET bench 200 form True file input False mark btn False msg True
+viewer GET crawl 200 Mark real bug False read-only True
+viewer GET run 200 Mark real bug False read-only True
+viewer POST marks 403 {"detail":"you do not have permission for this action (project.edit)"}
+viewer POST upload 403 stored: []
+bench dir after viewer/anon: ['demo-acceptance-autotester.trial.json', 'demo-acceptance.comparison.json', 'demo-acceptance.json']
+editor GET bench 200 file input True label True
+bench page title: ['<title>Demo &lt;b&gt;X&lt;/b&gt; - benchmark inputs — AutoTester</title>'] raw <b>X present (should be False): False
+crawl page raw onerror tag present (should be False): False escaped present: True
+keys ['a4e6f0a7af79d444', 'a4e6f0a7af79d444', '56ed99ff37493102', '56ed99ff37493102']
+editor cross-origin mark 403
+editor cross-referer mark 403
+editor sec-fetch cross-site mark 403
+editor cross-origin upload 403 stored: []
+editor bad-port origin upload 403 stored: []
+marks file after csrf probes exists (should be False): False
+marks bad: short key 400
+marks bad: upper hex 400
+marks bad: traversal key 400
+marks bad: newline key 400
+marks bad: 17 key 400
+marks bad: bad verdict 400
+marks bad: no fields 400
+marks bad: verdict clear unknown key 303
+marks file after bad inputs: True
+next '//evil.com' 303 /projects/demo/bench
+next '/\\evil.com' 303 /projects/demo/bench
+next 'https://evil.com' 303 /projects/demo/bench
+next '/projects/demo/../../evil' 303 /projects/demo/../../evil
+next '/projects/demo/crawls/crawl_1' 303 /projects/demo/crawls/crawl_1
+next '/projects/demox/evil' 303 /projects/demo/bench
+next '/projects/demo/bench\r\nSet-Cookie: a=b' 303 /projects/demo/bench
+next '/projects/demo/aaaaaaaaaaaaaaaaaaaaaaaaa' 303 /projects/demo/bench
+next '' 303 /projects/demo/bench
+slug inj POST /projects/..%2f..%2fx/bench/marks 404
+slug inj POST /projects/demo%00/bench/marks 400
+slug inj POST /projects/Demo/bench/marks 400
+slug inj POST /projects/nonexistent/bench/marks 404
+slug inj POST /projects/..%5c..%5cx/bench/atomic-list 400
+slug inj POST /projects/demo%2f..%2fdemo/bench/marks 404
+GET unknown project bench 404
+upload unknown project 404 ceo-bench dirs: none
+upload text field not file 400
+upload urlencoded none 400
+upload wrong field name 303
+upload bad: empty 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: notjson 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: noitems 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: extra text key 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+   body: {"detail":"not a valid atomic list (items.0.text: Extra inputs are not permitted)"}
+upload bad: bad priority 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: dup ids 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: nan 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: bom 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: deep nest 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+   body: {"detail":"not a valid atomic list (file: Invalid JSON: recursion limit exceeded at line 1 column 210)"}
+upload bad: toplevel list 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: bad utf8 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+   body: {"detail":"not a valid atomic list (file: Invalid JSON: invalid unicode code point at line 1 column 13)"}
+upload bad: string SECRET input 400 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+   body: {"detail":"not a valid atomic list (items: Input should be a valid array)"}
+upload bad: over cap 413 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload bad: 257KiB json 413 echo SECRET: False stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+upload 1500 fields 400
+valid upload (traversal filename) 303 /projects/demo/bench stored: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']
+pin: {'sha256': '37fa9a23be5a1659ab4419fa2ec5c62725f7bc40828b2dd41917180f449fc251', 'items': 2, 'bytes': 125, 'pinned_at': '2026-10-21T08:35:43.738219Z', 'pinned_by': 'editor@chk.test', 'replaced_sha256': []} sha matches file: True expected 37fa9a23be5a1659ab4419fa2ec5c62725f7bc40828b2dd41917180f449fc251
+page shows sha: True page contains item id A1: False technique inbox: True pinned by: True
+GET editor /.work/ceo-bench/demo/atomic-list.json 404 no-leak
+GET anon /.work/ceo-bench/demo/atomic-list.json 302 no-leak
+GET editor /projects/demo/bench/atomic-list 405 no-leak
+GET anon /projects/demo/bench/atomic-list 302 no-leak
+GET editor /static/ceo-bench/demo/atomic-list.json 404 no-leak
+GET anon /static/ceo-bench/demo/atomic-list.json 302 no-leak
+GET editor /projects/demo/runs/run_1/videos/..%2f..%2f..%2f.work%2fceo-bench%2fde 403 no-leak
+GET anon /projects/demo/runs/run_1/videos/..%2f..%2f..%2f.work%2fceo-bench%2fde 302 no-leak
+GET editor /projects/demo/runs/run_1/videos/../../../../.work/ceo-bench/demo/atom 404 no-leak
+GET anon /projects/demo/runs/run_1/videos/../../../../.work/ceo-bench/demo/atom 302 no-leak
+GET editor /projects/demo/bench/atomic-list.json 404 no-leak
+GET anon /projects/demo/bench/atomic-list.json 302 no-leak
+GET editor /projects/demo/bench/../../.work/ceo-bench/demo/atomic-list.json 404 no-leak
+GET anon /projects/demo/bench/../../.work/ceo-bench/demo/atomic-list.json 302 no-leak
+GET editor /work/ceo-bench/demo/atomic-list.json 404 no-leak
+GET anon /work/ceo-bench/demo/atomic-list.json 302 no-leak
+replace upload 303
+replaced list records old hash: True files: ['atomic-list.json', 'atomic-list.lock', 'atomic-list.pin.json']

@@ -1,0 +1,50 @@
+[
+ {
+  "mutant": "control",
+  "rc": 0,
+  "summary": [
+   "5 passed, 1 warning in 4.28s"
+  ],
+  "secs": 10.7
+ },
+ {
+  "mutant": "M1-C1 set_mark lock -> nullcontext",
+  "rc": 1,
+  "summary": [
+   "2 failed, 1 warning in 3.84s"
+  ],
+  "secs": 9.6
+ },
+ {
+  "mutant": "M2-C2 atomic-list lock -> nullcontext",
+  "rc": 1,
+  "summary": [
+   "1 failed, 1 warning in 1.21s"
+  ],
+  "secs": 13.4
+ },
+ {
+  "mutant": "M3-C2 .json name check removed",
+  "rc": 1,
+  "summary": [
+   "1 failed, 1 warning in 3.05s"
+  ],
+  "secs": 10.9
+ },
+ {
+  "mutant": "M4-C2 route stream cap x100",
+  "rc": 1,
+  "summary": [
+   "1 failed, 1 warning in 3.11s"
+  ],
+  "secs": 9.3
+ },
+ {
+  "mutant": "M5-C2 stage size check `>` -> `>=`",
+  "rc": 1,
+  "summary": [
+   "1 failed, 1 warning in 0.95s"
+  ],
+  "secs": 5.3
+ }
+]

@@ -1,0 +1,11 @@
+round 0: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 1: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 2: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 3: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 4: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 5: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 6: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 7: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 8: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+round 9: acknowledged=20 stored=20 lost_acknowledged=0 errors=[]
+rounds_with_lost_acknowledged_marks: 0 total_errors: 0
