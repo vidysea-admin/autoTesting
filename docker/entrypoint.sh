@@ -46,4 +46,4 @@ exec /opt/venv/bin/python /app/docker/supervise.py \
   tcp:5901 'x11vnc -display :99 -forever -shared -nopw -localhost -quiet -rfbport 5901 -viewonly' \
   tcp:6080 'websockify --web=/usr/share/novnc 6080 localhost:5900' \
   tcp:6081 'websockify --web=/usr/share/novnc 6081 localhost:5901' \
-  "tcp:${APP_PORT}" "uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port ${APP_PORT} --no-access-log"
+  "tcp:${APP_PORT}" "uv run uvicorn autotester.ui.app:app --host 0.0.0.0 --port ${APP_PORT} "
