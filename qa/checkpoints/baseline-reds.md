@@ -56,3 +56,11 @@ New pre-existing red, also red on origin/master ec151a35 (shown by the 6c run, q
   test_container_ci_workflow.py, test_container_entrypoint_behaviour.py, test_container_redaction.py,
   test_container_writable_root.py and test_browser_use_pin_telemetry.py go red (66 failed, 57 errors). Environmental, not a defect.
   Run 6c from a shell where `bash` is Git Bash (/usr/bin/bash): the seven files gave 141 passed, 3 skipped, 0 failed.
+
+## r10 note (2026-10-21, 6c-1021f on int/1019 3c328be3)
+
+Full sharded run: 14 of the baseline rows above red in the real worktree (9 test_mutation_check, 1 judgement, cli_advice, role_port_mail, infra_trio x2).
+Flaky under 8-way load, each green alone in the real worktree (files untouched by the batch): `tests/test_tracker_page.py::test_re_export_gives_identical_bytes`,
+`tests/test_mutation_check.py::test_it_refuses_an_anchor_that_matches_nothing`, `...::test_a_test_that_touches_the_report_variable_cannot_hide_a_kill[removed]`,
+`tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere`, `tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log`.
+Shard-copy artifact (AT-1405): 26 tests/acceptance/* errors, green in the real tree.
