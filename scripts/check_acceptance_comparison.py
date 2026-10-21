@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from autotester.schema.acceptance import AcceptanceComparison
 from autotester.schema.bench import BenchCorpus
 from autotester.stages.acceptance_comparison import (
+    ADJUDICATED,
     MissingInput,
     build_comparison,
     completeness_problems,
@@ -48,8 +49,13 @@ def render(cmp: AcceptanceComparison) -> str:
                      f"fp_rate: {col.false_positive_rate.text()} "
                      f"({col.false_positive_population})  time_s: {col.duration_s.text()}")
     fp = cmp.autotester.false_positive_rate.text()
-    lines.append(f"FP rate: {fp}" + (" (unadjudicated: no human list)"
-                                      if cmp.fp_rate_unadjudicated else ""))
+    ai = cmp.autotester
+    note = (" (unadjudicated: no human list)" if cmp.fp_rate_unadjudicated else
+            f" (adjudicated findings only: {ai.adjudicated_real} real, "
+            f"{ai.adjudicated_false_positives} false positive; "
+            f"{ai.unadjudicated} unadjudicated, not counted)"
+            if ai.false_positive_population == ADJUDICATED else "")
+    lines.append(f"FP rate: {fp}{note}")
     for bug in cmp.bugs:
         lines.append(f"  bug {bug.bug_id} [{bug.severity}] found by: {bug.found_by or 'nobody'}")
     if cmp.bugs_unavailable_reason:

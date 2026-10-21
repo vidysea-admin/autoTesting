@@ -17,6 +17,7 @@ from autotester.ui import (
     routes_access_requests,
     routes_admin,
     routes_auth,
+    routes_bench_inputs,
     routes_cases,
     routes_catalog,
     routes_crawl_approval,
@@ -91,6 +92,7 @@ ROUTERS: tuple[APIRouter, ...] = (
     routes_video_review.router,   # TA5 Run review; `STUBS['video_review']` stays registered, empty
     routes_access_requests.router,
     routes_role_accounts.router,   # T-208 G11: /onboard/roles and /projects/{slug}/accounts
+    routes_bench_inputs.router,   # T-136 marks, T-218 answer list: /projects/{slug}/bench
     *STUBS.values(),
 )
 

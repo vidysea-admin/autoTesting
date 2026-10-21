@@ -15,11 +15,12 @@ from autotester.schema.acceptance import (
     ParticipantColumn,
 )
 from autotester.schema.bench import BenchCorpus, BenchTrial
-from autotester.stages import bench
+from autotester.stages import bench, bench_marks
 from autotester.store.project_store import ProjectStore
 
 NO_HUMAN = "no human list"
 AI_ASSISTED = "known_bugs_ai_assisted"
+ADJUDICATED = "adjudicated_findings_only"
 RECALL_BASIS = {
     "fixture": "seeded fixture bugs",
     "human_confirmed": "independent human list",
@@ -68,6 +69,9 @@ def _column(corpus: BenchCorpus, trial: BenchTrial, human_missing: bool) -> Part
     independent = sum(1 for f in trial.findings if f.provenance == "independent")
     prompted = sum(1 for f in trial.findings if f.provenance == "prompted")
     crawl = sum(1 for f in trial.findings if f.source == "crawl")
+    ruled = int(score["adjudicated_real"]) + int(score["adjudicated_false_positives"])
+    fp_measure = (Measure(value=float(score["adjudicated_fp_rate"])) if ruled
+                  else _measure(score, "false_positive_rate", _scanned_reason(trial)))
     return ParticipantColumn(
         participant=trial.participant.value, present=True, label=trial.participant_label,
         kind=trial.kind, ordering=trial.ordering, findings_reported=len(trial.findings),
@@ -75,11 +79,15 @@ def _column(corpus: BenchCorpus, trial: BenchTrial, human_missing: bool) -> Part
         crawl_findings=crawl, crawl_ids_scanned=list(trial.crawl_ids_scanned),
         detected=int(score["detected"]), seeded=int(score["seeded"]),
         detection_rate=_measure(score, "detection_rate", override),
-        false_positive_rate=_measure(score, "false_positive_rate", _scanned_reason(trial)),
+        false_positive_rate=fp_measure,
         severity_weighted_recall=_measure(score, "severity_weighted_recall", override),
         duration_s=_measure(score, "duration_s"),
-        false_positive_population=str(score["false_positive_population"]),
+        false_positive_population=(
+            ADJUDICATED if ruled else str(score["false_positive_population"])),
         denominator_population=str(score["denominator_population"]),
+        adjudicated_real=int(score["adjudicated_real"]),
+        adjudicated_false_positives=int(score["adjudicated_false_positives"]),
+        unadjudicated=int(score["unadjudicated"]),
     )
 
 
@@ -113,12 +121,14 @@ def build_comparison(
             f"{store.paths.bench_dir}"
         )
     human = next((t for t in trials if t.participant.value == "human"), None)
+    ai = bench_marks.apply_marks(ai, bench_marks.load_marks(store, corpus_id))
+    column = _column(corpus, ai, human is None)
     return AcceptanceComparison(
         id=f"cmp_{corpus_id}", project=slug, corpus_id=corpus_id, corpus_mode=corpus.mode,
         recall_basis=RECALL_BASIS.get(corpus.mode, "unknown"),
         human_list="present" if human else "absent",
-        fp_rate_unadjudicated=human is None,
-        autotester=_column(corpus, ai, human is None),
+        fp_rate_unadjudicated=human is None and column.false_positive_population != ADJUDICATED,
+        autotester=column,
         human=_column(corpus, human, False) if human else _absent("human", NO_HUMAN),
         bugs=_bug_rows(corpus, [t for t in (ai, human) if t]),
         bugs_unavailable_reason=None if corpus.seeded_bugs else "no ground-truth bug list",

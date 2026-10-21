@@ -22,7 +22,7 @@ from autotester.stages.report_export import (
     valid_runs_newest_first,
 )
 from autotester.store.project_store import ProjectStore
-from autotester.ui import preflight_view, run_queue_view, team_run_view, theme
+from autotester.ui import bench_inputs_view, preflight_view, run_queue_view, team_run_view, theme
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id, _reserved_temp_path
 from autotester.ui.routes_unified_report import router as unified_report_router
 
@@ -204,7 +204,7 @@ def run_view(slug: str, run_id: str) -> Response:
         + preflight_view.warnings_card(run.preflight_warnings if run else None)
         + theme.card(f"<p>{escape(bounds_text(run))}</p>", title="Run bounds")
         + _counts_stats(_run_counts(store, run_id), run.catalog_runnable_counts if run else None)
-        + _trace_card(store, run_id)
+        + _trace_card(store, run_id) + bench_inputs_view.run_card(store, slug, run_id)
         + (sections or theme.empty_state("📭", "No case results in this run yet."))
     )
     return theme.page(f"Run {safe_run_id}", body, active_slug=slug)

@@ -92,7 +92,7 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/product-map", "/flow-diagram", "/schedule", "/crawls", "/crawls/{crawl_id}",
         "/crawls/{crawl_id}/report.xlsx", "/issues", "/issues.xlsx",
         "/issues/{issue_id}/pin", "/env", "/access", "/catalog", "/sources/drive/{job_id}",
-        "/proposals", "/accounts")},
+        "/proposals", "/accounts", "/bench")},
     **{("GET", _P + tail): _REPORT for tail in (
         "/runs/{run_id}", "/tracker", "/tracker/export.csv", "/tracker/export.xlsx",
         "/tracker/{bug_key}", "/report", "/report.xlsx", "/report.html", "/damage-report",
@@ -105,7 +105,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
         "/crawls/{crawl_id}/merge", "/issues/{issue_id}/pin", "/sources",
         "/sources/{source_id}/analyze", "/env/url", "/tracker/{bug_key}/assignee",
         "/proposals/stage", "/proposals/review",
-        "/accounts")},   # T-208 MP6: project.edit; a value also needs credentials.edit (handler)
+        "/accounts",   # T-208 MP6: project.edit; a value also needs credentials.edit (handler)
+        "/bench/marks", "/bench/atomic-list")},   # T-136 marks, T-218 answer list: project.edit
     **{("POST", _P + tail): _project(K.VIDEO_UPLOAD) for tail in (
         "/sources/upload", "/sources/drive")},   # T-198: file and Drive-link intake
     **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/test")},

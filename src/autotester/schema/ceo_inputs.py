@@ -67,6 +67,23 @@ class AtomicList(BaseModel):
         return self
 
 
+class AtomicListPin(BaseModel):
+    """The pin on the uploaded list file (T-218, MP30): its sha256 and counts, never its rows.
+
+    Stored beside the private list under `.work/ceo-bench/<slug>/` (`stages/bench_inputs.py`);
+    `CeoRunInput.atomic_sha256` is read from here, so the run scores the exact bytes pinned."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    sha256: str = Field(pattern=SHA256_PATTERN)
+    items: int = Field(ge=1)
+    bytes: int = Field(ge=1)
+    pinned_at: datetime
+    pinned_by: str
+    replaced_sha256: list[str] = Field(
+        default_factory=list, description="hashes this pin replaced, oldest first")
+
+
 class RunFinding(BaseModel):
     """One AutoTester finding, as matched to the list. `matched_atomic_id` is the one-to-one match.
 
