@@ -85,20 +85,23 @@ def test_nested_sanitizers_reuse_only_verified_copy(screenshot, monkeypatch):
     with privacy.sanitized_images([screenshot]) as outer:
         with privacy.sanitized_images(outer.paths) as inner:
             assert inner.paths == outer.paths
-            assert len(calls) == 1
+            assert len(calls) == 2  # mask read plus the AT-1363 re-read; the nested pass adds none
         assert outer.paths[0].exists()
         assert privacy._safe_copy(outer.paths[0])
         outer.paths[0].write_bytes(screenshot.read_bytes())
         with privacy.sanitized_images(outer.paths) as changed:
             assert changed.paths != outer.paths
-            assert len(calls) == 2
+            assert len(calls) == 4
 
 
 def test_ocr_uses_decoded_snapshot_not_mutable_source(screenshot, monkeypatch):
+    reads = []
     def ocr(path):
         assert path != screenshot
-        assert path.read_bytes() == screenshot.read_bytes()
-        screenshot.write_bytes(b"changed source")
+        if not reads:  # first read is the decoded snapshot; later ones read the masked copy
+            assert path.read_bytes() == screenshot.read_bytes()
+            screenshot.write_bytes(b"changed source")
+        reads.append(path)
         return _tsv()
     monkeypatch.setattr(privacy, "_local_ocr", ocr)
     with privacy.sanitized_images([screenshot]) as batch:
