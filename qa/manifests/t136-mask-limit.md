@@ -55,4 +55,4 @@ Open point for the checker: the 0.75 value is a judgement (measured 0.621 on the
 ## Live browser evidence
 SKIP - maker smoke only; checker runs Mode D when UI changed. No UI surface changed (src/autotester/core/image_privacy.py, tests only); no live run was made.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/t136-mask-limit.md + .b.md, dual, cycle 0)

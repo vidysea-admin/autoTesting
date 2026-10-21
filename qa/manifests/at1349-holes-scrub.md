@@ -1,6 +1,6 @@
 # Manifest - at1349-holes-scrub (AT-1349: crawl.json was saved unscrubbed; coverage holes kept raw selector, name and url_template)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/at1349-holes-scrub.md + .b.md, dual, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/explore.md, qa/contracts/core-invariants.md (redaction: no raw secret reaches disk); no contract edited
 **Goal task:** T-136 follow-up (PROPOSED-ISSUE 1, qa/verdicts/crawl-redact-timestamp-B.md)

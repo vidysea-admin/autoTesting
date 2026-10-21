@@ -1,6 +1,6 @@
 # Manifest - t169-harness-login (T-169: acceptance-script login comes from the settings page, not a terminal prompt)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (qa/verdicts/t169-harness-login.md + .b.md, dual, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/generic-acceptance.md, qa/contracts/ui-settings.md (US1 closed key set widened by this unit's brief C1; no contract edited, checker folds the amendment), qa/contracts/core-invariants.md (credential rules)
 **Goal task:** T-169 (Umesh 2026-10-21: "login and all k liye ui se hi hona chaiye, terminal se thodi")
