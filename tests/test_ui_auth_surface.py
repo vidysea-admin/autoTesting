@@ -224,3 +224,22 @@ def test_au22_audit_lines_hold_no_secret(root: Path) -> None:
         assert needle not in audit
     assert '"action": "login-failed"' in audit or '"action":"login-failed"' in audit
     assert "/admin/users/{user_id}/{action}" in audit and "user.password" in audit
+
+
+# -- password show/hide toggle (Umesh 2026-10-21) -------------------------------------
+
+@pytest.mark.parametrize("path", ["/auth/login", "/auth/signup"])
+def test_password_field_has_a_show_hide_eye_that_stays_hidden_by_default(
+        root: Path, path: str) -> None:
+    page = client().get(path).text
+    pw = re.search(r"<input[^>]*id='password'[^>]*>", page)
+    assert pw and "type='password'" in pw.group(0)  # default hidden
+    eye = re.search(r"<button[^>]*aria-label='Show password'[^>]*>", page)
+    assert eye, "no labelled show-password button"
+    assert "type='button'" in eye.group(0)  # never submits the form
+    assert "i.type==='password'?'text':'password'" in eye.group(0)
+    assert "Hide password" in eye.group(0)
+    assert page.count("<button") == 2  # eye + the one submit; nothing else added
+    # AU16: the toggle adds no request of its own (the page's own font links predate it)
+    assert "http" not in eye.group(0) and "//" not in eye.group(0)
+    assert "<script" not in page

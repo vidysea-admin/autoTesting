@@ -26,9 +26,22 @@ def auth_page(title: str, body: str) -> str:
             f"{body}</main></div>")
 
 
+# Show/hide toggle for a password field. Same inline-onclick pattern as the settings page
+# (routes_settings.py provider_settings_view `_EYE`); no CSP is sent, and nothing external loads
+# (AU16). type='button' so it never submits; aria-label always names what the next click does.
+_EYE = ("<button type='button' class='btn btn-sm' aria-label='Show password' "
+        "onclick=\"var i=this.parentNode.querySelector('input');"
+        "i.type=i.type==='password'?'text':'password';"
+        "var h=i.type==='text';this.textContent=h?'Hide':'Show';"
+        "this.setAttribute('aria-label',h?'Hide password':'Show password');\">Show</button>")
+
+
 def _field(label: str, name: str, kind: str, extra: str = "") -> str:
-    return (f"<div class='field'><label for='{name}'>{label}</label>"
-            f"<input id='{name}' name='{name}' type='{kind}' required {extra}></div>")
+    style = " style='flex:1'" if kind == "password" else ""
+    input_ = f"<input id='{name}' name='{name}' type='{kind}'{style} required {extra}>"
+    if kind == "password":
+        input_ = f"<div style='display:flex;gap:6px'>{input_}{_EYE}</div>"
+    return f"<div class='field'><label for='{name}'>{label}</label>{input_}</div>"
 
 
 def login_page(next_path: str, message: str = "") -> str:
