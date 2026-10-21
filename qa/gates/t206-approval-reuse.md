@@ -8,3 +8,5 @@ Question for Umesh: the button run (run-01M5A1GY1VT5T4XA2V8NT831W1) and the sche
 - Option B: require one signed row per run; sign two rows and re-run both (about 30 min plus Pathlynks traffic).
 
 Blocks: TA17 PASS and the T-206 close-out.
+
+Answered: 2026-10-21T12:21:00+05:30 — B (sign one RunApproval row per run and re-run both T-206 runs) — Umesh in chat 2026-10-21: "go on for rerun"
