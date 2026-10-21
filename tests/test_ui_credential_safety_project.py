@@ -201,12 +201,19 @@ def test_a_stored_credential_reads_back_exactly(scratch_root: Path, value: str) 
 def test_a_value_that_cannot_round_trip_is_refused_not_mangled(
     scratch_root: Path
 ) -> None:
-    """Both quote characters cannot survive `_clean_value`. Refusing is honest;
-    storing something different from what the user typed is not."""
+    """Where no quoting makes both `.env` readers return the value, refusing is honest;
+    storing something different from what the user typed is not. AT-1368 made `a"b'c`
+    storable (single quotes hold it exactly), so this pins a value that still has no safe
+    form: it needs quoting because of ` #` and holds both quote kinds."""
     from autotester.ui.env_editor import InvalidEnvValue, set_env_value
 
-    with pytest.raises(InvalidEnvValue):
-        set_env_value(scratch_root / ".env", "DEMO_PASSWORD", "a\"b'c")
+    env = scratch_root / ".env"
+    before = env.read_bytes() if env.exists() else None
+    value = "p@ss #1 \"q\" 'r'"
+    with pytest.raises(InvalidEnvValue) as refused:
+        set_env_value(env, "DEMO_PASSWORD", value)
+    assert value not in str(refused.value)
+    assert (env.read_bytes() if env.exists() else None) == before
 
 
 def test_setting_one_value_leaves_the_others_intact(scratch_root: Path) -> None:

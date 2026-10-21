@@ -6,8 +6,8 @@ Two modes, one job (give `scripts/container_diagnose_lib.sh` the repo's own secr
   plus its encodings); this module only adapts it to stdin/stdout.
 - `python -m autotester.core.redact_cli --values-from-env ENV_FILE > values`: print every value
   of ENV_FILE, one line each (a multiline value prints each of its lines), parsed by
-  `python-dotenv` `dotenv_values`, the same parser `core.env.load_repo_env` uses. Values go to
-  stdout (a pipe), never argv; the caller writes them only into its own 0600 file.
+  `core.env.read_dotenv` (literal, no interpolation), the reader `core.env.load_repo_env` uses.
+  Values go to stdout (a pipe), never argv; the caller writes them only into its own 0600 file.
 """
 
 from __future__ import annotations
@@ -16,8 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-from dotenv import dotenv_values
-
+from autotester.core.env import read_dotenv
 from autotester.core.redact import Redactor
 
 _LABEL = re.compile(r"\[REDACTED\]:\d+")
@@ -34,7 +33,7 @@ def mask_stream(text: str, values: list[str]) -> str:
 def env_values(path: Path) -> list[str]:
     """Every non-empty value line of the dotenv file at `path`, as `dotenv_values` reads it."""
     out: list[str] = []
-    for value in dotenv_values(path).values():
+    for value in read_dotenv(path).values():
         out.extend(line for line in (value or "").splitlines() if line.strip())
     return out
 

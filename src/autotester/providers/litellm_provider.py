@@ -7,10 +7,9 @@ import time
 from pathlib import Path
 from typing import Any, TypeVar
 
-from dotenv import dotenv_values
 from pydantic import BaseModel, ValidationError
 
-from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS
+from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS, read_dotenv
 from autotester.core.paths import repo_root
 from autotester.core.redact import assert_no_raw_secrets
 from autotester.providers import ollama_cloud
@@ -61,7 +60,7 @@ def _env_secret_values() -> list[str]:
     if not path.exists():
         return []
     skip = _CONFIG_KEYS | PUBLIC_ENV_KEYS
-    return [v for k, v in dotenv_values(path).items() if k and v and k not in skip]
+    return [v for k, v in read_dotenv(path).items() if k and v and k not in skip]
 
 
 def _texts(messages: list[dict[str, Any]]) -> list[str]:

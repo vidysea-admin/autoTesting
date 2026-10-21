@@ -7,6 +7,7 @@ straight through to disk.
 from __future__ import annotations
 
 import contextlib
+import io
 import os
 import re
 import tempfile
@@ -14,6 +15,7 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 
 from autotester.browser.secrets import parse_env
+from autotester.core.env import read_dotenv
 from autotester.core.file_lock import file_lock
 
 _KEY_RE = re.compile(r"^[A-Z_][A-Z0-9_]*$")
@@ -36,16 +38,30 @@ def _render_value(value: str) -> str:
     between a leading quote and its next match. A value containing BOTH quote
     characters cannot round-trip through that parser, so it is refused rather
     than written wrong — saying no is better than lying about what was stored.
+
+    AT-1368: TWO readers consume this file and they disagree on escapes: `parse_env`
+    (SecretStore, no escapes) and `core.env.read_dotenv` (the loader: backslash-n decoded
+    inside double quotes, a doubled backslash inside single ones). A candidate (double, single,
+    bare) is accepted only if BOTH read it back byte-identical, so a literal backslash-n goes
+    out single-quoted and a doubled backslash goes out bare. `read_dotenv` does not
+    interpolate, so `${X}` is data.
     """
-    for quote in ('"', "'"):
-        if quote not in value:
-            candidate = f"{quote}{value}{quote}"
-            if parse_env("K=" + candidate + chr(10)).get("K") == value:
-                return candidate
+    for candidate in (f'"{value}"', f"'{value}'", value):
+        if _reads_back(candidate, value):
+            return candidate
     raise InvalidEnvValue(
-        "this value cannot be stored safely because it contains both a single and a "
-        "double quote. Change the credential, or set it directly in the .env file."
+        "this value cannot be stored safely: no quoting makes the settings reader and the "
+        "loader agree on it (typically it starts with a quote character and holds the other "
+        "kind, or ends in a backslash after whitespace). Change the credential, or set it "
+        "directly in the .env file."
     )
+
+
+def _reads_back(candidate: str, value: str) -> bool:
+    """True when both `.env` readers return `value` for the line `K=<candidate>`."""
+    line = f"K={candidate}" + chr(10)
+    return (parse_env(line).get("K") == value
+            and read_dotenv(io.StringIO(line)).get("K") == value)
 
 
 def _validated_updates(values: dict[str, str]) -> dict[str, str]:
