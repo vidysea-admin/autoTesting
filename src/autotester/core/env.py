@@ -88,6 +88,26 @@ def read_dotenv(source: Path | IO[str]) -> dict[str, str | None]:
                          stream=None if isinstance(source, Path) else source, interpolate=False)
 
 
+def dollar_value_keys(root: Path | None = None) -> list[str]:
+    """KEY NAMES (never values) of repo-root `.env` entries whose value contains `${` (AT-1389).
+
+    After AT-1368 such a value is kept literally, so a hand-written `${VAR}` that used to
+    expand now reaches the login form as typed. The product reports it instead of a human
+    grepping the file. Reads through `read_dotenv`, the one parser; no value leaves here."""
+    path = (root or repo_root()) / ENV_FILE
+    if not path.exists():
+        return []
+    return sorted(key for key, value in read_dotenv(path).items() if key and "${" in (value or ""))
+
+
+def dollar_warning(keys: list[str]) -> str:
+    """The one sentence doctor and the settings page both show; empty when there is nothing."""
+    if not keys:
+        return ""
+    return (f"{len(keys)} value(s) in the repo-root .env contain \"${{\" and are kept literally "
+            f"(no expansion): {', '.join(keys)}. Re-enter them if a ${{VAR}} was meant.")
+
+
 TEST_MARKER = "PYTEST_CURRENT_TEST"
 """Set by pytest for the duration of every test. Its presence is the signal that
 loading real credentials would be a leak rather than a service."""

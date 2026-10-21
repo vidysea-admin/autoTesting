@@ -13,7 +13,7 @@ from fastapi import APIRouter, Form, HTTPException, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from autotester.browser.secrets import parse_env
-from autotester.core.env import HARNESS_KEYS
+from autotester.core.env import HARNESS_KEYS, dollar_value_keys, dollar_warning
 from autotester.core.paths import repo_root
 from autotester.ui import theme
 from autotester.ui.credential_guard import PROVIDER_KEYS
@@ -74,13 +74,15 @@ def provider_settings_view() -> str:
     rows = "".join(_row(key) for key in _PROVIDER_KEYS)
     table = (f"<table><tr><th>Key</th><th>Status</th>"
              f"<th>Value (edit and Save)</th><th></th></tr>{rows}</table>")
+    literal = dollar_warning(dollar_value_keys())  # AT-1389: key names + count, never values
     body = (
         theme.breadcrumb(("Projects", "/"), ("Settings", None))
         + "<h1>Provider settings</h1>"
         "<p class='subtitle'>Global AI/API keys every project's grading and agent steps fall "
         "back through. Saved values are shown (masked with show/hide) so you can verify and "
         "edit them; they never leave this page.</p>"
-        f"{theme.card(table)}"
+        + (f"<p class='alert' id='env-dollar-warning'>{escape(literal)}</p>" if literal else "")
+        + theme.card(table)
     )
     return theme.page("Settings", body)
 
