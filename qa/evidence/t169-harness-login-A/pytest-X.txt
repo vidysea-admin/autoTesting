@@ -1,0 +1,18 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+........................................................................ [ 57%]
+.....................................................                    [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\t169-harness-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+tests/test_env_loading.py::test_the_CLI_actually_calls_the_loader_before_any_command
+  <unknown>:19: DeprecationWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+125 passed, 6 warnings in 76.15s (0:01:16)
+exit=0 secs=83

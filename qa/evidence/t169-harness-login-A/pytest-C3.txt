@@ -1,0 +1,10 @@
+warning: `VIRTUAL_ENV=d:\autoTesting\.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+...............                                                          [100%]
+============================== warnings summary ===============================
+tests/test_hosting_deploy.py::test_prod_compose_publishes_the_app_on_loopback_only_and_never_a_raw_port
+  D:\autoTesting\.worktrees\t169-harness-login\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+15 passed, 1 warning in 0.63s
+exit=0 secs=6

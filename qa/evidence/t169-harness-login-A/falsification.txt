@@ -1,0 +1,11 @@
+C1 GREEN-BEFORE 0 ['2 passed, 2 warnings in 4.03s']
+C1 RED-AFTER 1 ['2 failed, 1 warning in 1.44s']
+    FAILED tests/test_ui_settings.py::test_settings_page_lists_the_harness_login_keys_password_masked_and_never_prefilled
+    FAILED tests/test_ui_settings.py::test_settings_submit_saves_the_harness_password_to_dotenv_and_never_echoes_it
+C2 GREEN-BEFORE 0 ['4 passed, 2 warnings in 2.34s']
+C2 RED-AFTER 1 ['2 failed, 2 passed, 1 warning in 1.52s']
+    FAILED tests/test_real_acceptance.py::test_script_exits_naming_the_missing_harness_key_and_the_settings_page[missing1]
+    FAILED tests/test_real_acceptance.py::test_script_exits_naming_the_missing_harness_key_and_the_settings_page[missing2]
+C3 GREEN-BEFORE 0 ['2 passed, 2 warnings in 7.98s']
+C3 RED-AFTER 1 ['1 failed, 1 passed, 1 warning in 2.42s']
+    FAILED tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads
