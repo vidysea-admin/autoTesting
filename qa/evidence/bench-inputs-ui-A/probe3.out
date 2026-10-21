@@ -1,0 +1,5 @@
+== deep nesting inside cap
+400 {"detail":"not a valid atomic list (file: Invalid JSON: recursion limit exceeded at line 1 column 202)"}
+400 {"detail":"not a valid atomic list (file: Invalid JSON: recursion limit exceeded at line 1 column 210)"}
+== large body: 120 MB streamed; watch spool in TMP
+status 400 {"detail":"the file is larger than 256 KiB"} secs 0.7 peak spool file bytes seen in TMP: 107019260

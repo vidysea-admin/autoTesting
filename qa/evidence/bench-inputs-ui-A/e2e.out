@@ -1,0 +1,15 @@
+--- no marks rc=0
+    recall: unavailable (no human list)  detection: unavailable (no human list)  fp_rate: 0 (adjudicated_findings_only)  time_s: 9
+FP rate: 0 (adjudicated findings only: 1 real, 0 false positive; 2 unadjudicated, not counted)
+--- 1 crawl finding FP, other 2 unmarked rc=0
+    recall: unavailable (no human list)  detection: unavailable (no human list)  fp_rate: 1 (adjudicated_findings_only)  time_s: 9
+FP rate: 1 (adjudicated findings only: 0 real, 1 false positive; 2 unadjudicated, not counted)
+--- + run finding real -> 1 real 1 fp, 1 unmarked rc=0
+    recall: unavailable (no human list)  detection: unavailable (no human list)  fp_rate: 0.5 (adjudicated_findings_only)  time_s: 9
+FP rate: 0.5 (adjudicated findings only: 1 real, 1 false positive; 1 unadjudicated, not counted)
+--- + second crawl real -> 2 real 1 fp rc=0
+    recall: unavailable (no human list)  detection: unavailable (no human list)  fp_rate: 0.3333 (adjudicated_findings_only)  time_s: 9
+FP rate: 0.3333 (adjudicated findings only: 2 real, 1 false positive; 0 unadjudicated, not counted)
+--- all undone rc=0
+    recall: unavailable (no human list)  detection: unavailable (no human list)  fp_rate: 1 (all_reported_findings)  time_s: 9
+FP rate: 1 (unadjudicated: no human list)

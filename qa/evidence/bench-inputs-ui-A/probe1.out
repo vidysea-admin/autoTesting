@@ -1,0 +1,79 @@
+editor login 303
+viewer login 303
+nogroup login 303
+crawl keys {'a4e6f0a7af79d444', '0fcd0ceaf367a234'}
+== anonymous / no-permission
+anon GET bench: 302 /auth/login?next=/projects/demo/bench
+anon POST marks html: 302 /auth/login?next=/projects/demo/bench/marks
+anon POST marks json: 401 
+anon POST upload: 401 
+nogroup POST marks: 403 
+nogroup GET bench: 403 
+== viewer
+viewer GET bench 200 True True
+viewer POST marks: 403 
+viewer POST upload: 403 
+viewer crawl page has mark buttons: False True
+== CSRF
+editor evil Origin: 403 
+editor evil Referer: 403 
+editor Sec-Fetch-Site cross-site: 403 
+editor evil Origin upload: 403 
+editor null Origin: 403 
+marks after CSRF attempts: 0
+== injection in mark route
+finding traversal: 400 
+finding 16hex upper: 400 
+finding trailing newline: 400 
+finding too long: 400 
+verdict bad: 400 
+no fields: 400 
+next='//evil.com': 303 /projects/demo/bench
+next='https://evil.com': 303 /projects/demo/bench
+next='/projects/other/bench': 303 /projects/demo/bench
+next='/projects/demo/../other/bench': 303 /projects/demo/../other/bench
+next='/projects/demo/crawls/crawl_1\r\nSet-Cookie: x=1': 303 /projects/demo/bench
+next='\\evil.com': 303 /projects/demo/bench
+next='/projects/demo/': 303 /projects/demo/
+next='/projects/demo/../../auth/logout': 303 /projects/demo/../../auth/logout
+next='/projects/demox/': 303 /projects/demo/bench
+== slug injection
+POST slug '..': 404 
+UPLOAD slug '..': 404 
+GET slug '..': 404 
+POST slug '../other': 404 
+UPLOAD slug '../other': 404 
+GET slug '../other': 404 
+POST slug '..%2fother': 404 
+UPLOAD slug '..%2fother': 404 
+GET slug '..%2fother': 404 
+POST slug 'demo%2f..%2fother': 404 
+UPLOAD slug 'demo%2f..%2fother': 404 
+GET slug 'demo%2f..%2fother': 404 
+POST slug 'nope': 404 
+UPLOAD slug 'nope': 404 
+GET slug 'nope': 404 
+POST slug 'demo%00': 400 
+UPLOAD slug 'demo%00': 400 
+GET slug 'demo%00': 400 
+POST slug 'DEMO': 400 
+UPLOAD slug 'DEMO': 400 
+GET slug 'DEMO': 400 
+POST slug 'demo%20': 400 
+UPLOAD slug 'demo%20': 400 
+GET slug 'demo%20': 400 
+POST slug '%2e%2e': 400 
+UPLOAD slug '%2e%2e': 400 
+GET slug '%2e%2e': 400 
+POST slug 'dem%C3%B6': 400 
+UPLOAD slug 'dem%C3%B6': 400 
+GET slug 'dem%C3%B6': 400 
+POST slug 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 404 
+UPLOAD slug 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 404 
+GET slug 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 404 
+POST slug 'demo;x': 400 
+UPLOAD slug 'demo;x': 400 
+GET slug 'demo;x': 400 
+POST slug 'demo%5c..%5cother': 400 
+UPLOAD slug 'demo%5c..%5cother': 400 
+GET slug 'demo%5c..%5cother': 400 

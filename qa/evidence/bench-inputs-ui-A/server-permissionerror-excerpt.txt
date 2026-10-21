@@ -1,0 +1,12 @@
+    os.replace(tmp_name, path)
+PermissionError: [WinError 5] Access is denied: 'D:\\autoTesting\\.work\\tmp\\bi-A\\root\\projects\\demo\\bench\\.tmp-nnu56u1r.json' -> 'D:\\autoTesting\\.work\\tmp\\bi-A\\root\\projects\\demo\\bench\\demo-acceptance.marks.json'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 422, in run_asgi
+--
+    os.replace(tmp_name, path)
+PermissionError: [WinError 5] Access is denied: 'D:\\autoTesting\\.work\\tmp\\bi-A\\root\\projects\\demo\\bench\\.tmp-jpy7qyvi.json' -> 'D:\\autoTesting\\.work\\tmp\\bi-A\\root\\projects\\demo\\bench\\demo-acceptance.marks.json'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 422, in run_asgi
+--
