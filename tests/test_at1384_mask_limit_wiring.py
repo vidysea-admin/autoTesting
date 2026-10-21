@@ -72,6 +72,19 @@ def test_pathlynks_dashboard_graded_by_the_parallel_run_path_uses_the_project_li
     assert seen == [PATHLYNKS_LIMIT]
 
 
+def test_pathlynks_errored_case_graded_by_the_crash_path_uses_the_project_limit(
+        tmp_path: Path, monkeypatch) -> None:
+    """run_case_pipeline.py:299 -- a crashed Pathlynks case is graded with limit 0.85 too."""
+    store = ProjectStore("demo", tmp_path)
+    store.save_project(_pathlynks_like())
+    seen: list = []
+    _record_grade(monkeypatch, pipeline, seen)
+    case = _case()
+    errored = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error="session crashed")
+    pipeline.grade_errored_result(case, errored, MockProvider(), "run_1", store)
+    assert seen == [PATHLYNKS_LIMIT]
+
+
 def test_pathlynks_dashboard_graded_by_the_downstream_stage_uses_the_project_limit(
         tmp_path: Path, monkeypatch) -> None:
     """orchestrate_downstream.py:162 -- the checkpointed grade stage grades with limit 0.85."""

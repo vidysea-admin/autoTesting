@@ -266,7 +266,7 @@ def test_invalid_sanitized_payload_cannot_become_filename_only_success(
         path.write_bytes(path.read_bytes() + b"x" * 100_000)
 
     @contextmanager
-    def invalid(paths):
+    def invalid(paths, *, mask_limit=None):
         yield ImageSanitation(requested=1, paths=[path])
 
     monkeypatch.setattr(vision_probe, "sanitized_images", invalid)

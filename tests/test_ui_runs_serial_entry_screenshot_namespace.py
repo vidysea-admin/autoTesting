@@ -97,7 +97,7 @@ def test_entry_and_ordinary_case_screenshots_never_collide_on_disk(
     monkeypatch.setattr(
         routes_runs_module, "for_role", lambda project, role: _AvailableProvider())
 
-    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
                        grader_provider="mock")
 
@@ -115,6 +115,11 @@ def test_entry_and_ordinary_case_screenshots_never_collide_on_disk(
     run_id = run_ids[0]
     results = {r.case_id: r for r in store.load_results(run_id)}
     assert set(results) == {entry_case.id, ordinary_case.id}
+    # AT-1404: a grade double that rejects a kwarg the pipeline passes raises TypeError, which the
+    # pipeline turns into INCONCLUSIVE -- so prove the double was really reached for every case.
+    verdicts = {v.case_id: v.result for v in store.load_verdicts(run_id)}
+    assert verdicts == {entry_case.id: Result.PASS, ordinary_case.id: Result.PASS}, verdicts
+    assert Result.INCONCLUSIVE not in verdicts.values()
 
     entry_shots = [e for e in results[entry_case.id].evidence if e.path.endswith(".png")]
     ordinary_shots = [e for e in results[ordinary_case.id].evidence if e.path.endswith(".png")]

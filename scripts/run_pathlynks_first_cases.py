@@ -123,7 +123,10 @@ def _wait_for_redirect_or_timeout(session: BrowserSession, signin_url: str) -> N
         elapsed += POST_SUBMIT_POLL_MS
 
 
-def run_one_case(case: Case, session: BrowserSession, judge: Provider | None, run_id: str):
+def run_one_case(case: Case, session: BrowserSession, judge: Provider | None, run_id: str,
+                 mask_limit: float | None = None):
+    """`mask_limit` is the project's own `image_mask_limit` (AT-1384): without it the dashboard
+    screenshot is judged at the stricter default, withheld, and the case reads INCONCLUSIVE."""
     # execute.py::run_case snapshots ALL of session.state.evidence, which is cumulative for the
     # whole (reused) session, not scoped per case -- slice to just what THIS case adds, else
     # case 2's RawResult would also carry case 1's evidence (found running this for real).
@@ -136,7 +139,8 @@ def run_one_case(case: Case, session: BrowserSession, judge: Provider | None, ru
     session._record(EvidenceKind.URL, landed_url, label="post-submit URL")
     result.evidence = list(session.state.evidence[start:])
 
-    verdict = grade(make_rubric(case), result, run_id, judge) if judge is not None else None
+    verdict = (grade(make_rubric(case), result, run_id, judge, mask_limit=mask_limit)
+               if judge is not None else None)
     return result, verdict
 
 
@@ -191,7 +195,8 @@ def main() -> None:
     results = []
     try:
         for case in run_order:
-            result, verdict = run_one_case(case, session, judge, run_id)
+            result, verdict = run_one_case(case, session, judge, run_id,
+                                           mask_limit=headed_project.image_mask_limit)
             store.save_result(run_id, result)
             if verdict is not None:
                 store.save_verdict(run_id, verdict)
