@@ -33,6 +33,7 @@ import json
 import os
 import re
 from pathlib import Path
+from typing import IO
 
 from dotenv import dotenv_values
 
@@ -76,6 +77,17 @@ def project_credentials(root: Path) -> tuple[tuple[str, ...], frozenset[str]]:
             continue  # an unreadable project still reserves its namespace
     return tuple(prefixes), frozenset(declared)
 
+def read_dotenv(source: Path | IO[str]) -> dict[str, str | None]:
+    """The ONE reading of a dotenv file or stream: literal, never interpolated (AT-1368).
+
+    `dotenv_values` defaults to `interpolate=True`, which rewrites `${NAME}` inside a value
+    (and, for a double-quoted value, decodes `\n`). A credential is data, not a template:
+    a password containing `${X}` must reach the login form as typed. Every reader of the
+    repo `.env` that wants the VALUE (loader, redaction, tesseract path) calls this."""
+    return dotenv_values(source if isinstance(source, Path) else None,
+                         stream=None if isinstance(source, Path) else source, interpolate=False)
+
+
 TEST_MARKER = "PYTEST_CURRENT_TEST"
 """Set by pytest for the duration of every test. Its presence is the signal that
 loading real credentials would be a leak rather than a service."""
@@ -109,7 +121,7 @@ def load_repo_env(root: Path | None = None) -> list[str]:
 
     prefixes, declared = project_credentials(base)
     loaded: list[str] = []
-    for key, value in dotenv_values(path).items():
+    for key, value in read_dotenv(path).items():
         if not key or not value or os.environ.get(key):
             continue
         if not is_server_key(key) and (key in declared or key.startswith(prefixes)):

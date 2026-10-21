@@ -100,3 +100,73 @@ def test_the_CLI_actually_calls_the_loader_before_any_command(monkeypatch) -> No
     CliRunner().invoke(cli.app, ["doctor"])
 
     assert called == ["yes"], "the CLI ran a command without loading the repo .env"
+
+
+_RAW_VALUES = (  # "¦" stands for a backslash, so no editor or shell can halve it
+    "simplePass123", "p@ss #1", " lead trail ", 'has"dq', "has'sq", "a$b", "a${HOME}b", "$X",
+    "back¦slash", "nl¦nlit", "double¦¦back", 'q¦"x', "pa$$word", "h#sh", "x=y", "ünï😀cödé",
+    "'", '"', "¦", "#", "$", "${", "${X}${Y}", "a¦", "a\"b'c", "¦n¦t¦r", "'x'",
+    '"x"', "a #b", "=", "k=v#w", "%(x)s", "`cmd`", "a	b", "tab	#c", "¦¦n", "¦'", '¦"',
+    "P@ss\"w'1", "a ¦b", "end¦¦", "tr ail ",
+)
+_REFUSED = ("\"'", "'\"x", " ¦")  # the two readers cannot agree on these: refuse, never alter
+REFUSED_VALUES = tuple(value.replace("¦", chr(92)) for value in _REFUSED)
+ROUNDTRIP_VALUES = tuple(value.replace("¦", chr(92)) for value in _RAW_VALUES)
+SERVER_KEY = "AUTOTESTER_HARNESS_PASSWORD"
+
+
+def test_every_printable_value_the_settings_writer_stores_loads_byte_identical(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """AT-1368: a credential containing `${NAME}`, a literal backslash-n, quotes or `#` was
+    altered between the settings writer and `load_repo_env` (dotenv interpolation and escape
+    decoding), so the harness signed in with a different password than the admin typed.
+    Equality only: a failure names the case index, never the value."""
+    from autotester.ui.env_editor import InvalidEnvValue, set_env_value
+
+    monkeypatch.delenv(TEST_MARKER, raising=False)
+    monkeypatch.setenv("X", "INTERPOLATED")   # a leaked interpolation would show up as this
+    monkeypatch.setenv("HOME", "INTERPOLATED")
+    bad: list[int] = []
+    for index, value in enumerate(ROUNDTRIP_VALUES):
+        monkeypatch.delenv(SERVER_KEY, raising=False)
+        (tmp_path / ".env").unlink(missing_ok=True)
+        try:
+            set_env_value(tmp_path / ".env", SERVER_KEY, value)
+        except InvalidEnvValue:
+            bad.append(index)
+            continue
+        load_repo_env(tmp_path)
+        if os.environ.get(SERVER_KEY) != value:
+            bad.append(index)
+    monkeypatch.delenv(SERVER_KEY, raising=False)
+    assert bad == [], f"cases {bad} of ROUNDTRIP_VALUES did not round-trip (refused or altered)"
+
+
+def test_a_value_the_old_writer_left_bare_still_loads_unchanged(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """Keys already in a real `.env` (hand-written, bare or quoted) read exactly as before."""
+    monkeypatch.delenv(TEST_MARKER, raising=False)
+    monkeypatch.delenv(SERVER_KEY, raising=False)
+    (tmp_path / ".env").write_text(f"{SERVER_KEY}=plain-Value_1\n", encoding="utf-8")
+    load_repo_env(tmp_path)
+    assert os.environ[SERVER_KEY] == "plain-Value_1"
+    monkeypatch.delenv(SERVER_KEY, raising=False)
+
+
+def test_a_value_no_quoting_can_store_exactly_is_refused_never_stored_altered(
+    tmp_path: Path,
+) -> None:
+    """The honest edge of the round-trip: where the loader and `SecretStore` parse a quoted
+    value differently and no form satisfies both, saying no beats a silent wrong password."""
+    from autotester.ui.env_editor import InvalidEnvValue, set_env_value
+
+    for value in REFUSED_VALUES:
+        path = tmp_path / ".env"
+        refused = False
+        try:
+            set_env_value(path, SERVER_KEY, value)
+        except InvalidEnvValue:
+            refused = True
+        assert refused and not path.exists()

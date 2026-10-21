@@ -51,8 +51,8 @@ def _env_tesseract() -> Path | None:
     value = os.environ.get(TESSERACT_ENV)
     if not value:
         try:
-            from dotenv import dotenv_values
-            value = dotenv_values(repo_root() / ".env").get(TESSERACT_ENV)
+            from autotester.core.env import read_dotenv
+            value = read_dotenv(repo_root() / ".env").get(TESSERACT_ENV)
         except OSError:
             value = None
     return Path(value) if value else None
