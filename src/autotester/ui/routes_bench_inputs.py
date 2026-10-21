@@ -11,19 +11,22 @@ beside the bench files (`stages/bench_marks.py`); the uploaded list goes under `
 from __future__ import annotations
 
 import re
+import shutil
 from html import escape
 
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from starlette.datastructures import UploadFile
 
 from autotester.auth.context import current_principal
+from autotester.core.ids import ulid
+from autotester.core.paths import work_dir
 from autotester.stages import bench_inputs, bench_marks
 from autotester.stages.acceptance_comparison import corpus_id_for
 from autotester.ui import bench_inputs_view as view
 from autotester.ui import theme
 from autotester.ui.auth_middleware import safe_next
 from autotester.ui.helpers import _load_project_or_404
+from autotester.ui.upload_stream import UploadRefused, stream_upload
 
 router = APIRouter()
 
@@ -65,16 +68,27 @@ def mark_finding(slug: str, finding: str = Form(""), verdict: str = Form(""),
         status_code=303)
 
 
+def _vet_json(filename: str) -> bool:
+    """The answer list is a `.json` file; anything else is refused before a byte is stored."""
+    if not filename.replace("\\", "/").rsplit("/", 1)[-1].lower().endswith(".json"):
+        raise UploadRefused(400, "choose the atomic answer list as a .json file")
+    return False
+
+
 @router.post("/projects/{slug}/bench/atomic-list")
 async def upload_atomic_list(slug: str, request: Request) -> RedirectResponse:
-    _load_project_or_404(slug)
-    form = await request.form()
-    upload = form.get("atomic_list")
-    if not isinstance(upload, UploadFile):
-        raise HTTPException(400, "choose the atomic answer list file to upload")
-    raw = await upload.read(bench_inputs.MAX_BYTES + 1)
+    """The body is streamed and stops at the size cap (`ui/upload_stream.py`), so an oversize
+    upload is refused without being received in full."""
+    store, _project = _load_project_or_404(slug)
+    staging = work_dir(store.paths.root) / "uploads" / slug / ulid()
     try:
+        staged = await stream_upload(request, staging, bench_inputs.MAX_BYTES, _vet_json)
+        raw = staged.path.read_bytes()
         bench_inputs.save_atomic_list(slug, raw, _who())
+    except UploadRefused as exc:
+        raise HTTPException(exc.status, exc.message) from None
     except bench_inputs.ListRefused as exc:
         raise HTTPException(400, str(exc)) from None
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
     return RedirectResponse(f"/projects/{slug}/bench", status_code=303)

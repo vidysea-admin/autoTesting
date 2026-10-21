@@ -11,16 +11,16 @@ only the hash, counts and time travel (`AtomicListPin`).
 from __future__ import annotations
 
 import hashlib
-import os
 from pathlib import Path
 
 from pydantic import ValidationError
 
+from autotester.core.file_lock import file_lock
 from autotester.core.paths import work_dir
 from autotester.core.safe_names import safe_name
 from autotester.schema.base import utc_now
 from autotester.schema.ceo_inputs import AtomicList, AtomicListPin
-from autotester.store.filestore import read_json, write_json
+from autotester.store.filestore import read_json, write_bytes, write_json
 
 LIST_NAME = "atomic-list.json"
 PIN_NAME = "atomic-list.pin.json"
@@ -59,15 +59,15 @@ def save_atomic_list(slug: str, raw: bytes, who: str, root: Path | None = None) 
     digest = hashlib.sha256(raw).hexdigest()
     folder = input_dir(slug, root)
     folder.mkdir(parents=True, exist_ok=True)
-    before = load_pin(slug, root)
-    replaced = [*before.replaced_sha256, before.sha256] if before and before.sha256 != digest \
-        else (before.replaced_sha256 if before else [])
-    staged = folder / (LIST_NAME + ".tmp")
-    staged.write_bytes(raw)
-    os.replace(staged, folder / LIST_NAME)
-    pin = AtomicListPin(sha256=digest, items=len(atomic.items), bytes=len(raw),
-                        pinned_at=utc_now(), pinned_by=who, replaced_sha256=replaced)
-    write_json(folder / PIN_NAME, pin)
+    with file_lock(folder / "atomic-list.lock", timeout_s=30.0, what="atomic list"):
+        before = load_pin(slug, root)  # read under the lock: two editors never lose a hash
+        replaced = list(before.replaced_sha256) if before else []
+        if before and before.sha256 != digest:
+            replaced.append(before.sha256)
+        write_bytes(folder / LIST_NAME, raw)  # unique temp name + os.replace
+        pin = AtomicListPin(sha256=digest, items=len(atomic.items), bytes=len(raw),
+                            pinned_at=utc_now(), pinned_by=who, replaced_sha256=replaced)
+        write_json(folder / PIN_NAME, pin)
     return pin
 
 

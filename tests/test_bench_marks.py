@@ -8,6 +8,8 @@ reports an FP rate computed from them, and unmarked findings stay unadjudicated.
 from __future__ import annotations
 
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -151,3 +153,17 @@ def test_marks_apply_to_crawl_findings_the_same_way(tmp_path: Path) -> None:
     col = build_comparison(store, "demo").autotester
     assert col.adjudicated_false_positives == 1 and col.crawl_findings == 1
     assert col.false_positive_rate.value == 1.0
+
+
+def test_simultaneous_set_mark_calls_lose_no_ruling(tmp_path: Path) -> None:
+    store = _seed(tmp_path)
+    keys = [f"{i:016x}" for i in range(32)]
+    gate = threading.Barrier(len(keys))
+
+    def mark(key: str) -> None:
+        gate.wait()  # line every writer up on the same read-modify-write
+        bench_marks.set_mark(store, CORPUS, key, "real", "u@x.test")
+
+    with ThreadPoolExecutor(max_workers=len(keys)) as pool:
+        list(pool.map(mark, keys))  # a writer that raises fails the test here
+    assert set(bench_marks.load_marks(store, CORPUS).marks) == set(keys)

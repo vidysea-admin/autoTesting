@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -154,6 +155,14 @@ def test_c1_a_malformed_mark_is_a_400_and_writes_nothing(root: Path, data: dict)
     assert not ProjectStore("demo", root).paths.bench_marks(CORPUS).exists()
 
 
+def test_c1_simultaneous_marks_over_http_all_stored_and_none_errors(root: Path) -> None:
+    who = _editor()
+    keys = [f"{i:016x}" for i in range(24)]
+    with ThreadPoolExecutor(max_workers=24) as pool:
+        assert {_.status_code for _ in pool.map(lambda k: _mark(who, k, "real"), keys)} == {303}
+    assert set(bench_marks.load_marks(ProjectStore("demo", root), CORPUS).marks) == set(keys)
+
+
 def test_c1_an_off_site_next_is_ignored(root: Path) -> None:
     who = _editor()
     key = _first_key(who.get("/projects/demo/crawls/crawl_1").text)
@@ -210,7 +219,6 @@ def test_c2_a_view_only_account_cannot_upload_and_sees_no_form(root: Path) -> No
                            "text": "CEO-SECRET-FINDING-TEXT"}]}).encode(),
     json.dumps({"items": [{"id": "A1", "priority": "P9", "technique": "inbox"}]}).encode(),
     json.dumps({"items": [{"id": "A1", "priority": "P0", "technique": "inbox"}] * 2}).encode(),
-    pytest.param(b" " * (bench_inputs.MAX_BYTES + 1), id="over-the-size-cap"),
 ])
 def test_c2_a_bad_list_is_refused_without_echoing_its_content_and_nothing_is_stored(
         root: Path, raw: bytes) -> None:
@@ -218,6 +226,17 @@ def test_c2_a_bad_list_is_refused_without_echoing_its_content_and_nothing_is_sto
     assert resp.status_code == 400 and "CEO-SECRET-FINDING-TEXT" not in resp.text
     assert bench_inputs.load_pin("demo", root) is None
     assert not (root / ".work" / "ceo-bench" / "demo" / "atomic-list.json").exists()
+
+
+def test_c2_an_oversize_list_is_refused_413_without_the_body_being_spooled(
+        root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    who = _editor()  # sign in first: the login route itself reads a form
+    monkeypatch.setattr("starlette.requests.Request.form", lambda *_a, **_k: pytest.fail("spool"))
+    assert _upload(who, b" " * (bench_inputs.MAX_BYTES + 1)).status_code == 413
+    assert _upload(who, LIST_BYTES, name="list.exe").status_code == 400  # name vetted first
+    assert who.post("/projects/demo/bench/atomic-list", data={"o": "x"}).status_code == 400
+    assert bench_inputs.load_pin("demo", root) is None
+    assert not list((root / ".work" / "uploads").rglob("*.part"))  # staging removed
 
 
 def test_c2_a_second_upload_replaces_the_list_and_records_the_old_hash(root: Path) -> None:
@@ -236,11 +255,6 @@ def test_c2_a_stored_list_edited_after_pinning_no_longer_loads(root: Path) -> No
     path.write_bytes(LIST_BYTES + b" ")
     with pytest.raises(bench_inputs.ListRefused, match="no longer matches"):
         bench_inputs.load_pinned_list("demo", root)
-
-
-def test_c2_a_missing_file_field_is_a_400(root: Path) -> None:
-    resp = _editor().post("/projects/demo/bench/atomic-list", data={"other": "x"})
-    assert resp.status_code == 400
 
 
 # -- C3: labels, no external request, navigation ------------------------------------------
