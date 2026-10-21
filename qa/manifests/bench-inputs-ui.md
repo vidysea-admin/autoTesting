@@ -62,4 +62,4 @@ Metrics: start=2026-10-21T07:00:00Z end=2026-10-21T10:00:00Z wall_min=unavailabl
 ## Live browser evidence
 SKIP - maker smoke only; the checker runs Mode D when the UI changed (crawl page, run page, `/projects/{slug}/bench`, sidebar).
 
-## Status: ready-for-check
+Earlier status (superseded by the checked-PASS line at the top): ready-for-check
