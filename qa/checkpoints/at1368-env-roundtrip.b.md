@@ -17,3 +17,16 @@ Code hashes (blob): core/env.py 636a715f68dd · ui/env_editor.py a0d47cf9865a ·
 | Falsification | copies row1 (interpolate True), row2 (old writer), row3 (loader leg dropped); green-before then red-after | red in all three on the property test |
 
 Remaining: none. Verdict: FAIL (C2, P1).
+
+## Cycle 1 (repair check, coordinator B)
+
+Checked state: e70ecf95 (code 8d0d2215), repair base 692adbcd, clean tree. Attribution: checker-B (claude-sonnet-subagent), evidence under D:/autoTesting/.work/tmp/chkB1368c1/. Env as cycle 0 (win32, Python 3.11 worktree .venv, python-dotenv 1.2.2, lock unchanged). Relevant blob: tests/test_ui_credential_safety_project.py (changed by repair); product blobs unchanged since d39837eb.
+
+| Check | Command / scope | Result |
+|---|---|---|
+| failed node + module | uv run pytest tests/test_ui_credential_safety_project.py tests/test_env_loading.py | 23 passed |
+| repair-input probe | set_env_value on 6 values in temp dirs (script in session scratchpad) | new input refused value-free, bytes unchanged; old input a"b'c round-trips on 3 readers; others as expected |
+| falsification | git-archive copies m0 (clean), m1 (never refuse), m2 (message echoes value), PYTHONPATH to copy src | m0 green, m1 red, m2 red |
+| lint | ruff check src tests scripts; autotester doctor | clean |
+
+Remaining: none. Verdict: PASS (cycle 1). C1 reuses the cycle-0 result (no input of C1 changed).
