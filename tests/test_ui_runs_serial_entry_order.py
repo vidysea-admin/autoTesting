@@ -1,11 +1,9 @@
-"""AT-576: the serial route (`ui/routes_runs.py::_run_cases_serially`) must
-run every entry case to completion -- its own dedicated session -- BEFORE
-the shared session (reused across the run's ordinary cases) is ever
-started. Fast, fake-session regression test for the ORDERING decision
-itself; `test_ui_runs_serial_entry_mix_live.py` proves the real defect (two
-live sync-Playwright drivers on one thread) that only a real browser can
-reach -- a fake `BrowserSession.start` cannot see it, which is exactly why
-AT-576 shipped undetected. Contract: qa/contracts/ui-run.md RU1-RU4.
+"""AT-576: the serial route (`ui/routes_runs.py::_run_cases_serially`) must run every entry case to
+completion -- its own dedicated session -- BEFORE the shared session (reused across the run's
+ordinary cases) is ever started. Fast, fake-session regression test for the ORDERING decision
+itself; `test_ui_runs_serial_entry_mix_live.py` proves the real defect (two live sync-Playwright
+drivers on one thread) that only a real browser can reach -- a fake `BrowserSession.start` cannot
+see it, which is exactly why AT-576 shipped undetected. Contract: qa/contracts/ui-run.md RU1-RU4.
 """
 
 from __future__ import annotations
@@ -69,7 +67,7 @@ def test_entry_cases_start_before_the_shared_session_starts(
     def fake_run_case(case_, session):
         return RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
 
-    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
                        grader_provider="mock")
 
@@ -127,9 +125,10 @@ def _patch_tier_execution(monkeypatch, events, clock=None):
             clock[0] = 11.0
         return RawResult(case_id=case.id, outcome=Outcome.COMPLETED)
 
-    def grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         if result.outcome is Outcome.ERRORED:
-            return original_grade(rubric, result, run_id, judge, run_dir=run_dir, secrets=secrets)
+            return original_grade(rubric, result, run_id, judge, run_dir=run_dir, secrets=secrets,
+                                  mask_limit=mask_limit)
         events.append(("grade", result.case_id))
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
                        grader_provider="mock")

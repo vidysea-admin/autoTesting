@@ -97,7 +97,7 @@ def test_a_grader_crash_for_one_of_three_serial_cases_still_saves_every_case_and
     def fake_run_case(case_, session):
         return RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
 
-    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         if result.case_id == crash_id:
             raise RuntimeError("boom grading")
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
@@ -146,7 +146,7 @@ def test_a_run_case_crash_for_one_of_three_serial_cases_still_saves_every_case_a
             raise RuntimeError("boom running the case")
         return RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
 
-    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
                        grader_provider="mock")
 
@@ -198,7 +198,7 @@ def test_an_entry_case_crash_still_saves_every_case_and_the_run(
             raise RuntimeError("boom entering")
         return RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
 
-    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
                        grader_provider="mock")
 
@@ -250,9 +250,9 @@ def _run_entry_and_sibling(client, scratch_root, monkeypatch, width, wipe):
         return RawResult(case_id=case_.id, outcome=Outcome.COMPLETED)
     real_grade = pipeline.grade
 
-    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None):
+    def fake_grade(rubric, result, run_id, judge, run_dir=None, secrets=None, mask_limit=None):
         if result.outcome is not Outcome.COMPLETED:
-            return real_grade(rubric, result, run_id, judge, run_dir=run_dir)
+            return real_grade(rubric, result, run_id, judge, run_dir=run_dir, mask_limit=mask_limit)
         return Verdict(run_id=run_id, case_id=result.case_id, result=Result.PASS,
                        grader_provider="x")
 
