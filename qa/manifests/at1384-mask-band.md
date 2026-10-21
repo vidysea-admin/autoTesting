@@ -62,4 +62,4 @@ uv run autotester doctor: 2 violation(s), both docs/SNAPSHOT.md (pre-existing, u
 ## Live browser evidence
 SKIP - maker smoke only; checker runs Mode D when UI changed. No UI surface changed.
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at1384-mask-band.md + .b.md, dual, cycle 1)
