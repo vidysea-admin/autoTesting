@@ -1,0 +1,5 @@
+{
+ "selected_count": 543,
+ "integration_required_count": 406,
+ "reason_head": "tests/acceptance/conftest.py, tests/conftest.py imports or is a changed module and runs for every test (conftest/package __init__)"
+}
