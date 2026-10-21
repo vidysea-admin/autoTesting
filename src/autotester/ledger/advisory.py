@@ -13,7 +13,8 @@ if TYPE_CHECKING:
 # decision, empty ADVISORY_CITATION and the blocking() filter will count them again.
 ADVISORY_CITATION = frozenset({"decision-citation-coverage", "decision-citation-declaration"})
 NON_BLOCKING = ADVISORY_CITATION | {"decision-citation-sealed", "decision-citation-known-disputed",
-                                      "committed-leg-skipped"}
+                                      "committed-leg-skipped",
+                                      "env-dollar-literal"}
 
 
 def blocking(violations: list[Violation]) -> list[Violation]:
