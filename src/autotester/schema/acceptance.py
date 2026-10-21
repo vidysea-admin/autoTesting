@@ -65,6 +65,8 @@ class ParticipantColumn(BaseModel):
     adjudicated_real: int = 0
     adjudicated_false_positives: int = 0
     unadjudicated: int = 0
+    # Coverage (AT-1381): findings ruled (marked, or matched to a corpus bug) of findings_reported.
+    adjudicated_findings: int = 0
 
 
 class BugRow(BaseModel):
@@ -96,3 +98,18 @@ class AcceptanceComparison(Artifact):
     bugs: list[BugRow] = Field(default_factory=list)
     bugs_unavailable_reason: str | None = None
     verdict: str = "not computed here: Umesh records the verdict on this artifact"
+
+    def fp_coverage(self) -> tuple[int, int]:
+        """(ruled, total) AutoTester findings behind `false_positive_rate` (AT-1381, option A:
+        the rate stays over adjudicated findings only). A human list rules every finding."""
+        col = self.autotester
+        by_human_list = (self.human_list == "present"
+                         and col.false_positive_population != "adjudicated_findings_only")
+        if by_human_list:
+            return col.findings_reported, col.findings_reported
+        return col.adjudicated_findings, col.findings_reported
+
+    def fp_rate_provisional(self) -> bool:
+        """True while any AutoTester finding is still unruled, so the rate may still move."""
+        ruled, total = self.fp_coverage()
+        return ruled < total

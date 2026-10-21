@@ -177,6 +177,7 @@ class BenchTrial(Artifact):
         reported = len(self.findings)
         real = sum(1 for f in self.findings if f.adjudication == "real")
         fp_marked = sum(1 for f in self.findings if f.adjudication == "false_positive")
+        unruled = sum(1 for f in false_positives if f.adjudication is None)
         return {
             "detected": len(matched),
             "seeded": len(seeded),
@@ -188,7 +189,11 @@ class BenchTrial(Artifact):
             "false_positive_population": "all_reported_findings",
             "adjudicated_real": real,
             "adjudicated_false_positives": fp_marked,
-            "unadjudicated": sum(1 for f in false_positives if f.adjudication is None),
+            "unadjudicated": unruled,
+            # Coverage (AT-1381): a finding matched to a corpus bug is ruled by the corpus, so
+            # only an unmatched, unmarked finding is outstanding. fp_rate stays over the rulings.
+            "findings_total": reported,
+            "adjudicated_findings": reported - unruled,
             "adjudicated_fp_rate": fp_marked / (real + fp_marked) if real + fp_marked else None,
             "severity_weighted_recall": (
                 found_weight / total_weight if unavailable is None else None
