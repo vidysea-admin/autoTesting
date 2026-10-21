@@ -1,6 +1,6 @@
 # Manifest - at1368-env-roundtrip (AT-1368, Umesh 2026-10-21 "fix kro")
 
-Status: ready-for-check
+## Status: checked-PASS (dual: qa/verdicts/at1368-env-roundtrip.md + .b.md, cycle 1)
 **Fix cycle:** 1
 **Repair base:** 692adbcd
 **Contract:** qa/contracts/ui-settings.md (settings .env writer), qa/contracts/browser-and-secrets.md (secret reading); criteria C1, C2 are the unit brief's (.work/briefs/build-at1368-env-roundtrip.md)
