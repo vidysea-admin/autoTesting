@@ -1,0 +1,5 @@
+head images 38 kept 18 withheld 20
+Counter({'mask_exceeds_limit': 19, 'text_remains_after_mask': 1})
+psm3x1 kept images with >=1 conf60 word: 0 with >=1 any word: 0 total conf60 words 0
+psm11x1 kept images with >=1 conf60 word: 15 with >=1 any word: 17 total conf60 words 17
+psm11x2 kept images with >=1 conf60 word: 15 with >=1 any word: 16 total conf60 words 21
