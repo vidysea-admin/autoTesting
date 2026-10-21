@@ -4,6 +4,11 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
+DEFAULT_MASK_LIMIT = 0.75
+"""Fraction of an image the cumulative text mask may cover before it is withheld (AT-1384)."""
+CEILING_MASK_LIMIT = 0.9
+"""No project may raise its limit past this: above it the guard stops withholding anything."""
+
 
 class ImageSanitation(BaseModel):
     """A temporary sanitized batch; reasons never contain OCR text or filenames."""

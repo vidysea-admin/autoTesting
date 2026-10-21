@@ -18,6 +18,7 @@ from autotester.stages.agent_loop import AgentLoopResult, run_with_fallback
 from autotester.stages.case_expectation import expects_error
 from autotester.stages.execute import run_case
 from autotester.stages.grade import grade
+from autotester.stages.grade_images import project_mask_limit
 from autotester.stages.script_replay import Executor, ScriptedRun, run_scripted
 from autotester.store.project_store import ProjectStore
 
@@ -223,7 +224,7 @@ def run_and_grade_case(
     else:
         with _judging(session):
             verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
-                            secrets=session.secrets)
+                            secrets=session.secrets, mask_limit=project_mask_limit(store))
     _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
     return result, verdict
 
@@ -266,7 +267,7 @@ def run_and_grade_case_resilient(
         rubric = rubric_for_case(case, store)
         with _judging(session):
             verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
-                            secrets=session.secrets)
+                            secrets=session.secrets, mask_limit=project_mask_limit(store))
     except Exception as exc:  # the grader failed; execution did not (C7: still not a guess)
         verdict = Verdict(
             run_id=run_id, case_id=result.case_id, result=Result.INCONCLUSIVE,

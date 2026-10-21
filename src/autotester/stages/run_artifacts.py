@@ -27,7 +27,8 @@ def _inside(path: Path, root: Path) -> Path:
     return resolved
 
 
-def _assemble_case(store, run, case, result, verdict, redactor) -> BundleAssembly:
+def _assemble_case(store, run, case, result, verdict, redactor,
+                   mask_limit: float | None = None) -> BundleAssembly:
     run_dir = store.paths.run_dir(run.id)
     shots = [e for e in result.evidence if e.kind is EvidenceKind.SCREENSHOT]
     sources, included, reasons = [], 0, []
@@ -45,7 +46,7 @@ def _assemble_case(store, run, case, result, verdict, redactor) -> BundleAssembl
             if not shot.masked or shot.step_order is None:
                 reasons.append("unmasked_or_unattributed_image")
                 continue
-            safe = stack.enter_context(sanitized_images([original]))
+            safe = stack.enter_context(sanitized_images([original], mask_limit=mask_limit))
             reasons.extend(safe.reasons)
             text_unavailable = text_unavailable or safe.text_unavailable
             if safe.paths:
@@ -88,7 +89,8 @@ def assemble_run_bundles(store: ProjectStore, run: Run) -> None:
                 if verdict.case_id not in run.case_ids:
                     raise ValueError("case_outside_run")
                 entry = _assemble_case(store, run, cases[verdict.case_id],
-                                       results[verdict.case_id], verdict, redactor)
+                                       results[verdict.case_id], verdict, redactor,
+                                       project.image_mask_limit)
             except Exception as exc:
                 # AT-1304 C3: a corrupt trace line says which file and line; never its content.
                 reason = str(exc) if isinstance(exc, TraceParseError) else None

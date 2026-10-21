@@ -112,3 +112,22 @@ def test_origin_is_a_closed_set_and_provenance_never_moves_the_id() -> None:
 def test_a_source_still_rejects_an_unknown_key() -> None:
     with pytest.raises(ValidationError):
         _plain_source(uploader="x")
+
+
+def test_image_mask_limit_defaults_to_todays_value_and_is_bounded() -> None:
+    """AT-1384: the per-project screenshot mask limit keeps 0.75 by default and can never
+    be raised past the ceiling (a limit of 1.0 would withhold nothing)."""
+    base = {"slug": "demo", "name": "Demo", "base_url": "https://demo.test/"}
+    assert Project(**base).image_mask_limit == 0.75
+    assert Project(**base, image_mask_limit=0.85).image_mask_limit == 0.85
+    for bad in (0, -0.5, 0.91, 1.0):
+        with pytest.raises(ValidationError):
+            Project(**base, image_mask_limit=bad)
+
+
+def test_pathlynks_declares_a_limit_above_the_default_and_other_projects_keep_it() -> None:
+    limits = {p.parent.name: Project.model_validate_json(p.read_text(encoding="utf-8"))
+              .image_mask_limit for p in (ROOT / "projects").glob("*/project.json")}
+    assert limits["pathlynks"] == 0.85
+    assert {k: v for k, v in limits.items() if k != "pathlynks"} == {
+        k: 0.75 for k in limits if k != "pathlynks"}

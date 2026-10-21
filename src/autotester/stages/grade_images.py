@@ -36,12 +36,20 @@ UNBACKED_PASS_NOTE = (
 )
 
 
+def project_mask_limit(store) -> float | None:
+    """AT-1384: the project's screenshot mask limit; None (the default) when it has no config."""
+    project = store.load_project()
+    return project.image_mask_limit if project else None
+
+
 def judge_images(judge: Provider, prompt: str, paths: list[Path], *,
-                 prompt_file: str, fed_id: str) -> tuple[Judgment, list[Path]]:
+                 prompt_file: str, fed_id: str,
+                 mask_limit: float | None = None) -> tuple[Judgment, list[Path]]:
     """Keep safe copies alive through the call; also return the SOURCE paths actually delivered
     (one sanitation batch per image, so a withheld image is identified, not just counted)."""
     with ExitStack() as stack:
-        batches = [(src, stack.enter_context(sanitized_images([src]))) for src in paths]
+        batches = [(src, stack.enter_context(sanitized_images([src], mask_limit=mask_limit)))
+                   for src in paths]
         delivered = [(src, batch.paths[0]) for src, batch in batches if batch.paths]
         if paths:
             prompt += "\n\n" + (RepoDocs().prompts_dir / "image_privacy.md").read_text("utf-8")

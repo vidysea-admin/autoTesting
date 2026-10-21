@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
+from autotester.schema.image_privacy import CEILING_MASK_LIMIT, DEFAULT_MASK_LIMIT
 from autotester.schema.intake import SourceOrigin
 from autotester.schema.mailbox_ref import SECRET_KEY_PATTERN
 from autotester.schema.platform import IMPLICIT_PLATFORM_ID, Platform
@@ -201,6 +202,13 @@ class Project(Artifact):
                     "list is ever used. Empty (the default) means role/label only.",
     )
     headed: bool = Field(default=True, description="real visible browser by default")
+    image_mask_limit: float = Field(
+        default=DEFAULT_MASK_LIMIT, gt=0, le=CEILING_MASK_LIMIT,
+        description="AT-1384: the cumulative text-mask fraction past which a screenshot is "
+                    "withheld instead of delivered. Every text band is masked whatever this is; "
+                    "it only decides when a mostly-text image is withheld, so it can never "
+                    "exceed the ceiling. Measured per product from its real dashboards.",
+    )
     description: str | None = None
     login_case_id: str | None = Field(
         default=None,

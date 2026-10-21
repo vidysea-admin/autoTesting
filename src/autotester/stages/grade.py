@@ -196,7 +196,8 @@ def _outcome_verdict(result: RawResult, rubric: Rubric, run_id: str) -> Verdict 
 
 def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
           docs: RepoDocs | None = None, run_dir: Path | None = None,
-          secrets: SecretStore | None = None, redactor: Redactor | None = None) -> Verdict:
+          secrets: SecretStore | None = None, redactor: Redactor | None = None,
+          mask_limit: float | None = None) -> Verdict:
     """Judge one case's execution against `rubric`. Never sees the case's own steps.
 
     `secrets`, when given, gates the built prompt through
@@ -223,8 +224,8 @@ def grade(rubric: Rubric, result: RawResult, run_id: str, judge: Provider,
     seen = [path for path in requested if path.exists()]
     counts = {"images_requested": len(requested), "images_seen": len(seen)}
 
-    judgment, delivered = judge_images(judge, prompt, seen,
-                                       prompt_file=SKILL_NAME, fed_id=result.case_id)
+    judgment, delivered = judge_images(judge, prompt, seen, prompt_file=SKILL_NAME,
+                                       fed_id=result.case_id, mask_limit=mask_limit)
     counts["images_seen"] = len(delivered)
     problem = _inconsistency(rubric, judgment)
     if problem is not None:
