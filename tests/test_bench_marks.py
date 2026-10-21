@@ -167,3 +167,75 @@ def test_simultaneous_set_mark_calls_lose_no_ruling(tmp_path: Path) -> None:
     with ThreadPoolExecutor(max_workers=len(keys)) as pool:
         list(pool.map(mark, keys))  # a writer that raises fails the test here
     assert set(bench_marks.load_marks(store, CORPUS).marks) == set(keys)
+
+
+# --- AT-1381: adjudication coverage and the PROVISIONAL fp_rate label ----------------------
+
+def test_two_of_three_findings_ruled_reports_coverage_and_a_provisional_fp_rate(
+        tmp_path: Path, capsys) -> None:
+    store = _seed(tmp_path)
+    bench_marks.set_mark(store, CORPUS, _key(store, "a broke"), "real", "u@x.test")
+    bench_marks.set_mark(store, CORPUS, _key(store, "b broke"), "false_positive", "u@x.test")
+    cmp = build_comparison(store, "demo")
+    assert (cmp.autotester.adjudicated_findings, cmp.autotester.findings_reported) == (2, 3)
+    assert cmp.fp_coverage() == (2, 3) and cmp.fp_rate_provisional()
+    assert cmp.autotester.false_positive_rate.value == 0.5  # fp_rate itself is unchanged
+    assert check.main(["demo", "--root", str(tmp_path)]) == 0  # no acceptance claim made
+    out = capsys.readouterr().out
+    assert "adjudicated 2/3" in out and "FP rate: 0.5" in out
+    assert "PROVISIONAL" in out.split("FP rate:")[1].splitlines()[0]
+
+
+def test_an_acceptance_claim_on_a_provisional_fp_rate_exits_non_zero(
+        tmp_path: Path, capsys) -> None:
+    store = _seed(tmp_path)
+    bench_marks.set_mark(store, CORPUS, _key(store, "a broke"), "real", "u@x.test")
+    assert check.main(["demo", "--root", str(tmp_path), "--claim"]) == 1
+    err = capsys.readouterr().err
+    assert "PROVISIONAL" in err and "adjudicated 1/3" in err
+
+
+def test_a_run_with_no_rulings_at_all_is_adjudicated_zero_of_three_and_provisional(
+        tmp_path: Path, capsys) -> None:
+    _seed(tmp_path)
+    assert check.main(["demo", "--root", str(tmp_path), "--claim"]) == 1
+    captured = capsys.readouterr()
+    assert "adjudicated 0/3" in captured.out and "PROVISIONAL" in captured.out
+
+
+def test_with_every_finding_ruled_the_fp_rate_is_final_and_the_claim_passes(
+        tmp_path: Path, capsys) -> None:
+    store = _seed(tmp_path)
+    for reason, verdict in (("a broke", "real"), ("b broke", "false_positive"),
+                            ("c broke", "false_positive")):
+        bench_marks.set_mark(store, CORPUS, _key(store, reason), verdict, "u@x.test")
+    cmp = build_comparison(store, "demo")
+    assert cmp.fp_coverage() == (3, 3) and not cmp.fp_rate_provisional()
+    assert check.main(["demo", "--root", str(tmp_path), "--claim"]) == 0
+    out = capsys.readouterr().out
+    assert "adjudicated 3/3" in out and "PROVISIONAL" not in out
+
+
+def test_a_finding_matched_to_a_known_bug_counts_as_ruled_by_the_corpus(tmp_path: Path) -> None:
+    store = _seed(tmp_path, ("only", "other"))
+    corpus = BenchCorpus(
+        id=CORPUS, app="demo", build_ref="b", mode="human_confirmed",
+        seeded_bugs=[SeededBug(id="bug1", description="d", location="/x", detect_hint="h",
+                               severity=Severity.S1, provenance="human_independent")])
+    store.save_bench_corpus(corpus)
+    trial = store.list_bench_trials(CORPUS)[0]
+    store.save_bench_trial(trial.model_copy(update={"findings": [
+        trial.findings[0].model_copy(update={"matched_bug_id": "bug1"}), trial.findings[1]]}))
+    col = build_comparison(store, "demo").autotester
+    assert (col.adjudicated_findings, col.findings_reported, col.unadjudicated) == (1, 2, 1)
+
+
+def test_the_scorecard_itself_exposes_the_adjudicated_count_and_the_total(
+        tmp_path: Path) -> None:
+    store = _seed(tmp_path)
+    bench_marks.set_mark(store, CORPUS, _key(store, "a broke"), "real", "u@x.test")
+    trial = bench_marks.apply_marks(store.list_bench_trials(CORPUS)[0],
+                                    bench_marks.load_marks(store, CORPUS))
+    corpus = store.load_bench_corpus(CORPUS)
+    score = trial.score(corpus)
+    assert (score["adjudicated_findings"], score["findings_total"]) == (1, 3)

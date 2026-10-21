@@ -88,6 +88,7 @@ def _column(corpus: BenchCorpus, trial: BenchTrial, human_missing: bool) -> Part
         adjudicated_real=int(score["adjudicated_real"]),
         adjudicated_false_positives=int(score["adjudicated_false_positives"]),
         unadjudicated=int(score["unadjudicated"]),
+        adjudicated_findings=int(score["adjudicated_findings"]),
     )
 
 
