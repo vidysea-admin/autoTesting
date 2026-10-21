@@ -1,6 +1,6 @@
 # Manifest - auth-eye (show/hide eye on sign-in and sign-up password fields)
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 0
 Risk tier: S (one UI markup file plus its test; no auth behaviour change)
 Round: 1
