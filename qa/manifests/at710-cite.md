@@ -18,7 +18,7 @@ Base: 7424e6ec, branch wave/at710-cite. Authorized by Umesh 2026-10-22 ("fix kar
   T-167 deps). Neither mentions write policy. D-058 (:1667) supersedes D-057 and carries the AT-740 note.
 - Decision: D-053 is the correct entry, so the task is not BLOCKED.
 
-## Step 2 -- hits for `git grep -E "D-05[67]"`
+## Step 2 -- hits for the old D-056 and D-057 citations (git grep, extended regex)
 
 State found: the seven citations had already been re-pointed to the placeholder
 `WP-DECISION (NOT YET WRITTEN; number assigned when written ...)` (AT-740 note in D-058), so the live write-policy
