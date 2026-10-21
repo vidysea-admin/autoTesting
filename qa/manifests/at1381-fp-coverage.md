@@ -1,6 +1,6 @@
 # AT-1381 fp_rate adjudication coverage and PROVISIONAL label
 
-Status: ready-for-check
+Status: checked-PASS (qa/verdicts/at1381-fp-coverage.md, cycle 0)
 Fix cycle: 0
 Policy-Version: proportional-verification/2026-10-19.17
 Root: D:/autoTesting/.worktrees/at1381-fp-coverage
