@@ -8,3 +8,4 @@ Options:
 Answer format: "A", "B" or "C".
 Blocks: push of int/1019 (AT-1363 re-OCR masking, AT-1368 .env round-trip) to master.
 Answered: 2026-10-21T18:09:50+05:30 — C (keep Karthick's access-log change; amend AU22 + 2 tests) — chat "lets go with kartik way", D-107
+Answered: 2026-10-21T19:00:06+05:30 — B (server-side scrub filter for query strings and /v/<token>; AT-1390) — Umesh chat 2026-10-21 "go with the best recommended way ahead as per the goal not as per the ease" (maker recommended default)
