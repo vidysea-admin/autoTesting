@@ -100,7 +100,7 @@ def test_image_runs_unprivileged_with_frozen_environment_outside_source():
     assert "build-essential" in dockerfile
     entrypoint = (ROOT / "docker/entrypoint.sh").read_text(encoding="utf-8")
     assert "exec /opt/venv/bin/python /app/docker/supervise.py" in entrypoint
-    assert "--no-access-log" in entrypoint and "chown" not in entrypoint
+    assert "chown" not in entrypoint  # access-log flag dropped by D-107 (master 5976c832)
 
 
 def test_posix_reaper_preserves_exit_status_and_collects_orphans(monkeypatch):

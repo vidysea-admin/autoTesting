@@ -1064,3 +1064,6 @@ CLASSIFIER_OUTAGE 2026-09-28T13:57:14+00:00 (Agent x2 + Bash refused, no verdict
 2026-10-20T05:43:08+05:30 HUMAN_GATE heartbeat 8/8 (final): master in sync; gates t136-withheld-screenshot-pass, t169-live-inputs, t206-approval-reuse unanswered; T-212/T-218 wait on role creds/IMAP; wave=0; loop stopped, resume on answer
 2026-10-21T12:03:37+05:30 HUMAN_GATE heartbeat 1/8 (new series after Umesh status ask 2026-10-21): master 47496209 in sync; gates t136-withheld-screenshot-pass, t169-live-inputs, t206-approval-reuse unanswered; T-212/T-218 wait on role creds/IMAP; wave=0
 2026-10-21T12:28:40+05:30 dispatched 4 builders (at1349, t136-mask, bench-inputs-ui, t169-harness-login) + t206 live rerun + auth-eye checker
+2026-10-21T18:10:38+05:30 ADVANCED 6c-1021b GREEN b8f6e861; push rejected (remote 5976c832), merged 4b69097a
+2026-10-21T18:10:38+05:30 HUMAN_GATE entrypoint-access-log (6c-1021c RED b902cb4f)
+2026-10-21T18:10:38+05:30 ADVANCED D-107 answered C (1d8e38d2); tests updated for access log
