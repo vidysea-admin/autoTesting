@@ -66,4 +66,4 @@ Open points for the checker: (1) a third re-mask is withheld unread rather than 
 ## Live browser evidence
 SKIP - maker smoke only; checker runs Mode D when UI changed. No UI surface changed (src/autotester/core/image_privacy.py, tests only).
 
-## Status: ready-for-check
+## Status: checked-PASS (dual: qa/verdicts/at1363-reocr.md + .b.md, cycle 0, merged 4104a0d5)
