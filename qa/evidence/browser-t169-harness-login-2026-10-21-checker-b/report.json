@@ -1,0 +1,16 @@
+{
+  "unit": "t169-harness-login", "coordinator": "B", "date": "2026-10-21", "head": "4ff07564",
+  "server": "uvicorn autotester.ui.app:app on 127.0.0.1:8791, AUTOTESTER_ROOT=D:/autoTesting/.work/tmp/chkB/root (PID 3556, started and stopped by this check)",
+  "browser": "playwright MCP",
+  "steps": [
+    {"step": "signup first loopback account", "result": "redirected to /, signed in as checkerb@example.test"},
+    {"step": "GET /settings/providers", "result": "9 rows; AUTOTESTER_HARNESS_EMAIL (text input) and AUTOTESTER_HARNESS_PASSWORD (type=password, value empty, no show/hide button, both Not set); console errors 0"},
+    {"step": "save AUTOTESTER_HARNESS_EMAIL via the row's Save button", "result": "303 back to page; status Set; email shown in a text field"},
+    {"step": "save AUTOTESTER_HARNESS_PASSWORD via the row's Save button", "result": "status Set; input type=password value=''; password string absent from page DOM (leaksPw=false); reread in a fresh session: still absent, toggle buttons=0"},
+    {"step": "POST empty value for the password", "result": "HTTP 400, nothing erased, status still Set, no leak (the one console error is this deliberate 400)"},
+    {"step": ".env in the temp root", "result": "both keys written (AUTOTESTER_HARNESS_EMAIL, AUTOTESTER_HARNESS_PASSWORD); the repo-root D:/autoTesting/.env was never opened"},
+    {"step": "server log", "result": "password string not present in server.log"}
+  ],
+  "console_errors_normal_navigation": 0,
+  "screenshot": "settings-providers.png"
+}

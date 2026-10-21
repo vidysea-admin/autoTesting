@@ -1,0 +1,17 @@
+{
+  "unit": "t169-harness-login", "coordinator": "A", "date": "2026-10-21", "head": "4ff07564",
+  "browser": "playwright MCP",
+  "server": "uvicorn autotester.ui.app:app 127.0.0.1:8317 from the worktree, AUTOTESTER_ROOT=D:/autoTesting/.work/tmp/chkA/root (PID 40348, stopped)",
+  "steps": [
+    "signup first loopback account (admin-chk@example.test) -> redirected to / (became admin)",
+    "GET /settings/providers: 9 rows; AUTOTESTER_HARNESS_EMAIL (type=text) and AUTOTESTER_HARNESS_PASSWORD (type=password, no show/hide button) present, both Not set",
+    "typed email, Save -> status Set, email prefilled (admin holds credentials.view)",
+    "typed a test password with a space and a hash, Save -> back on the page; status Set; password field value empty, type=password, no eye button; page outerHTML contains neither the password nor a fragment of it",
+    "Save with the empty password field -> HTTP 400 'Provider key not saved' (wipe guard), stored key untouched",
+    "load_repo_env(temp root) in a separate process: both keys loaded, password round-trips exactly",
+    "server log: 0 occurrences of the password"
+  ],
+  "console_errors_on_origin_8317": 1,
+  "console_error_note": "the single error is the expected 400 of the empty-password Save; one earlier entry for 127.0.0.1:8791 belongs to another session's page, not this server",
+  "screenshot": "settings-after-save-400.png"
+}

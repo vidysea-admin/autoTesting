@@ -7,13 +7,14 @@ Refuses to start without the signed approvals the mode needs (prints the grant c
 `--dry-run` checks approvals and prints the plan only: no browser, no model. Otherwise it
 drives `run_mode` through the app's routes with real seams, writes
 qa/evidence/t169-real/<mode>/ and prints the GR1-GR4 checklist. Umesh's verdict (GR3) and the
-AT-281 thresholds are never computed. Contract: qa/contracts/generic-acceptance.md.
+AT-281 thresholds are never computed. The sign-in is AUTOTESTER_HARNESS_EMAIL and
+AUTOTESTER_HARNESS_PASSWORD from the repo-root .env, entered on the settings page; there is no
+terminal prompt. Contract: qa/contracts/generic-acceptance.md.
 """
 
 from __future__ import annotations
 
 import argparse
-import getpass
 import os
 import sys
 from pathlib import Path
@@ -21,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from autotester.core.consent import ApprovalRequired
-from autotester.core.env import load_repo_env
+from autotester.core.env import HARNESS_KEYS, load_repo_env
 from autotester.core.paths import repo_root
 from autotester.schema.crawl import CrawlBounds
 from autotester.stages.generic_acceptance import ModeSeams, ModeSpec
@@ -51,6 +52,18 @@ def _real_seams(store: ProjectStore, mode: str, bounds: CrawlBounds) -> ModeSeam
         project, store, store.paths, secrets, bounds, None))
 
 
+def _harness_login() -> tuple[str, str] | None:
+    """The AutoTester login from the repo-root `.env` (settings page), or None after naming
+    the missing KEY on stderr. Never prompts; values are never printed."""
+    missing = [key for key in HARNESS_KEYS if not os.environ.get(key, "").strip()]
+    if missing:
+        origin = os.environ.get("AUTOTESTER_PUBLIC_ORIGIN", "").strip() or "http://127.0.0.1:8000"
+        print(f"MISSING {', '.join(missing)}: enter it on the AutoTester settings page, "
+              f"{origin.rstrip('/')}/settings/providers", file=sys.stderr)
+        return None
+    return os.environ[HARNESS_KEYS[0]].strip(), os.environ[HARNESS_KEYS[1]]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("slug")
@@ -62,8 +75,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--wall-clock", type=float, default=None,
                         help="url_only crawl seconds (default: fit the covering approval)")
     parser.add_argument("--root", type=Path, default=None)
-    parser.add_argument("--email",
-                        help="existing AutoTester account; password is prompted securely")
     args = parser.parse_args(argv)
     root = (args.root or repo_root()).resolve()
     os.environ["AUTOTESTER_ROOT"] = str(root)
@@ -87,15 +98,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(f"dry run: would drive {args.mode} on {project.base_url}; nothing started")
         return 0
+    login = _harness_login()
+    if login is None:
+        return 4
     from autotester.ui.app import app
 
     spec = ModeSpec(mode=args.mode, slug=args.slug, name=project.name, base_url=project.base_url,
                     allowed_domains=list(project.allowed_domains), onboard=False)
-    email = args.email or input("AutoTester account email: ")
-    password = getpass.getpass("AutoTester account password: ")
     try:
-        with acceptance_client(app, email, password, args.slug) as client:
-            password = ""
+        with acceptance_client(app, *login, args.slug) as client:
+            login = None
             seams = _real_seams(store, args.mode, bounds or CrawlBounds())
             _, out, lines = drive_real(client, store, spec, seams, root, bounds=bounds)
     except ValueError as why:
