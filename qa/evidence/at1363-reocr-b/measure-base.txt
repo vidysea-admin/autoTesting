@@ -1,0 +1,5 @@
+base images 38 kept 38 withheld 0
+Counter()
+psm3x1 kept images with >=1 conf60 word: 34 with >=1 any word: 34 total conf60 words 162
+psm11x1 kept images with >=1 conf60 word: 37 with >=1 any word: 37 total conf60 words 219
+psm11x2 kept images with >=1 conf60 word: 38 with >=1 any word: 38 total conf60 words 304

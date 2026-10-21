@@ -84,7 +84,7 @@ def test_partial_withholding_retains_original_index_and_time(monkeypatch, setup)
 
     def ocr(path):
         calls.append(path)
-        if len(calls) == 2:
+        if len(calls) == 3:  # frame 0 takes two reads (mask, AT-1363 re-read); this is frame 1
             raise ValueError("OCR failure containing private data")
         return OCR
 
