@@ -1,6 +1,6 @@
 # Manifest - at1390-log-scrub (AT-1390, Umesh-delegated default 2026-10-21, option B)
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at1390-log-scrub.md + .b.md, dual, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/auth.md AU22 (residual named there); criteria C1, C2 are the unit brief's (.work/briefs/build-at1390-log-scrub.md)
 **Issues addressed:** AT-1390
