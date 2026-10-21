@@ -1,6 +1,8 @@
 # HUMAN_GATE — which credentials AutoTester runs against first
 
 
+> **RESOLVED 2026-10-22 (at710-cite, qa/manifests/at710-cite.md):** the write-policy authority is D-053, already on disk ("ALLOW_WRITES is the authorized write-policy CEILING on every target including production"); no new entry is to be written. The note below is kept as history.
+>
 > **CITATION CORRECTED 2026-09-28 (AT-718).** This file cited `D-056` as the entry
 > authorizing Pathlynks `allow_writes`. No such entry existed. `D-056` has since been
 > appended for an unrelated subject (the at673 round-cap waiver), so the old citation
