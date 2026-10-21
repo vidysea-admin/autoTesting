@@ -1,5 +1,6 @@
-"""T-204 fix cycle 1 (P4): the auth state directory never ships in the image, uvicorn is
-launched once under the supervisor (its access log is on since D-107), and the auth settings are documented (keys only) in .env.example."""
+"""T-204 fix cycle 1 (P4): the auth state directory never ships in the image, uvicorn
+is launched once under the supervisor (its access log is on since D-107), and the auth
+settings are documented (keys only) in .env.example."""
 
 from __future__ import annotations
 
