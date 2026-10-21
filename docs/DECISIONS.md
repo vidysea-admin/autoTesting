@@ -2734,3 +2734,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (maker session chat, 2026-10-19, quoted above).
 
 **Links:** T-136; T-169; T-206; T-218; D-089; D-090; D-094; D-104; qa/gates/t136-route-after-r4.md; qa/gates/t136-independent-human-list.md; qa/gates/umesh-decisions-2026-10-19.md; qa/gates/live-acceptance-runs.md
+
+## D-107 | 2026-10-21 | type: decision | status: ACTIVE
+
+**What:** Keep master commit 5976c832 (KarthickCogniv, 2026-10-21 16:46): docker/entrypoint.sh runs uvicorn WITH its access log (`--no-access-log` removed). Contract AU22's sentence "The uvicorn access log is disabled in docker/entrypoint.sh" is to be amended by /checker from the feedback inbox, and the two tests that pin the flag (tests/test_auth_deploy_files.py::test_au22_the_container_starts_uvicorn_without_an_access_log, tests/test_container_supervision.py::test_image_runs_unprivileged_with_frozen_environment_outside_source) are updated to the new behaviour. The audit-file rules of AU22 (no body, query string, password, cookie or hash in audit.jsonl) are unchanged.
+
+**Why:** The 6c pre-push check 6c-1021c (qa/verdicts/6c-1021c.md) went RED after merging 5976c832 into int/1019; gate qa/gates/entrypoint-access-log.md offered A revert / B filter / C accept. Umesh, chat 2026-10-21: "lets go with kartik way".
+
+**Result:** int/1019 (AT-1363, AT-1368) can reach master with 5976c832 kept. Known residual, filed as a security issue row: the access log now records request lines, including query strings (login `next=`) and `/v/<token>` path tokens.
+
+**Changes-authorized:** none of ARCHITECTURE.md prose or enforcement paths; two test files under a maker unit with a /checker verdict; AU22 wording via the checker's contract fold-in.
+
+**Approved-by:** Umesh (maker session chat, 2026-10-21: "lets go with kartik way").
+
+**Links:** qa/gates/entrypoint-access-log.md; qa/verdicts/6c-1021c.md; qa/contracts/auth.md AU22; D-072

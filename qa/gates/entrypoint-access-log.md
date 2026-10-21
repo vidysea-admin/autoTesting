@@ -7,3 +7,4 @@ Options:
 - C: accept the log as is; amend AU22 and the 2 tests under a DECISIONS entry.
 Answer format: "A", "B" or "C".
 Blocks: push of int/1019 (AT-1363 re-OCR masking, AT-1368 .env round-trip) to master.
+Answered: 2026-10-21T18:09:50+05:30 — C (keep Karthick's access-log change; amend AU22 + 2 tests) — chat "lets go with kartik way", D-107
