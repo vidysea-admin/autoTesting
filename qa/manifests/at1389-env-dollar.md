@@ -1,6 +1,6 @@
 # Manifest - at1389-env-dollar (AT-1389, Umesh-delegated default 2026-10-21)
 
-## Status: ready-for-check
+## Status: checked-PASS (qa/verdicts/at1389-env-dollar.md + .b.md, dual, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/ui-settings.md (settings page), browser-and-secrets.md (secret reading); criteria C1-C3 are the unit brief's (.work/briefs/build-at1389-env-dollar.md); decision record qa/gates/at1389-env-dollar-check.md
 **Issues addressed:** AT-1389
