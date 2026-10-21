@@ -227,7 +227,9 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
 - **AU22 — Audit without secrets.** Every state-changing request appends one line `{ts, email, method, path template, status}` to
   `<data>/.work/audit.jsonl`; admin actions (disable, delete, reset, group edit, setting change) add `{actor, target, action}`. Lines hold
   no body, query string, password, cookie or hash. A login failure line names the attempted email only after normalization and never
-  the password. The uvicorn access log is disabled in `docker/entrypoint.sh` (cookies and `next` values travel in URLs and headers).
+  the password. The uvicorn access log stays on in `docker/entrypoint.sh` (D-107, master 5976c832; Umesh accepted it). It can record
+  request lines, so the residual that query strings (login `next=`) and `/v/<token>` path tokens reach it is tracked by AT-1390; the
+  secret rules above apply to `audit.jsonl`.
   `serves:` D-072#3, O7. *Re-derive:* canary password and cookie through login, grep logs and audit file.
 - **AU23 — Auth data lives under the data root, never in git or the image.** Users, groups, sessions and settings are stored under
   `repo_root()` (which honours `AUTOTESTER_ROOT`), in a path that `git check-ignore` and `.dockerignore` both cover, with atomic writes
@@ -293,3 +295,5 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   `settings.manage`, `credentials.view` and admin password resets; AU9 unchanged. The no-fire dependency line now names the one
   library. **Not changed here, follow-up:** `hosting.md` HO11 still says "first account = admin, AU7" and `docs/spec.md:140` still says
   "first account becomes admin"; both need the same wording and are left to the checker that owns those files.
+
+- 2026-10-21 (checker fold, inbox line 2026-10-21T18:09:50+05:30, D-107): **AU22** sentence "The uvicorn access log is disabled in `docker/entrypoint.sh`" amended: the access log stays on per D-107 (master 5976c832 removed `--no-access-log`); the `audit.jsonl` rules are unchanged; the residual (query strings and `/v/<token>` reaching the access log) is tracked by AT-1390 (open, medium, security). The Re-derive line is unchanged: it greps logs and the audit file for a canary, and does not mention the access log flag.
