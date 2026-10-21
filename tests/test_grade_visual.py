@@ -163,3 +163,19 @@ def test_g2_unmet_assertion_still_blocks_pass(tmp_path, monkeypatch) -> None:
 def test_g2_pass_with_note_describing_a_defect_is_still_held(tmp_path, monkeypatch) -> None:
     bad = _pass().model_copy(update={"note": "Page crashed after login.", "defect_observed": None})
     assert _grade(tmp_path, monkeypatch, bad, _result(MET)).result is Result.INCONCLUSIVE
+
+
+def test_g2_pass_is_held_when_a_dashboard_screenshot_is_withheld_for_mask_size(
+    tmp_path, monkeypatch,
+) -> None:
+    """T-136 gate A: raising the masking limit keeps a dense dashboard, but a screenshot that is
+    still withheld for `mask_exceeds_limit` (all text) never lets a met assertion make it a PASS."""
+    rows = "".join(f"5\t1\t1\t1\t{n}\t1\t5\t{n*20-20}\t90\t20\t99\tword{n}\n" for n in (1, 2, 3))
+    verdict = _grade(tmp_path, monkeypatch, _pass(), _result(MET))  # installs the fake OCR
+    assert verdict.result is Result.PASS and verdict.images_seen == 2
+    monkeypatch.setattr(image_privacy, "_local_ocr", lambda _: HEADER + rows)  # 100% text bands
+    held = grade(_rubric(), _result(MET), "run_2", MockProvider(responses={"judge": [_pass()]}),
+                 run_dir=tmp_path / "run")
+    assert held.result is Result.INCONCLUSIVE
+    assert (held.images_requested, held.images_seen) == (2, 0)
+    assert "withheld or absent" in (held.note or "")

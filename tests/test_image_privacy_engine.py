@@ -139,3 +139,56 @@ def test_lookup_ignores_nonexistent_env_path_then_fails_closed(lookup, monkeypat
     monkeypatch.setenv(privacy.TESSERACT_ENV, str(tmp_path / "nowhere" / "tesseract.exe"))
     with pytest.raises(privacy.ImagePrivacyError, match="local_ocr_unavailable"):
         privacy._find_tesseract()
+
+
+# --- T-136 gate A: a dense post-login dashboard is kept, a mostly-sensitive screen is not ------
+
+_HDR = ("level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\t"
+        "left\ttop\twidth\theight\tconf\ttext\n")
+DASHBOARD = (1366, 850)  # the Pathlynks run-5 post-login screenshot size (mask fraction 0.621)
+
+
+def _dense_lines(count: int) -> tuple[str, list[int]]:
+    """OCR of `count` stacked text lines (20px tall, 32px pitch): line 1 holds a confident
+    secret, line 2 a low-confidence word, the rest are ordinary dashboard text."""
+    rows, tops = [], []
+    for n in range(1, count + 1):
+        top, conf = 20 + (n-1)*32, 30 if n == 2 else 97
+        text = "hunterTwo" if n == 1 else f"widget{n}"
+        rows.append(f"5\t1\t1\t1\t{n}\t1\t40\t{top}\t120\t20\t{conf}\t{text}\n")
+        tops.append(top)
+    return _HDR + "".join(rows), tops
+
+
+def _mask_fraction(tsv: str) -> float:
+    boxes = privacy._text_boxes(tsv, DASHBOARD)
+    area = Image.new("L", DASHBOARD, 0)
+    for box in boxes:
+        ImageDraw.Draw(area).rectangle(box, fill=255)
+    return area.histogram()[255] / (DASHBOARD[0]*DASHBOARD[1])
+
+
+def test_dashboard_shaped_screenshot_is_kept_with_every_text_band_masked(tmp_path, monkeypatch):
+    tsv, tops = _dense_lines(19)
+    assert 0.6 < _mask_fraction(tsv) <= privacy.MAX_MASK_FRACTION  # over the old 0.6 limit
+    path = tmp_path / "dashboard.png"
+    Image.new("RGB", DASHBOARD, "white").save(path)
+    monkeypatch.setattr(privacy, "_local_ocr", lambda _: tsv)
+    with privacy.sanitized_images([path]) as batch:
+        assert len(batch.paths) == 1 and batch.reasons == [], batch.reasons
+        with Image.open(batch.paths[0]) as safe:
+            for top in tops:  # the secret line, the low-confidence line and every other band
+                assert safe.getpixel((0, top + 10)) == (0, 0, 0)
+                assert safe.getpixel((1365, top + 10)) == (0, 0, 0)
+                assert safe.getpixel((60, top + 10)) == (0, 0, 0)
+            assert safe.getpixel((700, 849)) == (255, 255, 255)  # below the last band: untouched
+
+
+def test_mostly_sensitive_screenshot_is_still_withheld(tmp_path, monkeypatch):
+    tsv, _ = _dense_lines(26)
+    assert _mask_fraction(tsv) > privacy.MAX_MASK_FRACTION
+    path = tmp_path / "wall-of-text.png"
+    Image.new("RGB", DASHBOARD, "white").save(path)
+    monkeypatch.setattr(privacy, "_local_ocr", lambda _: tsv)
+    with privacy.sanitized_images([path]) as batch:
+        assert batch.paths == [] and batch.reasons == ["mask_exceeds_limit"]

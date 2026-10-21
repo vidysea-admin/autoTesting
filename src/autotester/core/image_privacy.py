@@ -32,7 +32,10 @@ MAX_IMAGE_PIXELS = 16_000_000
 MAX_OCR_BYTES = 4 * 1024 * 1024
 OCR_TIMEOUT_S = 20
 MIN_CONFIDENCE = 85.0
-MAX_MASK_FRACTION = 0.6
+# Every recognized text line is masked across the FULL width, so this fraction is text density,
+# not leak risk. 0.6 withheld Pathlynks' post-login dashboard (1366x850, measured 0.621, T-136
+# run 5); 0.75 keeps such dense dashboards while a screen that is mostly text still withholds.
+MAX_MASK_FRACTION = 0.75
 TESSERACT_ENV = "AUTOTESTER_TESSERACT"
 WINDOWS_TESSERACT = Path("C:/Program Files/Tesseract-OCR/tesseract.exe")
 _SAFE_COPIES: dict[Path, str] = {}
