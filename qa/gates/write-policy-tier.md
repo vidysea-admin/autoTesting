@@ -112,3 +112,5 @@ to `WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spe
 old one.
 
 Answered: 2026-09-27 — `ALLOW_WRITES`, on every target including production — Umesh, chat; recorded as D-053 (`docs/DECISIONS.md:1360`); re-confirmed 2026-09-28 (see the note at the end of this file)
+
+**RESOLVED 2026-10-22 (at710-cite, qa/manifests/at710-cite.md):** the write-policy authority is D-053, already on disk ("ALLOW_WRITES is the authorized write-policy CEILING on every target including production"); no new entry is to be written. The note below is kept as history.

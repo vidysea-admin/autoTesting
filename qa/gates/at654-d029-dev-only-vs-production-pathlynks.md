@@ -1,6 +1,8 @@
 # HUMAN_GATE — D-029 says "dev environment only"; the 2026-09-27 direction says production
 
 
+> **RESOLVED 2026-10-22 (at710-cite, qa/manifests/at710-cite.md):** the write-policy authority is D-053, already on disk ("ALLOW_WRITES is the authorized write-policy CEILING on every target including production"); no new entry is to be written. The note below is kept as history.
+>
 > **CITATION CORRECTED 2026-09-28 (AT-718).** This file cited `D-056` as the entry
 > authorizing Pathlynks `allow_writes`. No such entry existed. `D-056` has since been
 > appended for an unrelated subject (the at673 round-cap waiver), so the old citation
@@ -13,7 +15,7 @@
 **Blocks:** T-145 (live bounded crawl) only. **Does NOT block T-122** — see the scope finding below,
 which is the part the first report of this got wrong.
 **This is NOT a re-ask of the write tier.** `qa/gates/write-policy-tier.md` is closed and
-`ALLOW_WRITES` stands (D-053, WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058)). The axis here is **environment**, not tier, and they are
+`ALLOW_WRITES` stands (D-053). The axis here is **environment**, not tier, and they are
 independent.
 
 ## The contradiction, verified line by line
@@ -23,7 +25,7 @@ independent.
 | **D-029** (2026-09-21) | synthetic typing into post-login forms is allowed *"on the Pathlynks **dev environment only**"*; at production targets X10's "nothing is typed" remains as it was | `docs/DECISIONS.md:460-473` |
 | **The code** | when the run policy has `synthetic_typing` and the covering approval is `production`, `require_consent` raises `ApprovalRequired` — *"grant a dev-environment approval (production: false) instead"* | `stages/explore_consent.py:42-49` |
 | **The schema** | `synthetic_typing` default **False**, description naming D-029's four conditions, one of which is literally **"non-production target"** | `schema/crawl.py:99-106` |
-| **Umesh** (2026-09-27) | production Pathlynks is the first target, and data must actually be entered — *"डेटा एंटर करेगा नहीं तो कैसे पता चलेगा डेटा एंटर होता है नहीं होता है?"* | `qa/gates/pathlynks-user-account-first.md`, WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058) |
+| **Umesh** (2026-09-27) | production Pathlynks is the first target, and data must actually be entered — *"डेटा एंटर करेगा नहीं तो कैसे पता चलेगा डेटा एंटर होता है नहीं होता है?"* | `qa/gates/pathlynks-user-account-first.md`, D-053 |
 
 The guard is not incidental and not a stale implementation detail: **"non-production target" is one of
 D-029's own four conditions**, so changing the behaviour means superseding a decision, not fixing a bug.
@@ -68,7 +70,7 @@ The maker is not choosing. D-029 is ACTIVE with a named authorization source
 Protocol that needs Umesh's entry, not a builder's judgement. **The guard is also not routed around:**
 no unit sets `production: false` on a production approval to get past it.
 
-**Links:** `AT-654` · `AT-570` · `AT-651` · D-029 (`docs/DECISIONS.md:460-473`) · D-016 · D-053 · WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058) ·
+**Links:** `AT-654` · `AT-570` · `AT-651` · D-029 (`docs/DECISIONS.md:460-473`) · D-016 · D-053 ·
 T-122 · T-145 · `stages/explore_consent.py:42-49` · `stages/explore_safety.py:33-41` ·
 `schema/crawl.py:99-106` · `qa/gates/post-login-forms.md` · `qa/gates/live-crawl-target.md` ·
 `qa/gates/pathlynks-user-account-first.md`

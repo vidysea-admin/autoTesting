@@ -1,6 +1,8 @@
 # HUMAN_GATE — which credentials AutoTester runs against first
 
 
+> **RESOLVED 2026-10-22 (at710-cite, qa/manifests/at710-cite.md):** the write-policy authority is D-053, already on disk ("ALLOW_WRITES is the authorized write-policy CEILING on every target including production"); no new entry is to be written. The note below is kept as history.
+>
 > **CITATION CORRECTED 2026-09-28 (AT-718).** This file cited `D-056` as the entry
 > authorizing Pathlynks `allow_writes`. No such entry existed. `D-056` has since been
 > appended for an unrelated subject (the at673 round-cap waiver), so the old citation
@@ -36,14 +38,14 @@ user type, not a fallback for this one.
   `allowed_domains: ['vidysea.com']`.
 - The account's own permissions ARE the test scope. Umesh provisions access when he provisions the
   account — *"मैंने यूजर क्रेडेंशियल दे दिए हैं… अब उस यूजर को कितने मैंने अकाउंट में एक्सेस दिए वो
-  तो मेरे हाथ में है ना"*. AutoTester does not invent a narrower scope (WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058)).
+  तो मेरे हाथ में है ना"*. AutoTester does not invent a narrower scope (D-053).
 
 ## Still outstanding after this answer
 
-1. **`projects/pathlynks/project.json` is `write_policy: read_only`.** WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058) authorizes
+1. **`projects/pathlynks/project.json` is `write_policy: read_only`.** D-053 authorizes
    `allow_writes`; the one-field edit is refused in the maker's session by the harness safety
    classifier ("Security Weaken") and is with Umesh. Until it lands, a run can log in and read but
-   cannot press a mutating button — which is exactly the incomplete report WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058) refuses.
+   cannot press a mutating button — which is exactly the incomplete report D-053 refuses.
 2. **A per-run `RunApproval` for the first live run** (D-018) is a separate act and is not granted
    by this answer.
 3. **`AT-651`** — `browser/secrets.py:88-90` `_host_matches` suffix-matches, so
@@ -72,7 +74,7 @@ it picked the filename out of the air and asked whether the maker had already ch
 `check_crawl_approval.py`. So this name is hereby the chosen one: it matches the sibling convention,
 and whoever builds T-136 creates **this** path. Do not add a second script to match a different guess.
 
-**Links:** D-052 · D-053 · WP-DECISION (NOT YET WRITTEN; number assigned when written — D-057 was spent on another subject, AT-740, D-058) · D-018 · D-048 (superseded as first target) · T-122 · T-145 ·
+**Links:** D-052 · D-053 · D-018 · D-048 (superseded as first target) · T-122 · T-145 ·
 `qa/gates/erp-credentials.md` · `qa/gates/live-crawl-target.md` · `core/env.py:46-67` · `AT-086` ·
 `AT-651` · `projects/pathlynks/project.json`
 
