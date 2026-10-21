@@ -1,0 +1,43 @@
+{
+  "unit": "auth-eye",
+  "checker": "claude-sonnet-subagent",
+  "date": "2026-10-21",
+  "server": "uv run uvicorn autotester.ui.app:app --host 127.0.0.1 --port 8765, AUTOTESTER_ROOT=D:/autoTesting/.work/tmp/ae-chk-root, started and stopped by this checker (PIDs 12964 + launcher 37788)",
+  "browser": "Playwright MCP (Chromium)",
+  "candidate": "a15a21c3c34d1930ec32d3b08b8e60e5002d184e",
+  "walks": [
+    {
+      "page": "/auth/login",
+      "steps": "fill password; click eye (mouse); click again; Tab to eye + Enter",
+      "assert": {
+        "default_type": "password",
+        "after_click_type": "text",
+        "after_second_click_type": "password",
+        "value_kept": true,
+        "aria_label_flip": "Show password -> Hide password -> Show password",
+        "text_flip": "Show -> Hide -> Show",
+        "submit_events": 0,
+        "extra_POST_in_server_log": 0,
+        "keyboard_enter_on_eye_toggles_without_submit": true
+      },
+      "result": "PASS"
+    },
+    {
+      "page": "/auth/signup",
+      "steps": "fill password; click eye; click again",
+      "assert": {
+        "default_type": "password",
+        "after_click_type": "text",
+        "value_kept": true,
+        "label": "Hide password",
+        "submit_events": 0,
+        "extra_POST_in_server_log": 0
+      },
+      "result": "PASS"
+    }
+  ],
+  "network_after_toggle": "only the pre-existing GET /auth/login plus Google Fonts stylesheet and woff2 loads from PAGE_STYLE; the toggle adds no request",
+  "console_errors_clean_loads": 0,
+  "console_errors_first_pass": "2 x 'Failed to load resource 401' at /auth/login, matching two POST /auth/login 401 lines in the server log during the FIRST login pass; cause not identified and not reproduced in 3 later armed replays (login x2, signup x1; submit listener plus server log count unchanged). Not attributed to the eye: after the first eye click the page was still the same document with 0 submit events.",
+  "persona_note": "AU26 persona/admin flows are not touched by this diff (markup only); label and keyboard operability of the new control verified."
+}
