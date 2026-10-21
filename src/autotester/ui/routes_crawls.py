@@ -31,7 +31,7 @@ from autotester.stages.explore_merge import merge_stored_crawl
 from autotester.stages.explore_status import displayed_reason, displayed_status, is_success
 from autotester.stages.merge_flowspec import resolve_requests
 from autotester.store.project_store import ProjectStore
-from autotester.ui import crawl_view, theme
+from autotester.ui import bench_inputs_view, crawl_view, theme
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id, _reserved_temp_path
 from autotester.ui.routes_crawl_login import login_card
 
@@ -202,6 +202,7 @@ def crawl_page(slug: str, crawl_id: str) -> str:
         + theme.card(crawl_view.issues_table(
             [i for i in issues if i.kind is not IssueKind.EVIDENCE], names),
             title="Issues found in the product")
+        + bench_inputs_view.crawl_card(store, slug, crawl_id)
         + theme.card(crawl_view.tool_failures_table(
             [i for i in issues if i.kind is IssueKind.EVIDENCE], names),
             title="What the crawler itself could not do")

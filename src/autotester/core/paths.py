@@ -141,6 +141,10 @@ class ProjectPaths:
         """The T-136 acceptance-comparison artifact for one corpus."""
         return self.bench_dir / f"{corpus_id}.comparison.json"
 
+    def bench_marks(self, corpus_id: str) -> Path:
+        """A person's real / false-positive rulings on findings (`stages/bench_marks.py`)."""
+        return self.bench_dir / f"{corpus_id}.marks.json"
+
     def bench_human_trial(self, corpus_id: str) -> Path:
         """Where the independent human list plugs in (D-089 item 3): a `BenchTrial`
         JSON of kind `human_live`, plus a `human_confirmed` corpus at `bench_corpus`.

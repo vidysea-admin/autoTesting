@@ -23,8 +23,11 @@ def file_lock(lock_path: Path, timeout_s: float = 5.0, *, what: str = "file") ->
     fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
     with os.fdopen(fd, "r+b") as handle:
         if os.fstat(handle.fileno()).st_size == 0:
-            handle.write(b"\0")
-            handle.flush()
+            try:
+                handle.write(b"\0")
+                handle.flush()
+            except PermissionError:
+                pass  # another holder initialised and locked the byte first; it is there now
         deadline = time.monotonic() + timeout_s
         while True:
             try:

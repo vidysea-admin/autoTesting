@@ -1,0 +1,23 @@
+...............................................................s........ [ 23%]
+........................................................................ [ 47%]
+........................................................................ [ 71%]
+........................................................................ [ 95%]
+...............                                                          [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:53
+  D:\autoTesting\.worktrees\bench-inputs-ui\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a lazy import inside a function]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a relative import]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[a stage that itself reaches the browser]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[from-import of a pipeline module]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[from-import of the browser session]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[plain import of the browser session]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[the gate importing the session]
+tests/test_schedule_tick.py::test_the_guard_catches_each_way_of_reaching_the_pipeline[the wiring importing the run queue's executor]
+  <unknown>:19: DeprecationWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+302 passed, 1 skipped, 9 warnings in 77.38s (0:01:17)
+exit=0

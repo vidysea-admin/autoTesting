@@ -15,6 +15,7 @@ bytes under a generated name.
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Callable
 from pathlib import Path
 from typing import BinaryIO
 from urllib.parse import parse_qs
@@ -78,8 +79,9 @@ def _vet_name(filename: str) -> bool:
 class _Reader:
     """The parser callbacks: collects part headers, text fields, and the one file part."""
 
-    def __init__(self, staging: Path, limit: int) -> None:
-        self.staging, self.limit = staging, limit
+    def __init__(self, staging: Path, limit: int,
+                 vet: Callable[[str], bool] = _vet_name) -> None:
+        self.staging, self.limit, self._vet = staging, limit, vet
         self.fields: dict[str, str] = {}
         self.filename: str | None = None
         self.is_zip = False
@@ -133,7 +135,7 @@ class _Reader:
         name = raw.decode("utf-8", "replace")
         if not name.strip():
             raise UploadRefused(400, "Choose a file to upload.")
-        self.is_zip = _vet_name(name)
+        self.is_zip = self._vet(name)
         self.filename = name
         self.staging.mkdir(parents=True, exist_ok=True)
         self._handle = (self.staging / STAGED_NAME).open("wb")
@@ -185,10 +187,13 @@ def _boundary(request: Request) -> bytes:
     return boundary
 
 
-async def stream_upload(request: Request, staging: Path, limit: int) -> StagedUpload:
+async def stream_upload(request: Request, staging: Path, limit: int,
+                        vet: Callable[[str], bool] = _vet_name) -> StagedUpload:
     """Read the request body into `staging`/upload.part; raises `UploadRefused` (413 over the
-    limit, 400 for a bad name or form). The caller removes `staging` on every exit."""
-    reader = _Reader(staging, limit)
+    limit, 400 for a bad name or form). The caller removes `staging` on every exit. `vet` judges
+    the client's file name before a byte is stored (default: a recording or a zip, TI3); another
+    caller passes its own, e.g. the benchmark answer list accepts only `.json`."""
+    reader = _Reader(staging, limit, vet)
     parser = MultipartParser(_boundary(request), reader.callbacks())
     total = 0
     try:

@@ -1,0 +1,15 @@
+start pin 3f0ca7e45467 replaced 1
+valid-json-size 262144: status 400 body '{"detail":"not a valid atomic list (pad: Extra inputs are not permitted)"}' 0.03s; pin sha now 3f0ca7e45467 bytes 125
+valid-json-size 262145: status 413 body '{"detail":"That upload is larger than the 256 KiB limit the administrator set. Send a smal' 0.01s; pin sha now 3f0ca7e45467 bytes 125
+40MB: status 413 0.06s; pin sha 3f0ca7e45467
+name 'x.exe': 400 stored_changed=False
+name 'x.json.exe': 400 stored_changed=False
+name 'x': 400 stored_changed=False
+name 'x.JSON': 303 stored_changed=True
+name 'C:\\evil\\x.json': 303 stored_changed=False
+name '../../x.json': 303 stored_changed=False
+name 'x.json ': 400 stored_changed=False
+staging leftovers: []
+concurrent uploads statuses: [303] list matches pin: True all 12 hashes recorded (replaced+current): True replaced count 14 (prev 2 ) tmp leftovers: []
+keys on crawl page: ['56ed99ff37493102', 'a4e6f0a7af79d444']
+40 concurrent marks + 3 readers: statuses ["('GET', 200)", '303'] stored 40 of 40

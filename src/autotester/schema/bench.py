@@ -6,6 +6,7 @@ scorecard is computed from these records — never written by hand.
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -52,6 +53,32 @@ class Finding(BaseModel):
         description="where the finding came from: a FAIL verdict on a case, or a crawl issue "
         "(stages/crawl_findings.py), so a report can tell them apart",
     )
+    adjudication: Literal["real", "false_positive"] | None = Field(
+        default=None,
+        description="a person's ruling on an unmatched finding (stages/bench_marks.py); None "
+        "means unadjudicated: neither a true nor a false positive in `adjudicated_fp_rate`",
+    )
+
+
+class Mark(BaseModel):
+    """One person's ruling on one finding, keyed by the finding's stable key (no finding text)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    verdict: Literal["real", "false_positive"]
+    marked_by: str
+    marked_at: datetime
+
+
+class BenchMarks(Artifact):
+    """The adjudication marks for one corpus; overlaid on the AutoTester trial when scored.
+
+    Kept beside, not inside, the trial: `bench_from_run` replaces the trial on every
+    conversion, and a person's ruling must survive that. An absent key is unadjudicated."""
+
+    id: str
+    corpus_id: str
+    marks: dict[str, Mark] = Field(default_factory=dict)
 
 
 class BenchCorpus(Artifact):
@@ -148,6 +175,8 @@ class BenchTrial(Artifact):
         total_weight = sum(weights[b.severity] for b in seeded.values())
         found_weight = sum(weights[seeded[b].severity] for b in matched)
         reported = len(self.findings)
+        real = sum(1 for f in self.findings if f.adjudication == "real")
+        fp_marked = sum(1 for f in self.findings if f.adjudication == "false_positive")
         return {
             "detected": len(matched),
             "seeded": len(seeded),
@@ -157,6 +186,10 @@ class BenchTrial(Artifact):
             "false_positive_rate": len(false_positives) / reported if reported else None,
             "false_positive_rate_unavailable_reason": None if reported else "no reported findings",
             "false_positive_population": "all_reported_findings",
+            "adjudicated_real": real,
+            "adjudicated_false_positives": fp_marked,
+            "unadjudicated": sum(1 for f in false_positives if f.adjudication is None),
+            "adjudicated_fp_rate": fp_marked / (real + fp_marked) if real + fp_marked else None,
             "severity_weighted_recall": (
                 found_weight / total_weight if unavailable is None else None
             ),

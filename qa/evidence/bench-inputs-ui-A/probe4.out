@@ -1,0 +1,7 @@
+script tag raw in run page: False | escaped present: True
+raw <b>x</b> in crawl page: False | escaped: True
+crawl keys ['0fcd0ceaf367a234', 'a4e6f0a7af79d444'] run keys ['db620125c8ab40ee']
+marks file ['D:\\autoTesting\\.work\\tmp\\bi-A\\root\\projects\\demo\\bench\\demo-acceptance.marks.json'] statuses [303, 500]
+stored marks: 10 of 30 posted
+file head: {"schema_version": 1, "created_at": "2026-10-21T07:55:13.881828Z", "id": "demo-acceptance-marks", "corpus_id": "demo-acceptance", "marks": {"0000000000000009": {"verdict": "real", "marked_by": "editor@team.test", "marked_at": "2026-10-21T07:56:07.257315Z"}, "0000000000000002": {"verdict": "real", "marked_by": "editor@team.test", "marked_at": "2026-10-21T07:56:07.304135Z"}, "0000000000000003": {"ve
+contains finding text 'api/status' or 'boom': False

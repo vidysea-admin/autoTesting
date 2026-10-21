@@ -62,6 +62,9 @@ PAGE_STYLE = """
   .sidebar-link:hover { background: var(--neutral-bg); color: var(--text); }
   .sidebar-link.active { background: var(--accent-dim); color: var(--accent-hover);
                           font-weight: 600; }
+  .sidebar-sub { display: block; padding: .3rem .6rem .3rem 1.3rem; color: var(--text-dim);
+                  text-decoration: none; font-size: .8rem; }
+  .sidebar-sub:hover { color: var(--accent-hover); }
   .sidebar-empty { color: var(--muted); font-size: .84rem; margin: 0 0 1rem; }
   .sidebar-add { display: block; margin-top: 1rem; padding-top: 1rem;
                  border-top: 1px solid var(--border); color: var(--accent);

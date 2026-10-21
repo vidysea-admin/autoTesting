@@ -1,0 +1,11 @@
+round 0: acknowledged=4 stored=1 lost_acknowledged=3 errors=['PermissionError', 'PermissionError']
+round 1: acknowledged=10 stored=2 lost_acknowledged=8 errors=['PermissionError', 'PermissionError']
+round 2: acknowledged=3 stored=1 lost_acknowledged=2 errors=['PermissionError', 'PermissionError']
+round 3: acknowledged=5 stored=1 lost_acknowledged=4 errors=['PermissionError', 'PermissionError']
+round 4: acknowledged=7 stored=2 lost_acknowledged=5 errors=['PermissionError', 'PermissionError']
+round 5: acknowledged=5 stored=1 lost_acknowledged=4 errors=['PermissionError', 'PermissionError']
+round 6: acknowledged=4 stored=1 lost_acknowledged=3 errors=['PermissionError', 'PermissionError']
+round 7: acknowledged=5 stored=1 lost_acknowledged=4 errors=['PermissionError', 'PermissionError']
+round 8: acknowledged=4 stored=1 lost_acknowledged=3 errors=['PermissionError', 'PermissionError']
+round 9: acknowledged=6 stored=2 lost_acknowledged=4 errors=['PermissionError', 'PermissionError']
+rounds_with_lost_acknowledged_marks: 10 total_errors: 147

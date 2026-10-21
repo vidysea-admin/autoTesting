@@ -1,0 +1,5 @@
+phase1 writers: 60 status set [303, 500] acked 59 stored 59 acked-but-missing []
+verdict mismatches []
+phase2 undo: 30 status set [303] remaining 30 expected 30; cleared-keys-still-present [] kept-keys-missing []
+reader statuses Counter({200: 210})
+stray files in bench dir: []

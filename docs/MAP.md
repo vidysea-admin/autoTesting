@@ -265,6 +265,8 @@
 | `stages/authz_probe.py` | The bounded-probe session both authorisation oracles share: gate, budget, log (MP20, A5, MPI4). |
 | `stages/bench.py` | BENCH: the north star made measurable. Contract: qa/contracts/bench.md K1-K5. |
 | `stages/bench_from_run.py` | Turn a real project's executed+graded run into the T-136 bench files. Contract: bench.md K10. |
+| `stages/bench_inputs.py` | The private CEO-benchmark answer list: validate, store under `.work/`, pin its sha256 (T-218). |
+| `stages/bench_marks.py` | A person's real / false-positive rulings on AutoTester findings (T-136 marks, bench.md K9). |
 | `stages/browser_recovery.py` | Bounded recovery from a closed browser between serial cases (AT-888). |
 | `stages/browser_use_backend.py` | BROWSER_USE_BACKEND: browser-use (MIT) as the `ActuatorBackend` for unknown screens (T-177). |
 | `stages/bug_loop.py` | BUG LOOP: a tracked bug's lifecycle as one table and a fold over events (T-199a, TB1-TB4, TB6). |
@@ -419,6 +421,7 @@
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/auth_middleware.py` | The login gate (T-204, auth.md AU6/AU13/AU14/AU16/AU22): one ASGI middleware that |
 | `ui/auth_view.py` | Markup for the sign-in, sign-up and "waiting for an admin" pages (T-204). |
+| `ui/bench_inputs_view.py` | Markup for the benchmark-input controls: the real / false-positive marks on a finding list |
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
 | `ui/credential_guard.py` | Credential-guard helpers: refuse a real secret typed into any UI text field. |
@@ -436,6 +439,7 @@
 | `ui/routes_access_requests.py` | Share-link opening, request-access, and the approvers' list (T-198b / G9, TP3, TP5). |
 | `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |
 | `ui/routes_auth.py` | Sign in, sign up, sign out and the waiting page (T-204, auth.md AU2-AU7). |
+| `ui/routes_bench_inputs.py` | Benchmark inputs a person supplies through the product (T-136 marks, T-218 answer list). |
 | `ui/routes_cases.py` | Create, list, rename and delete a project's test cases from the UI. |
 | `ui/routes_catalog.py` | The test catalog page: one row per `CaseClass`, a green runnable count, and |
 | `ui/routes_crawl_approval.py` | The crawl-approval card on the credentials page (D-018 consent, gate 2). |
@@ -562,6 +566,8 @@
 | `Artifact` (`schema/base.py`) | Common envelope: versioned, timestamped, attributable. |
 | `SeededBug` (`schema/bench.py`) | A deliberately introduced defect with known ground truth. |
 | `Finding` (`schema/bench.py`) | One reported defect from a participant, matched against ground truth. |
+| `Mark` (`schema/bench.py`) | One person's ruling on one finding, keyed by the finding's stable key (no finding text). |
+| `BenchMarks` (`schema/bench.py`) | The adjudication marks for one corpus; overlaid on the AutoTester trial when scored. |
 | `BenchCorpus` (`schema/bench.py`) | A build with known seeded defects and the material pack given to testers. |
 | `BenchTrial` (`schema/bench.py`) | One participant's attempt on one corpus. |
 | `BadEventFile` (`schema/bug_run.py`) | An event file the store could not use. It is reported by name and never deleted (P4). |
@@ -586,6 +592,7 @@
 | `Technique` (`schema/ceo_inputs.py`) | The CEO's detection techniques (intent "Scoring"); the stage maps each to its owner unit. |
 | `AtomicFinding` (`schema/ceo_inputs.py`) | One atomic defect of the CEO list: identity and categories only, never its text. |
 | `AtomicList` (`schema/ceo_inputs.py`) | The split list. The file stays private under `.work/`; only its count and hash travel. |
+| `AtomicListPin` (`schema/ceo_inputs.py`) | The pin on the uploaded list file (T-218, MP30): its sha256 and counts, never its rows. |
 | `RunFinding` (`schema/ceo_inputs.py`) | One AutoTester finding, as matched to the list. `matched_atomic_id` is the one-to-one match. |
 | `ScenarioLabel` (`schema/ceo_inputs.py`) | Marks a scenario written from a specific finding; its matches leave recall (MP30). |
 | `OrderingRecord` (`schema/ceo_inputs.py`) | When the list's hash was committed against when the run started (T-136 gate, MP30). |

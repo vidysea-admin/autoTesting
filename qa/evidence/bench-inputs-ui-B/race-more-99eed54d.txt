@@ -1,0 +1,6 @@
+round 0: phase1 missing=0 wrong=0 | phase2 stored=60 expected=60 diff=0 errors=[]
+round 1: phase1 missing=0 wrong=0 | phase2 stored=60 expected=60 diff=0 errors=[]
+round 2: phase1 missing=0 wrong=0 | phase2 stored=60 expected=60 diff=0 errors=[]
+round 3: phase1 missing=0 wrong=0 | phase2 stored=60 expected=60 diff=0 errors=[]
+round 4: phase1 missing=0 wrong=0 | phase2 stored=60 expected=60 diff=0 errors=[]
+TOTAL discrepancies: 0 errors: 0

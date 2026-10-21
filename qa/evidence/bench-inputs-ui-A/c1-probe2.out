@@ -1,0 +1,50 @@
+== bad uploads (nothing may be stored)
+empty: 400  '{"detail":"That file is empty."}'
+not json: 400  '{"detail":"not a valid atomic list (file: Invalid JSON: expected value at line 1 column 1)"}'
+binary: 400  '{"detail":"not a valid atomic list (file: Invalid JSON: expected value at line 1 column 1)"}'
+html: 400  '{"detail":"not a valid atomic list (file: Invalid JSON: expected value at line 1 column 1)"}'
+array: 400  '{"detail":"not a valid atomic list (file: Input should be an object)"}'
+no items: 400  '{"detail":"not a valid atomic list (items: Field required)"}'
+extra key: 400  '{"detail":"not a valid atomic list (items.0.text: Extra inputs are not permitted)"}'
+dup ids: 400  '{"detail":"not a valid atomic list (file: Value error, duplicate atomic finding ids)"}'
+bad priority: 400  '{"detail":"not a valid atomic list (items.0.priority: Input should be \'P0\', \'P1\' or \'P2\')"}'
+deep nest: 413  '{"detail":"That upload is larger than the 256 KiB limit the administrator set. Send a smaller file, or ask for the limit to be raised."}'
+bigint: 400  '{"detail":"not a valid atomic list (file: Invalid JSON: number out of range at line 1 column 4318)"}'
+NaN: 400  '{"detail":"not a valid atomic list (items.0.needs_seeded_data: Input should be a valid boolean)"}'
+utf16 bom: 400  '{"detail":"not a valid atomic list (file: Invalid JSON: expected value at line 1 column 1)"}'
+exact cap+1: 413  '{"detail":"That upload is larger than the 256 KiB limit the administrator set. Send a smaller file, or ask for the limit to be raised."}'
+255KiB spaces valid json?: 400  '{"detail":"not a valid atomic list (items: List should have at least 1 item after validation, not 0)"}'
+id huge: 400  '{"detail":"not a valid atomic list (items.0.id: String should match pattern \'^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$\')"}'
+pin after bad uploads: []
+== missing / wrong field / traversal filename / multiple
+wrong field name: 303 /projects/demo/bench
+text field not file: 400  '{"detail":"That request is not a file upload form."}'
+no body: 400  '{"detail":"That request is not a file upload form."}'
+json body not multipart: 400  '{"detail":"That request is not a file upload form."}'
+== valid upload with hostile filename
+traversal filename: 303 /projects/demo/bench
+stored: ['D:\\autoTesting\\.work\\tmp\\bi-A1\\root\\.work\\ceo-bench\\demo', 'D:\\autoTesting\\.work\\tmp\\bi-A1\\root\\.work\\ceo-bench\\demo\\atomic-list.json', 'D:\\autoTesting\\.work\\tmp\\bi-A1\\root\\.work\\ceo-bench\\demo\\atomic-list.lock', 'D:\\autoTesting\\.work\\tmp\\bi-A1\\root\\.work\\ceo-bench\\demo\\atomic-list.pin.json']
+outside root evil.json exists? False False False
+pin {'sha256': '8caba871968f84b5af59c260a20459ed01fc80292e723a23d54745da8c43bef0', 'items': 2, 'bytes': 172, 'pinned_at': '2026-10-21T08:36:10.994803Z', 'pinned_by': 'editor@team.test', 'replaced_sha256': []}
+sha matches: True stored bytes equal: True
+== page / never served
+page shows sha: True | contains CEO-SECRET: False | contains 'atomic-list.json' href: False
+GET /.work/ceo-bench/demo/atomic-list.json 404 False
+GET /projects/demo/atomic-list.json 404 False
+GET /projects/demo/bench/atomic-list 405 False
+GET /projects/demo/bench/atomic-list.json 404 False
+GET /projects/demo/bench/list 404 False
+GET /static/../.work/ceo-bench/demo/atomic-list.json 404 False
+GET /static/..%2f.work/ceo-bench/demo/atomic-list.json 404 False
+GET /ceo-bench/demo/atomic-list.json 404 False
+GET /projects/demo/files/.work/ceo-bench/demo/atomic-list.json 404 False
+GET /projects/demo/bench/../../../.work/ceo-bench/demo/atomic-list.json 404 False
+GET on POST-only route: 405
+viewer page has secret: False
+== replace with different list -> replaced hash
+replace: 303 /projects/demo/bench
+replaced: True True
+same again: 303 /projects/demo/bench
+replaced after same: True
+tmp leftovers: []
+git-ignored .work: .gitignore:13:.work/	.work/ceo-bench/demo/atomic-list.json

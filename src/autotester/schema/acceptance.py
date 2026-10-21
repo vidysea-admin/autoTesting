@@ -60,6 +60,11 @@ class ParticipantColumn(BaseModel):
     duration_s: Measure
     false_positive_population: str = "all_reported_findings"
     denominator_population: str = "unknown"
+    # A person's rulings on unmatched findings (stages/bench_marks.py). With any ruling the
+    # false_positive_rate is over adjudicated findings only; unadjudicated ones are not counted.
+    adjudicated_real: int = 0
+    adjudicated_false_positives: int = 0
+    unadjudicated: int = 0
 
 
 class BugRow(BaseModel):

@@ -144,6 +144,9 @@ def _sidebar_html(active_slug: str | None) -> str:
             rows.append(
                 f"<a class='sidebar-link{cls}' href='/projects/{escape(slug)}'>{name}</a>"
             )
+            if cls:  # the open project's benchmark inputs (T-136 marks, T-218 answer list)
+                rows.append(f"<a class='sidebar-sub' href='/projects/{escape(slug)}/bench'>"
+                            "Benchmark inputs</a>")
         links = "".join(rows)
     add = ("<a class='sidebar-add' href='/onboard'>+ New project</a>"
            if may(PermissionKey.PROJECT_CREATE) else "")
