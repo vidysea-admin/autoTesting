@@ -418,6 +418,7 @@
 | `store/run_store.py` | Persistence for the advisory UX track: personas and one run's `UXReport` (T-190, PU1/PU2). |
 | `store/server_settings.py` | Read and write the admin's server settings; resolve what is in force right now. |
 | `store/team_store.py` | The sibling store for team data: markers, records, preferences, outboxes (T-205/TF7, R65). |
+| `ui/access_log_scrub.py` | Scrub the uvicorn access log of query strings and `/v/<token>` path tokens (AT-1390). |
 | `ui/admin_view.py` | Markup for the admin pages: accounts, groups and the permission checkboxes (AU8, AU10). |
 | `ui/app.py` | Thin FastAPI project-list, onboarding and live-view pages over project files. |
 | `ui/auth_middleware.py` | The login gate (T-204, auth.md AU6/AU13/AU14/AU16/AU22): one ASGI middleware that |

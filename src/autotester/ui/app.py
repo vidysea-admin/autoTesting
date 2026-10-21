@@ -32,6 +32,7 @@ from autotester.ui import (
     schedule_view,
     theme,
 )
+from autotester.ui.access_log_scrub import install_access_log_scrub
 from autotester.ui.auth_middleware import auth_middleware
 from autotester.ui.credential_guard import refuse_reserved_slug
 from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
@@ -66,6 +67,7 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
 # D-066 Origin guard first, then the T-204 login gate (auth.md AU18)
 app = FastAPI(title="AutoTester", lifespan=_lifespan,
               middleware=[*origin_guard_middleware(), *auth_middleware()])
+install_access_log_scrub()  # AT-1390 / AU22: no query string or /v/<token> in the access log
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
 routers.include_all(app)  # T-204/T-205 (TF3): the one router list lives in ui/routers.py
 
