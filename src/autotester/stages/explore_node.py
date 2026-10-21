@@ -136,7 +136,7 @@ def heartbeat(rt: ExploreRuntime) -> None:
         "edges": rt.edges, "denied": rt.denied, "issues": rt.issues,
         "tool_failures": rt.tool_failures,
     })
-    rt.store.save_crawl(rt.crawl)
+    persisted.save_crawl(rt, rt.crawl)
 
 
 def _perform(rt: ExploreRuntime, el: ElementRef) -> Action:
