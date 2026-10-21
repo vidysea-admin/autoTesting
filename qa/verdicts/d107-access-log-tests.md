@@ -1,22 +1,18 @@
 # Verdict - d107-access-log-tests (Tier L, protected test change, single checker, cycle 0)
-Verdict: PASS
+Verdict: FAIL
 Cycle checked: 0
-Policy: proportional-verification/2026-10-19.17. Bound to D:/autoTesting/.worktrees/int-1019. Unit diff: commit 07c05e7c (base b752af42..HEAD for the unit; product line docker/entrypoint.sh came from master 5976c832, accepted by D-107).
-Tier L only because an assertion was removed (protected test change); no product-code change in this unit, so one checker (no security behaviour change made here).
+Policy: proportional-verification/2026-10-19.17. Bound to D:/autoTesting/.worktrees/int-1019. Unit diff: commit 07c05e7c. Supersedes the first write of this cycle (renamed qa/verdicts/d107-access-log-tests.r0-1.md, which said PASS before the lint run below was done; its judgement and falsification evidence stand).
 
-## Judgement (read the diff in full)
-- tests/test_auth_deploy_files.py: exactly one assertion removed (`assert "--no-access-log" in commands[0]`). Kept: single logical launch line found, `len(commands) == 1`, `commands[0][:4] == ["uv","run","uvicorn","autotester.ui.app:app"]`. Test renamed `..._without_an_access_log` -> `..._once_under_the_supervisor` (no other file references the old name outside old evidence); module docstring and a D-107/AT-1390 comment updated.
-- tests/test_container_supervision.py: one line changed, `"--no-access-log" in entrypoint and "chown" not in entrypoint` -> `"chown" not in entrypoint`. The supervisor-exec assertion above it and the chown assertion are kept.
-- No threshold lowered, no skip/xfail, no conftest/fixture touched. Change matches D-107 (access log kept per master 5976c832; the two named tests updated; AU22 audit rules unchanged; residual AT-1390 open).
+## Finding (blocking, evidence-to-block: command I ran)
+`uv run ruff check src tests scripts` (qa/adapter.json:20 verify command) -> `E501 Line too long (139 > 100)` at tests/test_auth_deploy_files.py:2 (the rewritten module docstring, line-length = 100 at pyproject.toml:55). It is the only ruff error on the tree; b752af42 line 2 was 96 chars and clean. Introduced by 07c05e7c. A unit that turns the project's lint verify red is not PASS.
+Repair: wrap the module docstring in tests/test_auth_deploy_files.py to <= 100 chars per line (one-line fix, a repair checker re-runs `uv run ruff check src tests scripts` plus the 2 affected tests).
 
-## Falsification floor (copy, never the bound tree): .work/tmp/fals-d107 (git archive of HEAD)
-- Current tests on current entrypoint: 2 passed.
-- Old flag-requiring assertions put back (copy only): 2 failed (`assert '--no-access-log' in ...`), both against the HEAD entrypoint which has no flag.
-- Old assertions removed again (= HEAD tests): 2 passed (identical to the first run).
+## Everything else holds (unchanged from r0-1)
+- Only the two `--no-access-log` assertions were removed; every other assertion kept; matches D-107; no threshold, skip/xfail, conftest change.
+- Falsification floor (copy .work/tmp/fals-d107): new tests 2 passed on current entrypoint; old assertions restored -> 2 failed; removed again -> 2 passed.
+- Contract fold committed first: 6e4ebaa5 (AU22 + amendment log).
+- Incidental 6c-scoped evidence at HEAD 12913c9f (not a verdict): 19 files, 322 passed, 2 skipped, 1 failed = baseline red tests/test_hosting_deploy.py::test_no_secret_value_anywhere_under_docker_or_in_the_dockerfile (docker/__pycache__/supervise.cpython-311.pyc, qa/checkpoints/baseline-reds.md); collect-only 8904 tests, all import. Output: .work/tmp/6c-1021d-scoped.txt. Not stamped: per brief the chain stops at the first FAIL; re-run 6c after the repair.
 
-## Fold
-Step 1 contract fold committed first: 6e4ebaa5 (qa/contracts/auth.md AU22 sentence + amendment-log line; Re-derive line unchanged because it does not mention the access log flag).
+PROPOSED-ISSUE: none (AT-1390 already open).
 
-PROPOSED-ISSUE: none new (AT-1390 already open, medium security).
-
-Metrics: start=2026-10-21T18:14 end=2026-10-21T18:22 wall_min=8 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 check_s=unavailable mutants=0 defects_unit=0 defects_6c=0
+Metrics: start=2026-10-21T18:14 end=2026-10-21T18:34 wall_min=20 agent_min=unavailable blocked_min=0 suite_runs=0 repeat_runs=0 mutations=1 cycle=0 resumes=0 tokens=unavailable policy=proportional-verification/2026-10-19.17 check_s=unavailable mutants=0 defects_unit=1 defects_6c=0
