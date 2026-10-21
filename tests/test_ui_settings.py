@@ -86,3 +86,34 @@ def test_settings_link_is_reachable_from_the_shared_nav(
 ) -> None:
     response = client.get("/")
     assert "/settings/providers" in response.text
+
+
+def test_settings_page_lists_the_harness_login_keys_password_masked_and_never_prefilled(
+    client: TestClient, scratch_root: Path
+) -> None:
+    """T-169 C1: an admin enters the acceptance-script login on the settings page; the
+    password box is masked and write-only, so its stored value is in no page body."""
+    set_env_value(scratch_root / ".env", "AUTOTESTER_HARNESS_EMAIL", "tester@example.test")
+    set_env_value(scratch_root / ".env", "AUTOTESTER_HARNESS_PASSWORD", "hunter2-harness-pw")
+
+    page = client.get("/settings/providers").text
+
+    assert "AUTOTESTER_HARNESS_EMAIL" in page
+    assert "AUTOTESTER_HARNESS_PASSWORD" in page
+    assert "hunter2-harness-pw" not in page
+    assert "type='password' name='value' value=''" in page
+    assert "Value for AUTOTESTER_HARNESS_PASSWORD" in page
+
+
+def test_settings_submit_saves_the_harness_password_to_dotenv_and_never_echoes_it(
+    client: TestClient, scratch_root: Path
+) -> None:
+    response = client.post("/settings/providers", data={
+        "key": "AUTOTESTER_HARNESS_PASSWORD", "value": "hunter2-harness-pw"},
+        follow_redirects=False)
+
+    assert response.status_code == 303
+    assert "hunter2-harness-pw" not in response.text
+    written = parse_env((scratch_root / ".env").read_text(encoding="utf-8"))
+    assert written["AUTOTESTER_HARNESS_PASSWORD"] == "hunter2-harness-pw"
+    assert "hunter2-harness-pw" not in client.get("/settings/providers").text

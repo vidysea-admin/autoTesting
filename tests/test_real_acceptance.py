@@ -220,3 +220,70 @@ def test_script_verifies_with_the_key_only_in_dotenv(
     assert out.returncode == 0, out.stderr
     assert "crawl bounds: max_actions=150 wall_clock_s=1800.0" in out.stdout
     assert "cannot verify" not in out.stderr + out.stdout
+
+
+def _no_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    import getpass
+
+    def refuse(*_a: object, **_k: object) -> str:
+        raise AssertionError("the script prompted in a terminal")
+
+    monkeypatch.setattr("builtins.input", refuse)
+    monkeypatch.setattr(getpass, "getpass", refuse)
+
+
+@pytest.mark.parametrize("missing", [
+    ("AUTOTESTER_HARNESS_EMAIL",), ("AUTOTESTER_HARNESS_PASSWORD",),
+    ("AUTOTESTER_HARNESS_EMAIL", "AUTOTESTER_HARNESS_PASSWORD")])
+def test_script_exits_naming_the_missing_harness_key_and_the_settings_page(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str], missing: tuple[str, ...]) -> None:
+    import run_real_acceptance as driver
+    store = _two_rows(tmp_path, monkeypatch)
+    _no_prompt(monkeypatch)
+    values = {"AUTOTESTER_HARNESS_EMAIL": "tester@example.test",
+              "AUTOTESTER_HARNESS_PASSWORD": "pw-never-printed-123"}
+    for key, value in values.items():
+        if key in missing:
+            monkeypatch.delenv(key, raising=False)
+        else:
+            monkeypatch.setenv(key, value)
+
+    code = driver.main([store.paths.slug, "--mode", "url_only", "--root", str(tmp_path),
+                        "--wall-clock", "1800"])
+
+    err = capsys.readouterr()
+    assert code != 0
+    for key in missing:
+        assert key in err.err
+    assert "/settings/providers" in err.err
+    assert "pw-never-printed-123" not in err.out + err.err
+
+
+def test_script_signs_in_with_the_two_keys_without_prompting_or_printing_them(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str]) -> None:
+    import contextlib
+
+    import run_real_acceptance as driver
+    store = _two_rows(tmp_path, monkeypatch)
+    _no_prompt(monkeypatch)
+    monkeypatch.setenv("AUTOTESTER_HARNESS_EMAIL", "tester@example.test")
+    monkeypatch.setenv("AUTOTESTER_HARNESS_PASSWORD", "pw-never-printed-123")
+    seen: list[tuple[str, str, str]] = []
+
+    @contextlib.contextmanager
+    def fake_client(_app: object, email: str, password: str, slug: str):
+        seen.append((email, password, slug))
+        raise ValueError("stop after sign-in")
+        yield  # pragma: no cover
+
+    monkeypatch.setattr(driver, "acceptance_client", fake_client)
+
+    code = driver.main([store.paths.slug, "--mode", "url_only", "--root", str(tmp_path),
+                        "--wall-clock", "1800"])
+
+    out = capsys.readouterr()
+    assert code == 3
+    assert seen == [("tester@example.test", "pw-never-printed-123", store.paths.slug)]
+    assert "pw-never-printed-123" not in out.out + out.err

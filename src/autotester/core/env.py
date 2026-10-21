@@ -45,6 +45,9 @@ PROVIDER_KEYS = (
     "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY",
     "OLLAMA_BASE_URL", "OLLAMA_MODEL", "OLLAMA_API_KEY", "OPENAI_API_KEY",
 )
+# T-169: the AutoTester account the acceptance script signs in as (an admin enters it on the
+# settings page; the script reads it through `load_repo_env`). `AUTOTESTER_*`, so a server key.
+HARNESS_KEYS = ("AUTOTESTER_HARNESS_EMAIL", "AUTOTESTER_HARNESS_PASSWORD")
 SERVER_PREFIX = "AUTOTESTER_"
 
 
