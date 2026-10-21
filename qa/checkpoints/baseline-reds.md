@@ -50,3 +50,9 @@ All 14 baseline reds above were re-shown red on a real detached worktree of d252
 
 New pre-existing red, also red on origin/master ec151a35 (shown by the 6c run, qa/verdicts/integration-6c-int1019-redact.md):
 `tests/test_role_port_mail.py::test_w2_a_mail_that_arrived_is_observed_through_the_read_only_reader` (not caused by crawl-redact or env-input-mask; neither touches role mail).
+
+## Env note r9 (2026-10-21, 6c on int/1019 1b526bd6): WSL bash
+- When `bash` resolves to `C:\Windows\system32\bash.exe` (the WSL launcher, no /bin/bash), tests/test_backup_restore.py,
+  test_container_ci_workflow.py, test_container_entrypoint_behaviour.py, test_container_redaction.py,
+  test_container_writable_root.py and test_browser_use_pin_telemetry.py go red (66 failed, 57 errors). Environmental, not a defect.
+  Run 6c from a shell where `bash` is Git Bash (/usr/bin/bash): the seven files gave 141 passed, 3 skipped, 0 failed.
