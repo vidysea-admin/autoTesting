@@ -179,3 +179,53 @@ def test_g2_pass_is_held_when_a_dashboard_screenshot_is_withheld_for_mask_size(
     assert held.result is Result.INCONCLUSIVE
     assert (held.images_requested, held.images_seen) == (2, 0)
     assert "withheld or absent" in (held.note or "")
+
+
+# -- AT-1384: the per-project mask limit reaches grading ----------------------------------------
+
+def _dashboard_ocr(monkeypatch) -> None:
+    """One confident secret-looking line whose full-width band covers 0.8 of a 100x60 shot:
+    over the default 0.75 limit, under Pathlynks' 0.85."""
+    row = "5\t1\t1\t1\t1\t1\t10\t6\t30\t40\t99\thunterTwo\n"
+    monkeypatch.setattr(image_privacy, "_local_ocr", lambda _: HEADER + row)
+
+
+def _shots(tmp_path: Path) -> Path:
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    for name in ("01-a.png", "02-b.png"):
+        _shot(run_dir / name)
+    return run_dir
+
+
+def test_at1384_dashboard_over_default_limit_is_kept_under_the_project_limit(
+    tmp_path, monkeypatch,
+) -> None:
+    _dashboard_ocr(monkeypatch)
+    run_dir = _shots(tmp_path)
+    judge = MockProvider(responses={"judge": [_pass(), _pass()]})
+    default = grade(_rubric(), _result(MET), "run_1", judge, run_dir=run_dir)
+    assert default.result is Result.INCONCLUSIVE and default.images_seen == 0
+    kept = grade(_rubric(), _result(MET), "run_2", judge, run_dir=run_dir, mask_limit=0.85)
+    assert kept.result is Result.PASS and kept.images_seen == 2
+
+
+def test_at1384_project_limit_is_read_from_the_project_config(tmp_path) -> None:
+    from autotester.schema.project import Project
+    from autotester.stages.grade_images import project_mask_limit
+    from autotester.store.project_store import ProjectStore
+    store = ProjectStore("demo", tmp_path)
+    assert project_mask_limit(store) is None  # no config: the default limit applies
+    store.save_project(Project(slug="demo", name="Demo", base_url="https://demo.test/",
+                               allowed_domains=["demo.test"], image_mask_limit=0.85))
+    assert project_mask_limit(store) == 0.85
+
+
+def test_at1384_a_screenshot_above_the_project_limit_still_grades_inconclusive(
+    tmp_path, monkeypatch,
+) -> None:
+    row = "5\t1\t1\t1\t1\t1\t10\t2\t30\t52\t99\thunterTwo\n"  # band covers all 60 rows (1.0)
+    monkeypatch.setattr(image_privacy, "_local_ocr", lambda _: HEADER + row)
+    held = grade(_rubric(), _result(MET), "run_3", MockProvider(responses={"judge": [_pass()]}),
+                 run_dir=_shots(tmp_path), mask_limit=0.85)
+    assert held.result is Result.INCONCLUSIVE and held.images_seen == 0

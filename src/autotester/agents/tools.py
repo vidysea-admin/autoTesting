@@ -159,7 +159,8 @@ def _grade_case(ctx: AgentContext, args: GradeCaseArgs) -> ToolOutcome:
         raise _Refused(RefusalClass.NOTHING_TO_DO, "needs a stored case, its rubric and a result")
     verdict = grade.grade(rubric, result, ctx.run_id, ctx.judge, ctx.docs,
                           run_dir=ctx.store.paths.run_dir(ctx.run_id), secrets=ctx.secrets,
-                          redactor=ctx.secrets.redactor())
+                          redactor=ctx.secrets.redactor(),
+                          mask_limit=ctx.project.image_mask_limit)
     _withhold_if_credential(ctx, verdict)
     ctx.store.save_verdict(ctx.run_id, verdict)
     return ToolOutcome(tool="grade_case", ok=True, artifact_ref=f"verdict:{case.id}",

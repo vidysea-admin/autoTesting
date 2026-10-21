@@ -35,6 +35,7 @@
     "judge": "langchain-fallback"
   },
   "headed": true,
+  "image_mask_limit": 0.85,
   "description": "Vidysea's Pathlynks product, PRODUCTION environment (pathlynks.vidysea.com; D-088). Student/user role logs in at /signin. Exact-host secrets (D-087/AT-651). The prepod environment (dev-new.vidysea.com) is the separate project pathlynks-prepod.",
   "login_case_id": "case_cfa40e6b95c2"
 }

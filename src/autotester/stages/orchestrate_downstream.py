@@ -159,7 +159,7 @@ def make_grade_stage(project: Project, *, judge: Provider | None = None):
             try:
                 verdict = grade(rubric_for_case(cases[result.case_id], view), result,
                                 ctx.run_id, model, run_dir=ctx.store.paths.run_dir(ctx.run_id),
-                                secrets=ctx.secrets)
+                                secrets=ctx.secrets, mask_limit=project.image_mask_limit)
             except Exception as exc:
                 batch.grading_error = ctx.secrets.scrub_optional(f"{type(exc).__name__}: {exc}")
                 save_pipeline_batch(ctx, batch, "grading-progress")

@@ -192,3 +192,54 @@ def test_mostly_sensitive_screenshot_is_still_withheld(tmp_path, monkeypatch):
     monkeypatch.setattr(privacy, "_local_ocr", lambda _: tsv)
     with privacy.sanitized_images([path]) as batch:
         assert batch.paths == [] and batch.reasons == ["mask_exceeds_limit"]
+
+
+# --- AT-1384: the cumulative mask limit is per project (default unchanged) ---------------------
+
+def _pathlynks_limit() -> float:
+    import json
+    path = Path(__file__).resolve().parents[1] / "projects" / "pathlynks" / "project.json"
+    return json.loads(path.read_text(encoding="utf-8"))["image_mask_limit"]
+
+
+def _sanitize_dense(tmp_path, monkeypatch, lines: int, **kwargs):
+    tsv, tops = _dense_lines(lines)
+    path = tmp_path / "dashboard.png"
+    Image.new("RGB", DASHBOARD, "white").save(path)
+    monkeypatch.setattr(privacy, "_local_ocr", lambda _: tsv)
+    with privacy.sanitized_images([path], **kwargs) as batch:
+        masked = None
+        if batch.paths:
+            with Image.open(batch.paths[0]) as safe:
+                masked = [safe.getpixel((x, top + 10)) for top in tops for x in (0, 60, 1365)]
+        return batch.reasons, masked, _mask_fraction(tsv)
+
+
+def test_pathlynks_dense_dashboard_is_kept_at_its_project_limit_with_every_band_masked(
+    tmp_path, monkeypatch,
+) -> None:
+    limit = _pathlynks_limit()
+    reasons, masked, fraction = _sanitize_dense(tmp_path, monkeypatch, 24, mask_limit=limit)
+    assert privacy.MAX_MASK_FRACTION < fraction <= limit  # withheld by default, within Pathlynks'
+    assert reasons == [] and masked is not None
+    assert set(masked) == {(0, 0, 0)}  # the secret line, the low-confidence line, all the rest
+
+
+def test_the_default_limit_still_withholds_that_dashboard(tmp_path, monkeypatch) -> None:
+    reasons, masked, _ = _sanitize_dense(tmp_path, monkeypatch, 24)
+    assert reasons == ["mask_exceeds_limit"] and masked is None
+
+
+def test_a_mostly_sensitive_image_is_still_withheld_at_the_project_limit(
+    tmp_path, monkeypatch,
+) -> None:
+    reasons, masked, fraction = _sanitize_dense(tmp_path, monkeypatch, 26,
+                                                mask_limit=_pathlynks_limit())
+    assert fraction > _pathlynks_limit()
+    assert reasons == ["mask_exceeds_limit"] and masked is None
+
+
+@pytest.mark.parametrize("limit", [0, -0.1, 0.95, 1.0, float("nan")])
+def test_a_nonsense_mask_limit_fails_closed(tmp_path, monkeypatch, limit) -> None:
+    reasons, masked, _ = _sanitize_dense(tmp_path, monkeypatch, 5, mask_limit=limit)
+    assert reasons == ["invalid_mask_limit"] and masked is None

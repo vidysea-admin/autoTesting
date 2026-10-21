@@ -28,7 +28,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from autotester.core.paths import repo_root
-from autotester.schema.image_privacy import ImageSanitation
+from autotester.schema.image_privacy import (
+    CEILING_MASK_LIMIT,
+    DEFAULT_MASK_LIMIT,
+    ImageSanitation,
+)
 
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
 MAX_IMAGE_PIXELS = 16_000_000
@@ -38,7 +42,7 @@ MIN_CONFIDENCE = 85.0
 # Every recognized text line is masked across the FULL width, so this fraction is text density,
 # not leak risk. 0.6 withheld Pathlynks' post-login dashboard (1366x850, measured 0.621, T-136
 # run 5); 0.75 keeps such dense dashboards while a screen that is mostly text still withholds.
-MAX_MASK_FRACTION = 0.75
+MAX_MASK_FRACTION = DEFAULT_MASK_LIMIT  # a project may set its own, `Project.image_mask_limit`
 # Re-reads of the masked output (AT-1363): words still readable are masked, then read again.
 MAX_REOCR_PASSES = 3
 TESSERACT_ENV = "AUTOTESTER_TESSERACT"
@@ -145,30 +149,34 @@ def _leftover_boxes(tsv: str, image) -> list[Box]:
     return boxes + _line_bands(lines, image.size)
 
 
-def _check_mask_area(boxes: list[Box], size: tuple[int, int]) -> None:
+def _check_mask_area(boxes: list[Box], size: tuple[int, int], limit: float | None) -> None:
     from PIL import Image, ImageDraw
 
+    limit = MAX_MASK_FRACTION if limit is None else limit
+    if not 0 < limit <= CEILING_MASK_LIMIT:  # a nonsense limit fails closed, never open
+        raise ImagePrivacyError("invalid_mask_limit")
     area = Image.new("L", size, 0)
     drawing = ImageDraw.Draw(area)
     for box in boxes:
         drawing.rectangle(box, fill=255)
-    if area.histogram()[255] > MAX_MASK_FRACTION * size[0] * size[1]:
+    if area.histogram()[255] > limit * size[0] * size[1]:
         raise ImagePrivacyError("mask_exceeds_limit")
 
 
-def _mask(image, destination: Path, boxes: list[Box], applied: list[Box]) -> None:
+def _mask(image, destination: Path, boxes: list[Box], applied: list[Box],
+          limit: float | None) -> None:
     """Black out `boxes`; the cumulative mask over every pass must stay within the limit."""
     from PIL import ImageDraw
 
     applied.extend(boxes)
-    _check_mask_area(applied, image.size)
+    _check_mask_area(applied, image.size, limit)
     drawing = ImageDraw.Draw(image)
     for box in boxes:
         drawing.rectangle(box, fill="black")
     image.save(destination, format="PNG")
 
 
-def _sanitize_one(source: Path, destination: Path) -> None:
+def _sanitize_one(source: Path, destination: Path, limit: float | None = None) -> None:
     from PIL import Image
 
     if not source.is_file() or source.stat().st_size > MAX_IMAGE_BYTES:
@@ -182,12 +190,12 @@ def _sanitize_one(source: Path, destination: Path) -> None:
     # OCR and mask the SAME decoded snapshot, even if source changes concurrently.
     image.save(destination, format="PNG")
     applied: list[Box] = []
-    _mask(image, destination, _text_boxes(_local_ocr(destination), image.size), applied)
+    _mask(image, destination, _text_boxes(_local_ocr(destination), image.size), applied, limit)
     for _ in range(MAX_REOCR_PASSES):
         leftover = _leftover_boxes(_local_ocr(destination), image)
         if not leftover:
             return  # the sanitized pixels were read again and nothing readable is left
-        _mask(image, destination, leftover, applied)
+        _mask(image, destination, leftover, applied, limit)
     raise ImagePrivacyError("text_remains_after_mask")  # the last re-mask was never read back
 
 
@@ -203,22 +211,25 @@ def _safe_copy(path: Path) -> bool:
             and _digest(path) == expected)
 
 
-def _prepare_image(source: Path, target: Path) -> Path:
+def _prepare_image(source: Path, target: Path, limit: float | None = None) -> Path:
     if _safe_copy(source):
         return source
-    _sanitize_one(source, target)
+    _sanitize_one(source, target, limit)
     with _SAFE_LOCK:
         _SAFE_COPIES[target.resolve()] = _digest(target)
     return target
 
 
 @contextmanager
-def sanitized_images(paths: list[Path] | None) -> Iterator[ImageSanitation]:
+def sanitized_images(paths: list[Path] | None, *,
+                     mask_limit: float | None = None) -> Iterator[ImageSanitation]:
     """Temporary safe copies and value-free shortfall evidence; deleted after the call.
 
     All text bands are masked, including credentials/contact/configured fields, so no
     secret values need cross this interface. Missing dependencies and every sanitation
     failure withhold that image. Callers MUST expose incomplete evidence to the user.
+    `mask_limit` is the project's cumulative mask limit (None: the default); every detected
+    text band is masked either way, the limit only decides when a mostly-text image is withheld.
     """
     batch = ImageSanitation(requested=len(paths or []))
     with TemporaryDirectory(prefix="autotester-images-") as scratch:
@@ -226,7 +237,7 @@ def sanitized_images(paths: list[Path] | None) -> Iterator[ImageSanitation]:
             for index, source in enumerate(paths or []):
                 target = Path(scratch) / f"image-{index}.png"
                 try:
-                    batch.paths.append(_prepare_image(source, target))
+                    batch.paths.append(_prepare_image(source, target, mask_limit))
                 except Exception as exc:  # never echo paths, OCR or local-engine errors
                     reason = str(exc) if isinstance(exc, ImagePrivacyError) else "sanitation_failed"
                     batch.withheld += 1
