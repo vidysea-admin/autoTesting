@@ -2748,3 +2748,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Approved-by:** Umesh (maker session chat, 2026-10-21: "lets go with kartik way").
 
 **Links:** qa/gates/entrypoint-access-log.md; qa/verdicts/6c-1021c.md; qa/contracts/auth.md AU22; D-072
+
+## D-108 | 2026-10-21 | type: decision | status: ACTIVE
+
+**What:** Maker defaults for AT-1381, AT-1384, AT-1389, AT-1390. AT-1390: scrub uvicorn access-log query strings and /v/<token> in-app. AT-1381: fp_rate denominator = adjudicated findings, coverage shown, provisional until fully adjudicated. AT-1384: per-project mask limit, Pathlynks raised from measured fractions, secrets stay masked, mostly-sensitive images still withheld. AT-1389: doctor/settings report the count and key names of .env values containing ${, no expansion restored.
+
+**Why:** The north star needs honest recall/FP numbers on real post-login screens with no secret leak; each choice keeps the security control and removes a human hand-step. Umesh, chat 2026-10-21: "go with the best recommended way ahead as per the goal not as per the ease".
+
+**Result:** The four gates (entrypoint-access-log, at1381, at1384, at1389) are answered by these defaults; each becomes its own maker unit with a /checker verdict. Honest fp_rate and coverage are reported for T-136 and T-218; no secret is unmasked and no .env value is ever printed.
+
+**Approved-by:** Umesh (chat 2026-10-21; append run approved in chat 2026-10-22)
+
+**Links:** qa/gates/entrypoint-access-log.md, qa/gates/at1381-fp-denominator.md, qa/gates/at1384-mask-limit-band.md, qa/gates/at1389-env-dollar-check.md, T-136, T-218
+
+**Changes-authorized:** none of ARCHITECTURE.md prose or enforcement paths; product changes go through maker units with /checker verdicts.
