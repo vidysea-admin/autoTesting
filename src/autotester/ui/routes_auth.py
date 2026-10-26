@@ -12,9 +12,16 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 
 from autotester.auth import audit
 from autotester.auth.access import authorize
-from autotester.auth.accounts import AccountError, authenticate, normalize_email, signup
+from autotester.auth.accounts import (
+    AccountError,
+    authenticate,
+    claim_admin,
+    normalize_email,
+    signup,
+)
 from autotester.auth.config import cookie_secure
 from autotester.auth.context import current_principal
+from autotester.auth.db import LastAdmin
 from autotester.auth.passwords import WeakPassword
 from autotester.auth.ratelimit import login_limiter, signup_limiter
 from autotester.auth.sessions import create_session, end_session, session_hours
@@ -100,6 +107,22 @@ def auth_waiting() -> Response:
     if who is not None and who.permissions:
         return RedirectResponse("/", status_code=303)
     return HTMLResponse(auth_view.waiting_page(who.email if who else ""))
+
+
+@router.post("/auth/claim-admin")
+def auth_claim_admin() -> Response:
+    """D-109: a signed-in account takes the admin group while it has no member. The first claim
+    wins; a refused one changes nothing. Both are audited."""
+    who = current_principal()
+    if who is None or who.user_id is None:   # the gate already refused anonymous requests
+        return JSONResponse({"detail": "authentication required"}, status_code=401)
+    try:
+        claim_admin(who.user_id)
+    except (AccountError, LastAdmin) as exc:
+        audit.record_action(actor=who.email, target=who.email, action="admin.claim_refused")
+        return HTMLResponse(auth_view.waiting_page(who.email, str(exc)), status_code=403)
+    audit.record_action(actor=who.email, target=who.email, action="admin.claim")
+    return RedirectResponse("/", status_code=303)
 
 
 @router.get("/auth/check")
