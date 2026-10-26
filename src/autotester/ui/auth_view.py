@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from html import escape
 
+from autotester.auth.accounts import may_claim_admin
 from autotester.auth.passwords import MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH
 from autotester.ui import theme
 from autotester.ui.theme_style import PAGE_STYLE
@@ -79,13 +80,22 @@ def logout_form() -> str:
             "<button class='btn btn-sm' type='submit'>Sign out</button></form>")
 
 
-def waiting_page(email: str) -> str:
-    """AU6: what an account with no group sees. Names the role to ask; lists no users."""
+def waiting_page(email: str, notice: str = "", can_claim: bool | None = None) -> str:
+    """AU6: what an account with no group sees. Names the role to ask; lists no users.
+    D-109: while the admin group has no member (and this address may claim it) a Claim admin
+    button is shown; `can_claim` None looks that up for `email`."""
+    if can_claim is None:
+        can_claim = may_claim_admin(email)
+    note = f"<p role='alert'>{escape(notice)}</p>" if notice else ""
+    claim = ("<form method='post' action='/auth/claim-admin' style='margin-top:14px'>"
+             "<p>This server has no administrator yet. The first account to claim becomes "
+             "one.</p><button class='btn btn-primary' type='submit'>Claim admin</button>"
+             "</form>") if can_claim else ""
     body = theme.card(
-        f"<p>You are signed in as <strong>{escape(email)}</strong>, but your account has "
+        f"{note}<p>You are signed in as <strong>{escape(email)}</strong>, but your account has "
         "no access yet.</p><p>Ask an <strong>administrator</strong> to add you to a group. "
         "Your access starts on your next click after they do.</p>"
-        f"<p style='margin-top:14px'>{logout_form()}</p>",
+        f"{claim}<p style='margin-top:14px'>{logout_form()}</p>",
         title="Waiting for an administrator",
     )
     return auth_page("Waiting for access", body)

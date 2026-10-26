@@ -3,7 +3,8 @@
 A new account joins no group, so it holds zero permissions until an admin adds it to
 one (AU6). The first account becomes Admin/CEO atomically (AU7). Disable, delete and
 password reset end the account's sessions in the same transaction (AU3, AU8), and no
-change may leave the store without an enabled admin (AU9).
+change may leave the store without an enabled admin (AU9). While Admin/CEO has no member,
+a signed-in account may claim it, first claim wins (D-109).
 """
 
 from __future__ import annotations
@@ -57,10 +58,51 @@ def _becomes_first_admin(conn: sqlite3.Connection, address: str, secure_cookie: 
         if public_facing(secure_cookie):
             return False
         return conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
+    return address == wanted and not _has_admin_member(conn)
+
+
+def _has_admin_member(conn: sqlite3.Connection) -> bool:
+    """True when Admin/CEO exists and has at least one member (enabled or not)."""
     admin = db.admin_group_id(conn)
-    has_admin = admin is not None and conn.execute(
+    return admin is not None and conn.execute(
         "SELECT 1 FROM memberships WHERE group_id = ?", (admin,)).fetchone() is not None
-    return address == wanted and not has_admin
+
+
+def _claim_refusal(conn: sqlite3.Connection, user_id: int) -> str | None:
+    """Why this account may not claim Admin/CEO now (D-109), or None when it may."""
+    row = conn.execute("SELECT email, disabled FROM users WHERE id = ?", (user_id,)).fetchone()
+    if row is None or row["disabled"]:
+        return "this account cannot claim admin"
+    if db.admin_group_id(conn) is None:
+        return "the Admin/CEO group was deleted; restore it first"
+    if _has_admin_member(conn):
+        return "an administrator already exists"
+    wanted = first_admin_email()
+    if wanted and row["email"] != wanted:
+        return "only the configured first-admin address may claim admin"
+    return None
+
+
+def may_claim_admin(email: str) -> bool:
+    """D-109: whether the Claim admin button is shown to this signed-in address (a read;
+    `claim_admin` re-checks inside its own transaction)."""
+    with db.reading() as conn:
+        row = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+        return row is not None and _claim_refusal(conn, row["id"]) is None
+
+
+def claim_admin(user_id: int) -> User:
+    """D-109: while Admin/CEO has no member, put this account in it. One write transaction
+    re-checks emptiness and inserts, so two concurrent claims yield exactly one admin.
+    Raises AccountError (message safe to show) when refused."""
+    with db.transaction() as conn:
+        refusal = _claim_refusal(conn, user_id)
+        if refusal is not None:
+            raise AccountError(refusal)
+        conn.execute("INSERT INTO memberships (user_id, group_id) VALUES (?, ?)",
+                     (user_id, db.admin_group_id(conn)))
+        db.ensure_an_admin_remains(conn)
+        return _load(conn, user_id)
 
 
 def signup(email: str, password: str, secure_cookie: bool = False) -> User:

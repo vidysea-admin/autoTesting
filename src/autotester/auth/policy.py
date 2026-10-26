@@ -68,6 +68,7 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/healthz"): PUBLIC_RULE,
     # signed in, even with zero permissions (AU6)
     ("POST", "/auth/logout"): SESSION, ("GET", "/auth/waiting"): SESSION,
+    ("POST", "/auth/claim-admin"): SESSION,   # D-109: handler claims only while Admin/CEO is empty
     ("GET", "/profile"): SESSION, ("POST", "/profile"): MEMBER,
     ("GET", "/favicon.ico"): MEMBER,
     ("GET", "/"): MEMBER,
