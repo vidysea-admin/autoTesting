@@ -1,0 +1,18 @@
+{
+  "unit": "d109-claim-admin",
+  "coordinator": "b",
+  "date": "2026-10-26",
+  "browser": "playwright MCP (chromium), driven by the checker",
+  "server": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 39517 from the bound worktree; temp AUTOTESTER_ROOT under the checker scratchpad (real .auth untouched); AUTOTESTER_HOSTED=1, AUTOTESTER_COOKIE_SECURE=0, ALLOWED_HOSTS/ORIGINS = 127.0.0.1:39517, FIRST_ADMIN_EMAIL unset",
+  "steps": [
+    {"step": "sign up alice@checker.test in the browser form", "observed": "redirect to /auth/waiting (no group; hosted+unset: nobody auto-promoted)"},
+    {"step": "GET /auth/waiting as alice", "observed": "page text contains 'This server has no administrator yet. The first account to claim becomes one.' and 1 'Claim admin' button; form method=post action=/auth/claim-admin", "screenshot": "alice-waiting.png"},
+    {"step": "click Claim admin", "observed": "303 to /, title 'Projects - AutoTester', nav shows Users, Groups, Access requests; GET /admin/users -> 'Users - AutoTester' (200)", "screenshot": "alice-after-claim.png"},
+    {"step": "sign up bob@checker.test, GET /auth/waiting", "observed": "waiting page, 0 Claim admin buttons", "screenshot": "bob-waiting.png"},
+    {"step": "bob POST /auth/claim-admin (same-origin fetch)", "observed": "403, waiting page shows 'an administrator already exists'"},
+    {"step": "bob GET /admin/users", "observed": "403 waiting page, no access gained"}
+  ],
+  "audit_rows": ["signup", "admin.claim (alice)", "POST /auth/claim-admin 303", "signup", "admin.claim_refused (bob)", "POST /auth/claim-admin 403"],
+  "password_in_audit_log": false,
+  "console_errors": {"alice_flow": 0, "bob_flow": 2, "explanation": "both are the expected 403 responses of bob's refused claim and his /admin/users request"}
+}
