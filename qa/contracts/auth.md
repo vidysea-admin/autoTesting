@@ -108,7 +108,7 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   account. A new account has **no group**, and an authenticated user with an empty effective-permission set can reach only the
   "waiting for an admin" page and logout; every other route returns 403. That page says which role to ask (an administrator) and lists
   no users. `serves:` D-072#3, D-072#4. *Re-derive:* signup as user 2, request every non-public route from `app.routes`, assert 403.
-- **AU7 — First admin: a fixed email on a hosted server, first account only in local dev, atomically.** *(amended D-074, 2026-10-07)*
+- **AU7 — First admin: a fixed email on a hosted server, first account only in local dev, atomically; or a signed-in claim while no admin exists.** *(amended D-074, 2026-10-07; D-109, 2026-10-26)*
   "Hosted" is the AU17 test: `AUTOTESTER_HOSTED=1`, a non-loopback bind address, or a Secure session cookie in effect (AU3).
   - **Hosted, `AUTOTESTER_FIRST_ADMIN_EMAIL` set:** only the signup whose email (trimmed, lowercased, like every email, AU6) equals that
     value is placed in Admin/CEO, and only while Admin/CEO has no member. Every other signup gets no group, **including one that arrives
@@ -120,10 +120,22 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   - **Local development (loopback bind, not hosted):** unchanged: when the user store is empty the first signup is placed in Admin/CEO,
     two simultaneous first signups yield exactly one admin, and every later signup gets no group.
   - The warning and the CLI output never print a password or the email of any existing account other than the one just created.
-  `serves:` D-074(d), D-072#4. *Re-derive:* hosted + variable set: sign up another email first -> no group, then the named email ->
+  - **Claim admin (D-109, any server, hosted or local):** while Admin/CEO has no member, a signed-in account sees a "Claim admin" button on the
+    waiting page (AU6) and `POST /auth/claim-admin` adds that account to Admin/CEO. The first claim wins: one transaction re-checks that
+    Admin/CEO has no member and adds the claimer, so two simultaneous claims yield exactly one admin. Once Admin/CEO has any member the
+    button is not rendered and the route refuses with 403 and changes nothing. Every successful and every refused claim is written to the
+    audit log (AU22) with no password or session value. When `AUTOTESTER_FIRST_ADMIN_EMAIL` is set, only that address (trimmed,
+    lowercased) may claim; any other signed-in account is refused (403, audited). Nothing for the claim is read from `.env` beyond that
+    optional variable. The route is authenticated (not in AU16's public set) and passes the AU18 Origin guard. The CLI bootstrap path above
+    stays unchanged and works whether or not a claim has happened.
+  `serves:` D-074(d), D-109, D-072#4. *Re-derive:* hosted + variable set: sign up another email first -> no group, then the named email ->
   admin; hosted + unset: sign up first -> no group, startup log holds the warning, CLI creates an admin who can log in; local: the
   threaded double-signup test with a barrier. Mutations: treat hosted as local -> the hosted tests fail; grant admin to every signup ->
   fails; compare the email case-sensitively -> the case-variant test fails.
+  Claim admin: with no admin, sign in as user 2 and POST `/auth/claim-admin` -> admin and one audit line, the waiting page shows the button
+  beforehand; two threaded claims with a barrier -> exactly one admin and one refusal; with an admin present the button is absent and the POST is 403
+  (audited); with the variable set, another address -> 403, the named address -> admin. Mutations: skip the in-transaction re-check -> the
+  threaded test fails; drop the variable check -> the other-address test fails; omit the refusal audit line -> fails.
 - **AU8 — The admin can act on any account.** A holder of `users.manage` can list accounts, disable, enable, **delete**, reset a
   password (sets a new hash and revokes that user's sessions), change the display name, and add or remove group membership, for any
   account. A disabled or deleted user's next request fails and their login is refused with the AU2 text. Deleting a user keeps the audit
@@ -297,3 +309,5 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   "first account becomes admin"; both need the same wording and are left to the checker that owns those files.
 
 - 2026-10-21 (checker fold, inbox line 2026-10-21T18:09:50+05:30, D-107): **AU22** sentence "The uvicorn access log is disabled in `docker/entrypoint.sh`" amended: the access log stays on per D-107 (master 5976c832 removed `--no-access-log`); the `audit.jsonl` rules are unchanged; the residual (query strings and `/v/<token>` reaching the access log) is tracked by AT-1390 (open, medium, security). The Re-derive line is unchanged: it greps logs and the audit file for a canary, and does not mention the access log flag.
+
+- 2026-10-26 (checker fold, inbox line 2026-10-26, D-109, Approved-by Umesh): **AU7** amended: a signed-in account may claim admin while Admin/CEO has no member, on any server. The waiting page shows a "Claim admin" button, `POST /auth/claim-admin` adds the first claimer in one transaction that re-checks no admin exists, the button is hidden and the route refuses (403) once an admin exists, successful and refused claims are audited, and `AUTOTESTER_FIRST_ADMIN_EMAIL`, when set, limits the claim to that address. The hosted/unset CLI bootstrap and the local first-signup rule are unchanged. Accepted risk recorded in D-109: until someone claims, whoever reaches the public server first and signs in can take admin.
