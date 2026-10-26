@@ -1,0 +1,17 @@
+{
+  "unit": "d109-claim-admin", "date": "2026-10-26", "driver": "playwright MCP (checker's own browser)",
+  "server": "uvicorn autotester.ui.app:app --host 127.0.0.1 --port 18765, AUTOTESTER_HOSTED=1, temp AUTOTESTER_ROOT and AUTOTESTER_AUTH_DIR under scratchpad (real .auth untouched), FIRST_ADMIN_EMAIL unset",
+  "steps": [
+    {"do": "GET /auth/signup, sign up first@claimtest.example", "saw": "303 to /auth/waiting; page shows 'This server has no administrator yet...' and a 'Claim admin' button"},
+    {"do": "click Claim admin", "saw": "landed on / (Projects page), toolbar shows Groups link and signed-in email; fetch /admin/users 200"},
+    {"do": "sign out, sign up second@claimtest.example", "saw": "waiting page has only a Sign out button, no Claim admin text"},
+    {"do": "same-origin fetch POST /auth/claim-admin as second account", "saw": "403, body names 'an administrator already exists', no Claim admin in body; /admin/users 403"},
+    {"do": "curl POST /auth/claim-admin with no cookie", "saw": "401 (html and json accept)"}
+  ],
+  "console_errors_page_loads": 0,
+  "console_errors_total": 2,
+  "console_errors_note": "both are the expected 403 responses to my own probe fetches (claim-admin, admin/users) as the second account",
+  "db_after": {"memberships": [["first@claimtest.example", "Admin/CEO"]], "users": 2},
+  "audit_after": ["signup", "admin.claim (first)", "admin.claim_refused (second)", "request lines with status 303 / 403, no password field"],
+  "screenshot": "second-account-waiting.png"
+}
