@@ -75,4 +75,4 @@ Falsifications ran in a throwaway copy (`git archive HEAD src tests pyproject.to
 ## Live browser evidence
 SKIP — builder smoke only; checker Mode D validates
 
-## Status: ready-for-check
+## Status: checked-PASS (dual: qa/verdicts/d109-claim-admin.md PASS + qa/verdicts/d109-claim-admin.b.md PASS, cycle 0)
