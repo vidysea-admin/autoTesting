@@ -2762,3 +2762,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** qa/gates/entrypoint-access-log.md, qa/gates/at1381-fp-denominator.md, qa/gates/at1384-mask-limit-band.md, qa/gates/at1389-env-dollar-check.md, T-136, T-218
 
 **Changes-authorized:** none of ARCHITECTURE.md prose or enforcement paths; product changes go through maker units with /checker verdicts.
+
+## D-109 | 2026-10-26 | type: decision | status: ACTIVE
+
+**What:** **Amends D-074 (d) (partial): a signed-in account may claim admin while no admin exists.** On any server, hosted or local, while the Admin/CEO group has no member, the "Waiting for an administrator" page shows a **Claim admin** button to a signed-in account. The first claim wins: one transaction checks that Admin/CEO still has no member and adds the claimer, so two concurrent claims cannot both succeed. Once Admin/CEO has any member, the button is not shown and the claim route refuses. A successful or refused claim is written to the audit log. `AUTOTESTER_FIRST_ADMIN_EMAIL` keeps working: when it is set, only that address may claim. No password, email or admin flag is read from `.env` for the claim. The rest of D-074 ((a), (b), (c), (e)) stays in force; this is an amendment, not a Supersedes, because `append_decision.ps1` computes a supersede as total.
+
+**Why:** The hosted server at 34.47.136.12 has an account (`umesh@gmail.com`) stuck on the waiting page. Umesh cannot run a shell on that server (`autotester auth bootstrap-admin` is not reachable) and does not want the first admin to come from `.env`. Without a shell, an existing admin or `.env`, no path can create the first admin. The claim button is the only path left that keeps the admin record in the auth DB. Accepted risk, stated to Umesh in chat before he chose it: until someone claims, whoever reaches the public server first and signs in can take admin. D-074 (d) avoided this race with a fixed email. Umesh accepts it for an internal tool and will claim right after the deploy.
+
+**Result:** One maker unit changes `src/autotester/auth/` (the claim, inside the existing transaction and last-admin helpers), `src/autotester/ui/routes_auth.py` and `src/autotester/ui/auth_view.py` (button and POST route), `src/autotester/auth/policy.py` (one policy row for the new route), with tests first. The checker amends `qa/contracts/auth.md` AU7 to match. The unit closes on a /checker PASS.
+
+**Approved-by:** Umesh (chat 2026-10-26: "1 claim")
+
+**Links:** D-074, D-072, T-204, qa/contracts/auth.md AU7
+
+**Changes-authorized:** `src/autotester/auth/`, `src/autotester/ui/routes_auth.py`, `src/autotester/ui/auth_view.py`, `src/autotester/auth/policy.py` and their tests; `qa/contracts/auth.md` AU7 (checker only). No ARCHITECTURE.md prose and no enforcement path.
