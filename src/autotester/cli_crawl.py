@@ -17,15 +17,9 @@ from autotester.store.project_store import ProjectStore
 
 
 def _preflight_consent(proj: Any, store_: ProjectStore, bounds: Any) -> None:
-    """D-018, checked before ANY directory is created and before the browser
-    starts — `run_crawl` checks again at the seam, so this is additional.
-
-    AT-111: with the check only at the seam, a refused run still left
-    `crawl/<id>/shots/` and a populated Chromium profile behind, because
-    `BrowserSession.start()` runs inside the `with` that wraps `run_crawl`.
-    Even `paths.ensure()` alone leaves an empty profile dir — harmless, but
-    "a refused run leaves no trace" has to mean what it says.
-    """
+    """D-018, checked before ANY directory is created and before the browser starts --
+    `run_crawl` checks again at the seam. AT-111: checking only there left
+    `crawl/<id>/shots/` and a Chromium profile behind, so a refused run left a trace."""
     from autotester.core.consent import ApprovalRequired
     from autotester.schema.crawl import SafetyPolicy
     from autotester.stages import explore_consent
@@ -149,8 +143,7 @@ def _end_of_day(day: date) -> datetime:
 
 def _validate_grant(expires: str, target: str, proj: Any) -> None:
     """Refuse a grant that can never cover anything, and flag a likely typo (AT-145):
-    a green "granted" line for consent that will refuse every run trains operators
-    to stop reading it."""
+    a green "granted" for consent that refuses every run trains operators to stop reading."""
     try:
         expiry = date.fromisoformat(expires)
     except ValueError:
@@ -158,10 +151,8 @@ def _validate_grant(expires: str, target: str, proj: Any) -> None:
         raise typer.Exit(1) from None
     today = _local_now().date()
     if expiry < today:
-        # CN4 (at147 answered C, D-048): a date means THROUGH THE END of that
-        # day for grants minted from 2026-09-26 on; a bare row already on disk
-        # keeps its old start-of-day meaning (option B, retroactive widening,
-        # was declined). AT-150/AT-151: name a usable date on every arm -- TODAY.
+        # CN4 (D-048): a date means THROUGH THE END of that day for new grants.
+        # AT-150/AT-151: name a usable date on every arm -- TODAY.
         usable = today.isoformat()
         typer.secho(
             f"--expires {expires} is already in the past; this grant would "
@@ -171,15 +162,31 @@ def _validate_grant(expires: str, target: str, proj: Any) -> None:
     _warn_on_target_mismatch(target, proj)
 
 
-def _caps_or_refuse(actions: int, wall_clock: float, expires_at: str) -> None:
-    """The shared grant caps (core.consent.validate_grant_bounds); exit 1 over a cap."""
+def _caps_or_refuse(actions: int, wall_clock: float, expires_at: str | None, kind: Any) -> None:
+    """The shared grant caps (core.consent.validate_grant_bounds); exit 1 over a cap.
+    `expires_at=None` is a standing grant (D-111), allowed for a crawl approval only."""
     from autotester.core.consent import validate_grant_bounds
 
     try:
-        validate_grant_bounds(actions, wall_clock, datetime.fromisoformat(expires_at))
+        validate_grant_bounds(actions, wall_clock, None if expires_at is None
+                              else datetime.fromisoformat(expires_at), kind=kind)
     except ValueError as exc:
         typer.secho(str(exc), fg=typer.colors.RED)
         raise typer.Exit(1) from None
+
+
+def _grant_expiry(expires: str | None, standing: bool, target: str, proj: Any) -> str | None:
+    """A NEW grant's `expires_at`: a dated end-of-day (CN4), or None for `--standing`
+    (D-111, valid until revoked). Exactly one of the two is required."""
+    if standing == (expires is not None):
+        typer.secho("give either --expires YYYY-MM-DD or --standing (valid until revoked), "
+                    "not both and not neither", fg=typer.colors.RED)
+        raise typer.Exit(1)
+    if expires is None:
+        _warn_on_target_mismatch(target, proj)
+        return None
+    _validate_grant(expires, target, proj)
+    return _end_of_day(date.fromisoformat(expires)).isoformat()
 
 
 def _is_under(path: str, base: str) -> bool:
@@ -193,16 +200,9 @@ def _is_under(path: str, base: str) -> bool:
 
 
 def _warn_on_target_mismatch(target: str, proj: Any) -> None:
-    """Flag a target this project will never ask about (AT-145/AT-148).
-
-    Not a refusal: an endpoint under test may legitimately differ from
-    `base_url`, and CN5 matches exactly at consent time regardless. But say it
-    at grant time rather than leaving the operator to discover it at a refusal.
-
-    AT-148: the first version used `target.startswith(base_url)`, which is
-    silent on `https://demo.test.evil.com/` — a naive URL prefix match reads a
-    lookalike host as a match. Host equality first, then the path prefix.
-    """
+    """Flag (not refuse) a target this project will never ask about (AT-145): CN5 matches
+    exactly at consent time, so say it at grant time. AT-148: host equality first, then
+    the path prefix -- a naive `startswith` reads `demo.test.evil.com` as a match."""
     from urllib.parse import urlparse
 
     if proj is None or not proj.base_url or "://" not in target:   # a provider id is no URL
@@ -234,18 +234,17 @@ def approve_cmd(
     target: str = typer.Option(..., "--target", help="the exact base_url or endpoint"),
     scope: str = typer.Option(..., "--scope", help="what this run may touch, in your words"),
     granted_by: str = typer.Option(..., "--granted-by"),
-    expires: str = typer.Option(..., "--expires", help="YYYY-MM-DD; consent is never open-ended"),
+    expires: str | None = typer.Option(None, "--expires", help="YYYY-MM-DD, through that day"),
+    standing: bool = typer.Option(False, "--standing", help="crawl only: valid until revoked "
+                                  "(autotester revoke); each run is still capped (D-111)"),
     max_actions: int = typer.Option(200, "--max-actions", min=1),
     max_probes: int = typer.Option(200, "--max-probes", min=1),
     wall_clock: float = typer.Option(600.0, "--wall-clock", help="seconds", min=0.001),
-    production: bool = typer.Option(
-        False, "--production", help="required for an adversarial run against production"
-    ),
+    production: bool = typer.Option(False, "--production", help="adversarial run on production"),
 ) -> None:
-    """Grant a human's approval for one kind of run against one target (D-018).
-    HMAC-signed with the repo-root approval key: protects against row tampering,
-    not a party capable of rewriting the checker itself (AT-110).
-    """
+    """Grant a human's approval for one kind of run against one target (D-018). HMAC-signed
+    with the repo-root approval key: protects against row tampering, not a party able to
+    rewrite the checker itself (AT-110)."""
     from autotester.schema.approval import RunApproval
     from autotester.schema.enums import ApprovalKind
 
@@ -262,20 +261,20 @@ def approve_cmd(
         allowed = ", ".join(k.value for k in ApprovalKind)
         typer.secho(f"--kind must be one of: {allowed}", fg=typer.colors.RED)
         raise typer.Exit(1) from None
-    _validate_grant(expires, target, store_.load_project())
-    # CN4: only NEW rows get an offset-aware end-of-day expiry (D-048).
-    expires_at = _end_of_day(date.fromisoformat(expires)).isoformat()
-    _caps_or_refuse(max_actions, wall_clock, expires_at)
+    # CN4: only NEW rows get an offset-aware end-of-day expiry (D-048); D-111: or none.
+    expires_at = _grant_expiry(expires, standing, target, store_.load_project())
+    _caps_or_refuse(max_actions, wall_clock, expires_at, run_kind)
     candidate = RunApproval(
         project=project, run_kind=run_kind, target=target, scope=scope,
         max_actions=max_actions, max_probes=max_probes, wall_clock_s=wall_clock,
         production=production, granted_by=granted_by,
-        granted_at=date.today().isoformat(), expires_at=expires_at,
+        granted_at=date.today().isoformat(), expires_at=expires_at, standing=standing,
     )
     _signed_or_refuse(candidate)
     approval = store_.add_approval(candidate)
     typer.secho(
-        f"{approval.id}: {run_kind.value} on {target} until {expires_at} "
+        f"{approval.id}: {run_kind.value} on {target} "
+        f"{'STANDING, until revoked' if standing else f'until {expires_at}'} "
         f"(actions<={max_actions}, probes<={max_probes})",
         fg=typer.colors.GREEN,
     )

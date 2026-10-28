@@ -62,8 +62,32 @@ past it". CN1-CN10 retain their fail-closed obligations.
 - **Verify:** edit `max_actions` on a real `approvals.jsonl` row → refused with "edited after it was
   granted"; the recomputed-id variant is a **known, documented** acceptance until AT-110 is decided.
 
-### CN4 — Consent is never open-ended
-- `expires_at` is required. An unparseable expiry is treated as **expired**, never as eternal.
+### CN4 — Consent is never open-ended, except a signed STANDING crawl grant (D-111)
+- `expires_at` is required **unless the row is a standing grant** (below). An unparseable expiry is
+  treated as **expired**, never as eternal, and so is any row with no expiry that is not standing.
+- **Standing grant (D-111, amends D-018, Umesh 2026-10-28).** A `RunApproval` may carry
+  `standing=True` and `expires_at=None` ONLY for `run_kind` crawl (explore runs under the crawl
+  approval). It is valid until a signed `ApprovalRevocation` names it (`autotester revoke`, or Revoke
+  on the credentials page). It is not "no consent": everything else in CN1-CN11 binds it unchanged:
+  HMAC-signed and content-addressed with `standing` inside the bound payload (only when true, so
+  every dated row keeps its id and signature), exact target (CN5), `production: true` for a
+  production target, and every RUN capped by the grant's `max_actions` / `max_probes` /
+  `wall_clock_s` (the 2000-action and 24h per-run caps stay).
+  - **Never standing:** adversarial (it fires hostile input and keeps a required expiry), `read`,
+    `live_case`, `video_review`. A no-expiry row of any of those, or a crawl row with no expiry
+    that is not `standing=True`, is **expired**, never eternal. `validate_grant_bounds(None, ...)`
+    without an eligible `kind` raises (fail closed when the kind is unstated), and the CLI and the
+    UI grant refuse to mint one.
+  - A DATED grant is still capped at `MAX_GRANT_DAYS` (30). That ceiling does not apply to a standing
+    grant; the per-run caps do.
+  - `approve` requires exactly one of `--expires <date>` or `--standing`. The grant form offers
+    "Standing, until revoked", and the approvals-in-force list shows a standing grant plainly and
+    offers Revoke on every row (a signed-in person only, never an API token).
+  - **Verify:** `tests/test_standing_approval.py` and `tests/test_standing_approval_grant.py`:
+    a standing crawl row passes at any `now`; a standing adversarial/live_case/read/video_review row
+    is refused; flipping `standing` on a signed dated row, or dropping it / adding an expiry on a
+    standing row, is refused; a signed revocation ends it; an unsigned or forged revocation does not
+    (`tests/test_approval_revoke.py`). Each is red with the check reverted (C7).
 - **A date given at the grant means through the END of that day, for grants minted from
   2026-09-26 on** (at147 answered C, D-048).
   - `approve --expires <date>` stores an explicit, **offset-aware** end-of-day timestamp in the
@@ -414,3 +438,11 @@ past it". CN1-CN10 retain their fail-closed obligations.
   `review-gate.md` R5:** it said "Human FlowSpec review ... remain[s] applicable", which contradicted D-070
   item 2 (the DRAFT review gate is a status only). Reworded so the three contracts agree. No consent,
   approval, budget or write-policy criterion changed. **Links:** D-070; `review-gate.md` R5.
+
+- 2026-10-28 · owner-authorized (D-111; Umesh: "yes it should not expire, i admin will disable it") ·
+  **CN4 amended:** "Consent is never open-ended" now admits ONE exception, a signed STANDING crawl
+  grant (valid until revoked), and keeps every other bound (signature, exact target, production flag,
+  per-run caps, revocation). Adversarial and every non-crawl kind still need a date. This weakens the
+  old "expiry is required" wording for crawl only, by an explicit owner decision; nothing already on
+  disk changes (dated rows keep their id and signature). **Changes-authorized:** qa/contracts/consent.md
+  CN4 + this log. **Links:** D-018, D-111; unit d111-standing-approval.

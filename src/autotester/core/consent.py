@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 
 from autotester.browser.secrets import SecretStore, _host_matches, host_of
 from autotester.core.ids import SigningKeyMissing
-from autotester.schema.approval import RunApproval
+from autotester.schema.approval import STANDING_KINDS, RunApproval
 from autotester.schema.approval_revocation import ApprovalRevocation, revoked_ids
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
@@ -44,17 +44,25 @@ MAX_GRANT_PROBES = MAX_GRANT_ACTIONS * PROBES_PER_ACTION  # the UI form's cap (A
 
 
 def validate_grant_bounds(
-    actions: int, wall_clock_s: float, expires_at: datetime, now: datetime | None = None,
+    actions: int, wall_clock_s: float, expires_at: datetime | None,
+    now: datetime | None = None, *, kind: ApprovalKind | None = None,
 ) -> None:
     """The ONE cap on a NEW human grant, shared by the UI route and the CLI `approve`:
     at most 2000 actions, 24h wall clock, 30 days to expiry. Raises ValueError naming the
-    limit. Grant time only; rows already on disk are never re-judged."""
+    limit. Grant time only; rows already on disk are never re-judged.
+
+    D-111: `expires_at=None` is a STANDING grant. It skips only the 30-day ceiling (the
+    per-run caps still apply) and only for a `kind` in `STANDING_KINDS`; an unstated or
+    other kind is refused, so adversarial always needs a date."""
+    if expires_at is None and kind not in STANDING_KINDS:
+        raise ValueError("only a crawl approval may be standing; this kind needs an expiry")
     if actions > MAX_GRANT_ACTIONS:
         raise ValueError(f"max actions {actions} exceeds the limit of {MAX_GRANT_ACTIONS}")
     if wall_clock_s > MAX_GRANT_WALL_CLOCK_S:
         raise ValueError(f"wall clock {wall_clock_s:g}s exceeds the limit of "
                          f"{MAX_GRANT_WALL_CLOCK_S:g}s (24h)")
-    if expires_at > (now or datetime.now(UTC)) + timedelta(days=MAX_GRANT_DAYS):
+    if expires_at is not None and expires_at > (now or datetime.now(UTC)) + timedelta(
+            days=MAX_GRANT_DAYS):
         raise ValueError(f"expiry is more than {MAX_GRANT_DAYS} days away")
 
 
@@ -145,7 +153,8 @@ def _grant_command(
         f"uv run autotester approve {project} --kind {kind.value}",
         f'--target "{target}"',
         '--scope "<what this run may touch>"',
-        "--granted-by <name> --expires <YYYY-MM-DD>",
+        "--granted-by <name> --expires <YYYY-MM-DD>"
+        + (" (or --standing, until revoked)" if kind in STANDING_KINDS else ""),
     ]
     if actions:
         parts.append(f"--max-actions {actions}")
@@ -192,6 +201,9 @@ def _reject_reason(
             )
         return f"{approval.id}: signature does not verify — the row was edited or forged"
     if approval.is_expired(now):
+        if approval.expires_at is None:  # D-111: standing is for crawl only
+            return (f"{approval.id}: has no expiry and is not a standing crawl approval -- "
+                    "only a crawl approval may be standing (adversarial needs an expiry)")
         return f"{approval.id}: expired {approval.expires_at}"
     if production and not approval.production:
         return f"{approval.id}: target is production and the approval does not say production"
