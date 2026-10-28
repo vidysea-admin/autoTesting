@@ -1,6 +1,6 @@
 # Manifest - consent-followups
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Security trigger:** YES - consent gate (D-018 / D-111) and the credential redactor path (C5). **Dual check recommended (A+B).**
 **Issues addressed:** `.work/inbox-1028.md` lines 1-7 (hint shows `[REDACTED]:KEY`; probe estimate under-counts; first-match approval binding) and D-111 checker-B N1 / N2.
