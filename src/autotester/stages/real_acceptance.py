@@ -51,7 +51,8 @@ def required_kinds(mode: Mode) -> list[ApprovalKind]:
 
 
 def _newest_first(rows: list[RunApproval]) -> list[RunApproval]:
-    """`require_approval` returns the first covering row, so order decides: newest grant wins."""
+    """Newest grant first. `require_approval` no longer takes the first covering row: it returns
+    the human-granted, then widest, covering row (ties keep this order, so newest wins a tie)."""
     return sorted(rows, key=lambda r: r.granted_at, reverse=True)
 
 

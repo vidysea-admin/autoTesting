@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+from urllib.parse import urlsplit
 
 from autotester.core.exit_codes import ExitCode
+from autotester.core.redact import scrub_url_credentials
 from autotester.core.safe_names import SLUG_PATTERN
 from autotester.providers.base import ProviderError
 from autotester.schema.case import Case
@@ -34,6 +36,14 @@ _STATUS = {ExitCode.OK: "passed", ExitCode.TEST_FAILED: "failed", ExitCode.USAGE
 _INLINE_KINDS = {EvidenceKind.URL, EvidenceKind.DOM}   # `path` holds the value, not a file
 
 
+def _pasteable(url: str) -> frozenset[str]:
+    """The base_url may stay readable only when it is credential-free: no userinfo, query or
+    fragment, and nothing `scrub_url_credentials` would change. Else it stays masked (C5)."""
+    parts = urlsplit(url)
+    clean = "@" not in parts.netloc and not parts.query and not parts.fragment
+    return frozenset({url}) if clean and scrub_url_credentials(url) == url else frozenset()
+
+
 def _report(store: ProjectStore | None, project: str, code: ExitCode, **fields) -> RegressionReport:
     """Build and scrub: every string passes the project's `Redactor` before it leaves (C5)."""
     report = RegressionReport(project=project, exit_code=int(code),
@@ -42,8 +52,9 @@ def _report(store: ProjectStore | None, project: str, code: ExitCode, **fields) 
         return report
     scrubbed = _load_redactor(store).scrub_obj(report.model_dump(mode="json"))
     if report.message:  # the grant hint's --target is the project's own stored base_url (already
-        # plain in project.json): keep it pasteable even when it equals a .env login URL
-        scrubbed["message"] = _load_redactor(store, frozenset({proj.base_url})).scrub(
+        # plain in project.json): keep it pasteable even when it equals a .env login URL, but
+        # only if that URL carries no credential (userinfo/query/fragment): checker B B1
+        scrubbed["message"] = _load_redactor(store, _pasteable(proj.base_url)).scrub(
             report.message)
     return RegressionReport.model_validate(scrubbed)
 

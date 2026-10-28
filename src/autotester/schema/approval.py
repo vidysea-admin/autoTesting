@@ -82,7 +82,7 @@ class RunApproval(Artifact):
                     "is the field where the old truthiness guard was live on disk.",
     )
     wall_clock_s: float = Field(
-        default=0.0,
+        default=0.0, allow_inf_nan=False,
         description="how many seconds this run may take in total. ZERO MEANS ZERO, as above: an "
                     "approval granting 0 seconds authorises no time. Present-and-non-zero is not "
                     "the same as plausible — the live pathlynks row grants 600000000.0s (19 "

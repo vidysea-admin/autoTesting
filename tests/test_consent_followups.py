@@ -89,6 +89,25 @@ def test_the_grant_hint_target_survives_the_report_scrub_when_it_is_an_env_value
     assert "hunter2-real-secret" not in out and "[REDACTED]:DEMO_PASSWORD" in out
 
 
+@pytest.mark.parametrize("base", [
+    "https://demo.test/login?token=abc123XYZ",
+    "https://bob:s3cretPW@demo.test/login",
+    "https://demo.test/login#access_token=abc123XYZ",
+    "https://demo.test/login?next=%2Fhome",
+])
+def test_a_base_url_that_could_carry_a_credential_stays_masked_when_it_is_an_env_value(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, base: str,
+) -> None:
+    """B1: the hint exemption applies only to a credential-free URL (no userinfo/query/fragment)."""
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    s = ProjectStore("demo", tmp_path)
+    s.save_project(Project(slug="demo", name="Demo", base_url=base, allowed_domains=["demo.test"]))
+    (s.paths.root / ".env").write_text(f"DEMO_MAGIC_URL={base}\n", encoding="utf-8")
+    out = _report(s, "demo", ExitCode.REFUSED, message=f'--target "{base}"').message
+    assert out is not None and out == '--target "[REDACTED]:DEMO_MAGIC_URL"'
+    assert "abc123XYZ" not in out and "s3cretPW" not in out
+
+
 def test_a_secret_that_is_not_the_target_stays_masked_everywhere_else(store: ProjectStore) -> None:
     (store.paths.root / ".env").write_text(f"DEMO_LOGIN_URL={URL}\nDEMO_TOKEN=tok-9f8e7d6c\n",
                                            encoding="utf-8")
@@ -196,3 +215,29 @@ def test_ui_standing_is_not_on_for_any_other_non_empty_value(
     out = TestClient(ui_app).post("/projects/demo/crawl-approval", data={**FORM, "standing": value})
     assert out.status_code == 400
     assert store.list_approvals() == []
+
+
+# -- cycle 1: explicit production flag and finite bounds ------------------------------------
+
+@pytest.mark.parametrize("value, production", [
+    ("1", True), ("on", True), (" ON ", True), ("0", False), ("false", False), ("off", False),
+    ("no", False), ("x", False), ("", False),
+])
+def test_ui_production_is_on_only_for_an_explicit_one_or_on(
+    store: ProjectStore, value: str, production: bool,
+) -> None:
+    data = {**FORM, "standing": "1", "production": value}
+    out = TestClient(ui_app).post("/projects/demo/crawl-approval", data=data)
+    assert out.status_code in (200, 303)
+    assert [r.production for r in store.list_approvals()] == [production]
+
+
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf")])
+def test_an_approval_with_a_non_finite_wall_clock_is_rejected(bad: float) -> None:
+    with pytest.raises(ValueError):
+        _row(wall_clock_s=bad)
+
+
+def test_a_finite_row_keeps_its_id_after_the_finite_check() -> None:
+    row = _row(wall_clock_s=600000000.0)
+    assert row.id == _row(wall_clock_s=600000000.0).id and row.wall_clock_s == 600000000.0

@@ -257,7 +257,7 @@ def crawl_approval_submit(
         return _approval_error(slug, str(exc.detail))
     candidate = RunApproval(
         project=project.slug, run_kind=run_kind, target=project.base_url,
-        production=project.production or bool(production),
+        production=project.production or production.strip().lower() in ("1", "on"),
         scope=allowed_scope, max_actions=actions, max_probes=probes, wall_clock_s=seconds,
         granted_by=signer, granted_at=datetime.now(UTC).isoformat(), expires_at=expiry,
         standing=on, note=note.strip() or None,

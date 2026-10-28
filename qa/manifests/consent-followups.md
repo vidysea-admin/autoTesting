@@ -1,7 +1,7 @@
 # Manifest - consent-followups
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Security trigger:** YES - consent gate (D-018 / D-111) and the credential redactor path (C5). **Dual check recommended (A+B).**
 **Issues addressed:** `.work/inbox-1028.md` lines 1-7 (hint shows `[REDACTED]:KEY`; probe estimate under-counts; first-match approval binding) and D-111 checker-B N1 / N2.
 **Branch:** `fix/consent-followups` (worktree `D:/autoTesting/.claude/worktrees/consent-followups`, off `feat/d111-standing-approval` d20eb037)
@@ -50,3 +50,23 @@ uv run ruff check src tests scripts   ->  All checks passed!
 uv run autotester doctor              ->  26 violation(s), all `decision-citation-dangling` for D-110/D-111, which are not yet entries in this tree (2 are this manifest's own lines 5-6; no code rule fails; a transient `function-too-long: require_approval 51 lines` was fixed before the commit)
 ```
 The full suite was NOT run (machine low on memory, by instruction); the checker should run its own sharded sweep.
+
+## Fix cycle 1 (checker B FAIL cycle 0: B1; checker A PASS)
+Tests first (`tests/test_consent_followups.py`, now 37 tests); before any src change:
+```
+uv run pytest tests/test_consent_followups.py -o addopts= -q
+12 failed, 25 passed   (B1 x4, production flag x5, non-finite wall clock x3)
+```
+After the fixes:
+```
+uv run pytest tests/test_consent_followups.py -o addopts= -q
+37 passed, 1 warning
+uv run pytest tests/test_consent_followups.py tests/test_consent.py tests/test_ui_production_approval.py tests/test_ui_crawl_approval.py tests/test_ui_crawl_approval_list.py tests/test_approval_signing.py tests/test_approval_prod_gate.py tests/test_report_export_secrets.py tests/test_cli_mcp.py tests/test_approve_cli.py tests/test_approve_cli_bounds.py tests/test_standing_approval_grant.py tests/test_real_acceptance.py -o addopts= -q
+207 passed, 1 warning in 73.47s
+uv run ruff check src tests scripts  ->  All checks passed!
+uv run autotester doctor  ->  only decision-citation-* findings (the added dangling ones are the two verdict files and this section citing D-111/D-110); no code rule fails
+```
+- **B1 (F1)** `stages/run_service.py` new `_pasteable(url)` and `_report`: the base_url is exempted from the message scrub only when it has no userinfo (`@` in netloc), no query, no fragment, and `scrub_url_credentials(url) == url`; otherwise the exemption set is empty and the `.env` match masks it (`[REDACTED]:KEY`). Tests: `?token=`, `user:pass@`, `#access_token=`, and `?next=` base_urls, each also a `.env` value, stay masked; the clean-URL test (`..._survives_the_report_scrub_...`) still passes.
+- **Stale docstring** `stages/real_acceptance.py` `_newest_first` now states that `require_approval` returns the human-granted, then widest covering row and that newest-first only decides ties.
+- **production flag** `ui/routes_crawl_approval.py` `crawl_approval_submit`: `production=project.production or production.strip().lower() in ("1", "on")`. Test: `1`/`on`/` ON ` true; `0`, `false`, `off`, `no`, `x`, empty false. File stays at 300 lines.
+- **Non-finite bound** `schema/approval.py` `RunApproval.wall_clock_s` has `allow_inf_nan=False`: NaN/inf/-inf raise at validation. `max_actions`/`max_probes` are ints (cannot be non-finite). Ids/signatures of finite rows unchanged (`_bound_payload` untouched; test with the live 600000000.0 value). Consequence: a stored row with a non-finite wall clock now fails to load (fail closed, `read_jsonl` raises with the line number); `model_dump_json` writes NaN as null, which already failed validation, so no new on-disk breakage.
