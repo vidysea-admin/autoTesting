@@ -1,6 +1,6 @@
 # Manifest - run-teardown-stall
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Source:** `.work/pathlynks-explore/stall-diagnosis.md` (2026-10-28) section 7 (7.1 trace rows, 7.2 items 1, 2, 3, 5, 6). Items 4 (run headline, already on `fix/run-summary-inconclusive`) and 7 (entry-browser reuse, needs a DECISIONS entry) are NOT in this unit.
 **Branch:** `fix/run-teardown-stall` from master e74664f8 (worktree `D:/autoTesting/.claude/worktrees/teardown-stall`).
