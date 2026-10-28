@@ -1,7 +1,7 @@
 # Manifest - ephemeral-storage-warning
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Issues addressed:** 2026-10-28 deploy silently wiped the admin account (Cloud Run /data not a mounted volume)
 
 ## Criteria (from the task brief; no qa/contract edited)
@@ -20,13 +20,18 @@
 - `docker/DEPLOY.md`: "Persistent storage" paragraph in the Cloud Run section.
 - Not touched: auth/config.py, ui/helpers.py, docs/DECISIONS.md, qa/contracts, qa/.paused.
 
+## Fix cycle 1
+- `.env.example`: added empty `AUTOTESTER_EPHEMERAL_OK=` with a one-line comment (test_env_example_documents_every_key_the_code_reads).
+- Manifest no longer cites a decision id.
+- Optional octal-decoding of mount points with spaces in the awk path: not done (a data root with a space is not a deploy shape here).
+
 ## Tests
 `tests/test_storage_warning.py` (new, 18): detector (same device, mounted root, ancestor mount, not-in-mounts, tmpfs, opt-out, missing/garbled mounts, device error), banner (hosted+ephemeral, not hosted, persistent, opt-out end to end), entrypoint (bash -n, no `exit` in function, real function run under bash with fake stat/mounts: warns and returns 0, quiet when mounted, quiet on opt-out and on missing mounts file).
 
 ## Verification
 - `uv run pytest tests/test_storage_warning.py tests/test_container_entrypoint_behaviour.py tests/test_env_loading.py`: 30 passed, 1 skipped.
 - `uv run ruff check src tests scripts`: All checks passed.
-- `uv run autotester doctor`: 1 violation, pre-existing and unrelated (`qa/verdicts/6c-1028-signup.md:4` cites D-110, which exists only in the main checkout's uncommitted DECISIONS.md).
+- `uv run autotester doctor`: 1 violation, pre-existing and unrelated (the dangling decision citation at `qa/verdicts/6c-1028-signup.md:4`, whose target entry exists only in the main checkout's uncommitted decisions file).
 - shellcheck not installed; `bash -n docker/entrypoint.sh` passes.
 - Not exercised: a real Cloud Run / Linux container (Windows host; /proc/mounts and `stat -c %d` are faked in tests).
 
