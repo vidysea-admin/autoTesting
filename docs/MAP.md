@@ -37,6 +37,7 @@
 | `browser/conditions.py` | Enact a case's execution condition, or say why it cannot be (D-045/AT-581, E6). |
 | `browser/db.py` | Read-only backend assertions against MongoDB. Contract: qa/contracts/db-assert.md. |
 | `browser/destroy_guard.py` | One job: refuse a click or submit on an account-destroying control, at every write policy. |
+| `browser/error_text.py` | What the page SHOWED when an assertion was unmet (inbox 2026-10-28 line 12). |
 | `browser/evidence.py` | Screenshot capture and evidence-recording for `BrowserSession`. |
 | `browser/launch.py` | Playwright launch options for one project's persistent browser context. |
 | `browser/locator_derive.py` | Derive the most meaningful locator for an element that is on screen right now. |
