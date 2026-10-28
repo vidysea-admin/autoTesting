@@ -7,7 +7,7 @@ the same typer apps there, so the CLI surface a user sees is unchanged.
 from __future__ import annotations
 
 import math
-from datetime import date, datetime, time
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any
 
@@ -268,7 +268,7 @@ def approve_cmd(
         project=project, run_kind=run_kind, target=target, scope=scope,
         max_actions=max_actions, max_probes=max_probes, wall_clock_s=wall_clock,
         production=production, granted_by=granted_by,
-        granted_at=date.today().isoformat(), expires_at=expires_at, standing=standing,
+        granted_at=datetime.now(UTC).isoformat(), expires_at=expires_at, standing=standing,
     )
     _signed_or_refuse(candidate)
     approval = store_.add_approval(candidate)

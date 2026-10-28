@@ -142,13 +142,10 @@ def _grant_command(
     project: str, kind: ApprovalKind, target: str,
     actions: int, probes: int, wall_clock_s: float, production: bool,
 ) -> str:
-    """The command that would actually let THIS run proceed.
-
-    Found by running it: the first version omitted the bounds, so an operator who
-    followed the printed command verbatim got a second refusal — `--max-actions`
-    defaults to 0, and every real crawl exceeds 0. A suggestion that does not
-    work is worse than no suggestion, because it spends the reader's trust.
-    """
+    """The command that would actually let THIS run proceed (bounds included: found by running
+    it, an operator who pasted a bound-less one got a second refusal). A live-case `probes` is
+    only the preflight FLOOR; a run polls past it, so the hint asks for `actions` x
+    `PROBES_PER_ACTION` (the D-068 brake) when that is larger, never above the grant cap."""
     parts = [
         f"uv run autotester approve {project} --kind {kind.value}",
         f'--target "{target}"',
@@ -159,7 +156,8 @@ def _grant_command(
     if actions:
         parts.append(f"--max-actions {actions}")
     if probes:
-        parts.append(f"--max-probes {probes}")
+        wide = actions * PROBES_PER_ACTION if kind is ApprovalKind.LIVE_CASE else 0
+        parts.append(f"--max-probes {min(max(probes, wide), MAX_GRANT_PROBES)}")
     if wall_clock_s:
         parts.append(f"--wall-clock {wall_clock_s}")
     if production:
@@ -213,6 +211,12 @@ def _reject_reason(
     return None
 
 
+def _width(approval: RunApproval) -> tuple[bool, float, int, int]:
+    """Sort key for the widest of several covering approvals: human-granted first."""
+    return (not is_account_derived(approval), approval.wall_clock_s,
+            approval.max_probes, approval.max_actions)
+
+
 def require_approval(
     approvals: list[RunApproval],
     *,
@@ -238,18 +242,19 @@ def require_approval(
     """
     now = now or datetime.now(UTC)
     revoked = revoked_ids(revocations or [])
-    candidates = [
-        a for a in approvals if a.id not in revoked
-        if a.project == project and a.run_kind is kind and a.target == target
-    ]
-    rejections = [f"{a.id}: revoked" for a in approvals
-                  if a.id in revoked and a.project == project and a.run_kind is kind
-                  and a.target == target]
+    same = [a for a in approvals
+            if a.project == project and a.run_kind is kind and a.target == target]
+    candidates = [a for a in same if a.id not in revoked]
+    rejections = [f"{a.id}: revoked" for a in same if a.id in revoked]
+    covering = []
     for approval in candidates:
         reason = _reject_reason(approval, now, actions, probes, wall_clock_s, production)
         if reason is None:
-            return approval
-        rejections.append(reason)
+            covering.append(approval)
+        else:
+            rejections.append(reason)
+    if covering:  # several cover the run: a human row first, then the widest (ties keep order)
+        return max(covering, key=_width)
 
     detail = (
         "no approval exists for it" if not rejections

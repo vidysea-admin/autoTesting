@@ -38,9 +38,13 @@ def _report(store: ProjectStore | None, project: str, code: ExitCode, **fields) 
     """Build and scrub: every string passes the project's `Redactor` before it leaves (C5)."""
     report = RegressionReport(project=project, exit_code=int(code),
                        **{"status": _STATUS[code], **fields})
-    if store is None or store.load_project() is None:
+    if store is None or (proj := store.load_project()) is None:
         return report
     scrubbed = _load_redactor(store).scrub_obj(report.model_dump(mode="json"))
+    if report.message:  # the grant hint's --target is the project's own stored base_url (already
+        # plain in project.json): keep it pasteable even when it equals a .env login URL
+        scrubbed["message"] = _load_redactor(store, frozenset({proj.base_url})).scrub(
+            report.message)
     return RegressionReport.model_validate(scrubbed)
 
 
