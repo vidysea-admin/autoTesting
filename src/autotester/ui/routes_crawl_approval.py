@@ -1,9 +1,8 @@
 """The crawl-approval card on the credentials page (D-018 consent, gate 2).
 
-Split from `routes_credentials.py` for the 300-line cap - a separate concept
-(human consent for one bounded run) from value editing. This form is the
-granting surface; `require_consent` in `stages/explore_consent.py` is the
-runtime gate that reads what lands here.
+Split from `routes_credentials.py` for the 300-line cap: human consent for one bounded run,
+not value editing. The grant form, the list and Revoke (D-111) live here;
+`stages/explore_consent.py::require_consent` is the runtime gate that reads what lands.
 """
 
 from __future__ import annotations
@@ -21,13 +20,16 @@ from autotester.core.consent import MAX_GRANT_PROBES, validate_grant_bounds
 from autotester.core.ids import SigningKeyMissing
 from autotester.core.paths import ProjectPaths
 from autotester.schema.approval import RunApproval
+from autotester.schema.approval_revocation import ApprovalRevocation
 from autotester.schema.enums import ApprovalKind
+from autotester.store.approval_revocations import add_revocation
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
 
 router = APIRouter()
 
 _KINDS = (ApprovalKind.CRAWL, ApprovalKind.LIVE_CASE)   # what the UI may grant, as the CLI can
+
 
 def _signer() -> str:
     """The signed-in human's email, or '' when there is no real session behind the request."""
@@ -36,8 +38,7 @@ def _signer() -> str:
 
 
 def _kind_and_production(project_production: bool) -> str:
-    """The kind selector and the production checkbox - forced on (and submitted) for a
-    production project, so a UI row is never the production:false row D-088 refuses."""
+    """Kind selector and production checkbox, forced on for a production project (D-088)."""
     options = "".join(f"<option value='{k.value}'>{k.value}</option>" for k in _KINDS)
     box = ("<input id='ca-production' type='checkbox' checked disabled> "
            "<input type='hidden' name='production' "
@@ -50,8 +51,7 @@ def _kind_and_production(project_production: bool) -> str:
 
 
 def _crawl_approval_form(slug: str, target: str, production: bool = False) -> str:
-    """Human-readable counterpart to the CLI `approve` command. The signer is the signed-in
-    account, never a field: a human grant has to be attributable."""
+    """The CLI `approve` counterpart; the signer is the signed-in account, never a field."""
     safe = escape(slug)
     form = (
         f"<p>This approval applies only to <code>{escape(target)}</code>.</p>"
@@ -61,8 +61,12 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
         "<div class='field'><label for='ca-scope'>Scope</label>"
         "<input id='ca-scope' name='scope' required "
         "placeholder='what this crawl may read and click'></div>"
-        "<div class='field'><label for='ca-expires'>Expires at</label>"
-        "<input id='ca-expires' type='datetime-local' name='expires_at' required></div>"
+        "<div class='field'><label for='ca-expires'>Expires at (blank if standing)</label>"
+        "<input id='ca-expires' type='datetime-local' name='expires_at'></div>"
+        "<div class='field'><label for='ca-standing'>Standing</label>"
+        "<input id='ca-standing' type='checkbox' name='standing' value='1'> "
+        "Standing, until revoked (crawl only; every run is still capped by the limits below)"
+        "</div>"
         "<div class='field'><label for='crawl-timezone-offset'>"
         "UTC offset in minutes (auto-detected)</label>"
         "<input type='number' id='crawl-timezone-offset' name='timezone_offset_minutes' "
@@ -72,6 +76,8 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
         "const syncOffset=()=>{const selected=new Date(expiry.value);"
         "if(!Number.isNaN(selected.valueOf()))offset.value="
         "String(-selected.getTimezoneOffset());};"
+        "const st=document.getElementById('ca-standing');"
+        "st.addEventListener('change',()=>{expiry.disabled=st.checked;});"
         "expiry.addEventListener('change',syncOffset);"
         "expiry.form.addEventListener('submit',syncOffset);</script>"
         "<div class='field'><label for='ca-actions'>Maximum actions</label>"
@@ -91,11 +97,8 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
 
 
 def _in_force(approval: RunApproval, slug: str, target: str) -> bool:
-    """What the consent gate would honour for this project's crawl ΓÇö never list
-    more. Listing a grant the gate would refuse is a false reassurance, so this
-    checks the same signature `core/consent.py` does (AT-110) — a card that
-    still showed a forged or legacy-unsigned row as "in force" would be
-    exactly that false reassurance in the one place a human actually looks."""
+    """What the consent gate would honour for this project's crawl, never more: a forged or
+    unsigned row shown as "in force" is false reassurance, so check the signature too (AT-110)."""
     if not (approval.project == slug and approval.run_kind is ApprovalKind.CRAWL
             and approval.target == target and approval.is_intact
             and not approval.is_expired(datetime.now(UTC))):
@@ -106,11 +109,16 @@ def _in_force(approval: RunApproval, slug: str, target: str) -> bool:
         return False  # fail closed: can't verify, don't claim it's in force
 
 
+def _revoke_form(slug: str, approval_id: str) -> str:
+    return (f"<form method='post' action='/projects/{escape(slug)}/crawl-approval/"
+            f"{escape(approval_id)}/revoke'><input name='reason' placeholder='why' size='14'>"
+            "<button type='submit'>Revoke</button></form>")
+
+
 def _approvals_card(approvals: list[RunApproval], slug: str, target: str, saved: str,
                     existing: bool) -> str:
-    """Confirmation plus the grants in force (AT-435). Saving used to redirect to an
-    identical page, so a human clicked again and a duplicate grant was written.
-    The banner is looked up ON DISK by id; the query string is never echoed."""
+    """Confirmation plus the grants in force (AT-435), looked up ON DISK by id; the query
+    string is never echoed."""
     active = [a for a in approvals if _in_force(a, slug, target)]
     banner = ""
     just_saved = next((a for a in active if a.id == saved), None)
@@ -124,29 +132,26 @@ def _approvals_card(approvals: list[RunApproval], slug: str, target: str, saved:
         f"<tr><td>{escape(a.granted_by)}</td><td>{a.run_kind.value}"
         f"{' (production)' if a.production else ''}</td><td>{escape(a.scope)}</td>"
         f"<td>{a.max_actions}</td><td>{a.wall_clock_s:g}s</td>"
-        f"<td>{escape(a.expires_at)}</td><td><code>{escape(a.id)}</code></td></tr>"
+        f"<td>{'<b>Standing, until revoked</b>' if a.is_standing else escape(a.expires_at or '')}"
+        f"</td><td><code>{escape(a.id)}</code></td><td>{_revoke_form(slug, a.id)}</td></tr>"
         for a in active
     )
     table = (
         "<table><tr><th>Signed by</th><th>Kind</th><th>Scope</th><th>Max actions</th>"
         "<th>Wall clock</th>"
-        f"<th>Expires (UTC)</th><th>Id</th></tr>{rows}</table>" if active
+        f"<th>Expires (UTC)</th><th>Id</th><th></th></tr>{rows}</table>" if active
         else "<p class='meta'>No crawl approval is in force for this target.</p>"
     )
-    # Only crawl grants: a READ/ADVERSARIAL grant is none of "expired, edited or
-    # for another target", so counting it gave a false reason (AT-452).
+    # Only crawl grants (AT-452); "or project": `_in_force` also requires it (AT-455).
     crawl = [a for a in approvals if a.run_kind is ApprovalKind.CRAWL]
     others = len(crawl) - len(active)
-    # "or project": `_in_force` also requires this project, so a grant naming
-    # another one is counted here and needs a reason that is true of it (AT-455).
     note = (f"<p class='meta'>{others} more on file are expired, edited after granting, or for "
             "another target or project, and are not honoured.</p>" if others else "")
     return theme.card(banner + table + note, title="Approvals in force")
 
 
 def _matching_grant(approvals: list[RunApproval], candidate: RunApproval) -> RunApproval | None:
-    """An in-force grant identical to `candidate` in everything but when it was
-    signed ΓÇö a repeated click, not a new decision."""
+    """An in-force grant identical to `candidate` but for when it was signed: a repeat click."""
     def bounds(a: RunApproval) -> dict[str, object]:
         payload = a._bound_payload()
         payload.pop("granted_at")
@@ -165,9 +170,8 @@ def _approval_error(slug: str, detail: str, status: int = 400) -> HTMLResponse:
         f"<p>{escape(detail)}</p><p><a class='btn' href='/projects/{safe}/env#crawl-approval'>"
         "Return to crawl approval</a></p>", title="Check the approval details",
     )
-    return HTMLResponse(
-        theme.page("Crawl approval not saved", body, active_slug=slug), status_code=status,
-    )
+    return HTMLResponse(theme.page("Crawl approval not saved", body, active_slug=slug),
+                        status_code=status)
 
 
 def _future_iso(value: str, offset_minutes: int) -> str:
@@ -186,14 +190,31 @@ def _future_iso(value: str, offset_minutes: int) -> str:
     return expiry.isoformat()
 
 
+def _grant_expiry(standing: str, expires_at: str, offset: int) -> str | None:
+    """None for a standing grant (D-111, no date); else the future ISO expiry."""
+    if standing and expires_at.strip():
+        raise HTTPException(400, "a standing approval has no expiry: clear it or untick standing")
+    return None if standing else _future_iso(expires_at, offset)
 
-def _capped(actions: int, seconds: float, expiry: str, probes: int) -> None:
+
+def _capped(actions: int, seconds: float, expiry: str | None, probes: int,
+            kind: ApprovalKind) -> None:
     if not 0 <= probes <= MAX_GRANT_PROBES:
         raise HTTPException(400, f"max probes must be between 0 and {MAX_GRANT_PROBES}")
     try:
-        validate_grant_bounds(actions, seconds, datetime.fromisoformat(expiry))
+        validate_grant_bounds(actions, seconds, None if expiry is None
+                              else datetime.fromisoformat(expiry), kind=kind)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from None
+
+
+def _bounds(actions: str, seconds: str, probes: str, offset: str) -> tuple[int, float, int, int]:
+    a, w, p, o = int(actions), float(seconds), int(probes), int(offset)
+    if a <= 0 or w <= 0 or not isfinite(w):
+        raise HTTPException(400, "crawl approval bounds must be positive")
+    if not -840 <= o <= 840:
+        raise HTTPException(400, "timezone offset must be between -840 and 840 minutes")
+    return a, w, o, p
 
 
 def _checked_kind(kind: str, scope: str) -> ApprovalKind:
@@ -210,7 +231,7 @@ def crawl_approval_submit(
     request: Request, slug: str, kind: str = Form("crawl"), production: str = Form(""),
     scope: str = Form(""), expires_at: str = Form(""), max_actions: str = Form(""),
     wall_clock_s: str = Form(""), max_probes: str = Form("0"),
-    timezone_offset_minutes: str = Form("0"), note: str = Form(""),
+    timezone_offset_minutes: str = Form("0"), note: str = Form(""), standing: str = Form(""),
 ) -> Response:
     """Persist one bounded approval; project and target always come from disk."""
     store, project = _load_project_or_404(slug)
@@ -226,14 +247,10 @@ def crawl_approval_submit(
             ("maximum probes", max_probes), ("timezone offset", timezone_offset_minutes),
             ("note", note),
         ], project, secrets)
-        actions, seconds = int(max_actions), float(wall_clock_s)
-        offset, probes = int(timezone_offset_minutes), int(max_probes)
-        if actions <= 0 or seconds <= 0 or not isfinite(seconds):
-            raise HTTPException(400, "crawl approval bounds must be positive")
-        if not -840 <= offset <= 840:
-            raise HTTPException(400, "timezone offset must be between -840 and 840 minutes")
-        expiry = _future_iso(expires_at, offset)
-        _capped(actions, seconds, expiry, probes)
+        actions, seconds, offset, probes = _bounds(
+            max_actions, wall_clock_s, max_probes, timezone_offset_minutes)
+        expiry = _grant_expiry(standing, expires_at, offset)
+        _capped(actions, seconds, expiry, probes, run_kind)
     except ValueError:
         return _approval_error(slug, "kind and bounds must be valid, numbers for bounds")
     except HTTPException as exc:
@@ -243,7 +260,7 @@ def crawl_approval_submit(
         production=project.production or bool(production),
         scope=allowed_scope, max_actions=actions, max_probes=probes, wall_clock_s=seconds,
         granted_by=signer, granted_at=datetime.now(UTC).isoformat(), expires_at=expiry,
-        note=note.strip() or None,
+        standing=bool(standing), note=note.strip() or None,
     )
     try:
         candidate.sign()
@@ -258,3 +275,26 @@ def crawl_approval_submit(
         f"/projects/{slug}/env?saved={grant.id}{flag}#crawl-approval", status_code=303,
     )
 
+
+@router.post("/projects/{slug}/crawl-approval/{approval_id}/revoke")
+def crawl_approval_revoke(
+    request: Request, slug: str, approval_id: str, reason: str = Form(""),
+) -> Response:
+    """D-111: withdraw one grant with a signed revocation (what ends a standing approval).
+    A signed-in person only, like granting; the grant file is never edited."""
+    store, project = _load_project_or_404(slug)
+    signer = _signer()
+    if not signer or "authorization" in request.headers:
+        return _approval_error(slug, "a revocation must come from a signed-in person", 403)
+    if all(a.id != approval_id for a in store.list_approvals()):
+        return _approval_error(slug, f"no approval in force with id {approval_id}", 404)
+    why = reason.strip()[:500] or "revoked from the credentials page"
+    try:
+        secrets = SecretStore.load(project, ProjectPaths(slug).env_file, strict=False)
+        _refuse_unsafe_submission([("reason", why)], project, secrets)
+        row = ApprovalRevocation(approval_id=approval_id, revoked_by=signer, reason=why,
+                                 revoked_at=datetime.now(UTC).isoformat()).sign()
+    except (HTTPException, SigningKeyMissing) as exc:
+        return _approval_error(slug, str(getattr(exc, "detail", exc)))
+    add_revocation(store.paths.approval_revocations, row)
+    return RedirectResponse(f"/projects/{slug}/env#crawl-approval", status_code=303)

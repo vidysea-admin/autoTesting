@@ -114,7 +114,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     **{("POST", _P + tail): _project(K.VIDEO_UPLOAD) for tail in (
         "/sources/upload", "/sources/drive")},   # T-198: file and Drive-link intake
     **{("POST", _P + tail): _RUN for tail in ("/run", "/explore", "/test")},
-    ("POST", _P + "/crawl-approval"): _project(K.ACCESS_APPROVE),   # a grant is an approval
+    **{("POST", _P + tail): _project(K.ACCESS_APPROVE) for tail in (   # a grant is an approval
+        "/crawl-approval", "/crawl-approval/{approval_id}/revoke")},   # and its revoke (D-111)
     **{("POST", _P + tail): _CRED for tail in (
         "/secrets", "/secrets/{key}/delete", "/env", "/env/add")},
     **{("POST", _P + tail): _SCHEDULE for tail in (   # T-200 TS1: only schedule.manage

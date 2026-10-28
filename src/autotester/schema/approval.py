@@ -27,7 +27,16 @@ against an agent that can edit the code itself** (e.g. `core/consent.py`, or
 this file) — that agent could as easily remove the check as forge a row, and
 no on-disk scheme defends against a party that can rewrite the checker. That
 is out of scope for a consent *file*; it is a different, code-integrity
-problem. Signing happens once, explicitly, at grant time (`sign()`, called
+problem.
+
+**Standing grants (D-111).** A crawl approval (explore runs under it) may carry
+`standing=True` and no `expires_at`: it is valid until a signed `ApprovalRevocation`
+names it. `standing` joins the bound payload ONLY when true, so every existing dated
+row keeps the id and signature it was granted under, while flipping it on a dated row
+changes both and is refused. Any other kind with no expiry (adversarial above all) reads
+as expired, never eternal. Per-run caps are unchanged.
+
+Signing happens once, explicitly, at grant time (`sign()`, called
 from `cli_crawl.approve_cmd` and the UI grant route) — never implicitly on
 load, so listing or displaying existing approvals never requires the key, and
 a forged row loaded through the normal read path is never quietly re-signed
@@ -43,6 +52,10 @@ from pydantic import Field
 from autotester.core.ids import content_id, sign_payload, verify_payload
 from autotester.schema.base import Artifact
 from autotester.schema.enums import ApprovalKind
+
+STANDING_KINDS = frozenset({ApprovalKind.CRAWL})
+"""D-111: the run kinds that may be granted standing. Explore runs under CRAWL. ADVERSARIAL is
+deliberately absent -- it fires hostile input and keeps a required expiry."""
 
 
 class RunApproval(Artifact):
@@ -83,7 +96,18 @@ class RunApproval(Artifact):
     )
     granted_by: str
     granted_at: str
-    expires_at: str = Field(description="ISO date/datetime; consent is never open-ended")
+    expires_at: str | None = Field(
+        default=None,
+        description="ISO date/datetime the grant lapses. None is valid ONLY for a STANDING "
+                    "grant (D-111); a non-standing row with none reads as expired, never eternal",
+    )
+    standing: bool = Field(
+        default=False,
+        description="D-111: valid until a signed `ApprovalRevocation` names it, instead of until "
+                    "a date. Crawl (and so explore) only -- an adversarial approval keeps a "
+                    "required expiry. Bound into the signed payload, so a dated row cannot be "
+                    "re-read as standing.",
+    )
     note: str | None = None
     signature: str = Field(
         default="",
@@ -100,6 +124,9 @@ class RunApproval(Artifact):
             "wall_clock_s": self.wall_clock_s, "production": self.production,
             "granted_by": self.granted_by, "granted_at": self.granted_at,
             "expires_at": self.expires_at,
+            # Only when true: a dated row keeps the exact payload (so id and signature) it
+            # was granted under, while flipping `standing` on it changes both (D-111).
+            **({"standing": True} if self.standing else {}),
         }
 
     def model_post_init(self, _context: object) -> None:
@@ -148,7 +175,17 @@ class RunApproval(Artifact):
             return False
         return verify_payload(self._bound_payload(), self.signature)
 
+    @property
+    def is_standing(self) -> bool:
+        """A grant with no end date that the gate may honour (D-111): crawl kind only,
+        and carrying no expiry. Anything else with no expiry is expired, never eternal."""
+        return self.standing and self.expires_at is None and self.run_kind in STANDING_KINDS
+
     def is_expired(self, now: datetime) -> bool:
+        if self.is_standing:
+            return False  # ends only by a signed revocation
+        if self.expires_at is None:
+            return True
         try:
             expiry = datetime.fromisoformat(self.expires_at)
         except ValueError:
