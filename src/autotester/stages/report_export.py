@@ -73,12 +73,12 @@ def _case_lookup(store: ProjectStore) -> dict[str, Case]:
     return {c.id: c for c in store.list_cases()}
 
 
-def _load_redactor(store: ProjectStore) -> Redactor:
-    """C5/AT-594: load the shared last-stop Redactor, including for repro steps."""
+def _load_redactor(store: ProjectStore, keep: frozenset[str] = frozenset()) -> Redactor:
+    """C5/AT-594: the shared last-stop Redactor; `keep` = literal values left readable."""
     project = store.load_project()
     if project is None:
         return Redactor({})
-    return SecretStore.load(project, store.paths.env_file, strict=False).redactor()
+    return SecretStore.load(project, store.paths.env_file, strict=False).redactor(exclude=keep)
 
 
 def _needs_developer_detail(verdict: Verdict | None) -> bool:

@@ -190,7 +190,7 @@ def _future_iso(value: str, offset_minutes: int) -> str:
     return expiry.isoformat()
 
 
-def _grant_expiry(standing: str, expires_at: str, offset: int) -> str | None:
+def _grant_expiry(standing: bool, expires_at: str, offset: int) -> str | None:
     """None for a standing grant (D-111, no date); else the future ISO expiry."""
     if standing and expires_at.strip():
         raise HTTPException(400, "a standing approval has no expiry: clear it or untick standing")
@@ -235,7 +235,7 @@ def crawl_approval_submit(
 ) -> Response:
     """Persist one bounded approval; project and target always come from disk."""
     store, project = _load_project_or_404(slug)
-    signer, allowed_scope = _signer(), scope.strip()
+    signer, allowed_scope, on = _signer(), scope.strip(), standing.strip().lower() in ("1", "on")
     if not signer or "authorization" in request.headers:   # human session only, no API token
         return _approval_error(slug, "a grant must come from a signed-in person", 403)
     try:
@@ -249,7 +249,7 @@ def crawl_approval_submit(
         ], project, secrets)
         actions, seconds, offset, probes = _bounds(
             max_actions, wall_clock_s, max_probes, timezone_offset_minutes)
-        expiry = _grant_expiry(standing, expires_at, offset)
+        expiry = _grant_expiry(on, expires_at, offset)
         _capped(actions, seconds, expiry, probes, run_kind)
     except ValueError:
         return _approval_error(slug, "kind and bounds must be valid, numbers for bounds")
@@ -257,10 +257,10 @@ def crawl_approval_submit(
         return _approval_error(slug, str(exc.detail))
     candidate = RunApproval(
         project=project.slug, run_kind=run_kind, target=project.base_url,
-        production=project.production or bool(production),
+        production=project.production or production.strip().lower() in ("1", "on"),
         scope=allowed_scope, max_actions=actions, max_probes=probes, wall_clock_s=seconds,
         granted_by=signer, granted_at=datetime.now(UTC).isoformat(), expires_at=expiry,
-        standing=bool(standing), note=note.strip() or None,
+        standing=on, note=note.strip() or None,
     )
     try:
         candidate.sign()

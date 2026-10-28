@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+from urllib.parse import urlsplit
 
 from autotester.core.exit_codes import ExitCode
 from autotester.core.safe_names import SLUG_PATTERN
@@ -35,13 +36,43 @@ _STATUS = {ExitCode.OK: "passed", ExitCode.TEST_FAILED: "failed", ExitCode.USAGE
 _INLINE_KINDS = {EvidenceKind.URL, EvidenceKind.DOM}   # `path` holds the value, not a file
 
 
+_PLAIN_HOST = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?")
+_PLAIN_SEGMENT = re.compile(r"[a-z-]{1,32}")
+
+
+def _pasteable(url: str) -> frozenset[str]:
+    """The base_url stays readable in the hint only when ALL hold (a positive allowlist, C5):
+    `urlsplit` succeeds; scheme is http or https; the URL is pure ASCII with no whitespace or
+    control character and no `;`, `?` or `#`; the netloc is a plain host[:port] (no userinfo, no
+    `%`, no brackets); and the path is empty, `/`, or segments that each match `[a-z-]{1,32}`
+    (lowercase letters and hyphens: no digits, `%`, dots or colons). Anything else, or a
+    ValueError from the parser, exempts nothing, so the `.env` match masks it as before."""
+    if not url.isascii() or not all("!" <= c <= "~" for c in url) or set(url) & set(";?#"):
+        return frozenset()
+    try:
+        parts = urlsplit(url)
+    except ValueError:
+        return frozenset()
+    if parts.scheme not in ("http", "https") or not _PLAIN_HOST.fullmatch(parts.netloc):
+        return frozenset()
+    path = parts.path.removesuffix("/")
+    if path and not all(_PLAIN_SEGMENT.fullmatch(seg) for seg in path.removeprefix("/").split("/")):
+        return frozenset()
+    return frozenset({url})
+
+
 def _report(store: ProjectStore | None, project: str, code: ExitCode, **fields) -> RegressionReport:
     """Build and scrub: every string passes the project's `Redactor` before it leaves (C5)."""
     report = RegressionReport(project=project, exit_code=int(code),
                        **{"status": _STATUS[code], **fields})
-    if store is None or store.load_project() is None:
+    if store is None or (proj := store.load_project()) is None:
         return report
     scrubbed = _load_redactor(store).scrub_obj(report.model_dump(mode="json"))
+    if report.message:  # the grant hint's --target is the project's own stored base_url (already
+        # plain in project.json): keep it pasteable even when it equals a .env login URL, but
+        # only if that URL carries no credential (userinfo/query/fragment): checker B B1
+        scrubbed["message"] = _load_redactor(store, _pasteable(proj.base_url)).scrub(
+            report.message)
     return RegressionReport.model_validate(scrubbed)
 
 
