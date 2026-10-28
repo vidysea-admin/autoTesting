@@ -17,7 +17,15 @@ from urllib.parse import urlparse
 
 from autotester.browser.secrets import SecretStore, _host_matches, host_of
 from autotester.core.ids import SigningKeyMissing
-from autotester.schema.approval import STANDING_KINDS, RunApproval
+from autotester.schema.approval import (
+    MAX_GRANT_ACTIONS,
+    MAX_GRANT_DAYS,
+    MAX_GRANT_WALL_CLOCK_S,
+    PROBES_PER_ACTION,
+    STANDING_KINDS,
+    RunApproval,
+    derive_grant_bounds,
+)
 from autotester.schema.approval_revocation import ApprovalRevocation, revoked_ids
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
@@ -30,17 +38,12 @@ class ApprovalRequired(RuntimeError):
 ACCOUNT_KINDS = frozenset({ApprovalKind.LIVE_CASE, ApprovalKind.CRAWL, ApprovalKind.READ})
 """D-068: the run kinds provisioned credentials authorise. ADVERSARIAL is deliberately absent."""
 ACCOUNT_GRANTOR = "account-derived:D-068"
-PROBES_PER_ACTION = 20
 
 
 def is_account_derived(approval: RunApproval) -> bool:
     return approval.granted_by.startswith("account-derived:")
 
 
-MAX_GRANT_ACTIONS = 2000
-MAX_GRANT_WALL_CLOCK_S = 86400.0
-MAX_GRANT_DAYS = 30
-MAX_GRANT_PROBES = MAX_GRANT_ACTIONS * PROBES_PER_ACTION  # the UI form's cap (AT-675)
 
 
 def validate_grant_bounds(
@@ -143,22 +146,19 @@ def _grant_command(
     actions: int, probes: int, wall_clock_s: float, production: bool,
 ) -> str:
     """The command that would actually let THIS run proceed (bounds included: found by running
-    it, an operator who pasted a bound-less one got a second refusal). A live-case `probes` is
-    only the preflight FLOOR; a run polls past it, so the hint asks for `actions` x
-    `PROBES_PER_ACTION` (the D-068 brake) when that is larger, never above the grant cap."""
+    it, an operator who pasted a bound-less one got a second refusal), sized by
+    `derive_grant_bounds`."""
+    actions, probes, wall_clock_s = derive_grant_bounds(kind, actions, probes, wall_clock_s)
     parts = [
         f"uv run autotester approve {project} --kind {kind.value}",
         f'--target "{target}"',
         '--scope "<what this run may touch>"',
         "--granted-by <name> --expires <YYYY-MM-DD>",
     ]
-    if actions:
-        parts.append(f"--max-actions {actions}")
-    if probes:
-        wide = actions * PROBES_PER_ACTION if kind is ApprovalKind.LIVE_CASE else 0
-        parts.append(f"--max-probes {min(max(probes, wide), MAX_GRANT_PROBES)}")
-    if wall_clock_s:
-        parts.append(f"--wall-clock {wall_clock_s}")
+    for flag, value in (("--max-actions", actions), ("--max-probes", probes),
+                        ("--wall-clock", wall_clock_s)):
+        if value:
+            parts.append(f"{flag} {value}")
     if production:
         parts.append("--production")
     return " ".join(parts)

@@ -16,10 +16,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore
-from autotester.core.consent import MAX_GRANT_PROBES, validate_grant_bounds
+from autotester.core.consent import validate_grant_bounds
 from autotester.core.ids import SigningKeyMissing
 from autotester.core.paths import ProjectPaths
-from autotester.schema.approval import RunApproval
+from autotester.schema.approval import MAX_GRANT_PROBES, RunApproval
 from autotester.schema.approval_revocation import ApprovalRevocation
 from autotester.schema.enums import ApprovalKind
 from autotester.store.approval_revocations import add_revocation
@@ -50,12 +50,14 @@ def _kind_and_production(project_production: bool) -> str:
             f"<div class='field'><label for='ca-production'>Production</label>{box}</div>")
 
 
-def _crawl_approval_form(slug: str, target: str, production: bool = False) -> str:
-    """The CLI `approve` counterpart; the signer is the signed-in account, never a field."""
+def _crawl_approval_form(slug: str, target: str, production: bool = False,
+                         prefill: tuple[str, str] = ("", "")) -> str:
+    """The CLI `approve` counterpart; the signer is the signed-in account, never a field.
+    `prefill` (D-112): form attributes + note/script from `routes_credentials._grant_prefill`."""
     safe = escape(slug)
     form = (
         f"<p>This approval applies only to <code>{escape(target)}</code>.</p>"
-        f"<form method='post' action='/projects/{safe}/crawl-approval'>"
+        f"<form method='post' action='/projects/{safe}/crawl-approval'{prefill[0]}>"
         f"<p>Signed by <code>{escape(_signer() or 'nobody - sign in first')}</code></p>"
         f"{_kind_and_production(production)}"
         "<div class='field'><label for='ca-scope'>Scope</label>"
@@ -91,14 +93,13 @@ def _crawl_approval_form(slug: str, target: str, production: bool = False) -> st
         "value='600' required></div>"
         "<div class='field'><label for='ca-note'>Note (optional)</label>"
         "<input id='ca-note' name='note' placeholder='why this crawl is approved'></div>"
-        "<button type='submit'>Save crawl approval</button></form>"
+        f"{prefill[1]}<button type='submit'>Save crawl approval</button></form>"
     )
     return f"<section id='crawl-approval'>{theme.card(form, title='Approve a run')}</section>"
 
 
 def _in_force(approval: RunApproval, slug: str, target: str) -> bool:
-    """What the consent gate would honour for this project's crawl, never more: a forged or
-    unsigned row shown as "in force" is false reassurance, so check the signature too (AT-110)."""
+    """What the consent gate honours for this crawl, never more; checks the signature (AT-110)."""
     if not (approval.project == slug and approval.run_kind is ApprovalKind.CRAWL
             and approval.target == target and approval.is_intact
             and not approval.is_expired(datetime.now(UTC))):
@@ -117,8 +118,7 @@ def _revoke_form(slug: str, approval_id: str) -> str:
 
 def _approvals_card(approvals: list[RunApproval], slug: str, target: str, saved: str,
                     existing: bool) -> str:
-    """Confirmation plus the grants in force (AT-435), looked up ON DISK by id; the query
-    string is never echoed."""
+    """Confirmation plus the grants in force (AT-435), looked up ON DISK by id, never echoed."""
     active = [a for a in approvals if _in_force(a, slug, target)]
     banner = ""
     just_saved = next((a for a in active if a.id == saved), None)

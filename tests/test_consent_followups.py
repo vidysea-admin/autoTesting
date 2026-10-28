@@ -18,13 +18,12 @@ from typer.testing import CliRunner
 
 from autotester.cli import app as cli_app
 from autotester.core.consent import (
-    MAX_GRANT_PROBES,
     PROBES_PER_ACTION,
     ApprovalRequired,
     require_approval,
 )
 from autotester.core.exit_codes import ExitCode
-from autotester.schema.approval import RunApproval
+from autotester.schema.approval import MAX_GRANT_PROBES, RunApproval
 from autotester.schema.approval_revocation import ApprovalRevocation
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, ApprovalKind, CaseClass, CaseKind
