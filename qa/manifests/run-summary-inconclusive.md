@@ -6,7 +6,7 @@ judged and every case judged PASS (feedback-inbox 2026-10-28 item 1).
 · `qa/contracts/core-invariants.md` C1 (no false green), C2
 **Goal task:** none (issue-driven)
 **Date:** 2026-10-28
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0 of max 3
 **Dual check:** no
 **Branch:** fix/run-summary-inconclusive (worktree `.claude/worktrees/run-summary`)
