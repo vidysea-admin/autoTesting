@@ -1,7 +1,7 @@
 # Manifest - consent-followups
 
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Security trigger:** YES - consent gate (D-018 / D-111) and the credential redactor path (C5). **Dual check recommended (A+B).**
 **Issues addressed:** `.work/inbox-1028.md` lines 1-7 (hint shows `[REDACTED]:KEY`; probe estimate under-counts; first-match approval binding) and D-111 checker-B N1 / N2.
 **Branch:** `fix/consent-followups` (worktree `D:/autoTesting/.claude/worktrees/consent-followups`, off `feat/d111-standing-approval` d20eb037)
@@ -70,3 +70,18 @@ uv run autotester doctor  ->  only decision-citation-* findings (the added dangl
 - **Stale docstring** `stages/real_acceptance.py` `_newest_first` now states that `require_approval` returns the human-granted, then widest covering row and that newest-first only decides ties.
 - **production flag** `ui/routes_crawl_approval.py` `crawl_approval_submit`: `production=project.production or production.strip().lower() in ("1", "on")`. Test: `1`/`on`/` ON ` true; `0`, `false`, `off`, `no`, `x`, empty false. File stays at 300 lines.
 - **Non-finite bound** `schema/approval.py` `RunApproval.wall_clock_s` has `allow_inf_nan=False`: NaN/inf/-inf raise at validation. `max_actions`/`max_probes` are ints (cannot be non-finite). Ids/signatures of finite rows unchanged (`_bound_payload` untouched; test with the live 600000000.0 value). Consequence: a stored row with a non-finite wall clock now fails to load (fail closed, `read_jsonl` raises with the line number); `model_dump_json` writes NaN as null, which already failed validation, so no new on-disk breakage.
+
+## Fix cycle 2 (both cycle-1 checkers FAIL on B2: path-embedded credential printed; malformed base_url crashes `_report`)
+Design is a positive allowlist, not a denylist. `src/autotester/stages/run_service.py` `_pasteable` (+ `_PLAIN_HOST`, `_PLAIN_SEGMENT`): the base_url is exempted from the message scrub ONLY if ALL hold: `urlsplit` succeeds (ValueError -> no exemption); scheme is http or https; pure ASCII, every char in `!`..`~` (no whitespace/control); no `;`, `?` or `#` anywhere; netloc is a plain `host[:port]` (no userinfo, no `%`, no brackets); path is empty, `/`, or every segment matches `[a-z-]{1,32}` (a single trailing `/` allowed). Else the exemption is empty and the `.env` match masks it as before this unit. `scrub_url_credentials` import removed (the allowlist subsumes it).
+Tests first (`tests/test_consent_followups.py`, now 78 tests; path tokens `/magic/AbC123SecretTok`, `/t/SEGsecret9XYZ/login`, `/login/bob:PATHsecret9%40x`, non-URL string, `http://[::1/login`, `http://[bad`, non-ASCII and whitespace URLs, over-long segment, empty netloc; existing query/userinfo/fragment cases kept; `https://pathlynks-like.test/signin`, bare host, `/`, `host:port/sign-in/` stay readable):
+```
+uv run pytest tests/test_consent_followups.py -o addopts= -q   (before src change)
+34 failed, 47 passed
+uv run pytest tests/test_consent_followups.py -o addopts= -q   (after)
+78 passed, 1 warning
+uv run pytest tests/test_cli_mcp.py tests/test_report_export_secrets.py tests/test_consent.py -o addopts= -q
+67 passed, 1 warning
+uv run ruff check src tests  ->  All checks passed!
+uv run autotester doctor     ->  no file-too-long / function-too-long (test file 296 lines, run_service.py 153); only decision-citation-* findings
+```
+Full suite NOT run (machine low on memory, by instruction).

@@ -32,7 +32,7 @@ from autotester.schema.flowspec import ExpectedState, Step
 from autotester.schema.project import Project
 from autotester.stages.execute import probe_request
 from autotester.stages.run_gates import LaunchRefused, require_live_case_approval
-from autotester.stages.run_service import _report
+from autotester.stages.run_service import _pasteable, _report
 from autotester.store.approval_revocations import add_revocation
 from autotester.store.project_store import ProjectStore
 from autotester.ui.app import app as ui_app
@@ -106,6 +106,59 @@ def test_a_base_url_that_could_carry_a_credential_stays_masked_when_it_is_an_env
     out = _report(s, "demo", ExitCode.REFUSED, message=f'--target "{base}"').message
     assert out is not None and out == '--target "[REDACTED]:DEMO_MAGIC_URL"'
     assert "abc123XYZ" not in out and "s3cretPW" not in out
+
+
+_NOT_PLAIN = [
+    "https://demo.test/magic/AbC123SecretTok",
+    "https://demo.test/magic/PATHtok123456abcdef",
+    "https://demo.test/t/SEGsecret9XYZ/login",
+    "https://demo.test/login/bob:PATHsecret9%40x",
+    "https://demo.test/login/a.b",
+    "https://demo.test/login/%61bc",
+    "https://demo.test/login;jsessionid=abc",
+    "https://bob%40x:pw@demo.test/login",
+    "https://demo.test/login?",
+    "https://demo.test/login#",
+    "ftp://demo.test/login",
+    "opensesame-not-a-url-9",
+    "http://[::1/login",
+    "http://[bad",
+    "https://démo.test/login",
+    "https://demo.test/lo gin",
+    "https://demo.test/login\n",
+    "https://demo.test/" + "a" * 33,
+    "https:///login",
+]
+
+
+@pytest.mark.parametrize("base", _NOT_PLAIN)
+def test_pasteable_exempts_nothing_unless_the_url_is_plain(base: str) -> None:
+    """B2: a positive allowlist; anything else (path token, non-URL, malformed) exempts nothing."""
+    assert _pasteable(base) == frozenset()
+
+
+@pytest.mark.parametrize("base", [
+    "https://pathlynks-like.test/signin", "https://demo.test", "https://demo.test/",
+    "http://demo.test:8080/sign-in/", "https://demo.test/a/b-c/login",
+])
+def test_pasteable_keeps_a_plain_host_and_word_path_readable(base: str) -> None:
+    assert _pasteable(base) == frozenset({base})
+
+
+@pytest.mark.parametrize("base", [b for b in _NOT_PLAIN if "\n" not in b and " " not in b])
+def test_a_path_or_malformed_base_url_stays_masked_and_never_crashes_the_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, base: str,
+) -> None:
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    s = ProjectStore("demo", tmp_path)
+    s.save_project(Project(slug="demo", name="Demo", base_url=base, allowed_domains=["demo.test"]))
+    (s.paths.root / ".env").write_text(f"DEMO_MAGIC_URL={base}\n", encoding="utf-8")
+    rep = _report(s, "demo", ExitCode.REFUSED, message=f'--target "{base}"')
+    out = rep.message
+    assert rep.exit_code == int(ExitCode.REFUSED) and out is not None and base not in out
+    for token in ("AbC123SecretTok", "PATHtok123456abcdef", "SEGsecret9XYZ", "PATHsecret9",
+                  "opensesame-not-a-url-9"):
+        assert token not in out
 
 
 def test_a_secret_that_is_not_the_target_stays_masked_everywhere_else(store: ProjectStore) -> None:

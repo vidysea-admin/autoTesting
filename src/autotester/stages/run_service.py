@@ -17,7 +17,6 @@ from collections import Counter
 from urllib.parse import urlsplit
 
 from autotester.core.exit_codes import ExitCode
-from autotester.core.redact import scrub_url_credentials
 from autotester.core.safe_names import SLUG_PATTERN
 from autotester.providers.base import ProviderError
 from autotester.schema.case import Case
@@ -36,12 +35,29 @@ _STATUS = {ExitCode.OK: "passed", ExitCode.TEST_FAILED: "failed", ExitCode.USAGE
 _INLINE_KINDS = {EvidenceKind.URL, EvidenceKind.DOM}   # `path` holds the value, not a file
 
 
+_PLAIN_HOST = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\d{1,5})?")
+_PLAIN_SEGMENT = re.compile(r"[a-z-]{1,32}")
+
+
 def _pasteable(url: str) -> frozenset[str]:
-    """The base_url may stay readable only when it is credential-free: no userinfo, query or
-    fragment, and nothing `scrub_url_credentials` would change. Else it stays masked (C5)."""
-    parts = urlsplit(url)
-    clean = "@" not in parts.netloc and not parts.query and not parts.fragment
-    return frozenset({url}) if clean and scrub_url_credentials(url) == url else frozenset()
+    """The base_url stays readable in the hint only when ALL hold (a positive allowlist, C5):
+    `urlsplit` succeeds; scheme is http or https; the URL is pure ASCII with no whitespace or
+    control character and no `;`, `?` or `#`; the netloc is a plain host[:port] (no userinfo, no
+    `%`, no brackets); and the path is empty, `/`, or segments that each match `[a-z-]{1,32}`
+    (lowercase letters and hyphens: no digits, `%`, dots or colons). Anything else, or a
+    ValueError from the parser, exempts nothing, so the `.env` match masks it as before."""
+    if not url.isascii() or not all("!" <= c <= "~" for c in url) or set(url) & set(";?#"):
+        return frozenset()
+    try:
+        parts = urlsplit(url)
+    except ValueError:
+        return frozenset()
+    if parts.scheme not in ("http", "https") or not _PLAIN_HOST.fullmatch(parts.netloc):
+        return frozenset()
+    path = parts.path.removesuffix("/")
+    if path and not all(_PLAIN_SEGMENT.fullmatch(seg) for seg in path.removeprefix("/").split("/")):
+        return frozenset()
+    return frozenset({url})
 
 
 def _report(store: ProjectStore | None, project: str, code: ExitCode, **fields) -> RegressionReport:
