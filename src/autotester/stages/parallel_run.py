@@ -29,6 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 
 from autotester.browser.video import VIDEO_OVERHEAD_MB
+from autotester.core.trace import TraceWriter, traced_phase
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
 from autotester.schema.enums import Outcome, WritePolicy
@@ -58,6 +59,7 @@ class ParallelPlan:
     bound_by: str  # "config" | "budget" | "write_policy"
     free_ram_mb: float
     cpu_count: int
+    excluded_s: dict[str, float] | None = None  # D-112: set once the run ends; see RunBudget
 
 
 def _free_ram_mb() -> float:
@@ -207,7 +209,7 @@ def run_cases(
 def default_session_factory(
     project: Project, secrets: object, run_dir: object,
     session_cls: Callable[..., object] | None = None, *, record_video: bool = False,
-    budget: RunBudget | None = None,
+    budget: RunBudget | None = None, trace: TraceWriter | None = None,
 ) -> SessionFactory:
     """PR2, the real (non-fake) integration: each case gets its OWN
     `BrowserSession` against its OWN profile directory (`case.id`-scoped), so
@@ -237,12 +239,15 @@ def default_session_factory(
         session = build(project, secrets, run_dir, paths, record_video=record_video)
         if budget is not None:
             session.budget = budget
+        if trace is not None:
+            session.trace = trace  # phase spans for start/close
         state = getattr(session, "state", None)
         if state is not None:
             state.evidence_prefix = case.id
         start = getattr(session, "start", None)
         try:
-            return start() if callable(start) else session
+            with traced_phase(trace, case.id, "session_start"):
+                return start() if callable(start) else session
         except Exception:
             close = getattr(session, "close", None)
             if callable(close):

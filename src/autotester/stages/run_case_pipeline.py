@@ -7,6 +7,7 @@ from pathlib import Path
 
 from autotester.browser.session import BrowserSession
 from autotester.browser.video import MAX_VIDEO_DURATION_S
+from autotester.core.trace import TraceWriter, traced_phase
 from autotester.providers.base import Provider
 from autotester.schema.base import Provenance
 from autotester.schema.case import Case
@@ -104,28 +105,25 @@ def rubric_for_case(case: Case, store: ProjectStore) -> Rubric:
 
 
 def _finalize_video(result: RawResult, verdict: Verdict, video_rel: str | None,
-                     run_dir: Path) -> None:
+                     run_dir: Path, trace: TraceWriter | None = None) -> None:
     """T-191/AT-587 V2/V6/V8, the named prune call site: the ONE function that
     decides whether a just-recorded video survives. `video_rel` is whatever
-    `BrowserSession.end_case_video()` returned (already a finished file at
-    this point) or `None` when this session had no recording -- both are
-    no-ops beyond this call.
+    `BrowserSession.end_case_video()` returned (a finished file) or `None` (no
+    recording): a no-op. Timed as the nested `finalize_video` phase when traced.
 
     Kept only when the verdict is FAIL/INCONCLUSIVE/BLOCKED (gate answer A:
     never PASS) AND the case finished inside `MAX_VIDEO_DURATION_S` (V6's
     disk safety net -- a runaway case's video is dropped regardless of
-    verdict, the same "record, then discard" shape V2 already uses for PASS,
-    just gated on duration instead of result). Kept videos are appended to
-    `result.evidence` as `EvidenceKind.VIDEO` (V8) -- the same envelope every
-    other evidence kind uses, never a new field on `RawResult`."""
+    verdict). Kept videos are appended to `result.evidence` as
+    `EvidenceKind.VIDEO` (V8) -- the same envelope every other evidence kind uses."""
     if video_rel is None:
         return
-    video_path = run_dir / video_rel
-    over_budget = result.duration_s > MAX_VIDEO_DURATION_S
-    if verdict.result is Result.PASS or over_budget:
-        video_path.unlink(missing_ok=True)
-        return
-    result.evidence.append(Evidence(kind=EvidenceKind.VIDEO, path=video_rel, masked=True))
+    with traced_phase(trace, result.case_id, "finalize_video", nested=True):
+        video_path = run_dir / video_rel
+        if verdict.result is Result.PASS or result.duration_s > MAX_VIDEO_DURATION_S:
+            video_path.unlink(missing_ok=True)
+            return
+        result.evidence.append(Evidence(kind=EvidenceKind.VIDEO, path=video_rel, masked=True))
 
 
 def _record_repair(loop: AgentLoopResult, case: Case, store: ProjectStore) -> None:
@@ -225,7 +223,8 @@ def run_and_grade_case(
         with _judging(session):
             verdict = grade(rubric, result, run_id, judge, run_dir=store.paths.run_dir(run_id),
                             secrets=session.secrets, mask_limit=project_mask_limit(store))
-    _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
+    _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id),
+                    getattr(judge, "trace", None))
     return result, verdict
 
 
@@ -274,7 +273,8 @@ def run_and_grade_case_resilient(
             scoreboard="not judged: the grader failed after execution completed",
             grader_provider="rule", note=f"{type(exc).__name__}: {exc}",
         )
-    _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id))
+    _finalize_video(result, verdict, video_rel, store.paths.run_dir(run_id),
+                    getattr(judge, "trace", None))
     return result, verdict
 
 

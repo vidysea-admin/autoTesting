@@ -8,6 +8,11 @@ run-view UI panel (RT7) -- a VIEW over the file, never a second store
 from __future__ import annotations
 
 import json
+import sys
+import time
+from collections.abc import Iterator
+from contextlib import contextmanager
+from datetime import timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -16,8 +21,12 @@ from pydantic import BaseModel, TypeAdapter
 
 from autotester.core.pricing import estimate_cost
 from autotester.core.redact import Redactor
+from autotester.schema.base import utc_now
 from autotester.schema.run_state import StageCheckpoint
-from autotester.schema.trace import LLMSpan, StageSpan, ToolSpan
+from autotester.schema.trace import LLMSpan, PhaseSpan, StageSpan, ToolSpan
+
+SLOW_PHASE_S = 30.0
+"""A phase longer than this prints one stderr line, so a stall is visible while it happens."""
 
 _LINE = TypeAdapter(dict[str, Any])  # encodes datetimes/enums exactly as model_dump_json
 
@@ -98,6 +107,35 @@ class TraceWriter:
                         refusal=refusal, parent_seq=parent_seq, duration_s=duration_s)
         self._append(span)
 
+    def record_phase(self, *, phase: str, started_mono: float, case_id: str | None = None,
+                     ok: bool = True, nested: bool = False, note: str | None = None) -> None:
+        """One timed phase, measured on the monotonic clock from `started_mono` to now."""
+        duration = max(0.0, time.monotonic() - started_mono)
+        finished = utc_now()
+        self._append(PhaseSpan(
+            trace_id=self.trace_id, case_id=case_id, phase=phase, ok=ok, nested=nested,
+            note=note, started=finished - timedelta(seconds=duration), finished=finished,
+            duration_s=duration))
+        if duration > SLOW_PHASE_S:
+            print(f"slow phase: {phase} {duration:.0f}s", file=sys.stderr)
+
+
+@contextmanager
+def traced_phase(trace: TraceWriter | None, case_id: str | None, phase: str, *,
+                 nested: bool = False) -> Iterator[None]:
+    """Time the block as one `PhaseSpan` (ok=False when it raises; the error propagates).
+    A no-op when `trace` is None, so untraced use costs nothing."""
+    started, ok = time.monotonic(), True
+    try:
+        yield
+    except BaseException:
+        ok = False
+        raise
+    finally:
+        if trace is not None:
+            trace.record_phase(phase=phase, started_mono=started, case_id=case_id, ok=ok,
+                               nested=nested)
+
 
 def read_tool_spans(path: Path) -> list[ToolSpan]:
     """The agent-layer lines of `trace.jsonl`, in order; no trace yet returns an empty list."""
@@ -108,13 +146,16 @@ def read_tool_spans(path: Path) -> list[ToolSpan]:
     return [ToolSpan.model_validate(r) for r in rows if r.get("kind") == "tool"]
 
 
-def read_spans(path: Path) -> list[StageSpan | LLMSpan]:
+def read_spans(
+    path: Path, *, include_phases: bool = False,
+) -> list[StageSpan | LLMSpan | PhaseSpan]:
     """RT7: parse `trace.jsonl` back into spans for the run-view panel -- a
     VIEW over the file. A run with no trace yet returns an empty list, never
-    an error."""
+    an error. Phase spans are returned only with `include_phases=True`, so the
+    stage/LLM consumers (run view, failure bundle) see exactly what they always did."""
     if not path.exists():
         return []
-    spans: list[StageSpan | LLMSpan] = []
+    spans: list[StageSpan | LLMSpan | PhaseSpan] = []
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
@@ -124,8 +165,26 @@ def read_spans(path: Path) -> list[StageSpan | LLMSpan]:
             raise TraceParseError(f"{path.name}:{number}: not valid JSON") from exc
         if raw.get("kind") == "tool":  # agent-layer spans: `read_tool_spans`
             continue
+        if raw.get("kind") == "phase":
+            if include_phases:
+                spans.append(PhaseSpan.model_validate(raw))
+            continue
         if raw.get("kind") == "llm_call":
             spans.append(LLMSpan.model_validate(raw))
         else:
             spans.append(StageSpan.model_validate(raw))
     return spans
+
+
+def phase_summary(path: Path, wall_s: float) -> tuple[dict[str, float], float]:
+    """`(phase_totals_s, unaccounted_s)` for a run: seconds per phase name, and the run's wall
+    time minus every top-level phase (nested phases sit inside a top-level one).
+    Never negative: parallel workers' phases overlap, so their sum can exceed the wall."""
+    spans = read_spans(path, include_phases=True)
+    totals: dict[str, float] = {}
+    accounted = 0.0
+    for span in spans:
+        if isinstance(span, PhaseSpan):
+            totals[span.phase] = round(totals.get(span.phase, 0.0) + span.duration_s, 3)
+            accounted += 0.0 if span.nested else span.duration_s
+    return totals, round(max(0.0, wall_s - accounted), 3)

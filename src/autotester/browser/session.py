@@ -22,9 +22,11 @@ from autotester.browser.launch import (
 )
 from autotester.browser.locators import LocatorMixin
 from autotester.browser.secrets import SecretStore, bad_scheme, host_of
+from autotester.browser.teardown import close_session
 from autotester.browser.video import VIDEO_DIR_NAME, VideoMixin
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import PLACEHOLDER_RE
+from autotester.core.trace import TraceWriter
 from autotester.schema.enums import EvidenceKind, Outcome
 from autotester.schema.flowspec import ExpectedState
 from autotester.schema.project import Project
@@ -79,6 +81,7 @@ class BrowserSession(DestroyGuardMixin, EvidenceMixin, LocatorMixin, VideoMixin)
                  paths: ProjectPaths | None = None, *, observer: Any | None = None,
                  record_video: bool = False, expose_cdp: bool = False) -> None:
         self.budget: RunBudget | None = None
+        self.trace: TraceWriter | None = None  # the run's trace, set by the run executor
         self.project = project
         self.secrets = secrets
         self.paths = paths or ProjectPaths(project.slug)
@@ -132,17 +135,15 @@ class BrowserSession(DestroyGuardMixin, EvidenceMixin, LocatorMixin, VideoMixin)
             self.close()
 
     def close(self) -> None:
-        """Close only this session's context and driver (B9). Never a process kill."""
+        """Close only this session's context and driver (B9). Never a process kill. Each step
+        is bounded and traced (`browser/teardown.py`); one failure skips none."""
         context, driver = self._context, self._playwright
         self._context = self._page = self._playwright = self._cdp_url = None
-        for step in (getattr(context, "close", None), getattr(driver, "stop", None)):
-            if callable(step):  # each teardown step guarded: one failure skips none
-                with contextlib.suppress(Exception):
-                    step()
+        close_session(context, driver, trace=getattr(self, "trace", None),
+                      budget=getattr(self, "budget", None), case_id=self.state.evidence_prefix,
+                      sweep=self._sweep_orphan_videos if self.record_video else None)
         with contextlib.suppress(Exception):
             forget_cdp_port(self.paths.profile_dir)
-        if self.record_video:
-            self._sweep_orphan_videos()
 
     def _sweep_orphan_videos(self) -> None:
         """Sweep only this session's video scratch, never a sibling's (V1)."""

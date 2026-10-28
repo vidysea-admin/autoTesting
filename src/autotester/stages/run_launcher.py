@@ -15,7 +15,10 @@ width planner.
 
 from __future__ import annotations
 
+import dataclasses
 import re
+import sys
+import time
 from collections.abc import Callable
 from contextlib import AbstractContextManager
 from datetime import datetime
@@ -27,6 +30,7 @@ from autotester.browser.video import VIDEO_OVERHEAD_MB
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.core.safe_names import SLUG_PATTERN
+from autotester.core.trace import phase_summary
 from autotester.providers import for_role, why_unavailable
 from autotester.providers.base import Provider, ProviderError
 from autotester.schema.approval import RunApproval
@@ -139,7 +143,34 @@ def prepare_run(slug: str, seams: RunSeams = DEFAULT_SEAMS,
     approval = require_live_case_approval(project, store, cases, secrets, account_keys)
     cat = catalog(project, store.load_flowspec(), store)   # snapshot taken when the run starts
     entry_flags = [is_entry_case(c, project) for c in cases]
+    warn_if_memory_starved(seams)
     return Prepared(store, project, cases, judge, paths, secrets, approval, entry_flags, cat)
+
+
+LOW_RAM_WARN_MB = 2048.0
+"""Free RAM below which a run warns: Chromium start/close took 10-1000x longer on a host with
+~1 GB free (stall diagnosis 2026-10-28)."""
+
+
+def warn_if_memory_starved(seams: RunSeams = DEFAULT_SEAMS) -> bool:
+    """One stderr line when free RAM is under `LOW_RAM_WARN_MB`; True when it warned. Advisory
+    only: a run is never refused for it, and a failed measurement is silent."""
+    try:
+        free_mb = seams.free_ram_mb()
+        if free_mb >= LOW_RAM_WARN_MB:
+            return False
+        print(f"warning: host is memory-starved ({free_mb / 1024:.1f} GB free): expect slow "
+              "browser start and close; stop other heavy jobs (e.g. a sharded pytest) before "
+              "this run", file=sys.stderr)
+    except Exception:  # a bad measurement or an unwritable stderr must never stop a run
+        return False
+    return True
+
+
+def phase_fields(store: ProjectStore, run_id: str, wall_s: float) -> dict[str, Any]:
+    """`Run` fields from this run's trace: seconds per phase and the unaccounted remainder."""
+    totals, unaccounted = phase_summary(store.paths.run_trace(run_id), wall_s)
+    return {"phase_totals_s": totals or None, "unaccounted_s": unaccounted}
 
 
 def plan_under_shared_budget(
@@ -195,7 +226,7 @@ def run_cases_traced(
         error=f"run budget exhausted: {budget.stop_reason}" if budget.stop_reason else None,
         started=started, finished=ctx.clock(),
     ))
-    return plan
+    return dataclasses.replace(plan, excluded_s=budget.excluded_report())
 
 
 def save_tracked_run(store: ProjectStore, **fields: Any) -> Run:
@@ -216,6 +247,7 @@ def launch_run(
     store, project, cases, judge, paths, secrets, approval, entry_flags, cat = prepare_run(
         slug, seams, priorities)
     run_id = run_id or f"run-{ulid()}"
+    wall_started = time.monotonic()
     plan = run_cases_traced(
         store, run_id, secrets, project, cases, entry_flags, paths.run_dir(run_id), paths, slug,
         judge, approval, cat, seams,
@@ -230,6 +262,8 @@ def launch_run(
         # CN10: what it ran under, reported not capped -- a 19-year wall clock is visible.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
+        excluded_s=plan.excluded_s,
+        **phase_fields(store, run_id, time.monotonic() - wall_started),
     )
     run_follow_ups(store, run_id, judge)
     return run

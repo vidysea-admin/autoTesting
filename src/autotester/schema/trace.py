@@ -1,9 +1,10 @@
 """Trace-span shapes for the redacted per-run trace.jsonl (D-041 phase 1,
 qa/contracts/run-trace.md).
 
-Two spans: one per finished pipeline-stage transition (`StageSpan`, RT3) and
-one per LLM call (`LLMSpan`, RT4). `core/trace.py::TraceWriter` is the only
-writer of either shape (RT5); this module only defines what a line looks
+Spans: one per finished pipeline-stage transition (`StageSpan`, RT3), one per
+LLM call (`LLMSpan`, RT4) and one per timed run phase (`PhaseSpan`, the
+teardown-stall diagnosis). `core/trace.py::TraceWriter` is the only
+writer of any shape (RT5); this module only defines what a line looks
 like, so a reader (the UI panel, RT7) and a writer always agree on the shape.
 """
 
@@ -73,4 +74,25 @@ class ToolSpan(BaseModel):
     refusal: str | None = None
     parent_seq: int | None = None
     duration_s: float = 0.0
+    recorded_at: datetime = Field(default_factory=utc_now)
+
+
+class PhaseSpan(BaseModel):
+    """One timed phase of a run (entry-profile wipe, session start/close, OCR, video finalise,
+    save, a failed judge tier). Records WHERE wall time went so a silent multi-minute gap is a
+    number, not a mystery. `nested=True` marks a phase that happens INSIDE another recorded
+    phase (so `unaccounted_s` never counts its time twice)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["phase"] = "phase"
+    trace_id: str
+    case_id: str | None = None
+    phase: str
+    started: datetime
+    finished: datetime
+    duration_s: float = Field(ge=0.0)
+    ok: bool = True
+    nested: bool = False
+    note: str | None = None
     recorded_at: datetime = Field(default_factory=utc_now)

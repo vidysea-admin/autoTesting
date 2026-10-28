@@ -115,7 +115,10 @@ class RunApproval(Artifact):
     )
     wall_clock_s: float = Field(
         default=0.0, allow_inf_nan=False,
-        description="how many seconds this run may take in total. ZERO MEANS ZERO, as above: an "
+        description="how many seconds this run may spend ACTING on the target site (navigation, "
+                    "clicks, fills, waits on the page). Model judging and housekeeping "
+                    "(browser teardown, profile wipe, saving) are held off this clock up to "
+                    "bounded allowances (D-112). ZERO MEANS ZERO, as above: an "
                     "approval granting 0 seconds authorises no time. Present-and-non-zero is not "
                     "the same as plausible — the live pathlynks row grants 600000000.0s (19 "
                     "years) and nothing here rejects it; CN10 requires that bound be REPORTED "

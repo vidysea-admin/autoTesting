@@ -168,7 +168,7 @@ def test_trigger_runs_exact_selected_priority_plus_pinned_once(
 
     def execute(store_, run_id, secrets, project, cases, *args):
         seen.extend(c.id for c in cases)
-        return SimpleNamespace(n=1, bound_by="config")
+        return SimpleNamespace(n=1, bound_by="config", excluded_s=None)
 
     monkeypatch.setattr("autotester.stages.run_launcher.run_cases_traced", execute)
     monkeypatch.setattr("autotester.ui.routes_runs.for_role",

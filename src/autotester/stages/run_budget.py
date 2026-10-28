@@ -19,7 +19,7 @@ import math
 import threading
 import time
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import AbstractContextManager, contextmanager
 
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
@@ -27,6 +27,31 @@ from autotester.schema.case import Case
 
 class RunBudgetExceeded(RuntimeError):
     """A named aggregate brake, never swallowed as a browser observation."""
+
+
+class _ExcludedClock:
+    """Seconds spent inside `measure()` blocks, overlapping blocks counted as their UNION once,
+    with `allowance_s` capping how much of it the owner may subtract from the approval clock.
+    Not locked itself: `RunBudget` calls it only while holding its own lock."""
+
+    def __init__(self, allowance_s: float) -> None:
+        self.allowance_s, self.done_s, self.active, self.since = float(allowance_s), 0.0, 0, 0.0
+
+    def enter(self) -> None:
+        if self.active == 0:
+            self.since = time.monotonic()
+        self.active += 1
+
+    def leave(self) -> None:
+        self.active -= 1
+        if self.active == 0:
+            self.done_s += time.monotonic() - self.since
+
+    def spent(self, now: float) -> float:
+        return self.done_s + (now - self.since if self.active else 0.0)
+
+    def excluded(self, now: float) -> float:
+        return min(self.spent(now), self.allowance_s)
 
 
 class RunBudget:
@@ -47,7 +72,8 @@ class RunBudget:
     zero budget -- one field, two opposite meanings, and the permissive one
     governed what actually happened."""
 
-    def __init__(self, approval: RunApproval, judge_allowance_s: float = 0.0) -> None:
+    def __init__(self, approval: RunApproval, judge_allowance_s: float = 0.0,
+                 housekeeping_allowance_s: float = 0.0) -> None:
         if approval is None:
             raise ValueError(
                 "RunBudget requires a RunApproval: a run with no approval is an unapproved "
@@ -58,15 +84,18 @@ class RunBudget:
             value = getattr(approval, name)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"invalid run budget {name}")
-        if not math.isfinite(judge_allowance_s) or judge_allowance_s < 0:
-            raise ValueError("invalid judge allowance")
-        # Judge (model-grading) time is accounted SEPARATELY from the approval's clock:
-        # the approval bounds the time the browser acts on the target; grading is bounded
-        # by this allowance, and any grading beyond it is charged to the approval clock.
-        self._judge_allowance_s = float(judge_allowance_s)
-        self._judge_done_s = 0.0
-        self._judge_active = 0
-        self._judge_since = 0.0
+        for allowance in (judge_allowance_s, housekeeping_allowance_s):
+            if not math.isfinite(allowance) or allowance < 0:
+                raise ValueError("invalid judge allowance")
+        # The approval's clock bounds only the time the browser ACTS on the target (D-112).
+        # Judge (model grading) and housekeeping (Chromium exit, profile wipe, OCR, bundle
+        # assembly) time is held off it by ONE shared exclusion clock (`_excluded`), so a second
+        # spent inside both scopes is subtracted once. Its combined allowance is the two
+        # allowances; anything beyond it is charged to the approval clock. `_judge` and
+        # `_housekeeping` only MEASURE each kind for the run record -- they exclude nothing.
+        self._excluded = _ExcludedClock(judge_allowance_s + housekeeping_allowance_s)
+        self._judge = _ExcludedClock(judge_allowance_s)
+        self._housekeeping = _ExcludedClock(housekeeping_allowance_s)
         self._lock = threading.Lock()
         self._actions_used = 0
         self._probes_used = 0
@@ -75,42 +104,64 @@ class RunBudget:
 
     @classmethod
     def for_cases(cls, approval: RunApproval, cases: list[Case]) -> RunBudget:
-        """The budget for a run of `cases`: the approval plus its bounded judge allowance."""
-        return cls(approval, judge_allowance_s=judge_allowance_s(cases))
+        """The budget for a run of `cases`: the approval plus its bounded judge and
+        housekeeping allowances."""
+        return cls(approval, judge_allowance_s=judge_allowance_s(cases),
+                   housekeeping_allowance_s=housekeeping_allowance_s(cases))
 
     @contextmanager
-    def judging(self) -> Iterator[None]:
-        """Time spent inside is judge time: excluded from the approval clock, up to the
-        judge allowance. Overlapping judges (parallel workers) count their UNION once."""
+    def _excluding(self, kind: _ExcludedClock) -> Iterator[None]:
         with self._lock:
-            if self._judge_active == 0:
-                self._judge_since = time.monotonic()
-            self._judge_active += 1
+            self._excluded.enter()
+            kind.enter()
         try:
             yield
         finally:
             with self._lock:
-                self._judge_active -= 1
-                if self._judge_active == 0:
-                    self._judge_done_s += time.monotonic() - self._judge_since
+                kind.leave()
+                self._excluded.leave()
 
-    def _judge_excluded_locked(self, now: float) -> float:
-        spent = self._judge_done_s + (now - self._judge_since if self._judge_active else 0.0)
-        return min(spent, self._judge_allowance_s)
+    def judging(self) -> AbstractContextManager[None]:
+        """Time spent inside is judge time: excluded from the approval clock, up to the
+        judge allowance. Overlapping judges (parallel workers) count their UNION once."""
+        return self._excluding(self._judge)
+
+    def housekeeping(self) -> AbstractContextManager[None]:
+        """Time spent inside is browser teardown / profile wipe / OCR / bundle time: excluded
+        from the approval clock (once, even when it overlaps judging) up to the combined
+        allowance; beyond it, charged."""
+        return self._excluding(self._housekeeping)
 
     def _browser_elapsed_locked(self) -> float:
         now = time.monotonic()
-        return now - self._start - self._judge_excluded_locked(now)
+        return now - self._start - self._excluded.excluded(now)
+
+    def excluded_report(self) -> dict[str, float]:
+        """Seconds held off the approval clock, for the run record: each kind as measured and
+        the `total` actually subtracted (the union, capped at the combined allowance)."""
+        with self._lock:
+            now = time.monotonic()
+            return {"judging": self._judge.spent(now),
+                    "housekeeping": self._housekeeping.spent(now),
+                    "total": self._excluded.excluded(now)}
 
     @property
     def judge_s_used(self) -> float:
         with self._lock:
-            now = time.monotonic()
-            return self._judge_done_s + (now - self._judge_since if self._judge_active else 0.0)
+            return self._judge.spent(time.monotonic())
 
     @property
     def judge_allowance_s(self) -> float:
-        return self._judge_allowance_s
+        return self._judge.allowance_s
+
+    @property
+    def housekeeping_s_used(self) -> float:
+        with self._lock:
+            return self._housekeeping.spent(time.monotonic())
+
+    @property
+    def housekeeping_allowance_s(self) -> float:
+        return self._housekeeping.allowance_s
 
     def try_consume(self, *, actions: int = 0, probes: int = 0) -> bool:
         return self._consume(actions=actions, probes=probes, require_running=False)
@@ -231,3 +282,16 @@ approval clock instead)."""
 def judge_allowance_s(cases: list[Case]) -> float:
     """The separate judge-time budget for a run: one per-case allowance per case."""
     return len(cases) * JUDGE_ALLOWANCE_PER_CASE_S
+
+
+HOUSEKEEPING_ALLOWANCE_PER_CASE_S = 60.0
+"""Seconds per case of non-browser housekeeping held OUTSIDE the approval's wall clock: waiting for
+Chromium to exit (two bounded teardown calls of ~20 s), the entry-profile wipe, OCR and bundle
+assembly. Measured stalls of 224-887 s per entry case were this time being charged to the clock
+(stall-diagnosis 2026-10-28). Bounded: housekeeping beyond it IS charged, so a runaway teardown
+still ends the run."""
+
+
+def housekeeping_allowance_s(cases: list[Case]) -> float:
+    """The separate housekeeping budget for a run: one per-case allowance per case."""
+    return len(cases) * HOUSEKEEPING_ALLOWANCE_PER_CASE_S
