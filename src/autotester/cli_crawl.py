@@ -60,8 +60,8 @@ def explore_cmd(
         False, "--merge", help="fold the crawled screens into the FlowSpec (resets it to DRAFT)"
     ),
 ) -> None:
-    """Bounded BFS crawl of a project, refusing anything its write_policy denies
-    (qa/contracts/explore.md). Only the optional login case is typed; nothing destructive."""
+    """Bounded BFS crawl of a project, refusing anything its write_policy denies.
+    Contract: qa/contracts/explore.md. Only the login case is typed; nothing destructive."""
     from autotester.browser.observe import PageObserver
     from autotester.browser.secrets import SecretStore
     from autotester.browser.session import BrowserSession
@@ -238,14 +238,14 @@ def approve_cmd(
     scope: str = typer.Option(..., "--scope", help="what this run may touch, in your words"),
     granted_by: str = typer.Option(..., "--granted-by"),
     expires: str | None = typer.Option(None, "--expires", help="YYYY-MM-DD, through that day"),
-    standing: bool = typer.Option(False, "--standing", help="crawl only: until revoked (D-111)"),
+    standing: bool = typer.Option(False, "--standing", help="until revoked (autotester revoke)"),
     max_actions: int | None = typer.Option(None, "--max-actions", min=1, help="default 200"),
     max_probes: int | None = typer.Option(None, "--max-probes", min=1, help="default 200"),
     wall_clock: float | None = typer.Option(None, "--wall-clock", min=0.001, help="default 600s"),
     production: bool = typer.Option(False, "--production", help="adversarial run on production"),
 ) -> None:
-    """Grant a human's approval for one kind of run against one target (D-018), HMAC-signed
-    with the repo-root key (AT-110). `--kind live_case`: any bound left out is derived (D-112)."""
+    """Grant a human's approval for one kind of run against one target (D-018).
+    HMAC-signed (AT-110). `--kind live_case`: any bound left out is derived (D-112)."""
     from autotester.schema.approval import RunApproval
     from autotester.schema.enums import ApprovalKind
 
