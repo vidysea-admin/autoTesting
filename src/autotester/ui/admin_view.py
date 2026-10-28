@@ -9,8 +9,20 @@ from __future__ import annotations
 from html import escape
 
 from autotester.auth.defaults import PERMISSION_SECTIONS
+from autotester.auth.loopback import hosted
+from autotester.core import env
 from autotester.schema.auth import CATALOGUE, Group, User
 from autotester.ui import theme
+
+
+def storage_banner() -> str:
+    """A visible banner when a hosted server's data root is not a persistent volume (every
+    deploy would wipe accounts and projects); empty on a laptop, on a volume, or when
+    AUTOTESTER_EPHEMERAL_OK=1. The text is the detector's own sentence."""
+    message = env.storage_warning() if hosted() else None
+    if not message:
+        return ""
+    return f"<p class='error' role='alert'><strong>{escape(message)}</strong></p>"
 
 
 def _post(action: str, inner: str, label: str, tone: str = "btn btn-sm") -> str:
@@ -53,7 +65,8 @@ def users_body(users: list[User], groups: list[Group], message: str = "") -> str
     table = ("<table><tr><th>Account</th><th>Groups</th><th>Details</th><th>Actions</th>"
              f"</tr>{rows}</table>")
     return (theme.breadcrumb(("Projects", "/"), ("Users", None)) + "<h1>Users</h1>"
-            "<p class='subtitle'>A new account has no access until you add it to a group. "
+            + storage_banner()
+            + "<p class='subtitle'>A new account has no access until you add it to a group. "
             "<a href='/admin/groups'>Edit groups</a></p>" + note + theme.card(table))
 
 
@@ -85,7 +98,8 @@ def groups_body(groups: list[Group], message: str = "") -> str:
               "<label for='name'>Group name</label><input id='name' name='name' required "
               "maxlength='64'></div>" + permission_boxes(set())
               + "<button class='btn btn-primary' type='submit'>Create group</button></form>")
-    return (theme.breadcrumb(("Projects", "/"), ("Groups", None)) + "<h1>Groups</h1>" + note
+    return (theme.breadcrumb(("Projects", "/"), ("Groups", None)) + "<h1>Groups</h1>"
+            + storage_banner() + note
             + theme.card("<table><tr><th>Group</th><th>Members</th><th>Permissions</th></tr>"
                          f"{rows}</table>")
             + theme.card(create, title="New group"))

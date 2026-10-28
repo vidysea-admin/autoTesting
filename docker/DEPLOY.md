@@ -231,6 +231,8 @@ gcloud run deploy autotester --image <region>-docker.pkg.dev/<project>/<repo>/au
   --startup-probe tcpSocket.port=8000,initialDelaySeconds=10,timeoutSeconds=5,periodSeconds=10,failureThreshold=18
 ```
 
+**Persistent storage:** without the `--add-volume`/`--add-volume-mount` pair above, auth, `projects/`, approvals and `.work` live on the container filesystem and every deploy wipes them. The entrypoint logs `WARNING: storage is not persistent` (and `/admin/users` and `/admin/groups` show a banner on a hosted server) when the data root is not a mounted volume; it never blocks start-up. `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately throwaway local container.
+
 The container binds `$PORT` (default 8000): `--port` must match, or drop the flag and let Cloud
 Run inject `PORT=8080`. CPU must stay always allocated (`--no-cpu-throttling`); the app runs
 background work between requests. Start-up runs Xvfb and the VNC sidecars before the app.
