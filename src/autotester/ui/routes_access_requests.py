@@ -13,9 +13,11 @@ import re
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
-from autotester.auth import audit
+from autotester.auth import accounts, audit, groups
 from autotester.auth.access import authorize
+from autotester.auth.db import NotAllowed
 from autotester.schema.auth import PermissionKey as K
+from autotester.schema.auth import Principal
 from autotester.schema.team_enums import AccessRequestStatus
 from autotester.stages import video_access as access
 from autotester.stages.video_requests import (
@@ -81,11 +83,61 @@ def _labels(requests: list) -> dict[tuple[str, str], str]:
     return out
 
 
+def _requests_page(message: str = "", status: int = 200) -> HTMLResponse:
+    """The approvers' page; the New accounts section only for a holder of users.manage."""
+    who = who_is()
+    pending = pending_for(who)
+    manager = authorize(who, K.USERS_MANAGE)
+    html = view.approver_requests_page(
+        pending, _labels(pending), accounts.list_waiting() if manager else None,
+        groups.list_groups(), message)
+    return HTMLResponse(html, status_code=status)
+
+
 @router.get("/access-requests", response_class=HTMLResponse)
-def access_requests_page() -> str:
+def access_requests_page() -> HTMLResponse:
     """Only the requests this account may act on (absence, not 403, for the rest)."""
-    pending = pending_for(who_is())
-    return view.approver_requests_page(pending, _labels(pending))
+    return _requests_page()
+
+
+def _manager() -> Principal:
+    who = who_is()
+    if not authorize(who, K.USERS_MANAGE):
+        raise HTTPException(403, "you do not have permission")
+    return who
+
+
+def _decide_account(user_id: int, approve: bool, form: dict) -> Response:
+    """Approve (add to the chosen group) or decline (disable) a waiting account; a refusal
+    changes nothing and is audited like any refused admin action."""
+    who = _manager()
+    target = accounts.get_user(user_id)
+    if target is None:
+        raise HTTPException(404, "no such account")
+    verb = "signup.approve" if approve else "signup.decline"
+    try:
+        if approve:
+            raw = str(form.get("group_id", ""))
+            if not raw.isdigit():
+                raise accounts.AccountError("choose a group")
+            accounts.approve_waiting(user_id, int(raw), who)
+        else:
+            accounts.decline_waiting(user_id, who)
+    except (accounts.AccountError, NotAllowed) as exc:
+        audit.record_action(actor=who.email, target=target.email, action=f"{verb}.refused")
+        return _requests_page(str(exc), 403 if isinstance(exc, NotAllowed) else 400)
+    audit.record_action(actor=who.email, target=target.email, action=verb)
+    return RedirectResponse("/access-requests", status_code=303)
+
+
+@router.post("/access-requests/accounts/{user_id}/approve")
+async def approve_account(user_id: int, request: Request) -> Response:
+    return _decide_account(user_id, True, dict(await request.form()))
+
+
+@router.post("/access-requests/accounts/{user_id}/decline")
+def decline_account(user_id: int) -> Response:
+    return _decide_account(user_id, False, {})
 
 
 def _decide(request_id: int, approve: bool) -> Response:

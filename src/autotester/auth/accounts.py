@@ -145,6 +145,20 @@ def authenticate(email: str, password: str) -> User | None:
     return user
 
 
+def list_waiting() -> list[User]:
+    """Enabled accounts with no group: what a new signup is until an admin decides."""
+    return [u for u in list_users() if not u.disabled and not u.groups]
+
+
+def user_managers() -> list[str]:
+    """Emails of enabled accounts holding users.manage: who to tell about a new signup."""
+    with db.reading() as conn:
+        return [r["email"] for r in conn.execute(
+            "SELECT DISTINCT u.email FROM users u JOIN memberships m ON m.user_id = u.id "
+            "JOIN group_permissions p ON p.group_id = m.group_id "
+            "WHERE p.permission = 'users.manage' AND u.disabled = 0 ORDER BY u.email")]
+
+
 def get_user(user_id: int) -> User | None:
     with db.reading() as conn:
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
@@ -218,6 +232,36 @@ def set_user_groups(user_id: int, group_ids: list[int],
         conn.executemany("INSERT INTO memberships (user_id, group_id) VALUES (?, ?)",
                          [(user_id, g) for g in sorted(set(group_ids))])
         db.ensure_an_admin_remains(conn)
+
+
+def _require_waiting(conn: sqlite3.Connection, user_id: int) -> None:
+    row = conn.execute("SELECT disabled FROM users WHERE id = ?", (user_id,)).fetchone()
+    if row is None:
+        raise AccountError("no such account")
+    if row["disabled"] or conn.execute("SELECT 1 FROM memberships WHERE user_id = ?",
+                                       (user_id,)).fetchone():
+        raise AccountError("this account is not waiting for access")
+
+
+def approve_waiting(user_id: int, group_id: int, actor: Principal | None = None) -> None:
+    """Put a waiting account (enabled, no group) into `group_id`. Same limits as
+    `set_user_groups`; refused, changing nothing, once it already has a group."""
+    with db.transaction() as conn:
+        _require_waiting(conn, user_id)
+        if conn.execute("SELECT 1 FROM groups WHERE id = ?", (group_id,)).fetchone() is None:
+            raise AccountError("unknown group")
+        access.require_may_regroup(conn, actor, user_id, {group_id})
+        conn.execute("INSERT INTO memberships (user_id, group_id) VALUES (?, ?)",
+                     (user_id, group_id))
+
+
+def decline_waiting(user_id: int, actor: Principal | None = None) -> None:
+    """Disable a waiting account and end its sessions; refused once it has a group."""
+    with db.transaction() as conn:
+        _require_waiting(conn, user_id)
+        access.require_may_touch(conn, actor, user_id)
+        conn.execute("UPDATE users SET disabled = 1 WHERE id = ?", (user_id,))
+        conn.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
 
 
 def bootstrap_admin(email: str, password: str) -> tuple[User, bool]:

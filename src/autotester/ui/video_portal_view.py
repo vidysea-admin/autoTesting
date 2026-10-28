@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from html import escape
 
+from autotester.schema.auth import Group, User
 from autotester.schema.project import Source
 from autotester.schema.team_enums import AccessRequestStatus
 from autotester.schema.video_share import AccessRequest, VideoComment
@@ -159,11 +160,32 @@ def shared_page(videos: list[tuple[str, Source]], mine: list[AccessRequest],
     return theme.page("Videos", body)
 
 
-def approver_requests_page(pending: list[AccessRequest], labels: dict[tuple[str, str], str]) -> str:
+def _waiting_row(user: User, groups: list[Group]) -> str:
+    """One new account: a group picker with Approve, and Decline (both POST, no JS)."""
+    options = "".join(f"<option value='{g.id}'>{esc(g.name)}</option>" for g in groups)
+    base = f"/access-requests/accounts/{user.id}"
+    pick = (f"<label>Group <select name='group_id' required><option value=''>Choose a group"
+            f"</option>{options}</select></label> ")
+    return (f"<li>{esc(user.email)} signed up {esc(user.created_at.date().isoformat())} "
+            + _form(f"{base}/approve", pick, "Approve", "btn btn-sm btn-primary")
+            + _form(f"{base}/decline", "", "Decline") + "</li>")
+
+
+def _waiting_card(waiting: list[User], groups: list[Group]) -> str:
+    rows = "".join(_waiting_row(u, groups) for u in waiting) or "<li>No new accounts waiting.</li>"
+    return theme.card(f"<ul>{rows}</ul>", title="New accounts waiting")
+
+
+def approver_requests_page(pending: list[AccessRequest], labels: dict[tuple[str, str], str],
+                           waiting: list[User] | None = None, groups: list[Group] | None = None,
+                           message: str = "") -> str:
+    """`waiting` is None for a viewer who may not manage users: the section is not rendered."""
     rows = "".join(
         f"<li>{esc(r.requester)} asked for {esc(labels.get((r.slug, r.video_id), 'a video'))} "
         + _form(f"/access-requests/{r.id}/approve", "", "Approve", "btn btn-sm btn-primary")
         + _form(f"/access-requests/{r.id}/decline", "", "Decline") + "</li>"
         for r in pending) or "<li>No requests waiting.</li>"
-    return theme.page("Access requests", "<h1>Access requests</h1>"
+    note = f"<p class='subtitle' role='alert'>{esc(message)}</p>" if message else ""
+    people = _waiting_card(waiting, groups or []) if waiting is not None else ""
+    return theme.page("Access requests", "<h1>Access requests</h1>" + note + people
                       + theme.card(f"<ul>{rows}</ul>", title="Waiting for you"))

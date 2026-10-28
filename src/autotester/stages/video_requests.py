@@ -149,17 +149,21 @@ def approvers(res: ResourceRef, requester: str) -> list[str]:
 
 
 def notify_approvers(emails: list[str], link: str, *, environ: Mapping[str, str] | None = None,
-                     transport: mail.MailTransport | None = None) -> int:
+                     transport: mail.MailTransport | None = None, subject: str | None = None,
+                     body: str | None = None) -> int:
     """Mail each approver a link to the requests page, only when SMTP is configured (HO27).
     The text carries a link and no video, thumbnail or comment text. Returns how many were
-    handed to the transport; a failure is logged by class and never raised."""
+    handed to the transport; a failure is logged by class and never raised. `subject` and
+    `body` (a template with `{link}`) let another request kind, such as a new account waiting
+    for a group, reuse this transport."""
     env = os.environ if environ is None else environ
     if transport is None and not mail.is_configured(env):
         return 0
     sender = transport or mail.select_transport(env, repo_root() / ".work" / "outbox")
-    message = RenderedMessage(subject="AutoTester: someone asked for access to a video",
-                              body=f"Someone asked for access to a video you can approve.\n"
-                                   f"Open the requests page: {link}\n")
+    text = body or ("Someone asked for access to a video you can approve.\n"
+                    "Open the requests page: {link}\n")
+    message = RenderedMessage(subject=subject or "AutoTester: someone asked for access to a video",
+                              body=text.replace("{link}", link))
     sent = 0
     for address in emails:
         try:

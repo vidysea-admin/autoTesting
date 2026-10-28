@@ -36,8 +36,12 @@ def _user_row(user: User, groups: list[Group]) -> str:
     name = _post(f"{base}/name",
                  f"<label>Display name <input name='display_name' "
                  f"value='{escape(user.display_name)}' maxlength='80'></label> ", "Save name")
-    state = theme.pill("disabled", "neutral") if user.disabled else theme.pill("active",
-                                                                               "positive")
+    if user.disabled:
+        state = theme.pill("disabled", "neutral")
+    elif not user.groups:
+        state = theme.pill("active", "positive") + " " + theme.pill("Waiting", "warning")
+    else:
+        state = theme.pill("active", "positive")
     return (f"<tr><td>{escape(user.email)}<br>{state}</td><td>{_group_boxes(user, groups)}</td>"
             f"<td>{name}<br>{reset}</td><td>{toggle} "
             f"{_post(f'{base}/delete', '', 'Delete', 'btn btn-sm btn-danger')}</td></tr>")

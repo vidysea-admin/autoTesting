@@ -59,6 +59,9 @@ PORTAL_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/access-requests"): _key(K.ACCESS_APPROVE),
     **{("POST", "/access-requests/{request_id}/" + tail): _key(K.ACCESS_APPROVE)
        for tail in ("approve", "decline")},
+    # a new account waiting for a group: the same key as the Users page (users.manage)
+    **{("POST", "/access-requests/accounts/{user_id}/" + tail): _key(K.USERS_MANAGE)
+       for tail in ("approve", "decline")},
 }
 
 ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {

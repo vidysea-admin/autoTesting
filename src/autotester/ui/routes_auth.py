@@ -7,6 +7,8 @@ locked scope gets 429 even with the right password (AU5).
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
@@ -18,6 +20,7 @@ from autotester.auth.accounts import (
     claim_admin,
     normalize_email,
     signup,
+    user_managers,
 )
 from autotester.auth.config import cookie_secure
 from autotester.auth.context import current_principal
@@ -26,9 +29,11 @@ from autotester.auth.passwords import WeakPassword
 from autotester.auth.ratelimit import login_limiter, signup_limiter
 from autotester.auth.sessions import create_session, end_session, session_hours
 from autotester.schema.auth import PermissionKey
+from autotester.stages.video_requests import notify_approvers
 from autotester.ui import auth_view
 from autotester.ui.auth_middleware import SESSION_COOKIES, safe_next, session_token
 
+log = logging.getLogger(__name__)
 router = APIRouter()
 
 _LOGIN_FAILED = "That email and password do not match an active account."
@@ -76,6 +81,19 @@ def auth_signup_form() -> str:
     return auth_view.signup_page()
 
 
+def _tell_user_managers(request: Request) -> None:
+    """A signup with no group waits for an admin: mail the users.manage holders a link to the
+    requests page (the shared approver mailer). A failure is logged, never shown or raised."""
+    try:
+        notify_approvers(
+            user_managers(), str(request.base_url).rstrip("/") + "/access-requests",
+            subject="AutoTester: a new account is waiting for access",
+            body="A new account signed up and waits for a group.\n"
+                 "Open the requests page: {link}\n")
+    except Exception as exc:   # a mail problem must never block a signup
+        log.warning("signup notification not sent (%s)", type(exc).__name__)
+
+
 @router.post("/auth/signup")
 def auth_signup_submit(request: Request, email: str = Form(""),
                        password: str = Form("")) -> Response:
@@ -88,6 +106,8 @@ def auth_signup_submit(request: Request, email: str = Form(""),
     except (AccountError, WeakPassword) as exc:
         return HTMLResponse(auth_view.signup_page(str(exc)), status_code=400)
     audit.record_action(actor=user.email, target=user.email, action="signup")
+    if not user.groups:
+        _tell_user_managers(request)
     return _signed_in(request, user.id, bool(user.groups), "/")
 
 

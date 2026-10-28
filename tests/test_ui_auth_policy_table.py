@@ -76,6 +76,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
     ("GET", "/access-requests"): ("key", "access.approve"),
     **{("POST", "/access-requests/{request_id}" + t): ("key", "access.approve")
        for t in ("/approve", "/decline")},
+    **{("POST", "/access-requests/accounts/{user_id}" + t): ("key", "users.manage")
+       for t in ("/approve", "/decline")},
 }
 
 
