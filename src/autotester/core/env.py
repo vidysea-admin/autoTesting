@@ -32,7 +32,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import IO
 
 from dotenv import dotenv_values
@@ -106,6 +106,64 @@ def dollar_warning(keys: list[str]) -> str:
         return ""
     return (f"{len(keys)} value(s) in the repo-root .env contain \"${{\" and are kept literally "
             f"(no expansion): {', '.join(keys)}. Re-enter them if a ${{VAR}} was meant.")
+
+
+EPHEMERAL_OK_ENV = "AUTOTESTER_EPHEMERAL_OK"
+"""`1` says "this server's data root is deliberately not a volume" (local docker): no warning."""
+_MEMORY_FS = frozenset({"tmpfs", "ramfs"})
+_MOUNTS = Path("/proc/mounts")
+
+
+def _device(path: Path) -> int:
+    """`st_dev` of `path`, or of its nearest existing ancestor when it is not created yet."""
+    while not path.exists() and path != path.parent:
+        path = path.parent
+    return path.stat().st_dev
+
+
+def _mount_entries(text: str) -> list[tuple[str, str]]:
+    """(mount point, fs type) per `/proc/mounts` line; octal escapes (backslash-040) decoded."""
+    out = []
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) >= 3:
+            out.append((re.sub(r"\\([0-7]{3})", lambda m: chr(int(m[1], 8)), parts[1]), parts[2]))
+    return out
+
+
+def _holding_mount(base: Path, entries: list[tuple[str, str]]) -> tuple[str, str] | None:
+    """The deepest mount whose point is `base` or an ancestor of it: the filesystem it lives on."""
+    where = PurePosixPath(base.as_posix())
+    held = [e for e in entries if e[0] == "/" or where == PurePosixPath(e[0])
+            or PurePosixPath(e[0]) in where.parents]
+    return max(held, key=lambda e: len(PurePosixPath(e[0]).parts), default=None)
+
+
+def storage_warning(root: Path | None = None, mounts_path: Path = _MOUNTS) -> str | None:
+    """One sentence when the data root is NOT on a persistent volume, else None.
+
+    Cloud Run (and any container) keeps `AUTOTESTER_ROOT` (auth SQLite, `projects/`, approvals,
+    `.work`) on its throwaway root filesystem unless a volume is mounted there, and every deploy
+    then wipes the accounts. Ephemeral = the deepest mount holding the root is `/`, is memory
+    backed, or shares `st_dev` with `/`. Anything that cannot be determined (no `/proc/mounts`,
+    a read error, no `/` entry) answers None: this check informs, it must never stop a start.
+    `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately ephemeral local container."""
+    try:
+        if os.environ.get(EPHEMERAL_OK_ENV, "").strip() == "1":
+            return None
+        base = (root or repo_root()).resolve()
+        entries = _mount_entries(mounts_path.read_text(encoding="utf-8", errors="replace"))
+        if not any(point == "/" for point, _ in entries):
+            return None
+        held = _holding_mount(base, entries)
+        ephemeral = (held is None or held[0] == "/" or held[1] in _MEMORY_FS
+                     or _device(base) == _device(Path("/")))
+    except Exception:  # a diagnostic must never break startup
+        return None
+    if not ephemeral:
+        return None
+    return (f"Storage is not persistent: accounts and projects are lost on every deploy. "
+            f"Mount a volume at {base}.")
 
 
 TEST_MARKER = "PYTEST_CURRENT_TEST"

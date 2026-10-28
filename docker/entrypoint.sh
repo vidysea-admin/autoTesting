@@ -35,6 +35,33 @@ if [ -n "${AUTOTESTER_ROOT:-}" ]; then
   [ -w "$AUTOTESTER_ROOT" ] || echo "WARNING: AUTOTESTER_ROOT=$AUTOTESTER_ROOT is not writable by uid $(id -u); runs and queue state will fail" >&2
 fi
 
+# One loud line when the data root is not a persistent volume: every deploy would then wipe the
+# accounts and projects (docker/DEPLOY.md, "Persistent storage"). Informational ONLY: it never
+# exits or fails, because DevOps may not have mounted the volume yet and a refused start would
+# take the live site down. Ephemeral = the root shares a device with / or has no /proc/mounts line
+# (a volume mounted at an ancestor counts). AUTOTESTER_EPHEMERAL_OK=1 silences it (local docker).
+warn_if_ephemeral() {
+  [ "${AUTOTESTER_EPHEMERAL_OK:-}" = "1" ] && return 0
+  local root="${AUTOTESTER_ROOT:-/app}" mounts="${AUTOTESTER_MOUNTS_FILE:-/proc/mounts}"
+  local root_dev slash_dev mp="$root" listed=""
+  root_dev=$(stat -c %d "$root" 2>/dev/null) || return 0
+  slash_dev=$(stat -c %d / 2>/dev/null) || return 0
+  [ -r "$mounts" ] || return 0
+  while [ -n "$mp" ]; do
+    if [ "$mp" != "/" ] && [ "$(awk -v m="$mp" '$2 == m && $3 != "tmpfs" && $3 != "ramfs" { f = 1 } END { print f + 0 }' "$mounts")" = 1 ]; then
+      listed=1
+      break
+    fi
+    [ "${mp%/*}" = "$mp" ] && break
+    mp="${mp%/*}"
+  done
+  if [ "$root_dev" = "$slash_dev" ] || [ -z "$listed" ]; then
+    echo "WARNING: storage is not persistent: AUTOTESTER_ROOT=$root is on the container's own filesystem; accounts and projects are LOST on every deploy. Mount a volume at $root (docker/DEPLOY.md, Persistent storage)." >&2
+  fi
+  return 0
+}
+warn_if_ephemeral || true
+
 # Readiness sockets gate startup; the supervisor monitors every service throughout.
 # The app starts last on purpose: a resumed queued run launches headed Chromium at app startup and
 # needs Xvfb on :99 first. The sidecars become ready in about a second; give the Cloud Run startup
