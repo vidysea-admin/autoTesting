@@ -37,8 +37,8 @@ AutoTester wins on bugs found, false positives, and time (`schema/bench.py` comp
 - T-212 [high] G11-6 Mailbox oracle: read-only IMAP read per role, presence and absence within T (O18, O20)
 - T-218 [high] G11-12 CEO-benchmark acceptance: 8 roles across linked platforms, recall/FP/time vs the atomic list (O21, O6)
 ## Last decisions (computed status)
-- D-105 2026-10-18 decision ACTIVE
-- D-106 2026-10-19 decision ACTIVE
-- D-107 2026-10-21 decision ACTIVE
 - D-108 2026-10-21 decision ACTIVE
 - D-109 2026-10-26 decision ACTIVE
+- D-110 2026-10-26 decision ACTIVE
+- D-111 2026-10-28 decision ACTIVE
+- D-112 2026-10-28 decision ACTIVE
