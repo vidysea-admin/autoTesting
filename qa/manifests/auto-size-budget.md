@@ -1,6 +1,6 @@
 # Manifest - auto-size-budget
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Security trigger:** YES - consent gate (D-018 / D-111 / D-112): grant bounds are signed into `RunApproval` rows. **Dual check recommended (A+B).**
 **Authority:** D-112 item (2) (`docs/DECISIONS.md` lines 2808-2820 on master, `Approved-by: Umesh`, chat 2026-10-28 "go with A"). The entry is not in this tree yet, so doctor lists the D-112 citations as dangling, as it did for D-110/D-111 on consent-followups.
