@@ -1,6 +1,6 @@
 # Manifest - run-error-text-evidence
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Issues addressed:** `.work/inbox-1028.md` line 12 ("The login failure reason is only in a screenshot"): DOM evidence records the unmet assertions, not the visible error text ("Invalid credentials"); with image withholding (`mask_exceeds_limit`, limit 0.85) the case became INCONCLUSIVE though the failure is real and reproducible.
 **Branch:** `fix/run-error-text-evidence` (worktree `D:/autoTesting/.claude/worktrees/error-text`, off e74664f8). Not merged, not pushed.

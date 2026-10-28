@@ -2,50 +2,45 @@
 
 **Verdict:** PASS
 **Status:** PASS
-**Cycle checked:** 0
-**Reviewed SHA:** 31f6329f (base e74664f8), branch `fix/run-error-text-evidence`, worktree `.claude/worktrees/error-text`
+**Cycle checked:** 1
+**Reviewed SHA:** 61be2b6f (cycle-1 diff `3ede657a..61be2b6f`), branch `fix/run-error-text-evidence`, worktree `.claude/worktrees/error-text`
 
 ## Scope
-`git diff e74664f8..31f6329f`: `browser/error_text.py` (new, 67), `browser/error_text.js` (new, 56), `browser/assertions.py:25,177,180-186` (+10), `tests/test_assertion_error_text.py` (new, 10 tests), `docs/MAP.md` (+1 generated row), the manifest.
+`git diff 3ede657a..61be2b6f`: `browser/error_text.js` (77 lines), `browser/error_text.py` (83), `tests/test_assertion_error_text.py` (18 tests, 8 new), manifest. `assertions.py` untouched this cycle (268 lines). Cycle-0 findings F1, F2, F3, F5 were asked to be fixed; F4 was kept as a documented limit; criterion 8 was reworded and criterion 10 added.
 
-## Independent checks (run by the checker, one pytest at a time, `-o addopts=`)
-- `pytest tests/test_assertion_error_text.py tests/test_probe_floor_matches_runtime.py`: 27 passed (the 3 real-Chromium tests ran, none skipped).
+## Independent checks (checker-run, one pytest at a time, `-o addopts=`; imports confirmed to resolve to the worktree `src`)
+- `pytest tests/test_assertion_error_text.py tests/test_probe_floor_matches_runtime.py`: 35 passed (real-Chromium tests ran, none skipped).
 - `pytest tests/test_execute_assertions.py tests/test_execute.py tests/test_browser_settle.py`: 33 passed.
 - `ruff check src tests scripts`: All checks passed.
-- `autotester doctor`: 2 violations, both `decision-citation-dangling` on D-110 (`qa/verdicts/6c-1028-signup.md:4`, expected, D-110 is parked in the main checkout; and `qa/manifests/run-error-text-evidence.md:39`, same cause, resolves when D-110 lands). `stale-committed: docs/MAP.md` and `duplicate-concept` are NOT present. No size violation: assertions.py 268 lines, error_text.py 67, error_text.js 56 (manifest says 51; cosmetic).
-- Revert test: the `_with_error_text` guard replaced by `if False:` gave 4 failed, 6 passed (`test_unmet_assertion_records_the_visible_alert_text_as_dom_evidence`, `test_error_text_goes_through_the_redactor`, `test_excerpt_is_bounded`, `test_run_case_assertion_failed_carries_the_error_text`). Reverted via `git checkout`. The manifest says "the 7 wiring tests then fail"; only 4 do (the other 3 are negative or pure-function tests that pass vacuously). Overstatement, not a defect.
+- `autotester doctor`: 4 violations, all `decision-citation-dangling` on the parked decision (manifest :40/:65, the earlier verdict, the signup verdict); no size, stale-committed or duplicate-concept finding. File sizes OK (js 77, py 83, assertions.py 268).
+- Revert test A, `assertions.py:184` guard forced False: 7 failed, 11 passed (the 4 wiring tests plus the 3 F5 tests that go through `assert_expected`). Restored with `git checkout`.
+- Revert test B, `error_text.py` `read()` calling `clean(...)` without the scrubber (scrub only after the caps): exactly the 3 `test_f5_*` fail, 15 pass. Restored with `git checkout`. Worktree clean afterwards.
+
+## Cycle-0 leak probes re-run (checker-written, real Chromium, scratchpad, not committed)
+Direct runs of `error_text.SCRAPE_JS` + `clean`. All closed:
+- F1 whitespace/newline: `"John  Smith"`, multi-line textarea, tab, NBSP-separated, padded value, all blanked to `[input]`.
+- F2 case: `Alice99` echoed as `ALICE99`/`alice99` blanked; accented `Ünïcodé Ñame` echoed upper-case blanked.
+- F3: value in an open shadow root blanked; nested open shadow roots three levels deep blanked; `contenteditable` (bare, `""`, `plaintext-only`, nested descendant) never read; iframe (srcdoc alert, fallback content) never read.
+- F5: for every offset 150..204 a whitespace-bearing secret straddling the 200-char cap is fully masked; secret with consecutive whitespace masked as typed and collapsed; revert B proves the ordering is pinned.
+- Regex specials in typed values (`a.b*c(d[e]+f?$^|\g{1}`, `((((`, `[[[`, `a|b|c`, `(?:x)+`, `$&$1`, literal backslashes): no regex error, all blanked.
+- Text split across sibling nodes (`<span>Ali</span><span>ce99`, `<b>Al</b>ice<i>99</i>`, comment or `<script>` between): blanked (textContent joins them).
+- Property-set value (`.value=` after load), `<select>` value, 300 inputs of 2000 chars + 40 alerts, 100 textareas of 20 KB: correct and fast (~0.01-0.02 s).
 
 ## Criteria
-1. PASS. `assertions.py:182-185` records one DOM row via `error_text.record_visible_error_text(step_order=...)` when any `assert ...: unmet` row exists; pinned by 2 tests, red on revert.
-2. PASS. Row label is `error text on page ...`, never `assert `. `stages/grade.py:91-93` (`_unmet_assertions`) and `stages/grade_images.py:78` (`met_assertions`) filter on `startswith("assert ")`; neither file is in the diff.
-3. PASS. The guard keys on an unmet row; the met-case test asserts `evaluate` is never called.
-4. PASS. `error_text.py:66` goes through `session._record`, which runs `self.secrets.redactor().scrub(path)` (`browser/evidence.py:187`) before the row is built or appended; redactor test is red on revert.
-5. PASS. `read()` swallows everything except `RunBudgetExceeded`; `clean()` returns [] for non-list/None/blank. Test covers exception, [], None, str, [None, 5, "  "].
-6. PASS. `clean()` caps 200 chars/item, dedupes, drops contained fragments, keeps <= 5; `error_text.py:65` caps the body at 600. The JS also caps at 40 elements. Test is red on revert.
-7. PASS. Real Chromium tests plus my own probe: visible `role=alert`, `aria-live`, `*toast*`/`*error*` found; `display:none` / `visibility:hidden` skipped; a `<form class=has-error>` wrapper skipped (`error_text.js:50`, `el.querySelector(CONTROLS)`).
-8. PASS for the stated scenario (an `<input>`/password whose value is >= 3 chars echoed verbatim); see F1-F5 for edge cases where the claim is narrower than its wording. Probe confirms `data-autotester-secret` nodes and input/select/option are dropped from the clone (`error_text.js:18,40`).
-9. PASS. `read()` calls `session.budget.check()` with no `probes=`/`actions=`; `run_budget.py:146` `check(actions=0, probes=0)` consumes nothing and still raises on a hard stop. `error_text.py` is imported only by `assertions.py`; the read runs only on the already-unmet path. Probe-floor test unchanged and 17/17 green.
+1-7, 9. PASS, unchanged since cycle 0 and re-verified by the green runs above.
+8 (reworded). PASS: every claim in the new wording was probed above and holds; the "not covered, by design" list (under 3 chars, iframe or closed-shadow typed values, encoded/reversed/partial echo) is accurate. See F6 for one transformed-echo case the wording does not list.
+10. PASS: `error_text.py` `_scrubber` + `clean(raw, scrub)` scrub before the 200-char cap, the 600 body cap then sees scrubbed text; whitespace-collapsed secrets matched; three tests pinned and red on revert.
 
-## Security probe (checker-written, real Chromium, scratchpad; not committed)
-Direct runs of `error_text.SCRAPE_JS` + `clean` against crafted pages. Leaked into the excerpt:
-- F1 (typed value with consecutive whitespace, or a multi-line `<textarea>`): `messageText` collapses whitespace in the page text (`error_text.js:41`) but `typed` values are only `.trim()`med (`:33`), so `"John  Smith"` and `"line1\nline2xx"` echoed in an alert are not matched and survive.
-- F2 (server echoes in a different case, `Alice99` -> `ALICE99`): the exact-case `split` (`:42`) misses it.
-- F3 (inputs the extractor cannot see): a value typed in an open shadow root or an iframe is not collected (`document.querySelectorAll` pierces neither), and `contenteditable` text inside an element matched by the selector list is read as message text (`contenteditable` is in neither DROP nor CONTROLS).
-- F4 (documented limit, confirmed): values < 3 chars (`ab`) are not blanked.
-- F5 (ordering): `clean()` and the 600-char slice cut the text BEFORE `session._record` scrubs it, so a secret shown in page text (not in an input, so not blanked in JS) that straddles char 200/600 leaves a prefix the Redactor cannot match. The Redactor is also exact-match, and the JS collapses whitespace first, so a secret holding consecutive whitespace is not matched.
-
-Not leaked (confirmed): input/textarea/select/option values inside the alert, `[data-autotester-secret]` text, hidden elements, a value changed via the `.value` property after load (the live value is blanked, not the stale attribute), a form wrapper holding inputs.
-
-## Why PASS and not FAIL
-The exposure path that matters (the `.env` / `{{SECRET:KEY}}` credential the run itself typed) is covered twice: blanked in-page when it sits in an input AND exact-match scrubbed by the project's Redactor at `_record`. F1-F5 need a non-secret test value echoed with altered whitespace/case, a shadow-DOM/iframe/contenteditable form, or a secret printed in page text straddling a cap; runs use a supplied test account (CLAUDE.md Credentials). The row records a fact and assigns no verdict (C7). Criterion 8 is worded absolutely ("every value held by any input"), which the code does not fully meet; that is a hardening item, not a regression (before this unit the same text was already in the screenshot).
+## Non-blocking findings (low; none is a leak of a `.env` secret or a regression)
+- F6 (low) `<br>` or block-level separators swallow the space: `error_text.js:56` builds text from `textContent`, so a multi-line textarea value `line1\nline2xx` echoed as `line1<br>line2xx` (nl2br) or as two `<p>`s becomes `line1line2xx`, which does not match the typed `line1 line2xx`, and survives. Probed: output `Bad: line1line2xx`. Same for a typed `Alice 99` echoed over a `<br>`. Fix idea: insert a space for `br` and block elements in the clone before `textContent`. This is a transformed echo of a non-secret typed value; the Redactor still masks `.env` secrets.
+- F7 (low, fail-safe) a typed value of roughly 60,000+ characters makes `new RegExp(...)` throw ("Invalid regular expression", measured: 30,000 ok, 60,000 throws), `page.evaluate` raises, `read()` swallows it and records NO error text for that page. No leak, but the diagnostic is silently lost. Fix idea: skip values over a few thousand chars, or wrap the regex build in try/catch and fall back to `split/join`.
+- F8 (low, same class as the documented "transformed form") the `gi` flags use simple case folding only: NFC vs NFD (`café` vs `cafe\u0301`), `straße` vs `STRASSE`, and the Kelvin sign vs `k` are not matched. Needs a server that transforms the echo.
+- F9 (low, pre-existing, outside this unit) the Redactor is case-sensitive for a secret printed in page text in another case (`PASS WORD 9` vs `pass word 9` stays visible). Core behaviour of `core/redact.py`, not changed here.
 
 ## One-concept / edit-in-place
-`assertions.py` was 259/300 and `assert_expected` 49/50 (manifest); the +10 lines are one import, one `return` swap and one 6-line helper, and function sizes stay within 50. A new `error_text.py` + `.js` is justified: no other module under `browser/` reads alert/toast text (a grep for `role="alert"`/toast/aria-live finds only this pair, `stages/report_banner.py` which renders the report's own HTML, and an unrelated `review_recall.py`), and `enumerate.js` / `visual_order.js` set the precedent of a sidecar `.js`. `execute.py::_error_text` is a different concept (formats a caught exception). The module docstring states one job. Doctor reports no duplicate-concept.
-
-## PROPOSED-ISSUE (low, hardening; not written to issues.jsonl, to avoid an id collision with the main checkout)
-Harden `error_text.js` / `error_text.py` against F1-F3 and F5: normalise `typed` values with the same whitespace collapse and compare case-insensitively; also collect from `textarea`, open shadow roots and same-origin iframes and drop `[contenteditable]`; scrub with the Redactor BEFORE the 200/600 caps (or cap on a boundary after scrub). Re-word criterion 8 to the exact guarantee until then.
+No new file this cycle; `error_text.js` and `error_text.py` edited in place, functions within the 50-line cap, no duplicate concept.
 
 ## Residual / follow-up
-- The maker's scope limit stands: only the `assert_expected` path; a thrown error with no declared expectation records no error text.
-- `*error*`/`*alert*` class substrings can match a visible non-error component; bounded and recorded as a plain fact.
+- Maker scope limit stands: only the `assert_expected` path.
+- Class-substring selectors can pick a visible non-error component; bounded and recorded as a plain fact (C7).
 - Branch not merged, not pushed (per instruction).
