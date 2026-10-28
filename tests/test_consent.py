@@ -218,6 +218,28 @@ def test_the_grant_command_says_production_when_the_run_needs_it() -> None:
     assert "--max-probes 25" in command
 
 
+def test_the_standing_hint_is_its_own_line_and_the_command_line_stays_pasteable() -> None:
+    """D-111 fix cycle 1: the crawl refusal once appended "(or --standing, until revoked)"
+    INSIDE the printed command, so shlex.split gave the token `--standing,` and the
+    pasted command exited 2. The command line must hold no prose; the standing
+    alternative is a separate line, and only for a kind that can be standing."""
+    import shlex
+
+    with pytest.raises(ApprovalRequired) as exc:
+        require([], actions=150, wall_clock_s=900.0)
+    lines = str(exc.value).splitlines()
+    command = next(ln for ln in lines if "autotester approve" in ln)
+    hint = [ln for ln in lines if "--standing" in ln]
+
+    assert "--standing" not in command and "(" not in command
+    assert all(not t.endswith(",") for t in shlex.split(command))
+    assert len(hint) == 1 and hint[0] != command and "--expires" in hint[0]
+
+    with pytest.raises(ApprovalRequired) as other:
+        require([], kind=ApprovalKind.ADVERSARIAL, probes=25)
+    assert "--standing" not in str(other.value)
+
+
 @pytest.mark.parametrize("mode", ["valid", "unused", "missing", "undeclared", "scope", "target",
                                   "actions", "probes", "wall", "infinite", "overflow", "other",
                                   "bigint"])

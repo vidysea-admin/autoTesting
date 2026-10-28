@@ -167,6 +167,7 @@ EXPECTED_SITES = {
     ("cli_issues.py", "issues derive"),
     ("cli_issues.py", "issues list"),
     ("cli_video.py", "ingest register"),
+    ("cli_crawl.py", "revoke"),   # D-111: `approve --standing` help names the way to end it
     ("cli_release.py", "release"),
     ("cli_release.py", "release-log"),
     ("cli_video.py", "ingest list"),
@@ -207,10 +208,11 @@ The set above names every site from all sides."""
 
 # 28: b578526a (D-097, TV9 expand-over-DRAFT) added a second `flowspec approve` site in
 # stages/review.py (the DRAFT-flow refusal); the (file, command) set above is unchanged.
+# 32: D-111 (standing approval) added cli_crawl.py's `revoke` hint in `approve --standing` help.
 # 31: f7605b35 (AT-899, release CLI) added three more sites in cli_release.py - the declined
 # `release` hint (:49), the post-run `release-log` hint (:62) and the repeated-answer refusal's
 # `release-log` hint (:105). The (file, command) set above already names both commands.
-EXPECTED_SITE_COUNT = 31
+EXPECTED_SITE_COUNT = 32
 
 
 def test_no_advice_site_can_vanish_unnoticed() -> None:
