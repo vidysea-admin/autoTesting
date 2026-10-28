@@ -18,15 +18,18 @@ class ExitCode(IntEnum):
     REFUSED = 3       # no valid RunApproval (consent gate, D-018): nothing started
     INFRA = 4         # provider/network/browser failure or a timeout: retry, do not triage
     INTERNAL = 5      # an AutoTester bug: report it
+    INCONCLUSIVE = 6  # the run finished, nothing FAILed, but not every case was judged PASS
 
 
 _MEANING = {
-    ExitCode.OK: "run finished, no case failed (or a dry run listed what would run)",
+    ExitCode.OK: "run finished, every case judged PASS (or a dry run listed what would run)",
     ExitCode.TEST_FAILED: "run finished and at least one case failed",
     ExitCode.USAGE: "usage or validation error (unknown project, no cases, missing credential)",
     ExitCode.REFUSED: "run refused: no valid approval covers it, nothing was started",
     ExitCode.INFRA: "infrastructure failure or timeout (provider, network, browser)",
     ExitCode.INTERNAL: "internal error in AutoTester",
+    ExitCode.INCONCLUSIVE: "run finished, no case failed, but a case errored, was inconclusive or "
+                           "blocked, or went unjudged: not a pass",
 }
 
 

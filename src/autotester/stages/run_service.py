@@ -21,7 +21,7 @@ from autotester.providers.base import ProviderError
 from autotester.schema.case import Case
 from autotester.schema.catalog import Catalog
 from autotester.schema.cli_output import CaseReport, RegressionReport
-from autotester.schema.enums import CaseStatus, EvidenceKind, Result
+from autotester.schema.enums import CaseStatus, EvidenceKind, Outcome, Result
 from autotester.schema.run import RawResult
 from autotester.schema.verdict import Verdict
 from autotester.stages.catalog import catalog
@@ -30,7 +30,8 @@ from autotester.stages.run_launcher import DEFAULT_SEAMS, LaunchRefused, launch_
 from autotester.store.project_store import ProjectStore
 
 _STATUS = {ExitCode.OK: "passed", ExitCode.TEST_FAILED: "failed", ExitCode.USAGE: "usage",
-           ExitCode.REFUSED: "refused", ExitCode.INFRA: "infra", ExitCode.INTERNAL: "internal"}
+           ExitCode.REFUSED: "refused", ExitCode.INFRA: "infra", ExitCode.INTERNAL: "internal",
+           ExitCode.INCONCLUSIVE: "inconclusive"}
 _INLINE_KINDS = {EvidenceKind.URL, EvidenceKind.DOM}   # `path` holds the value, not a file
 
 
@@ -91,9 +92,32 @@ def report_for(slug: str, run_id: str | None = None) -> RegressionReport:
     verdicts = {v.case_id: v for v in store.load_verdicts(run_id)}
     cases = [_case_report(r, verdicts.get(r.case_id)) for r in store.load_results(run_id)]
     counts = dict(Counter(v.result.value for v in verdicts.values()))
-    failed = counts.get(Result.FAIL.value, 0) > 0
-    return _report(store, slug, ExitCode.TEST_FAILED if failed else ExitCode.OK, run_id=run_id,
+    code, message = _headline(cases, counts)
+    return _report(store, slug, code, run_id=run_id, message=message,
                    case_ids=[c.case_id for c in cases], verdict_counts=counts, cases=cases)
+
+
+_UNRUN = (Outcome.ERRORED, Outcome.NOT_RUN)
+
+
+def _headline(cases: list[CaseReport], counts: dict[str, int]) -> tuple[ExitCode, str | None]:
+    """The ONE rule for a run's headline and exit code. `passed` needs at least one case and
+    every case judged PASS: a FAIL is `failed`; anything else short of PASS (INCONCLUSIVE,
+    BLOCKED, errored or not-run executor outcome, no verdict) is `inconclusive`, never green."""
+    if counts.get(Result.FAIL.value, 0) > 0:
+        return ExitCode.TEST_FAILED, None
+    unjudged = [c for c in cases if c.result is not Result.PASS or c.outcome in _UNRUN]
+    if cases and not unjudged:
+        return ExitCode.OK, None
+    if not cases:
+        return ExitCode.INCONCLUSIVE, "no case was judged: the run produced no results"
+    parts = [f"{n} {label}" for n, label in (
+        (sum(c.outcome in _UNRUN for c in cases), "errored or not run"),
+        (sum(c.result is Result.INCONCLUSIVE for c in cases), "inconclusive"),
+        (sum(c.result is Result.BLOCKED for c in cases), "blocked"),
+        (sum(c.result is None for c in cases), "without a verdict")) if n]
+    return ExitCode.INCONCLUSIVE, (f"{len(unjudged)} of {len(cases)} case(s) not judged PASS ("
+                                   + ", ".join(parts) + "): not a pass")
 
 
 def run_regression(slug: str) -> RegressionReport:
