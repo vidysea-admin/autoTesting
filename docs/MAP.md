@@ -46,6 +46,7 @@
 | `browser/role_probe.py` | Page-level reads and viewport sweeps for the multi-role port (MP11, MP25, MP26). |
 | `browser/secrets.py` | The credential boundary. Secret values live here and nowhere else. |
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |
+| `browser/teardown.py` | Bounded, traced browser teardown: the one place a session's context and driver are closed. |
 | `browser/video.py` | Per-case video recording for `BrowserSession` (T-191/AT-587). |
 | `cli.py` | Command line. Every action the UI offers is available here first. |
 | `cli_auth.py` | `autotester auth` -- break-glass account administration from the server shell (T-204). |
@@ -865,6 +866,7 @@
 | `StageSpan` (`schema/trace.py`) | One finished `StageCheckpoint` (RT3) — `trace_id` is always the run's |
 | `LLMSpan` (`schema/trace.py`) | One call through `Provider.see_video`/`act`/`judge` (RT4), recorded at |
 | `ToolSpan` (`schema/trace.py`) | One agent-layer step (T-179 AL5): a lead planning step, a tool call, or a delegation to a |
+| `PhaseSpan` (`schema/trace.py`) | One timed phase of a run (entry-profile wipe, session start/close, OCR, video finalise, |
 | `BugStatus` (`schema/tracked_bug.py`) |  |
 | `EventKind` (`schema/tracked_bug.py`) | What happened, in the loop's vocabulary. The first seven are verdict-derived; `case_changed` |
 | `BugSeed` (`schema/tracked_bug.py`) | What a bug is made of when its first FAIL opens it. |

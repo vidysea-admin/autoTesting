@@ -11,12 +11,14 @@ Nothing here is itself a FastAPI route.
 from __future__ import annotations
 
 import contextlib
+from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 
 from autotester.browser.profiles import wipe_entry_profile as _wipe_entry_profile
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
+from autotester.core.trace import traced_phase
 from autotester.providers.base import Provider
 from autotester.schema.approval import RunApproval
 from autotester.schema.case import Case
@@ -32,6 +34,35 @@ from autotester.stages.run_case_pipeline import (
     run_and_grade_case_resilient,
 )
 from autotester.store.project_store import ProjectStore
+
+
+def _trace_of(judge: Provider):
+    """The run's `TraceWriter` (attached to the judge by `run_cases_traced`), or None."""
+    return getattr(judge, "trace", None)
+
+
+def _housekeeping(budget: RunBudget) -> AbstractContextManager[object]:
+    """The budget's housekeeping scope (non-browser time, held off the approval clock); a
+    budget stand-in without one costs nothing."""
+    scope = getattr(budget, "housekeeping", None)
+    return scope() if callable(scope) else nullcontext()
+
+
+def _save_case(store: ProjectStore, run_id: str, result: RawResult, verdict: Verdict,
+               judge: Provider) -> None:
+    """Persist one graded case as the traced `save_result` phase."""
+    with traced_phase(_trace_of(judge), result.case_id, "save_result"):
+        store.save_result(run_id, result)
+        store.save_verdict(run_id, verdict)
+
+
+def _start_session(session: BrowserSession, judge: Provider, budget: RunBudget,
+                   case_id: str | None) -> None:
+    """Launch the browser as the traced `session_start` phase. Waiting for Chromium to come up
+    is not the browser acting on the target, so it is housekeeping time, not approval clock."""
+    session.trace = _trace_of(judge)
+    with traced_phase(session.trace, case_id, "session_start"), _housekeeping(budget):
+        session.start()
 
 
 def _run_and_grade_resilient(
@@ -50,7 +81,8 @@ def _run_and_grade_resilient(
         budget = getattr(session, "budget", None)
         if budget is not None:
             budget.check_start()
-        return run_and_grade_case_resilient(case, session, judge, run_id, store)
+        with traced_phase(_trace_of(judge), case.id, "case_pipeline"):
+            return run_and_grade_case_resilient(case, session, judge, run_id, store)
     except Exception as exc:  # AT-574: reported as this case's own ERRORED result
         result = RawResult(case_id=case.id, outcome=Outcome.ERRORED,
                             error=f"{type(exc).__name__}: {exc}")
@@ -75,17 +107,22 @@ def _run_entry_case(
     entry_paths = ProjectPaths(f"{slug}-entry-test")
     session: BrowserSession | None = None
     try:
-        _wipe_entry_profile(entry_paths.profile_dir)  # AT-733 / RU5: fail closed, no browser
-        session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
-        session.state.evidence_prefix = case.id
-        session.budget = budget
-        budget.check_start()
-        session.start()
-        return _run_and_grade_resilient(case, session, judge, run_id, store)
-    except Exception as exc:
-        result = RawResult(case_id=case.id, outcome=Outcome.ERRORED,
-                           error=secrets.redactor().scrub(f"{type(exc).__name__}: {exc}"))
-        return result, grade_errored_result(case, result, judge, run_id, store)
+        try:
+            wipe = traced_phase(_trace_of(judge), case.id, "entry_profile_wipe")
+            with wipe, _housekeeping(budget):
+                _wipe_entry_profile(entry_paths.profile_dir)  # AT-733 / RU5: fail closed
+            session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
+            session.state.evidence_prefix = case.id
+            session.budget = budget
+            budget.check_start()
+            _start_session(session, judge, budget, case.id)
+            outcome = _run_and_grade_resilient(case, session, judge, run_id, store)
+        except Exception as exc:
+            result = RawResult(case_id=case.id, outcome=Outcome.ERRORED,
+                               error=secrets.redactor().scrub(f"{type(exc).__name__}: {exc}"))
+            outcome = result, grade_errored_result(case, result, judge, run_id, store)
+        _save_case(store, run_id, *outcome, judge)  # durable BEFORE teardown can stall (RTS-3)
+        return outcome
     finally:
         if session is not None:
             with contextlib.suppress(Exception):
@@ -102,10 +139,8 @@ def _run_cases_serially(
     for case, is_entry in zip(cases, entry_flags, strict=True):
         if not is_entry:
             continue
-        result, verdict = _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id,
-                                          store, budget=budget)
-        store.save_result(run_id, result)
-        store.save_verdict(run_id, verdict)
+        _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id, store,
+                        budget=budget)  # saves its own result before closing its browser
 
     normal_cases = [c for c, is_entry in zip(cases, entry_flags, strict=True) if not is_entry]
     if not normal_cases:
@@ -116,7 +151,7 @@ def _run_cases_serially(
     try:
         try:
             budget.check_start()
-            session.start()
+            _start_session(session, judge, budget, None)
             budget.check()
         except Exception as exc:
             startup_error = secrets.redactor().scrub(f"{type(exc).__name__}: {exc}")
@@ -132,8 +167,7 @@ def _run_cases_serially(
             else:
                 result = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error=startup_error)
                 verdict = grade_errored_result(case, result, judge, run_id, store)
-            store.save_result(run_id, result)
-            store.save_verdict(run_id, verdict)
+            _save_case(store, run_id, result, verdict, judge)
     finally:
         with contextlib.suppress(Exception):
             session.close()
@@ -150,10 +184,8 @@ def _run_entry_cases(
     inside the 50-line design cap (core-invariants C2); the ordering guarantee
     it carries is asserted by `tests/test_ui_runs_serial_entry_order.py`."""
     for case in entry_cases:
-        result, verdict = _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id,
-                                          store, budget=budget)
-        store.save_result(run_id, result)
-        store.save_verdict(run_id, verdict)
+        _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id, store,
+                        budget=budget)  # saves its own result before closing its browser
 
 
 def _run_cases_in_parallel(
@@ -187,7 +219,7 @@ def _run_cases_in_parallel(
         return result
 
     session_factory = default_session_factory(project, secrets, run_dir, record_video=True,
-                                               budget=budget)
+                                               budget=budget, trace=_trace_of(judge))
     for result in run_cases(normal_cases, plan, session_factory, _run_and_grade,
                             approval=approval, budget=budget):
         # AT-568/PR6: a session_factory crash, or any exception BEFORE
@@ -202,5 +234,4 @@ def _run_cases_in_parallel(
             verdict = grade_errored_result(
                 case_by_id[result.case_id], result, judge, run_id, store
             )
-        store.save_result(run_id, result)
-        store.save_verdict(run_id, verdict)
+        _save_case(store, run_id, result, verdict, judge)

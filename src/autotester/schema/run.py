@@ -150,6 +150,17 @@ class Run(Artifact):
                     "measured RAM/CPU budget ('budget'), or a forced serial fallback because "
                     "write_policy is allow_writes ('write_policy')",
     )
+    phase_totals_s: dict[str, float] | None = Field(
+        default=None,
+        description="seconds spent per traced phase name (entry_profile_wipe, session_start, "
+                    "case_pipeline, session_close.*, save_result, ...); None = NOT RECORDED "
+                    "(a run from before phase tracing), never an empty measurement",
+    )
+    unaccounted_s: float | None = Field(
+        default=None, ge=0.0,
+        description="the run's wall time minus its top-level traced phases: a silent gap is a "
+                    "number. Parallel workers overlap, so it is clamped at 0; None = NOT RECORDED",
+    )
     bounds: RunBounds | None = Field(
         default=None,
         description="AT-570/CN10: the approval and bounds this run ran under. None means NOT "

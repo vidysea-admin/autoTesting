@@ -17,6 +17,7 @@ from pathlib import Path
 
 from autotester.core.image_privacy import sanitized_images
 from autotester.core.paths import RepoDocs
+from autotester.core.trace import traced_phase
 from autotester.providers.base import Provider
 from autotester.schema.enums import Result
 from autotester.schema.run import RawResult
@@ -48,8 +49,9 @@ def judge_images(judge: Provider, prompt: str, paths: list[Path], *,
     """Keep safe copies alive through the call; also return the SOURCE paths actually delivered
     (one sanitation batch per image, so a withheld image is identified, not just counted)."""
     with ExitStack() as stack:
-        batches = [(src, stack.enter_context(sanitized_images([src], mask_limit=mask_limit)))
-                   for src in paths]
+        with traced_phase(getattr(judge, "trace", None), fed_id, "ocr_sanitize", nested=True):
+            batches = [(src, stack.enter_context(sanitized_images([src], mask_limit=mask_limit)))
+                       for src in paths]
         delivered = [(src, batch.paths[0]) for src, batch in batches if batch.paths]
         if paths:
             prompt += "\n\n" + (RepoDocs().prompts_dir / "image_privacy.md").read_text("utf-8")

@@ -17,6 +17,7 @@ does not expose.
 from __future__ import annotations
 
 import base64
+import contextlib
 import os
 import time
 from collections.abc import Callable
@@ -31,6 +32,13 @@ ModelT = TypeVar("ModelT", bound=BaseModel)
 
 ChainEntry = tuple[str, Callable[[], Any]]
 
+JUDGE_TIMEOUT_S = 120.0
+"""Per-request ceiling on every tier of the chain. Without it `model.invoke` waited on the vendor
+SDK's default policy and a hung tier stalled a run for minutes with no trace row (stall diagnosis
+2026-10-28, 7.2 item 5)."""
+JUDGE_MAX_RETRIES = 2
+"""The SDK's own retries per tier; the chain then falls through to the next tier."""
+
 
 def _default_chain() -> list[ChainEntry]:
     """The ordered (id, factory) list built from whichever credentials are
@@ -42,7 +50,8 @@ def _default_chain() -> list[ChainEntry]:
         def make_anthropic() -> Any:
             from langchain_anthropic import ChatAnthropic
 
-            return ChatAnthropic(model="claude-sonnet-5")
+            return ChatAnthropic(model="claude-sonnet-5", timeout=JUDGE_TIMEOUT_S,
+                                 max_retries=JUDGE_MAX_RETRIES)
 
         chain.append(("anthropic", make_anthropic))
 
@@ -51,7 +60,8 @@ def _default_chain() -> list[ChainEntry]:
             from langchain_google_genai import ChatGoogleGenerativeAI
 
             key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-            return ChatGoogleGenerativeAI(model="gemini-3.6-flash", google_api_key=key)
+            return ChatGoogleGenerativeAI(model="gemini-3.6-flash", google_api_key=key,
+                                          timeout=JUDGE_TIMEOUT_S, max_retries=JUDGE_MAX_RETRIES)
 
         chain.append(("gemini", make_gemini))
 
@@ -62,6 +72,7 @@ def _default_chain() -> list[ChainEntry]:
             return ChatOllama(
                 model=os.environ.get("OLLAMA_MODEL", "llama3"),
                 base_url=os.environ["OLLAMA_BASE_URL"],
+                client_kwargs={"timeout": JUDGE_TIMEOUT_S},
             )
 
         chain.append(("ollama", make_ollama))
@@ -70,7 +81,8 @@ def _default_chain() -> list[ChainEntry]:
         def make_openai() -> Any:
             from langchain_openai import ChatOpenAI
 
-            return ChatOpenAI(model="gpt-4o")
+            return ChatOpenAI(model="gpt-4o", timeout=JUDGE_TIMEOUT_S,
+                              max_retries=JUDGE_MAX_RETRIES)
 
         chain.append(("chatgpt", make_openai))
 
@@ -140,15 +152,27 @@ class LangChainFallbackProvider(Provider):
 
         errors: list[str] = []
         for hop, (name, factory) in enumerate(self._chain):
+            tier_started = time.monotonic()
             try:
                 return self._try_tier(name, factory, prompt, schema, role, images,
                                        hop, prompt_file, fed_id)
             except Exception as exc:  # deliberately broad: any vendor failure falls through
                 errors.append(f"{name}: {type(exc).__name__}: {exc}")
+                self._trace_failed_tier(name, exc, role, fed_id, tier_started)
                 continue
         raise ProviderError(
             f"{self.id}: every configured provider failed for role={role}: " + " | ".join(errors)
         )
+
+    def _trace_failed_tier(self, name: str, exc: Exception, role: str, fed_id: str | None,
+                           started_mono: float) -> None:
+        """A failed tier used to leave no trace row (`record()` runs only on success): write one
+        nested `judge_tier_failed` phase naming the tier and the error TYPE (never its text)."""
+        if self.trace is not None:
+            with contextlib.suppress(Exception):  # tracing must never break the fallback chain
+                self.trace.record_phase(phase="judge_tier_failed", started_mono=started_mono,
+                                        case_id=fed_id, ok=False, nested=True,
+                                        note=f"{name}/{role}: {type(exc).__name__}")
 
     def _try_tier(
         self, name: str, factory: Callable[[], Any], prompt: str, schema: type[ModelT], role: str,
