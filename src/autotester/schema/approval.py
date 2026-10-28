@@ -45,7 +45,9 @@ by the reader that happens to hold the key.
 
 from __future__ import annotations
 
+import math
 from datetime import UTC, datetime
+from typing import NamedTuple
 
 from pydantic import Field
 
@@ -56,6 +58,36 @@ from autotester.schema.enums import ApprovalKind
 STANDING_KINDS = frozenset({ApprovalKind.CRAWL})
 """D-111: the run kinds that may be granted standing. Explore runs under CRAWL. ADVERSARIAL is
 deliberately absent -- it fires hostile input and keeps a required expiry."""
+
+PROBES_PER_ACTION = 20
+MAX_GRANT_ACTIONS = 2000
+MAX_GRANT_WALL_CLOCK_S = 86400.0
+MAX_GRANT_DAYS = 30
+MAX_GRANT_PROBES = MAX_GRANT_ACTIONS * PROBES_PER_ACTION  # the UI form's cap (AT-675)
+GRANT_SAFETY_MARGIN = 1.25   # headroom a derived LIVE_CASE grant adds over the planned run
+
+
+class GrantBounds(NamedTuple):
+    actions: int
+    probes: int
+    wall_clock_s: float
+
+
+def derive_grant_bounds(
+    kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
+) -> GrantBounds:
+    """The ONE derivation of the bounds a grant carries (D-112 item 2); the refusal hint,
+    `approve` with the flags omitted and the UI pre-fill all call it. A LIVE_CASE run's planned
+    actions and time get `GRANT_SAFETY_MARGIN`, in whole units, within the grant ceilings;
+    probes are `max(floor, actions x PROBES_PER_ACTION)` (the D-068 brake) up to
+    `MAX_GRANT_PROBES`. 0 means not asked; any other kind passes through unchanged."""
+    if kind is not ApprovalKind.LIVE_CASE:
+        return GrantBounds(actions, probes, wall_clock_s)
+    wide = min(math.ceil(actions * GRANT_SAFETY_MARGIN), MAX_GRANT_ACTIONS) if actions else 0
+    wall = (min(float(math.ceil(wall_clock_s * GRANT_SAFETY_MARGIN)), MAX_GRANT_WALL_CLOCK_S)
+            if wall_clock_s and math.isfinite(wall_clock_s) else wall_clock_s)
+    wide_probes = min(max(probes, wide * PROBES_PER_ACTION), MAX_GRANT_PROBES) if probes else 0
+    return GrantBounds(wide, wide_probes, wall)
 
 
 class RunApproval(Artifact):

@@ -60,9 +60,8 @@ def explore_cmd(
         False, "--merge", help="fold the crawled screens into the FlowSpec (resets it to DRAFT)"
     ),
 ) -> None:
-    """Bounded BFS crawl of a project, refusing anything its write_policy
-    denies. Contract: qa/contracts/explore.md. Nothing is typed except the
-    optional login case; nothing destructive is clicked."""
+    """Bounded BFS crawl of a project, refusing anything its write_policy denies
+    (qa/contracts/explore.md). Only the optional login case is typed; nothing destructive."""
     from autotester.browser.observe import PageObserver
     from autotester.browser.secrets import SecretStore
     from autotester.browser.session import BrowserSession
@@ -114,8 +113,7 @@ def echo_crawl_summary(crawl: Any) -> None:
 
 
 def _merge_into_flowspec(store_: ProjectStore, project: str, crawl_id: str) -> None:
-    """Fold the crawl's screens and flow proposals into the FlowSpec and say what that cost the
-    review status: a merge sends an approved spec back to DRAFT, so the user must be told."""
+    """Fold the crawl into the FlowSpec and say what it cost the review status (back to DRAFT)."""
     from autotester.stages.explore_merge import merge_stored_crawl
 
     before = store_.load_flowspec()
@@ -136,14 +134,12 @@ def _local_now() -> datetime:
 
 
 def _end_of_day(day: date) -> datetime:
-    """The last local second of `day` -- a NEW grant's `expires_at` (CN4, at147
-    answered C, D-048); never naive, since `is_expired` reads a naive stamp as UTC."""
+    """The last local second of `day`, never naive: a NEW grant's `expires_at` (CN4, D-048)."""
     return datetime.combine(day, time(23, 59, 59), tzinfo=_local_now().tzinfo)
 
 
 def _validate_grant(expires: str, target: str, proj: Any) -> None:
-    """Refuse a grant that can never cover anything, and flag a likely typo (AT-145):
-    a green "granted" for consent that refuses every run trains operators to stop reading."""
+    """Refuse a grant that can never cover anything, flag a likely typo (AT-145)."""
     try:
         expiry = date.fromisoformat(expires)
     except ValueError:
@@ -163,8 +159,7 @@ def _validate_grant(expires: str, target: str, proj: Any) -> None:
 
 
 def _caps_or_refuse(actions: int, wall_clock: float, expires_at: str | None, kind: Any) -> None:
-    """The shared grant caps (core.consent.validate_grant_bounds); exit 1 over a cap.
-    `expires_at=None` is a standing grant (D-111), allowed for a crawl approval only."""
+    """The shared grant caps (consent.validate_grant_bounds); exit 1 over one."""
     from autotester.core.consent import validate_grant_bounds
 
     try:
@@ -175,9 +170,17 @@ def _caps_or_refuse(actions: int, wall_clock: float, expires_at: str | None, kin
         raise typer.Exit(1) from None
 
 
+def _resolved_bounds(store_: ProjectStore, kind: Any, *typed: Any) -> tuple[Any, ...]:
+    """The grant's three bounds, omitted ones derived (D-112), saying so before signing."""
+    from autotester.stages.run_gates import resolve_grant_bounds
+    *bounds, note = resolve_grant_bounds(store_, kind, *typed)
+    if note:
+        typer.secho(note, fg=typer.colors.CYAN)
+    return tuple(bounds)
+
+
 def _grant_expiry(expires: str | None, standing: bool, target: str, proj: Any) -> str | None:
-    """A NEW grant's `expires_at`: a dated end-of-day (CN4), or None for `--standing`
-    (D-111, valid until revoked). Exactly one of the two is required."""
+    """A NEW grant's `expires_at`: end-of-day (CN4) or None for `--standing` (D-111); one of two."""
     if standing == (expires is not None):
         typer.secho("give either --expires YYYY-MM-DD or --standing (valid until revoked), "
                     "not both and not neither", fg=typer.colors.RED)
@@ -235,20 +238,19 @@ def approve_cmd(
     scope: str = typer.Option(..., "--scope", help="what this run may touch, in your words"),
     granted_by: str = typer.Option(..., "--granted-by"),
     expires: str | None = typer.Option(None, "--expires", help="YYYY-MM-DD, through that day"),
-    standing: bool = typer.Option(False, "--standing", help="crawl only: valid until revoked "
-                                  "(autotester revoke); each run is still capped (D-111)"),
-    max_actions: int = typer.Option(200, "--max-actions", min=1),
-    max_probes: int = typer.Option(200, "--max-probes", min=1),
-    wall_clock: float = typer.Option(600.0, "--wall-clock", help="seconds", min=0.001),
+    standing: bool = typer.Option(False, "--standing", help="crawl only: until revoked (D-111)"),
+    max_actions: int | None = typer.Option(None, "--max-actions", min=1, help="default 200"),
+    max_probes: int | None = typer.Option(None, "--max-probes", min=1, help="default 200"),
+    wall_clock: float | None = typer.Option(None, "--wall-clock", min=0.001, help="default 600s"),
     production: bool = typer.Option(False, "--production", help="adversarial run on production"),
 ) -> None:
-    """Grant a human's approval for one kind of run against one target (D-018). HMAC-signed
-    with the repo-root approval key: protects against row tampering, not a party able to
-    rewrite the checker itself (AT-110)."""
+    """Grant a human's approval for one kind of run against one target (D-018), HMAC-signed
+    with the repo-root key (AT-110). `--kind live_case`: any bound left out is derived (D-112)."""
     from autotester.schema.approval import RunApproval
     from autotester.schema.enums import ApprovalKind
 
-    if not math.isfinite(wall_clock) or min(max_actions, max_probes, wall_clock) <= 0:
+    if any(v is not None and (not math.isfinite(v) or v <= 0)
+           for v in (max_actions, max_probes, wall_clock)):
         typer.secho("grant bounds must be positive and finite", fg=typer.colors.RED)
         raise typer.Exit(1)
     store_ = ProjectStore(project)
@@ -261,6 +263,8 @@ def approve_cmd(
         allowed = ", ".join(k.value for k in ApprovalKind)
         typer.secho(f"--kind must be one of: {allowed}", fg=typer.colors.RED)
         raise typer.Exit(1) from None
+    max_actions, max_probes, wall_clock = _resolved_bounds(
+        store_, run_kind, max_actions, max_probes, wall_clock)
     # CN4: only NEW rows get an offset-aware end-of-day expiry (D-048); D-111: or none.
     expires_at = _grant_expiry(expires, standing, target, store_.load_project())
     _caps_or_refuse(max_actions, wall_clock, expires_at, run_kind)

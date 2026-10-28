@@ -543,6 +543,7 @@
 | `AnswerKeySource` (`schema/answer_key.py`) | Where the key was written from: a product document, by reference. |
 | `AnswerItem` (`schema/answer_key.py`) | One answer to give. `is_correct=False` is a deliberately wrong answer (score less). |
 | `AnswerKey` (`schema/answer_key.py`) | The items, the documented all-correct score, and the source. |
+| `GrantBounds` (`schema/approval.py`) |  |
 | `RunApproval` (`schema/approval.py`) | One human's authorisation for one kind of run against one target. |
 | `ApprovalRevocation` (`schema/approval_revocation.py`) | One human's withdrawal of consent previously granted by `approval_id`. |
 | `PermissionKey` (`schema/auth.py`) | The closed catalogue (auth.md "Permission catalogue"). |

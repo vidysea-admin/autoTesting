@@ -18,6 +18,8 @@ from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.paths import ProjectPaths, repo_root
 from autotester.schema.auth import PermissionKey
+from autotester.schema.case import Case
+from autotester.stages.run_gates import derive_live_case_grant, planned_cases
 from autotester.ui import theme
 from autotester.ui.credential_guard import refuse_server_key
 from autotester.ui.env_editor import InvalidEnvValue, set_env_value
@@ -177,6 +179,32 @@ def env_add_credential(
     return RedirectResponse(f"/projects/{slug}/env", status_code=303)
 
 
+_GRANT_SCRIPT = (
+    "<script>(()=>{const f=document.querySelector(\"[name='expires_at']\").form,d={};"
+    "const live={max_actions:f.dataset.liveActions,max_probes:f.dataset.liveProbes,"
+    "wall_clock_s:f.dataset.liveWall},base={max_actions:200,max_probes:4000,wall_clock_s:600};"
+    "for(const n in live)f[n].addEventListener('input',()=>{d[n]=1;});"
+    "f.kind.addEventListener('change',()=>{for(const n in live)"
+    "if(!d[n])f[n].value=f.kind.value==='live_case'?live[n]:base[n];});})();</script>"
+)
+
+
+def _grant_prefill(cases: list[Case]) -> tuple[str, str]:
+    """D-112 item 2: (form attributes, note + script) carrying the bounds derived from the
+    planned cases. Picking kind `live_case` fills the three inputs with them; a field the
+    human has edited is never overwritten. No planned cases: nothing, the old defaults stand."""
+    if not cases:
+        return "", ""
+    got = derive_live_case_grant(cases)
+    attrs = (f" data-live-actions='{got.actions}' data-live-probes='{got.probes}'"
+             f" data-live-wall='{got.wall_clock_s:g}'")
+    note = (f"<p class='meta'>For a live_case run the bounds are derived from "
+            f"{len(cases)} planned case(s): {got.actions} actions, {got.probes} probes, "
+            f"{got.wall_clock_s:g}s of target time (with margin). Pick the kind to fill them; "
+            "edit any value.</p>")
+    return attrs, note + _GRANT_SCRIPT
+
+
 @router.get("/projects/{slug}/env", response_class=HTMLResponse)
 def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
     store, project = _load_project_or_404(slug)
@@ -188,6 +216,7 @@ def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
     safe_slug = escape(slug)
     show = can_view_credentials()
     table = _env_table(project, present, show)
+    prefill = _grant_prefill(planned_cases(store))
     note = ("Saved values are shown here so you can verify and edit them. "
             "They stay masked as ●●● until you press show." if show else
             "Each key shows only whether it is set. Type a new value to replace it; "
@@ -202,7 +231,7 @@ def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
         f"{theme.card(table)}"
         f"{_platform_url_card(slug, project)}"
         f"{_custom_credential_card(slug, project)}"
-        f"{_crawl_approval_form(slug, project.base_url, project.production)}"
+        f"{_crawl_approval_form(slug, project.base_url, project.production, prefill)}"
         f"{_approvals_card(store.list_approvals(), slug, project.base_url, saved, bool(existing))}"
     )
     return theme.page(f"{name} — credentials", body, active_slug=slug)
