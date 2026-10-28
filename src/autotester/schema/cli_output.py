@@ -30,7 +30,8 @@ class RegressionReport(BaseModel):
 
     project: str
     run_id: str | None = Field(default=None, description="None for a dry run or a refusal")
-    status: Literal["passed", "failed", "dry_run", "refused", "usage", "infra", "internal"]
+    status: Literal["passed", "failed", "dry_run", "refused", "usage", "infra", "internal",
+                    "inconclusive"]
     exit_code: int = Field(description="`core.exit_codes.ExitCode` value for this status")
     dry_run: bool = False
     message: str | None = None

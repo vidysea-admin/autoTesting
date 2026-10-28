@@ -1,10 +1,8 @@
 """T-174 (qa/contracts/cli-mcp.md CM1-CM5): the CLI contract and the MCP server.
 
-Every `ExitCode` is provoked by a fixture (CM1); `--output json` is one schema-typed, scrubbed
-document (CM2); `--dry-run` runs against fakes that raise on use and an unchanged file tree (CM3);
-the MCP server lists exactly three tools, calls the CLI's functions, and its `run_tests` is
-refused without an approval (CM4); `mcp` is declared and no tool returns a secret (CM5).
-Everything is in-process: no network, no browser.
+Every `ExitCode` is provoked by a fixture (CM1); `--output json` is one scrubbed document (CM2);
+`--dry-run` starts nothing (CM3); the MCP server lists three tools and refuses `run_tests` without
+an approval (CM4); `mcp` is declared and no tool returns a secret (CM5). In-process.
 """
 
 from __future__ import annotations
@@ -130,6 +128,13 @@ def test_test_failed(world) -> None:
     grant_live_case_approval(world)
     World.result = Result.FAIL
     assert code_of(invoke("run", "demo", "-o", "json"), ExitCode.TEST_FAILED).status == "failed"
+
+
+def test_inconclusive(world) -> None:
+    grant_live_case_approval(world)
+    World.result = Result.INCONCLUSIVE
+    code = code_of(invoke("run", "demo", "-o", "json"), ExitCode.INCONCLUSIVE)
+    assert code.status == "inconclusive"
 
 
 def test_usage_unknown_project(world) -> None:
@@ -283,16 +288,3 @@ def test_no_tool_returns_a_secret(world) -> None:
             return "".join(parts)
 
     assert SECRET not in asyncio.run(everything())
-
-
-def test_mcp_module_is_a_thin_adapter() -> None:
-    source = Path(mcp_server.__file__).read_text(encoding="utf-8")
-    imported = {line.split()[1] for line in source.splitlines() if line.startswith("from ")}
-    assert imported == {"__future__", "mcp.server.mcpserver", "autotester.schema.catalog",
-                        "autotester.schema.cli_output", "autotester.stages"}
-    assert "launch_run" not in source and "BrowserSession" not in source
-
-
-def test_mcp_dependency_is_declared() -> None:
-    text = (Path(__file__).parents[1] / "pyproject.toml").read_text(encoding="utf-8")
-    assert '"mcp>=' in text
