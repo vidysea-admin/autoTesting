@@ -44,8 +44,6 @@ def is_account_derived(approval: RunApproval) -> bool:
     return approval.granted_by.startswith("account-derived:")
 
 
-
-
 def validate_grant_bounds(
     actions: int, wall_clock_s: float, expires_at: datetime | None,
     now: datetime | None = None, *, kind: ApprovalKind | None = None,
