@@ -45,7 +45,11 @@ After:
 ```
 315 passed, 1 warning in 156.27s
 ```
-`uv run pytest` on the other 22 test files that construct a `RunApproval` or read `expires_at` (adversarial, agent_*, ai_*, authz_gate, ceo_run_evidence, discover, explore_live/modal/login_spa_live, ...): all green up to the point the maker stopped waiting, EXCEPT two reds that are not in the approval path and need a baseline compare by the checker: `tests/test_core.py::test_env_creation_is_coordinated_across_processes` (env-file lock, `'timeout' must be a non-negative number`) and one case in `tests/test_crawl_inventory_live.py` (live-browser test; it grants a DATED approval via `expires_at="2099-01-01"` and fails or hangs on the browser, not on consent). The signup-requests verdict records the full-suite reds as baseline/flake. The remaining files (explore_typing onward, test_grant_bounds_caps, test_ui_origin_guard, test_ui_crawl_login, role_port_authz, real_acceptance, parallel_run, regression_trigger) were still running; the checker should run the full sharded suite.
+`uv run pytest` on the other 22 test files that construct a `RunApproval` or read `expires_at` (adversarial, agent_*, ai_*, authz_gate, ceo_run_evidence, core, crawl_inventory_live, discover, explore_*, grant_bounds_caps, oracle_privilege, parallel_run, real_acceptance, regression_trigger, role_port_authz, ui_crawl_login, ui_origin_guard):
+```
+10 failed, 510 passed, 14 warnings in 2944.49s (0:49:04)
+```
+The 10 reds: `test_crawl_inventory_live` (1), `test_real_acceptance` (1) and `test_regression_trigger` (7) are timeouts under CPU contention with other runs: re-run in isolation, `test_crawl_inventory_live.py` is 2 passed and `test_regression_trigger.py` + `test_real_acceptance.py` are 33 passed. The last, `tests/test_core.py::test_env_creation_is_coordinated_across_processes` (env-file lock, `'timeout' must be a non-negative number`), reproduces in isolation and is in the env-lock path, not consent; the maker did not run it against master, so the checker should confirm it is baseline (the signup-requests verdict records the suite reds as baseline/flake). The checker should run the full sharded suite.
 
 `uv run ruff check src tests scripts`:
 ```
