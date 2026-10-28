@@ -16,9 +16,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from test_execute import LOGIN, make_case, session_with_fake_page
+from test_execute import LOGIN, make_case, make_project, session_with_fake_page
 
 from autotester.browser import assertions, error_text
+from autotester.browser.secrets import SecretStore
 from autotester.schema.enums import Action, EvidenceKind, Outcome
 from autotester.schema.flowspec import ExpectedState, Step
 from autotester.stages.execute import run_case
@@ -154,15 +155,19 @@ def real_page():
             runner.stop()
         pytest.skip(f"chromium unavailable: {type(exc).__name__}")
     page = browser.new_page()
-    page.set_content(PAGE)
     yield page
     browser.close()
     runner.stop()
 
 
+def scrape(page, html: str = PAGE) -> str:
+    """Load `html` into the real page and return the cleaned excerpts joined by ' | '."""
+    page.set_content(html)
+    return " | ".join(error_text.clean(page.evaluate(error_text.SCRAPE_JS)))
+
+
 def test_extractor_finds_visible_alerts_and_toasts(real_page) -> None:
-    texts = error_text.clean(real_page.evaluate(error_text.SCRAPE_JS))
-    joined = " | ".join(texts)
+    joined = scrape(real_page)
 
     assert "Invalid credentials" in joined
     assert "Session expired" in joined
@@ -170,7 +175,7 @@ def test_extractor_finds_visible_alerts_and_toasts(real_page) -> None:
 
 
 def test_extractor_skips_hidden_elements_and_form_wrappers(real_page) -> None:
-    joined = " | ".join(error_text.clean(real_page.evaluate(error_text.SCRAPE_JS)))
+    joined = scrape(real_page)
 
     assert "HIDDEN TOAST" not in joined and "INVISIBLE BOUNDARY" not in joined
     assert "Welcome to the portal" not in joined  # the has-error <form> wrapper holds inputs
@@ -178,8 +183,100 @@ def test_extractor_skips_hidden_elements_and_form_wrappers(real_page) -> None:
 
 
 def test_extractor_never_echoes_filled_input_values(real_page) -> None:
-    joined = " | ".join(error_text.clean(real_page.evaluate(error_text.SCRAPE_JS)))
+    joined = scrape(real_page)
 
     assert "alice@example.org" not in joined
     assert "s3cretpass" not in joined
     assert "Invalid credentials for" in joined and "is too weak" in joined
+
+
+# -- hardening cycle 1 (checker findings F1-F3, F5) --------------------------------
+
+def test_f1_typed_value_with_consecutive_whitespace_or_newline_is_blanked(real_page) -> None:
+    joined = scrape(real_page, """<input value="John  Smith"><textarea>line1
+line2xx</textarea>
+<div role=alert>No account for John  Smith or line1
+line2xx here</div>""")
+
+    assert "No account for" in joined
+    assert "John Smith" not in joined and "John  Smith" not in joined
+    assert "line1" not in joined and "line2xx" not in joined
+
+
+def test_f2_typed_value_echoed_in_another_case_is_blanked(real_page) -> None:
+    joined = scrape(real_page, """<input value="Alice99">
+<div role=alert>User ALICE99 is already taken, alice99 too</div>""")
+
+    assert "is already taken" in joined
+    assert "alice99" not in joined.lower()
+
+
+def test_f3_value_typed_in_an_open_shadow_root_is_blanked(real_page) -> None:
+    joined = scrape(real_page, """<div id=h></div>
+<script>document.getElementById('h').attachShadow({mode:'open'}).innerHTML =
+  '<input value="shadowtyped"><div><textarea>deeptyped</textarea></div>';</script>
+<div role=alert>Rejected shadowtyped and deeptyped.</div>""")
+
+    assert "Rejected" in joined
+    assert "shadowtyped" not in joined and "deeptyped" not in joined
+
+
+def test_f3_contenteditable_text_is_never_read_as_message_text(real_page) -> None:
+    joined = scrape(real_page, """<div role=alert>Failed <b contenteditable>my private draft</b>
+ end</div>
+<div class=error-box contenteditable=true>an editor body</div>
+<div role=alert contenteditable=plaintext-only>another editor</div>
+<div contenteditable=true><p class=error-line>nested editor line</p></div>""")
+
+    assert "Failed" in joined
+    for leaked in ("private draft", "editor body", "another editor", "nested editor line"):
+        assert leaked not in joined
+
+
+def test_f3_text_inside_an_iframe_is_not_read(real_page) -> None:
+    joined = scrape(real_page, """<div role=alert>Outer message
+<iframe>FRAME FALLBACK TEXT</iframe>
+<iframe srcdoc="<div role=alert>INSIDE FRAME ALERT</div>"></iframe></div>
+<iframe srcdoc="<div role=alert>OTHER FRAME ALERT</div>"></iframe>""")
+
+    assert "Outer message" in joined
+    assert "FRAME FALLBACK TEXT" not in joined and "FRAME ALERT" not in joined
+
+
+# -- F5: scrub before the caps ---------------------------------------------------------
+
+def test_f5_secret_straddling_the_item_cap_is_scrubbed_before_the_cut(tmp_path: Path) -> None:
+    session = session_with_fake_page(tmp_path)  # .env holds PATHLYNKS_PASSWORD=hunter2
+    session.page.body_text = "Sign in"
+    session.page.evaluate = lambda js: ["x" * (error_text.MAX_ITEM_CHARS - 3) + "hunter2 tail"]
+
+    rows = _rows(_expect_dashboard(session))
+
+    assert len(rows) == 1 and "hun" not in rows[0].path
+
+
+def test_f5_secret_straddling_the_total_cap_is_scrubbed_before_the_cut(tmp_path: Path) -> None:
+    session = session_with_fake_page(tmp_path)
+    session.page.body_text = "Sign in"
+    first = "a" * 198
+    second = "b" * 198
+    third = "c" * 190 + "hunter2"  # starts inside the 600-char body, ends after it
+    session.page.evaluate = lambda js: [first, second, third]
+
+    rows = _rows(_expect_dashboard(session))
+
+    assert len(rows) == 1 and "hun" not in rows[0].path
+
+
+def test_f5_secret_with_consecutive_whitespace_is_scrubbed(tmp_path: Path) -> None:
+    session = session_with_fake_page(tmp_path)
+    (tmp_path / ".env").write_text('PATHLYNKS_PASSWORD="pass  word  9"' + chr(10), encoding="utf-8")
+    session.secrets = SecretStore.load(make_project(), tmp_path / ".env")
+    session.page.body_text = "Sign in"
+    # the in-page extractor collapses whitespace, so the secret reaches Python with single spaces
+    session.page.evaluate = lambda js: ["Wrong credential pass word 9 for this account"]
+
+    rows = _rows(_expect_dashboard(session))
+
+    assert len(rows) == 1
+    assert "pass word 9" not in rows[0].path and "word" not in rows[0].path
