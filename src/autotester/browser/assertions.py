@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import contextlib
 
+from autotester.browser import error_text
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.flowspec import ExpectedState
 from autotester.stages.run_budget import RunBudgetExceeded
@@ -173,6 +174,15 @@ def assert_expected(session, expected: ExpectedState, *,
         evidence.append(session._record(
             EvidenceKind.NETWORK, f"assert network: {'met' if found else 'unmet'} ({pattern!r})",
             step_order=step_order))
+    return _with_error_text(session, evidence, step_order)
+
+
+def _with_error_text(session, evidence: list, step_order: int | None) -> list:
+    """What the page SHOWED (inbox 2026-10-28): on any unmet field, one more bounded
+    alert/error-text DOM row, so the failure reason is readable even when the screenshot is
+    withheld. Not an `assert ` row, so `stages/grade.py`'s unmet counting is unchanged."""
+    if any(item.path.startswith("assert ") and ": unmet" in item.path for item in evidence):
+        evidence.extend(error_text.record_visible_error_text(session, step_order=step_order))
     return evidence
 
 
