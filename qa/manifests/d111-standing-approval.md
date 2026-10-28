@@ -1,6 +1,6 @@
 # Manifest - d111-standing-approval
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Security trigger:** YES - consent gate (D-018 / D-111). **Dual check required (A+B).**
 **Issues addressed:** D-111 (Umesh 2026-10-28: "yes it should not expire, i admin will disable it").
