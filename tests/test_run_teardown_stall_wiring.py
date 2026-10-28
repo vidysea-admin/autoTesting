@@ -4,6 +4,8 @@ memory-starved host is warned about. Fakes only -- no browser, no network, no mo
 
 from __future__ import annotations
 
+import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -66,7 +68,7 @@ def test_a_launched_run_records_phase_totals_and_unaccounted_seconds(
                         grader_provider="mock"))
 
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
-    monkeypatch.setattr(run_execution, "_wipe_entry_profile", lambda _p: None)
+    monkeypatch.setattr(run_execution, "_wipe_entry_profile", lambda _p: time.sleep(0.06))
     monkeypatch.setattr(run_execution, "run_and_grade_case_resilient", graded)
     seams = RunSeams(judge_factory=_Judge, free_ram_mb=lambda: 16000.0,
                      planner=lambda project, **_kw: ParallelPlan(1, 1, 1, "config", 16000.0, 4))
@@ -78,6 +80,11 @@ def test_a_launched_run_records_phase_totals_and_unaccounted_seconds(
     assert {"entry_profile_wipe", "session_start", "case_pipeline",
             "save_result"} <= set(saved.phase_totals_s)
     assert saved.unaccounted_s is not None and saved.unaccounted_s >= 0.0
+    # D-112 / F2: the seconds held off the approval clock are in run.json, auditable
+    assert saved.excluded_s is not None and set(saved.excluded_s) == {
+        "judging", "housekeeping", "total"}
+    assert saved.excluded_s["housekeeping"] >= 0.05  # the slowed profile wipe
+    assert saved.excluded_s["total"] >= saved.excluded_s["housekeeping"] - 0.001
     spans = read_spans(store.paths.run_trace(run.id), include_phases=True)
     assert any(isinstance(s, PhaseSpan) and s.phase == "save_result" for s in spans)
 
@@ -154,3 +161,27 @@ def test_no_warning_with_headroom_or_when_the_measurement_fails(capsys) -> None:
     assert warn_if_memory_starved(RunSeams(free_ram_mb=broken)) is False
     assert capsys.readouterr().err == ""
     assert run_launcher.LOW_RAM_WARN_MB == 2048.0
+
+
+def test_a_garbage_or_unprintable_measurement_never_raises_out_of_the_warning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    assert warn_if_memory_starved(RunSeams(free_ram_mb=lambda: None)) is False  # type: ignore[arg-type,return-value]
+    assert warn_if_memory_starved(RunSeams(free_ram_mb=lambda: "lots")) is False  # type: ignore[arg-type,return-value]
+
+    class _Broken:
+        def write(self, _text: str) -> int:
+            raise OSError("closed stderr")
+
+        def flush(self) -> None:
+            raise OSError("closed stderr")
+
+    monkeypatch.setattr(sys, "stderr", _Broken())
+    assert warn_if_memory_starved(RunSeams(free_ram_mb=lambda: 100.0)) is False
+
+
+def test_wall_clock_description_says_target_acting_time_only() -> None:
+    from autotester.schema.approval import RunApproval
+    text = (RunApproval.model_fields["wall_clock_s"].description or "").lower()
+    assert "acting" in text and "judging" in text and "housekeeping" in text
+    assert "in total" not in text

@@ -87,11 +87,13 @@ class RunBudget:
         for allowance in (judge_allowance_s, housekeeping_allowance_s):
             if not math.isfinite(allowance) or allowance < 0:
                 raise ValueError("invalid judge allowance")
-        # Judge (model-grading) time is accounted SEPARATELY from the approval's clock:
-        # the approval bounds the time the browser acts on the target; grading is bounded
-        # by this allowance, and any grading beyond it is charged to the approval clock.
-        # Housekeeping (waiting for Chromium to exit, profile wipe, OCR, bundle assembly) is
-        # not the browser acting on the target either, so it gets the same treatment.
+        # The approval's clock bounds only the time the browser ACTS on the target (D-112).
+        # Judge (model grading) and housekeeping (Chromium exit, profile wipe, OCR, bundle
+        # assembly) time is held off it by ONE shared exclusion clock (`_excluded`), so a second
+        # spent inside both scopes is subtracted once. Its combined allowance is the two
+        # allowances; anything beyond it is charged to the approval clock. `_judge` and
+        # `_housekeeping` only MEASURE each kind for the run record -- they exclude nothing.
+        self._excluded = _ExcludedClock(judge_allowance_s + housekeeping_allowance_s)
         self._judge = _ExcludedClock(judge_allowance_s)
         self._housekeeping = _ExcludedClock(housekeeping_allowance_s)
         self._lock = threading.Lock()
@@ -108,14 +110,16 @@ class RunBudget:
                    housekeeping_allowance_s=housekeeping_allowance_s(cases))
 
     @contextmanager
-    def _excluding(self, clock: _ExcludedClock) -> Iterator[None]:
+    def _excluding(self, kind: _ExcludedClock) -> Iterator[None]:
         with self._lock:
-            clock.enter()
+            self._excluded.enter()
+            kind.enter()
         try:
             yield
         finally:
             with self._lock:
-                clock.leave()
+                kind.leave()
+                self._excluded.leave()
 
     def judging(self) -> AbstractContextManager[None]:
         """Time spent inside is judge time: excluded from the approval clock, up to the
@@ -124,13 +128,22 @@ class RunBudget:
 
     def housekeeping(self) -> AbstractContextManager[None]:
         """Time spent inside is browser teardown / profile wipe / OCR / bundle time: excluded
-        from the approval clock up to the housekeeping allowance; beyond it, charged."""
+        from the approval clock (once, even when it overlaps judging) up to the combined
+        allowance; beyond it, charged."""
         return self._excluding(self._housekeeping)
 
     def _browser_elapsed_locked(self) -> float:
         now = time.monotonic()
-        return (now - self._start - self._judge.excluded(now)
-                - self._housekeeping.excluded(now))
+        return now - self._start - self._excluded.excluded(now)
+
+    def excluded_report(self) -> dict[str, float]:
+        """Seconds held off the approval clock, for the run record: each kind as measured and
+        the `total` actually subtracted (the union, capped at the combined allowance)."""
+        with self._lock:
+            now = time.monotonic()
+            return {"judging": self._judge.spent(now),
+                    "housekeeping": self._housekeeping.spent(now),
+                    "total": self._excluded.excluded(now)}
 
     @property
     def judge_s_used(self) -> float:

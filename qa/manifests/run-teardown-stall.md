@@ -1,7 +1,7 @@
 # Manifest - run-teardown-stall
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Source:** `.work/pathlynks-explore/stall-diagnosis.md` (2026-10-28) section 7 (7.1 trace rows, 7.2 items 1, 2, 3, 5, 6). Items 4 (run headline, already on `fix/run-summary-inconclusive`) and 7 (entry-browser reuse, needs a DECISIONS entry) are NOT in this unit.
 **Branch:** `fix/run-teardown-stall` from master e74664f8 (worktree `D:/autoTesting/.claude/worktrees/teardown-stall`).
 
@@ -14,7 +14,7 @@
 - `browser/session.py::close` delegates to `close_session`; `BrowserSession.trace` attribute.
 - `ui/run_execution.py`: `_run_entry_case` now saves result+verdict BEFORE `session.close()` (callers no longer save entry cases); phases `entry_profile_wipe`, `session_start`, `case_pipeline`, `save_result`; wipe and start run inside `budget.housekeeping()` (`_housekeeping` tolerates budget stand-ins).
 - `stages/parallel_run.py::default_session_factory`: `trace=` param, sets `session.trace`, traces `session_start`.
-- `stages/run_budget.py`: `_ExcludedClock` (shared by judge and housekeeping), `RunBudget.housekeeping()`, `housekeeping_s_used`, `housekeeping_allowance_s`, `HOUSEKEEPING_ALLOWANCE_PER_CASE_S = 60`, `RunBudget.for_cases` sizes it; `judging()` behaviour unchanged.
+- `stages/run_budget.py`: `_ExcludedClock`, `RunBudget.housekeeping()`, `housekeeping_s_used`, `housekeeping_allowance_s`, `HOUSEKEEPING_ALLOWANCE_PER_CASE_S = 60`, `RunBudget.for_cases` sizes it. (Cycle 0 had separate judge and housekeeping exclusions; cycle 1 replaced them with ONE shared clock, see below.)
 - `stages/run_case_pipeline.py::_finalize_video` takes optional `trace`, nested phase `finalize_video`.
 - `stages/grade_images.py::judge_images`: nested phase `ocr_sanitize` (already inside the judge-time exclusion).
 - `providers/langchain_fallback.py`: `JUDGE_TIMEOUT_S = 120`, `JUDGE_MAX_RETRIES = 2` on every tier; `_trace_failed_tier` writes nested phase `judge_tier_failed` (note = tier/role + exception TYPE only).
@@ -48,3 +48,35 @@ Playwright's sync API is thread-bound: `pw.stop()` from a second thread raised `
 - `qa/contracts/` (B9 wording, parallel-run PR7 budget semantics, consent CN10 "approval bounds browser time") and `docs/DECISIONS.md` were NOT touched (maker never edits contracts; DECISIONS needs `append_decision.ps1`). The checker should decide whether the housekeeping clause and the cancel-not-kill teardown need a contract amendment and a D-entry.
 - The senior-software-engineer review agent could not be dispatched from this subagent (the PreToolUse hook demanded a compact-handoff bundle I was not given), so fresh-context review is left to the checker.
 - Follow-ups not done (outside this unit): 7.2 item 4 (`fix/run-summary-inconclusive`), item 7 (entry-browser reuse, needs a decision), `run_case`/per-step phase rows (`stages/execute.py` is at 287 lines), a quiet-host re-measurement of the 224-887 s entry-case gaps (the cancel bounds the client-side wait; whether Chromium lingers after a cancel is released by `driver.stop()` is not proven here).
+
+
+## Fix cycle 1 (D-112 item 1 + checker-B findings F1-F3)
+Source: `docs/DECISIONS.md` D-112 (Umesh, "go with A") and `.work/teardown-b-verdict.md`. D-112 item (2), auto-sized bounds, is NOT in this unit.
+
+### What changed (file:function)
+- `stages/run_budget.py::RunBudget.__init__/_excluding/_browser_elapsed_locked` (F1): one shared `_excluded` `_ExcludedClock` (combined allowance = judge + housekeeping allowance) is the ONLY clock subtracted from the approval clock; `judging()` and `housekeeping()` both enter it plus their own measuring-only clock (`_judge`, `_housekeeping`), so a second inside both scopes is subtracted once. Public API (`judging`, `housekeeping`, `judge_s_used`, `housekeeping_s_used`, both allowance properties) unchanged. New `RunBudget.excluded_report()` -> `{"judging", "housekeeping", "total"}`.
+- `schema/run.py::Run.excluded_s` (F2): `dict[str, float] | None`, None = not recorded.
+- `stages/parallel_run.py::ParallelPlan.excluded_s` (default None): carries the report out of `run_launcher.run_cases_traced` (which returns `dataclasses.replace(plan, excluded_s=budget.excluded_report())`) without changing its call signature (tests and `_with_seams` wrap it positionally). `stages/run_launcher.py::launch_run` saves it into `Run.excluded_s`.
+- `stages/run_launcher.py::warn_if_memory_starved` (F3): compare and print now inside the `try`; a non-numeric measurement or an unwritable stderr returns False and never raises.
+- `schema/approval.py::RunApproval.wall_clock_s` description (D-112): bounds time ACTING on the target; judging and housekeeping held off it up to bounded allowances; the inaccurate "in total" wording is gone.
+- Test stand-ins `tests/test_run_failure_artifacts.py` and `tests/test_ui_runs.py` return `excluded_s=None` on their fake plan.
+
+### Criteria (numbered; each cites its test)
+11. Overlapping judge + housekeeping intervals subtract their union once (F1): `tests/test_run_teardown_stall.py::test_overlapping_judge_and_housekeeping_subtract_their_union_once` (60 s inside both, then 99 s acting passes, 101 s raises; the cycle-0 double subtraction let 101 s through).
+12. The exclusions are measured per kind, the union is what is subtracted, and it is capped at the combined allowance: `::test_excluded_seconds_report_each_kind_and_the_union` (judging 30, housekeeping 20, total 40), `::test_excluded_total_is_capped_at_the_combined_allowance`.
+13. run.json carries the excluded seconds beside `phase_totals_s` / `unaccounted_s` (F2): `tests/test_run_teardown_stall_wiring.py::test_a_launched_run_records_phase_totals_and_unaccounted_seconds` (keys judging/housekeeping/total; housekeeping >= 0.05 with a 0.06 s profile wipe).
+14. A raising or garbage RAM probe, or a broken stderr, never raises out of the warning (F3): `::test_a_garbage_or_unprintable_measurement_never_raises_out_of_the_warning`; earlier RAM tests unchanged and passing.
+15. `wall_clock_s` description says target-acting time only: `::test_wall_clock_description_says_target_acting_time_only`.
+16. Prior behaviour kept: judge-time and housekeeping tests pass unchanged (`tests/test_run_budget_judge_time.py`, criteria 7).
+
+### Tests run (worktree, `PYTHONPATH=<worktree>/src`, `-o addopts= -p no:cacheprovider`, one pytest at a time)
+- RED first: 6 of the new tests failed before the implementation (overlap, report, cap, run.json, RAM probe, description).
+- `tests/test_run_teardown_stall.py tests/test_run_teardown_stall_wiring.py tests/test_run_budget_judge_time.py`: `34 passed, 1 warning in 6.05s`.
+- Adjacent set (`test_run_launcher`, `_approval`, `test_run_failure_artifacts`, `test_ui_runs`, `test_parallel_run`, `_approval`, `test_ui_runs_serial_entry_order`, `_parallel_trace`, `_live_case_approval`, `_parallel_crash_recovery`, `test_team_run_launcher`, `test_bug_wiring`, `test_cli_mcp`, `test_schedule_wiring`, `test_run_trace`): `169 passed, 8 warnings in 43.14s`.
+- `python -m ruff check src tests scripts`: `All checks passed!`. `autotester map`: MAP.md unchanged. `autotester doctor`: only decision-citation advisories (coverage/declaration/known-disputed), no design-rule violation. Line counts: run_budget.py 297, run_launcher.py 284, parallel_run.py 258, test files 284 and 187 (cap 300).
+- NOT run: the full suite (host low on memory; checker owns it), any live run or browser.
+
+### Deviations and open items
+- The report rides on `ParallelPlan` rather than a new `run_cases_traced` parameter or return type because existing tests stub that function positionally and an AST test constrains its call shape; the default `None` keeps every other constructor valid.
+- Judge and housekeeping allowances are now pooled: unused housekeeping allowance can absorb judge overrun and vice versa (the checker-B F1 recommendation, "a single combined allowance"). Total non-acting exclusion per run is unchanged at 105 s per case at most.
+- D1 (consent.md CN10 / parallel-run.md PR7 contract notes) is a checker amendment; D-112 is already recorded. The senior-software-engineer agent was not dispatched from this subagent; fresh-context review is left to the checker.

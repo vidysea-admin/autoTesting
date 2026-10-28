@@ -15,6 +15,7 @@ width planner.
 
 from __future__ import annotations
 
+import dataclasses
 import re
 import sys
 import time
@@ -156,13 +157,13 @@ def warn_if_memory_starved(seams: RunSeams = DEFAULT_SEAMS) -> bool:
     only: a run is never refused for it, and a failed measurement is silent."""
     try:
         free_mb = seams.free_ram_mb()
-    except Exception:  # a measurement failure must never stop a run
+        if free_mb >= LOW_RAM_WARN_MB:
+            return False
+        print(f"warning: host is memory-starved ({free_mb / 1024:.1f} GB free): expect slow "
+              "browser start and close; stop other heavy jobs (e.g. a sharded pytest) before "
+              "this run", file=sys.stderr)
+    except Exception:  # a bad measurement or an unwritable stderr must never stop a run
         return False
-    if free_mb >= LOW_RAM_WARN_MB:
-        return False
-    print(f"warning: host is memory-starved ({free_mb / 1024:.1f} GB free): expect slow browser "
-          "start and close; stop other heavy jobs (e.g. a sharded pytest) before this run",
-          file=sys.stderr)
     return True
 
 
@@ -225,7 +226,7 @@ def run_cases_traced(
         error=f"run budget exhausted: {budget.stop_reason}" if budget.stop_reason else None,
         started=started, finished=ctx.clock(),
     ))
-    return plan
+    return dataclasses.replace(plan, excluded_s=budget.excluded_report())
 
 
 def save_tracked_run(store: ProjectStore, **fields: Any) -> Run:
@@ -261,6 +262,7 @@ def launch_run(
         # CN10: what it ran under, reported not capped -- a 19-year wall clock is visible.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
+        excluded_s=plan.excluded_s,
         **phase_fields(store, run_id, time.monotonic() - wall_started),
     )
     run_follow_ups(store, run_id, judge)

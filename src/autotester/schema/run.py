@@ -161,6 +161,13 @@ class Run(Artifact):
         description="the run's wall time minus its top-level traced phases: a silent gap is a "
                     "number. Parallel workers overlap, so it is clamped at 0; None = NOT RECORDED",
     )
+    excluded_s: dict[str, float] | None = Field(
+        default=None,
+        description="D-112: seconds held OFF the approval's wall clock, which counts only time "
+                    "acting on the target -- `judging`, `housekeeping` (each as measured) and "
+                    "`total` (their union, capped at the combined allowance, as actually "
+                    "subtracted); None = NOT RECORDED (an older run), never zero",
+    )
     bounds: RunBounds | None = Field(
         default=None,
         description="AT-570/CN10: the approval and bounds this run ran under. None means NOT "

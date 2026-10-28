@@ -186,6 +186,41 @@ def test_housekeeping_beyond_its_allowance_is_charged(clock) -> None:
         budget.check()
 
 
+def test_overlapping_judge_and_housekeeping_subtract_their_union_once(clock) -> None:
+    budget = RunBudget(_approval(max_actions=100, wall_clock_s=100.0),
+                       judge_allowance_s=100.0, housekeeping_allowance_s=100.0)
+    with budget.judging(), budget.housekeeping():
+        clock.now += 60  # one real minute inside BOTH scopes: subtracted once, not twice
+    clock.now += 99
+    budget.check()  # 99 s acting against 100 s
+    clock.now += 2
+    with pytest.raises(rb.RunBudgetExceeded, match="wall_clock_s"):  # 101 s acting
+        budget.check()
+
+
+def test_excluded_seconds_report_each_kind_and_the_union(clock) -> None:
+    budget = RunBudget(_approval(max_actions=100, wall_clock_s=100.0),
+                       judge_allowance_s=100.0, housekeeping_allowance_s=100.0)
+    with budget.judging():
+        clock.now += 20
+        with budget.housekeeping():
+            clock.now += 10
+        clock.now += 0
+    with budget.housekeeping():
+        clock.now += 10
+    assert budget.excluded_report() == pytest.approx(
+        {"judging": 30.0, "housekeeping": 20.0, "total": 40.0})
+
+
+def test_excluded_total_is_capped_at_the_combined_allowance(clock) -> None:
+    budget = RunBudget(_approval(max_actions=100, wall_clock_s=100.0),
+                       judge_allowance_s=10.0, housekeeping_allowance_s=10.0)
+    with budget.judging():
+        clock.now += 50
+    report = budget.excluded_report()
+    assert report["judging"] == pytest.approx(50.0) and report["total"] == pytest.approx(20.0)
+
+
 def test_for_cases_sizes_a_housekeeping_allowance_per_case() -> None:
     budget = RunBudget.for_cases(_approval(max_actions=100, wall_clock_s=10.0),
                                  [_case("a"), _case("b")])

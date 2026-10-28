@@ -59,6 +59,7 @@ class ParallelPlan:
     bound_by: str  # "config" | "budget" | "write_policy"
     free_ram_mb: float
     cpu_count: int
+    excluded_s: dict[str, float] | None = None  # D-112: set once the run ends; see RunBudget
 
 
 def _free_ram_mb() -> float:
