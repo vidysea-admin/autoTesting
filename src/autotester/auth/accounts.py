@@ -151,12 +151,16 @@ def list_waiting() -> list[User]:
 
 
 def user_managers() -> list[str]:
-    """Emails of enabled accounts holding users.manage: who to tell about a new signup."""
+    """Emails of enabled accounts that can act on a signup, i.e. open /access-requests with its
+    New accounts section: users.manage AND access.approve in some scope (F2). A users.manage-only
+    holder is not mailed a link that 403s; they see the Waiting pill on /admin/users instead."""
+    held = ("EXISTS (SELECT 1 FROM memberships m JOIN group_permissions p "
+            "ON p.group_id = m.group_id WHERE m.user_id = u.id AND p.permission {})")
     with db.reading() as conn:
         return [r["email"] for r in conn.execute(
-            "SELECT DISTINCT u.email FROM users u JOIN memberships m ON m.user_id = u.id "
-            "JOIN group_permissions p ON p.group_id = m.group_id "
-            "WHERE p.permission = 'users.manage' AND u.disabled = 0 ORDER BY u.email")]
+            "SELECT u.email FROM users u WHERE u.disabled = 0 AND "
+            + held.format("= 'users.manage'") + " AND "
+            + held.format("LIKE 'access.approve@%'") + " ORDER BY u.email")]
 
 
 def get_user(user_id: int) -> User | None:

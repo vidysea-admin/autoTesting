@@ -7,6 +7,7 @@ write, when the store refuses (last admin, unknown permission, unknown group).
 
 from __future__ import annotations
 
+import re
 from html import escape
 
 from fastapi import APIRouter, HTTPException, Request
@@ -46,11 +47,15 @@ def _users_page(message: str = "", status: int = 200) -> HTMLResponse:
     return HTMLResponse(theme.page("Users", body), status_code=status)
 
 
-def _ints(values: list[object]) -> list[int]:
-    try:
-        return [int(str(v)) for v in values]
-    except ValueError as exc:
-        raise HTTPException(400, "invalid id") from exc
+_ID = re.compile(r"[0-9]{1,18}")      # ASCII digits only, always inside SQLite's int64
+
+
+def parse_ids(values: list[object]) -> list[int]:
+    """Ids from form text, or a 400: non-ASCII digits ('²'), signs, blanks, `1_0` and
+    numbers too big for the store are all 'invalid id', never a 500 (signup-requests-f1 F1)."""
+    if not all(_ID.fullmatch(str(v)) for v in values):
+        raise HTTPException(400, "invalid id")
+    return [int(str(v)) for v in values]
 
 
 @router.get("/admin/users", response_class=HTMLResponse)
@@ -68,7 +73,7 @@ async def admin_user_action(user_id: int, action: str, request: Request) -> Resp
         raise HTTPException(404, "no such account")
     try:
         if action == "groups":
-            accounts.set_user_groups(user_id, _ints(form.getlist("group_id")), who)
+            accounts.set_user_groups(user_id, parse_ids(form.getlist("group_id")), who)
         elif action in {"disable", "enable"}:
             accounts.set_disabled(user_id, action == "disable", who)
         elif action == "delete":
@@ -130,7 +135,7 @@ async def admin_group_update(group_id: int, request: Request) -> Response:
     group = _group_or_404(group_id)
     form = await request.form()
     can_members = authorize(who, PermissionKey.USERS_MANAGE)
-    members = (_ints(form.getlist("member_id"))
+    members = (parse_ids(form.getlist("member_id"))
                if can_members and form.get("members_shown") else None)
     try:
         groups.update_group(group_id, str(form.get("name", "")),

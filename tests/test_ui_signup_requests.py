@@ -160,7 +160,7 @@ def test_sr8_the_users_page_flags_waiting_accounts(root: Path) -> None:
 def test_sr9_signing_up_without_a_group_notifies_the_user_managers_with_a_link(
         root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("UVICORN_HOST", "0.0.0.0")   # hosted: a signup joins no group
-    managers = groups.create_group("People", ["users.manage"])
+    managers = groups.create_group("People", ["users.manage", "access.approve@all"])
     account("people@team.test")
     accounts.set_user_groups(user_id("people@team.test"), [managers.id])
     off = account("gone@team.test", "admin")

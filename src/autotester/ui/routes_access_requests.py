@@ -9,8 +9,9 @@ declining belongs to people `authorize()` allows (`stages/video_requests.py`).
 from __future__ import annotations
 
 import re
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Path, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.auth import accounts, audit, groups
@@ -29,9 +30,11 @@ from autotester.stages.video_requests import (
     request_access,
 )
 from autotester.ui import video_portal_view as view
+from autotester.ui.routes_admin import parse_ids
 from autotester.ui.routes_video_portal import who_is
 
 router = APIRouter()
+UserId = Annotated[int, Path(ge=1, le=2**63 - 1)]   # outside SQLite's int64: 422, not 500
 _TOKEN_SHAPE = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 
 
@@ -117,10 +120,11 @@ def _decide_account(user_id: int, approve: bool, form: dict) -> Response:
     verb = "signup.approve" if approve else "signup.decline"
     try:
         if approve:
-            raw = str(form.get("group_id", ""))
-            if not raw.isdigit():
-                raise accounts.AccountError("choose a group")
-            accounts.approve_waiting(user_id, int(raw), who)
+            try:
+                (group_id,) = parse_ids([form.get("group_id", "")])
+            except HTTPException as exc:
+                raise accounts.AccountError("choose a group") from exc
+            accounts.approve_waiting(user_id, group_id, who)
         else:
             accounts.decline_waiting(user_id, who)
     except (accounts.AccountError, NotAllowed) as exc:
@@ -131,12 +135,12 @@ def _decide_account(user_id: int, approve: bool, form: dict) -> Response:
 
 
 @router.post("/access-requests/accounts/{user_id}/approve")
-async def approve_account(user_id: int, request: Request) -> Response:
+async def approve_account(user_id: UserId, request: Request) -> Response:
     return _decide_account(user_id, True, dict(await request.form()))
 
 
 @router.post("/access-requests/accounts/{user_id}/decline")
-def decline_account(user_id: int) -> Response:
+def decline_account(user_id: UserId) -> Response:
     return _decide_account(user_id, False, {})
 
 
