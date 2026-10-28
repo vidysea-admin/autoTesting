@@ -1,5 +1,34 @@
 # Verdict - d111-standing-approval (checker A, criteria, Mode A)
 Verdict: PASS
+Cycle checked: 1
+Head tested: f3a5b12a (branch feat/d111-standing-approval). Security trigger: consent gate. This is checker A, cycle 1; the cycle 0 verdict (PASS at 8e8c76c3) follows unchanged below.
+
+## Cycle 1 (fix for the two 6c regressions)
+Diff d20eb037..f3a5b12a touches src/autotester/core/consent.py (+3/-2), tests/test_consent.py (+22), tests/test_cli_advice_resolves.py (+3/-1) and the manifest only. No schema, gate, CLI or UI logic changed.
+
+| Item | Result | Evidence |
+|---|---|---|
+| Printed grant command pasteable | PASS | consent.py:153-156 `_grant_command` is a pure command again (`"--granted-by <name> --expires <YYYY-MM-DD>"`, no prose). The standing alternative is a separate line appended in `require_approval` (consent.py:258-264) only `if kind in STANDING_KINDS`. New test tests/test_consent.py::test_the_standing_hint_is_its_own_line_and_the_command_line_stays_pasteable (no `--standing` or `(` in the command line, no shlex token ending `,`, exactly one hint line mentioning `--expires`, no hint for ADVERSARIAL) passes. tests/test_crawl_real_cli.py::test_the_refusals_command_grants_the_run_once_a_human_fills_it_in (the 6c red, `No such option: --standing,`) passes. |
+| Gate unchanged by the message edit | PASS | The hunk in `require_approval` only changes the text of the raised `ApprovalRequired`; `_reject_reason`, `validate_grant_bounds` and the candidates loop are not in the diff. The hint is informational and adds no way to obtain a standing row. |
+| Advice-site guard registers `revoke` | PASS | tests/test_cli_advice_resolves.py:170 adds `("cli_crawl.py","revoke")` to EXPECTED_SITES and `EXPECTED_SITE_COUNT` 31 -> 32; cli_crawl.py:238-239 is the site (`approve --standing` help names `autotester revoke`). test_no_advice_site_can_vanish_unnoticed and test_every_command_the_code_names_is_one_the_cli_exposes pass. Registering rather than rewording is the right call: the hint names a real command an operator is told to run, which is what the guard freezes. |
+| Cycle 0 criteria S1-S10 still hold | PASS | The D-111 tests and neighbours pass at this head (below); no src file other than consent.py changed since the cycle 0 head's code, and the consent.py hunks are message-only. Standing grant semantics, `standing` inside the HMAC-bound payload, adversarial/live_case/read/video_review refusal and the dated 30-day cap are exercised by test_standing_approval.py and test_standing_approval_grant.py (green). |
+
+## Commands run (worktree d111-standing, head f3a5b12a, one pytest at a time, `-o addopts=`)
+- `tests/test_crawl_real_cli.py tests/test_cli_advice_resolves.py tests/test_consent.py`: 84 passed, 1 failed (see baseline).
+- `tests/test_standing_approval.py tests/test_standing_approval_grant.py tests/test_approve_cli.py tests/test_explore_consent.py tests/test_ui_crawl_approval.py tests/test_cli_release.py`: 62 passed.
+- `tests/test_approval_signing.py tests/test_approval_revoke.py tests/test_approval_prod_gate.py tests/test_ui_auth_policy_table.py tests/test_grant_bounds_caps.py`: 45 passed.
+- `uv run ruff check src tests scripts`: All checks passed. `core/consent.py` is 296 lines (<= 300).
+- `uv run autotester doctor`: 29 violations, ALL `decision-citation-dangling` and all citing D-110 or D-111 (entries uncommitted in the main checkout's docs/DECISIONS.md); no size, function-length, duplicate, name, stale-generated or other rule fires. They clear when D-110/D-111 are committed.
+
+## Baseline red (not caused by this unit)
+tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve fails with one unresolved site in ui/routes_crawl_approval.py (the f-string `{MAX_GRANT_PROBES}` at :203 in this branch). The identical construct exists on master e74664f8 at routes_crawl_approval.py:192 (`git grep` at e74664f8), and `MAX_GRANT_PROBES` is integer arithmetic the collector cannot resolve: this is open issue AT-1024 (qa/issues.jsonl:1039, "red on base and head"). The line only moved (192 -> 203) because of this unit's added code. Not a regression from D-111. I did not run the full sharded suite (6c integration after merge is the pre-push step, as the manifest says).
+
+## Residual
+Findings 1-3 and the policy-row note from cycle 0 stand as non-blocking. qa/contracts/consent.md CN4 amendment from cycle 0 is unchanged. No merge, no push; manifest status is the maker's to flip.
+
+---
+# Cycle 0 record (unchanged)
+Verdict: PASS
 Cycle checked: 0
 Head tested: 8e8c76c3 (branch feat/d111-standing-approval, off master 26b2ce58). Security trigger: consent gate; dual check (this is A; B is independent). Judged against D-111 (docs/DECISIONS.md, uncommitted on master) and manifest S1-S10.
 

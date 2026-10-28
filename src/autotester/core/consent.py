@@ -153,8 +153,7 @@ def _grant_command(
         f"uv run autotester approve {project} --kind {kind.value}",
         f'--target "{target}"',
         '--scope "<what this run may touch>"',
-        "--granted-by <name> --expires <YYYY-MM-DD>"
-        + (" (or --standing, until revoked)" if kind in STANDING_KINDS else ""),
+        "--granted-by <name> --expires <YYYY-MM-DD>",
     ]
     if actions:
         parts.append(f"--max-actions {actions}")
@@ -259,6 +258,8 @@ def require_approval(
         f"refusing to start a {kind.value} run against {target} — {detail}\n"
         "Grant one with:\n  "
         f"{_grant_command(project, kind, target, actions, probes, wall_clock_s, production)}"
+        + ("\nTo keep it valid until revoked, replace --expires <YYYY-MM-DD> with --standing."
+           if kind in STANDING_KINDS else "")
     )
 
 

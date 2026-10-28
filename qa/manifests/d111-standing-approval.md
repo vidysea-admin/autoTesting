@@ -1,7 +1,7 @@
 # Manifest - d111-standing-approval
 
 **Status:** checked-PASS
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Security trigger:** YES - consent gate (D-018 / D-111). **Dual check required (A+B).**
 **Issues addressed:** D-111 (Umesh 2026-10-28: "yes it should not expire, i admin will disable it").
 **Branch:** `feat/d111-standing-approval` (worktree `D:/autoTesting/.claude/worktrees/d111-standing`, off master 26b2ce58)
@@ -21,7 +21,7 @@
 
 ## What changed
 - `schema/approval.py`: `expires_at: str | None = None`, new `standing: bool = False`, `STANDING_KINDS = {CRAWL}`, `is_standing` property, `is_expired` returns False for a standing crawl row and True for any other no-expiry row; `_bound_payload` adds `"standing": True` only when set. Module docstring documents it.
-- `core/consent.py`: `validate_grant_bounds(..., expires_at: datetime | None, now, *, kind)`; `_reject_reason` gives a specific message for a no-expiry non-standing row; `_grant_command` mentions `--standing` for crawl.
+- `core/consent.py`: `validate_grant_bounds(..., expires_at: datetime | None, now, *, kind)`; `_reject_reason` gives a specific message for a no-expiry non-standing row; the refusal message (not `_grant_command`) carries a separate `--standing` hint line for crawl (fix cycle 1).
 - `cli_crawl.py`: `approve --standing`, `--expires` now optional, new `_grant_expiry`, `_caps_or_refuse(..., kind)`; docstrings condensed to stay at the 300-line / 50-line caps (no behaviour change).
 - `ui/routes_crawl_approval.py`: standing checkbox, `_grant_expiry`, `_bounds` (extracted from the submit handler, same checks), `_revoke_form`, table column + `crawl_approval_revoke` route; docstrings condensed for the 300-line cap.
 - `auth/policy.py` + `tests/test_ui_auth_policy_table.py`: the new revoke POST needs a policy row (deny by default); it takes the SAME key as the grant, `access.approve`. **This file is not named in D-111's Changes-authorized** (it lists the "UI approval grant/list route and view"); the row is the minimum for the route to exist. Checker: confirm or ask Umesh.
@@ -64,3 +64,16 @@ File sizes (all <= 300): `ui/routes_crawl_approval.py` 300, `cli_crawl.py` 296, 
 - Try to mint a standing adversarial/live_case row via CLI, UI form tampering (`kind=adversarial`, hidden fields) and a hand-edited `approvals.jsonl`; try to flip a dated row; try to forge an unsigned revocation to hide a grant.
 - Check the revoke route cannot be reached by an API token or an unauthenticated/other-project request, and that its policy row matches the grant's key.
 - CN4 contract text still says consent is never open-ended: amend it (checker only).
+
+## Fix cycle 1 (source: `.work/6c-1028-batch.md`, 6c RED on integrate/1028, two regressions from this unit)
+Both found only by the integration suite; cycle 0 did not run these two files. Tests first.
+1. `tests/test_crawl_real_cli.py::test_the_refusals_command_grants_the_run_once_a_human_fills_it_in` (`No such option: --standing,`). Cause: `core/consent.py::_grant_command` appended `" (or --standing, until revoked)"` to the printed pasteable line, so `shlex.split` produced the token `--standing,`. Fix in place: `_grant_command` is back to a pure command; `require_approval`'s `ApprovalRequired` message (`core/consent.py:258-264`) adds a separate line `To keep it valid until revoked, replace --expires <YYYY-MM-DD> with --standing.` only for `kind in STANDING_KINDS`. New test first (red on d20eb037): `tests/test_consent.py::test_the_standing_hint_is_its_own_line_and_the_command_line_stays_pasteable` (no prose or `(` in the command line, no token ending `,`, hint on its own line with `--expires`, no hint for adversarial).
+2. `tests/test_cli_advice_resolves.py::test_no_advice_site_can_vanish_unnoticed` (`new: [('cli_crawl.py','revoke')]`). Decision: REGISTER, not reword. `cli_crawl.py:239` (`approve --standing` help, "(autotester revoke)") names a real command an operator is told to run to end a standing grant, which is exactly what the guard freezes; registering also puts it under `test_every_command_the_code_names_is_one_the_cli_exposes` (`revoke --help` resolves), so a rename of `revoke` would now fail. Rewording would only hide an advice site the D-111 feature genuinely adds. Added `("cli_crawl.py", "revoke")` to `EXPECTED_SITES`, `EXPECTED_SITE_COUNT` 31 -> 32, history comment.
+
+Output (worktree, one pytest at a time, `-o addopts=`):
+- Before the src fix: new consent test red (1 failed); the two reds from the 6c verdict reproduce by their cause.
+- `tests/test_cli_advice_resolves.py tests/test_crawl_real_cli.py tests/test_consent.py`: 84 passed, 1 failed. The 1 failed is `test_the_collector_reports_what_it_could_not_resolve`, baseline AT-1024 (red on master e74664f8 per the 6c verdict, not touched here).
+- `tests/test_standing_approval.py tests/test_standing_approval_grant.py tests/test_approve_cli.py tests/test_explore_consent.py tests/test_ui_crawl_approval.py tests/test_cli_release.py`: 62 passed.
+- `uv run ruff check src tests scripts`: All checks passed. `core/consent.py` 297 lines.
+- `uv run autotester doctor`: no `stale-generated`/`stale-committed` on this branch, so `autotester snapshot` was not run (the 6c SNAPSHOT staleness belongs to the integration branch); remaining violations are the known dangling D-110/D-111 citations.
+Checker: re-run the 6c integration after merge.
