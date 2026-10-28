@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 from collections.abc import Sequence
 from pathlib import Path
@@ -78,6 +79,28 @@ def _dump(redactor: Redactor, payload: Any) -> str:
     data = payload.model_dump(mode="json") if hasattr(payload, "model_dump") else payload
     text = json.dumps(redactor.scrub_obj(data), indent=2, ensure_ascii=False)
     return _clean_text(redactor, text) + "\n"
+
+
+_SHA256_RE = re.compile(r"[0-9a-f]{64}")
+
+
+def _dump_manifest(redactor: Redactor, manifest: BundleManifest) -> str:
+    """Manifest JSON with every free-text field scrubbed and every integrity hash left intact.
+
+    A `sha256` is a computed digest, not text: a short secret value occurring inside its hex
+    would be masked and `load_bundle` would then fail the bundle's own hash check. Well-formed
+    hashes are blanked while the rest is scrubbed + gated, then restored verbatim; a malformed
+    `sha256` is not exempt and goes through the scrub like any other string.
+    """
+    data = manifest.model_dump(mode="json")
+    kept: dict[int, str] = {}
+    for i, f in enumerate(data["files"]):
+        if _SHA256_RE.fullmatch(f["sha256"]):
+            kept[i], f["sha256"] = f["sha256"], ""
+    clean = json.loads(_dump(redactor, data))
+    for i, digest in kept.items():
+        clean["files"][i]["sha256"] = digest
+    return json.dumps(clean, indent=2, ensure_ascii=False) + "\n"
 
 
 def _check_one_run(run_id: str, case: Case, result: RawResult, verdict: Verdict,
@@ -195,7 +218,7 @@ def build_failure_bundle(
     manifest = BundleManifest(bundle_id=bundle_id, run_id=run_id, case_id=case.id,
                               failing_step=failing, failing_step_source=source,
                               steps_included=steps, files=w.files)
-    (partial / MANIFEST).write_text(_dump(redactor, manifest), encoding="utf-8")
+    (partial / MANIFEST).write_text(_dump_manifest(redactor, manifest), encoding="utf-8")
     partial.rename(final)
     return final
 
