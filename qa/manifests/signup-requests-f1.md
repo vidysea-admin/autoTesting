@@ -1,6 +1,6 @@
 # Manifest - signup-requests-f1
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual A+B cycle 0: qa/verdicts/signup-requests-f1.md + signup-requests-f1.b.md)
 **Fix cycle:** 0
 **Issues addressed:** follow-up F1 and F2 from the signup-requests senior review / checker (manifest `qa/manifests/signup-requests.md`, checked-PASS, non-blocking findings).
 **Branch:** `fix/signup-requests-f1` (worktree `D:/autoTesting/.claude/worktrees/signup-requests-f1`, off bd56f8c5). Not merged, not pushed.
