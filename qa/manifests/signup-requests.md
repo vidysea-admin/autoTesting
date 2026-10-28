@@ -1,6 +1,6 @@
 # Manifest - signup-requests
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual A+B cycle 0: qa/verdicts/signup-requests.md + signup-requests.b.md; senior review Warning, non-blocking F1 follow-up)
 **Fix cycle:** 0
 **Issues addressed:** Umesh 2026-10-28 (live Cloud Run): a person who signs up lands on the waiting-for-admin page but the admin never sees a request (account umeshsugara@vidysea.com ACTIVE, zero groups; `/access-requests` listed only video share-link requests; nothing notified admins).
 **Branch:** `fix/signup-requests` (worktree `D:/autoTesting/.claude/worktrees/agent-accf8a0414496c0ce`, off master 924d811a)
