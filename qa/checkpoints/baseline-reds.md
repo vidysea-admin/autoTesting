@@ -64,3 +64,21 @@ Flaky under 8-way load, each green alone in the real worktree (files untouched b
 `tests/test_mutation_check.py::test_it_refuses_an_anchor_that_matches_nothing`, `...::test_a_test_that_touches_the_report_variable_cannot_hide_a_kill[removed]`,
 `tests/test_hosting_config.py::test_healthz_source_root_is_the_package_even_when_the_data_root_is_elsewhere`, `tests/test_mc_sessionstart_loop_status.py::test_hook_prints_the_report_and_exits_zero_on_a_healthy_log`.
 Shard-copy artifact (AT-1405): 26 tests/acceptance/* errors, green in the real tree.
+
+## r11 note (2026-10-29, 6c-1028-batch2): master-red, previously unlisted
+Each was run alone (file group, `uv run pytest <files> -o addopts=`) on a detached worktree of master `e74664f8` and is red there too, with the same failure as on integrate/1028 head `0d2b1688`
+(evidence: `qa/verdicts/6c-1028-batch2.md`; first seen as "master-red candidates" in `qa/verdicts/6c-1028-batch.md`). None is caused by a merged unit.
+
+| Baseline | Node id | Cause (one line) | Ticket |
+|---|---|---|---|
+| e74664f8 | tests/test_role_port_authz.py::test_w3_the_tenant_oracle_finds_the_planted_cross_tenant_row | `getaddrinfo ENOTFOUND a.localhost` from Playwright `APIRequestContext.get`: `*.localhost` does not resolve on this host | env (DNS) |
+| e74664f8 | tests/test_role_port_authz.py::test_w3_the_privilege_oracle_finds_the_read_the_lower_role_should_not_have | same | env (DNS) |
+| e74664f8 | tests/test_role_port_authz.py::test_w3_every_probe_stays_inside_the_planned_count | same | env (DNS) |
+| e74664f8 | tests/test_role_port_authz.py::test_w3_a_url_off_the_platform_is_never_requested | same (`GET http://a.localhost:<port>/go-away`) | env (DNS) |
+| e74664f8 | tests/test_role_port_authz.py::test_w3_a_logged_out_role_reads_as_401_never_as_the_login_page_200 | same | env (DNS) |
+| e74664f8 | tests/test_role_port_escalation.py::test_w4_below_allow_writes_the_control_is_listed_unprobed_and_never_pressed | `assertions[0].verdict` is `failed`, expected `passed` (same multi-host `*.localhost` rig) | env (DNS), unconfirmed |
+| e74664f8 | tests/test_platform_links.py::test_mp12_fixture_links_redirect_sso_control_off_platform_chain_404_and_unreached | link outcome FAILED, `goto: net::ERR_FAILED`, hops `['a.localhost:<port>']` | env (DNS) |
+| e74664f8 | tests/test_platform_links.py::test_mp12_containment_first_hop_never_reaches_the_stray_host_later_hop_is_parked | same | env (DNS) |
+
+Also confirmed red alone on master (already listed above): `test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve`, `test_role_port_mail.py::test_w2_*`, `test_infra_trio.py::test_verify_gates_keeps_exit_code[0]`/`[3]`.
+Shard-copy artifacts re-confirmed on `0d2b1688`: 51 `tests/acceptance/*` errors (66 passed run directly in the worktree); `test_hosting_deploy.py::test_no_secret_value_anywhere_*` (reads `docker/__pycache__/supervise.cpython-311.pyc`, see above; green alone) and `test_hosting_config.py::test_healthz_source_root_*` (subprocess resolves the worktree install, not the shard copy; green alone).
