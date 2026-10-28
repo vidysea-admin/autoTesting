@@ -2818,3 +2818,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-018, D-088, D-111, run-teardown-stall, consent-followups, run-01M617NCNB8RBBME2RSH9ZQ87P
 
 **Changes-authorized:** `src/autotester/schema/approval.py` (wall_clock_s description and any derived-bound field), `src/autotester/core/consent.py`, `src/autotester/core/trace.py`, the RunBudget module, `src/autotester/ui/run_execution.py`, `src/autotester/cli_crawl.py`, the UI approval grant route and view, and their tests; the consent contract's wall-clock criterion (checker only). No ARCHITECTURE.md prose and no enforcement path.
+
+## D-113 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Ratifies, under D-111, the `src/autotester/auth/policy.py` row that gates the new approval-revoke UI route on `access.approve` (the same permission that grants an approval), together with its policy-table test. D-111's `Changes-authorized` named the UI approval grant/list route and view but not `auth/policy.py`; the D-111 unit added the row so that only someone who may grant an approval may revoke it.
+
+**Why:** The D-111 checker flagged the policy row as outside D-111's authorized file list. Asked in chat on 2026-10-28 whether to ratify it, Umesh answered "ratify , rerun". Gating revoke on the grant permission is the narrowest choice: a viewer or tester cannot remove an admin's standing grant, and no new permission is invented.
+
+**Result:** No code change; the row and its test already shipped in feat/d111-standing-approval (dual check PASS cycle 0 and cycle 1) and are on master via integrate/1028 (6c-1028-batch2 run 3 GREEN).
+
+**Approved-by:** Umesh (chat 2026-10-28: "ratify , rerun")
+
+**Links:** D-111, D-018, d111-standing-approval, qa/verdicts/6c-1028-batch2.md
+
+**Changes-authorized:** `src/autotester/auth/policy.py` (the access.approve row for the revoke route) and its policy-table test. No ARCHITECTURE.md prose and no enforcement path.
