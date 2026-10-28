@@ -1,6 +1,6 @@
 # Manifest - bundle-hash-redaction
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** inbox 2026-10-28 (run3, run-01M613NEA9M29N8N7SKBR01FGT): bundle manifest hashes get redacted -> intermittent PartialBundleError on `bundles/fb_585c249bc002`
 **Branch:** fix/bundle-hash-redaction (from master e74664f8)
