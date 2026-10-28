@@ -1,6 +1,6 @@
 # Manifest - ephemeral-storage-warning
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Issues addressed:** 2026-10-28 deploy silently wiped the admin account (Cloud Run /data not a mounted volume)
 

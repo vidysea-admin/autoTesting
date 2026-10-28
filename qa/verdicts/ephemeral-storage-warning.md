@@ -1,7 +1,16 @@
-# Verdict - ephemeral-storage-warning (Mode A, head b58c8ec2, branch fix/ephemeral-storage-warning)
-Verdict: FAIL
-Cycle checked: 0
+# Verdict - ephemeral-storage-warning (Mode A, cycle 1 head 0ddc716e; cycle 0 head b58c8ec2; branch fix/ephemeral-storage-warning)
+Verdict: PASS
+Cycle checked: 1
 Head tested: b58c8ec2 (one commit on master e74664f8). Independent checker; no contract edited; main checkout untouched.
+
+## Cycle 1 re-check (head 0ddc716e) - PASS
+Diff since the cycle 0 verdict (4969580b..0ddc716e): only `.env.example` (+3) and the manifest; no src, docker or test file changed, so the cycle 0 per-criterion evidence below still holds unchanged.
+- Finding 1 fixed: `.env.example` now has `AUTOTESTER_EPHEMERAL_OK=` (empty value, comment line above). `uv run pytest tests/test_storage_warning.py tests/test_container_entrypoint_behaviour.py tests/test_hosting_config.py tests/test_hosting_deploy.py tests/test_hosting_gaps.py tests/test_env_loading.py`: `89 passed, 1 skipped` (test_hosting_deploy green, incl. the no-secret-looking-value test).
+- Finding 2 fixed: manifest no longer cites a decision id. `uv run autotester doctor`: `1 violation(s)`, the pre-existing `qa/verdicts/6c-1028-signup.md:4` dangling citation only.
+- `uv run ruff check src tests scripts`: All checks passed.
+- Manifest Status flipped to checked-PASS in the same commit as this verdict. Not merged, not pushed.
+
+# Cycle 0 record (FAIL, superseded by the cycle 1 PASS above)
 
 ## Blocking findings (2, both introduced by this branch)
 1. `tests/test_hosting_deploy.py::test_env_example_documents_every_key_the_code_reads` is RED because of this diff.
