@@ -51,16 +51,17 @@ def _ordinary(n: int) -> Case:
     return _case(n, keys=()).model_copy(update={"id": f"plain-{n}", "title": f"Plain {n}"})
 
 
-def _login_then_ordinary(monkeypatch, tmp_path, plan: dict[str, RawResult]):
-    """A passed login lends its session; run `_run_normal_cases` over `plan` in it. Returns
-    (pool, the lent session, {case id: result saved}, ids that ran)."""
+def _login_then_ordinary(monkeypatch, tmp_path, plan: dict[str, RawResult], *,
+                         reset=lambda _s: None):
+    """A passed login lends its session; run `_run_normal_cases` over `plan` in it (`reset` is
+    the logged-out reset). Returns (pool, the lent session, {case id: result saved}, ids ran)."""
     ran: list[str] = []
     saved: dict[str, Result] = {}
     store = _Store([])
     store.save_verdict = lambda run_id, verdict: saved.update({verdict.case_id: verdict.result})
     monkeypatch.setattr(run_execution, "BrowserSession", _StrictSession)
     monkeypatch.setattr(run_execution, "_wipe_entry_profile", lambda _p: None)
-    monkeypatch.setattr(run_execution, "reset_to_logged_out", lambda _s: None)
+    monkeypatch.setattr(run_execution, "reset_to_logged_out", reset)
 
     def graded(case, session, judge, run_id, store_):
         session.use()  # a closed session raises here, exactly like the real browser

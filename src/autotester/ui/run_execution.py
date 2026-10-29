@@ -195,7 +195,9 @@ def _run_normal_cases(
                 pool.note_shared(result)
                 if relaunched:  # the login died with the browser: replay it before the next case
                     startup_error = pool.relogin(
-                        lambda c, s: _run_and_grade_resilient(c, s, judge, run_id, store)[1])
+                        lambda c, s: _run_and_grade_resilient(c, s, judge, run_id, store)[1],
+                        may_relaunch=recovery.spend)  # a login fallback launch is a relaunch too
+                    session = recovery.session = pool.live() or session  # it may have replaced it
     finally:
         if lent is None:
             with contextlib.suppress(Exception):

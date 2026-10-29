@@ -13,7 +13,9 @@ logged-in session to the logged-in cases that follow, instead of a wiped launch 
   no relaunch); an ERRORED one among them stops the lending, a poisoned entry case discards it.
 * Relaunch. A lent session whose browser died is relaunched without its login (a session cookie
   is not in the profile); `relogin` replays the login case in it, or names why it could not, so no
-  later case is graded as logged in on a logged-out page.
+  later case is graded as logged in on a logged-out page. If that reset itself fails, the browser
+  is discarded and one fresh wiped one is launched for the replay (as `acquire` does), once per
+  relogin and only while the tier's relaunch cap allows.
 * Identity. A `{{SECRET:KEY}}` credential set that is neither within nor around the browser's
   (another account) gets its own launch (one browser is
   live at a time: they share the `{slug}-entry-test` profile and a second sync-Playwright driver
@@ -126,17 +128,23 @@ class EntryBrowserPool:
         """The logged-in session for the ordinary cases that follow a passed login, else None."""
         return self._session if self._logged_in and self._session is not None else None
 
-    def relogin(self, grade: Callable[[Case, Any], Verdict]) -> str | None:
+    def live(self) -> Any:
+        """The pool's current browser (None when it has none): `relogin` may replace it."""
+        return self._session
+
+    def relogin(self, grade: Callable[[Case, Any], Verdict], *,
+                may_relaunch: Callable[[], bool] = lambda: True) -> str | None:
         """The lent browser was relaunched and its login is gone: reset it, replay the login case
         (`grade` runs and grades it) and keep lending it. None on success, else the named reason
-        the rest of the tier stops with. The replay is not a second result for the login case."""
+        the rest of the tier stops with. The replay is not a second result for the login case.
+        A reset that raises falls back the way `acquire` does (`_reset_or_replace`)."""
         session, login = self._session, self._login
         self._logged_in = False  # lendable again only once the replay has passed
         if session is None or login is None:
             return "browser relaunched and the login was lost: no login case to replay"
         shots = session.state.screenshots  # the ordinary cases' running count, not the replay's
         try:
-            self._reset(session, login)
+            session = self._reset_or_replace(session, login, may_relaunch)
             _prime(session, login)
             session.state.evidence_prefix = f"{login.id}-relogin"
             replayed = grade(login, session).result is Result.PASS
@@ -152,6 +160,22 @@ class EntryBrowserPool:
                     f"{failure}; remaining cases not run")
         self._logged_in = True
         return None
+
+    def _reset_or_replace(self, session: Any, login: Case, may_relaunch: Callable[[], bool]) -> Any:
+        """Reset the lent browser to logged out; if that raises (fail closed: never replay on state
+        the reset could not clear), discard it and open ONE fresh wiped browser instead, provided
+        the tier may still spend a relaunch. Otherwise the reset error propagates, named by the
+        caller. The fresh browser is not reset and no second fallback follows: bounded."""
+        try:
+            self._reset(session, login)
+            return session
+        except Exception:
+            if not may_relaunch():
+                raise
+        self._drop(session)
+        self._session = self._open(login)
+        self._key, self._login = context_key(login), login  # a later relogin replays it again
+        return self._session
 
     def note_shared(self, result: RawResult) -> None:
         """An ordinary case ran in the lent session: an ERRORED one may have broken it, so stop
