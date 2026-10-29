@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.core.ids import content_id, run_id
 from autotester.schema.base import Artifact
+from autotester.schema.crawl_guidance import CrawlGuidance
 from autotester.schema.enums import CrawlStatus, IssueKind, TraversalStrategy, WritePolicy
 
 
@@ -86,6 +87,12 @@ class CrawlBounds(BaseModel):
     crawl displays as interrupted -- comfortably above `heartbeat_every_actions`
     actions at the measured ~2.8s/action pace. Display-only; `crawl.json` is never
     rewritten because of this."""
+    max_model_calls: int | None = Field(default=None, ge=0, description=(
+        "G6: model calls guidance may make (one per screen at most). None or 0 = guidance OFF"))
+    model_call_timeout_s: float | None = Field(default=None, ge=0, description=(
+        "G6: per-call cap in seconds; None = 20 once guidance is on, 0 = guidance OFF"))
+    model_total_s: float | None = Field(default=None, ge=0, description=(
+        "G6: model seconds guidance may spend, counted on the crawl wall clock; None = 120"))
 
 
 class SafetyPolicy(BaseModel):
@@ -253,6 +260,8 @@ class Crawl(Artifact):
     approval_production: bool | None = Field(
         default=None, description="that approval's `production` flag, copied at the gate")
     provider: str = "mock"
+    guidance: CrawlGuidance | None = None
+    """G8: set only when guidance was active; `provider` then names the serving model."""
     started_at: str | None = None
     finished_at: str | None = None
     stop_reason: str | None = None
