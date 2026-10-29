@@ -1,6 +1,6 @@
 # Manifest - teardown-residuals
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Source:** `qa/verdicts/run-teardown-stall.b.md:35` (R1) and `:36` (R2), plus the load-flaky wiring test `tests/test_run_teardown_stall_wiring.py::test_a_launched_run_records_phase_totals_and_unaccounted_seconds`. Parent unit: run-teardown-stall (checked-PASS, D-112).
 **Branch:** `fix/teardown-residuals` from master a6e03fa4 (worktree `D:/autoTesting/.claude/worktrees/teardown-r`).
