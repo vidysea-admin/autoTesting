@@ -31,6 +31,10 @@ if _REACH_MARKER not in _VISUAL_ORDER_JS_RAW:
         "-- visual_order_reach.js would never run")
 _VISUAL_ORDER_JS = _VISUAL_ORDER_JS_RAW.replace(_REACH_MARKER, _VISUAL_ORDER_REACH_JS)
 
+MAX_BUFFERED_API_RESPONSES = 2000
+"""Hard cap on `PageObserver.api_responses`: the oldest entry is dropped past it, so an
+observer nobody drains (a case run) cannot grow without bound."""
+
 DialogAction = Callable[[str], str]  # dialog_type -> "accept" | "dismiss"
 
 
@@ -109,6 +113,7 @@ class PageObserver:
             self.responses.append(seen)
             if getattr(request, "resource_type", "") in ("xhr", "fetch"):
                 self.api_responses.append(seen)
+                del self.api_responses[:-MAX_BUFFERED_API_RESPONSES]
         for hook in tuple(self._hooks):
             hook(response)
 

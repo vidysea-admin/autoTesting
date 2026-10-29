@@ -19,7 +19,12 @@ from autotester.schema.enums import Action, EdgeOutcome, IssueKind, NodeStatus
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
 from autotester.stages import crawl_coverage, explore, explore_safety, explore_traversal
 from autotester.stages import explore_summary as persisted
-from autotester.stages.explore_return import return_to, why_lost
+from autotester.stages.explore_return import (
+    note_revealed,
+    press_revealer,
+    return_to,
+    why_lost,
+)
 from autotester.stages.explore_safety import (
     OFF_DOMAIN_LINK_REFUSED,
     classify_request,
@@ -28,7 +33,7 @@ from autotester.stages.explore_safety import (
     typing_allowed,
     typing_target_allowed,
 )
-from autotester.stages.screen_identity import node_from, same_screen
+from autotester.stages.screen_identity import is_layout_toggle, node_from, same_screen
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime
@@ -152,6 +157,7 @@ def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEd
     action = Action.NAVIGATE if (el.role == "link" and el.href) else Action.CLICK
     rt.take_responses(node.id)  # traffic since the last action is this screen's own load
     try:
+        press_revealer(rt, node, el)  # a control a layout toggle revealed needs it pressed again
         action = _perform(rt, el)
     except NavigationRefused as exc:
         return record_edge(rt, node, el, action, EdgeOutcome.OFF_DOMAIN_REFUSED, str(exc))
@@ -169,6 +175,8 @@ def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEd
     same = same_screen(node, new, el)  # a same-URL layout toggle is not a screen
     rt.take_responses(node.id if same else new.id)
     if same:
+        if is_layout_toggle(el):
+            note_revealed(rt, node, el, new)
         return record_edge(rt, node, el, action, EdgeOutcome.SAME_SCREEN, None, node.id)
     edge = record_edge(rt, node, el, action, EdgeOutcome.NAVIGATED, None, new.id)
     _enqueue(rt, new, edge)
@@ -176,9 +184,8 @@ def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEd
 
 
 def _mark(rt: ExploreRuntime, node: ScreenNode, status: NodeStatus) -> None:
-    """Record how this node ended, in memory AND on disk â€” `add_node` is
-    idempotent, so an updated status needs `update_node` to land."""
-    updated = node.model_copy(update={"status": status})
+    """Record how this node ended, in memory and on disk (via `update_node`)."""
+    updated = rt.nodes.get(node.id, node).model_copy(update={"status": status})
     rt.nodes[node.id] = updated
     rt.store.update_node(persisted.scrubbed(rt, updated))
 
@@ -230,8 +237,10 @@ def _names(elements: list[ElementRef], limit: int = 8) -> str:
 def _click_loop(rt: ExploreRuntime, node: ScreenNode, typed: int) -> bool:
     """The click phase after the typing pre-pass (AT-533: ONE shared per-node budget).
     Returns False when the node ended ABORTED_DIALOG/ABORTED_ERROR; True otherwise."""
-    tried = 0
-    for el in explore_safety.destructive_last(node.elements, rt.policy):
+    tried, seen = 0, len(node.elements)
+    queue = explore_safety.destructive_last(node.elements, rt.policy)
+    while queue:
+        el = queue.pop(0)
         # AT-533: typing and clicking share ONE per-node budget (typed pre-pass first)
         if tried + typed >= rt.bounds.per_node_action_cap:
             break
@@ -249,6 +258,9 @@ def _click_loop(rt: ExploreRuntime, node: ScreenNode, typed: int) -> bool:
             continue
         rt.frontier.actions_used += 1
         edge = try_action(rt, node, el)
+        grown = rt.nodes.get(node.id, node).elements  # controls a layout toggle just revealed
+        queue += explore_safety.destructive_last(grown[seen:], rt.policy)
+        seen = len(grown)
         if _heartbeat_due(rt):
             heartbeat(rt)
         if edge.outcome is EdgeOutcome.DIALOG:
@@ -271,22 +283,10 @@ def _click_loop(rt: ExploreRuntime, node: ScreenNode, typed: int) -> bool:
 def visit_node(rt: ExploreRuntime, node: ScreenNode) -> None:
     """Try every allowed candidate on `node`, bounded by the per-node cap.
 
-    AT-534: a typing target the pre-pass was not allowed to fill must not be
-    silently clicked afterwards and counted exercised — the click loop skips
-    the pre-pass's refusal targets, whose DENIED_POLICY edge is already on
-    disk. (`typing_allowed` is false but a *different* element is a click
-    candidate, ordinary rules apply.)
-
-    AT-113 (checker-found, gated T-145): a node the crawl could never get back
-    to used to be marked ABORTED_ERROR with NO issue filed, and — mid-loop —
-    the same failure recorded an edge but then fell through to EXPLORED
-    anyway. Neither surfaced anywhere a human would look: the crawl still
-    reported `status=completed`, `stop_reason='frontier empty'`, `issues=0`,
-    and the unreachable node entered the FlowSpec via `merge_screens` as an
-    ordinary screen — a partial crawl indistinguishable from a complete one,
-    which is the one failure mode a live production run can least afford.
-    Both paths now file a NAVIGATION issue and the node's final status always
-    matches what actually happened to it.
+    AT-534: a typing target the pre-pass was refused is never clicked afterwards and counted
+    exercised (its DENIED_POLICY edge is already on disk). AT-113: a node the crawl could not get
+    back to is marked ABORTED_ERROR WITH a NAVIGATION issue, mid-loop too, so a partial crawl
+    never reads as a complete one and the final status matches what happened to the node.
     """
     if not return_to(rt, node):
         add_issue(rt, node.id, IssueKind.NAVIGATION,

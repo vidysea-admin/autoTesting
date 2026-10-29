@@ -55,21 +55,39 @@ _ASSET_SUFFIXES = (".js", ".mjs", ".css", ".map", ".png", ".jpg", ".jpeg", ".gif
                    ".webp", ".ico", ".woff", ".woff2", ".ttf", ".otf")
 
 
-def api_inventory(
+ApiKey = tuple[str, str, int]
+"""(METHOD, path pattern, status): one row of a screen's tally."""
+
+
+def count_api_calls(
     responses: list[tuple[str, str, int]], project: Project, policy: SafetyPolicy,
-    redactor: Redactor,
-) -> list[ApiCall]:
-    """Fold XHR/fetch `(method, url, status)` responses into one `ApiCall` row per
-    (method, path pattern, status): first-party only, status < 400, static assets and the
-    framework's own `/_next/` routes dropped, path `url_template`'d and redacted (no query,
-    no host), counted, sorted, and capped at `MAX_API_CALLS_PER_NODE`."""
-    counts: dict[tuple[str, str, int], int] = {}
+    redactor: Redactor, counts: dict[ApiKey, int],
+) -> None:
+    """Add XHR/fetch `(method, url, status)` responses to `counts`, in place: first-party only,
+    status < 400, static assets and the framework's own `/_next/` routes dropped, path
+    `url_template`'d and redacted (no query, no host). The tally is constant-size in the number
+    of calls (a poll adds 1 to a counter, not a row) and holds at most `MAX_API_CALLS_PER_NODE`
+    distinct keys: a new key past the cap is dropped, an existing one still counts."""
     for method, url, status in responses:
         path = urlsplit(url).path.lower()
         if (status >= 400 or classify_request(url, project, policy) != "first_party"
                 or path.endswith(_ASSET_SUFFIXES) or path.startswith("/_next/")):
             continue
         key = (method.upper(), redactor.scrub(url_template(url, keep_host=False)), status)
-        counts[key] = counts.get(key, 0) + 1
-    rows = [ApiCall(method=m, path=p, status=s, count=n) for (m, p, s), n in sorted(counts.items())]
-    return rows[:MAX_API_CALLS_PER_NODE]
+        if key in counts or len(counts) < MAX_API_CALLS_PER_NODE:
+            counts[key] = counts.get(key, 0) + 1
+
+
+def api_rows(counts: dict[ApiKey, int]) -> list[ApiCall]:
+    """The tally as sorted `ApiCall` rows."""
+    return [ApiCall(method=m, path=p, status=s, count=n) for (m, p, s), n in sorted(counts.items())]
+
+
+def api_inventory(
+    responses: list[tuple[str, str, int]], project: Project, policy: SafetyPolicy,
+    redactor: Redactor,
+) -> list[ApiCall]:
+    """One `ApiCall` row per (method, path pattern, status) in `responses`."""
+    counts: dict[ApiKey, int] = {}
+    count_api_calls(responses, project, policy, redactor, counts)
+    return api_rows(counts)

@@ -26,6 +26,7 @@ from autotester.schema.crawl import Crawl, CrawlBounds, SafetyPolicy
 from autotester.schema.enums import TraversalStrategy
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import CrawlFrontier, ElementRef, ScreenEdge, ScreenNode
+from autotester.stages import network_capture
 from autotester.stages.explore_incremental import PersonaIndex
 from autotester.stages.explore_safety import DialogBreaker
 from autotester.store.project_store import ProjectStore
@@ -89,9 +90,12 @@ class ExploreRuntime:
     net_log: list[tuple[str, str, int]] = field(default_factory=list)
     """Every (method, url, status) the observer has handed over so far, kept whole for the
     crawl-wide NETWORK evidence now that responses are drained per action (T-170/NA1)."""
-    api_seen: dict[str, list[tuple[str, str, int]]] = field(default_factory=dict)
-    """node id -> the XHR/fetch responses seen while on that screen; folded into
-    `ScreenNode.api_calls` once, in `explore_summary.apply_api_calls`."""
+    api_seen: dict[str, dict[network_capture.ApiKey, int]] = field(default_factory=dict)
+    """node id -> that screen's (method, path pattern, status) -> count tally (constant-size,
+    never raw responses); folded into `ScreenNode.api_calls` by `apply_api_calls`."""
+    revealed_by: dict[tuple[str, str], ElementRef] = field(default_factory=dict)
+    """(node id, selector) -> the layout toggle whose press made that control visible, so
+    `explore_return.press_revealer` re-presses it first (a reload hides it)."""
 
     def take_responses(self, node_id: str | None) -> None:
         """Drain the observer. Everything joins `net_log`; the XHR/fetch subset is
@@ -99,7 +103,9 @@ class ExploreRuntime:
         self.net_log.extend(self.observer.drain_responses())
         api = self.observer.drain_api_responses()
         if node_id is not None and api:
-            self.api_seen.setdefault(node_id, []).extend(api)
+            network_capture.count_api_calls(
+                api, self.project, self.policy, self.session.secrets.redactor(),
+                self.api_seen.setdefault(node_id, {}))
 
     @property
     def bounds(self) -> CrawlBounds:

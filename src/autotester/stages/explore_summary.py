@@ -97,10 +97,9 @@ def save_crawl(rt: ExploreRuntime, crawl: Crawl) -> None:
 def apply_api_calls(rt: ExploreRuntime) -> None:
     """Fold each screen's attributed XHR/fetch responses into `ScreenNode.api_calls` and
     persist the changed nodes (`update_node`; `add_node` would not overwrite)."""
-    redactor = rt.session.secrets.redactor()
-    for node_id, seen in rt.api_seen.items():
+    for node_id, counts in rt.api_seen.items():
         node = rt.nodes.get(node_id)
-        calls = network_capture.api_inventory(seen, rt.project, rt.policy, redactor)
+        calls = network_capture.api_rows(counts)
         if node is None or not calls:
             continue
         rt.nodes[node_id] = node = node.model_copy(update={"api_calls": calls})
