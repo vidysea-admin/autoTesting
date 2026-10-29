@@ -1,6 +1,6 @@
 # Manifest - entry-browser-reuse
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Authority:** D-115 item (1) (`docs/DECISIONS.md` 2850-2862, "one logged-in context"); cause: `.work/pathlynks-explore/stall-diagnosis.md` section 6. Direction change inside cycle 1, from Umesh 2026-10-29 ("login huaa use kro, baar baar logout kyu hi krna, fast kro kaam"): reuse the login, do not log out between cases.
 **Branch:** `fix/entry-browser-reuse` (from master 63445fbe). Not merged, not pushed.
