@@ -25,9 +25,11 @@ def _origin(url: str) -> str | None:
 
 def _known_origins(session: Any, base: str) -> list[str]:
     """Every origin whose state could hold a login: the start URL's, the page's now, and each one
-    the context holds web storage for (an SSO host the previous case signed in on)."""
+    the context holds local storage or IndexedDB for (an SSO host the previous case signed in on).
+    A CacheStorage-only origin cannot be listed by Playwright or DevTools, so it is not reached."""
     try:
-        stored = [o.get("origin") for o in session._context.storage_state().get("origins", [])]
+        state = session._context.storage_state(indexed_db=True)  # also origins with only IndexedDB
+        stored = [o.get("origin") for o in state.get("origins", [])]
     except Exception:  # unreadable state: the two known origins still clear
         stored = []
     found = (_origin(base), _origin(session.page.url), *(_origin(o or "") for o in stored))

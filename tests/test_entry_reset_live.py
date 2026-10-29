@@ -70,3 +70,39 @@ def test_reset_clears_cookie_local_session_storage_and_a_second_origin_on_real_c
     probe.goto(f"{sso}/index.html")
     assert probe.evaluate(_STORED) == [None, None]  # the second origin's storage is gone too
     context.close()
+
+
+_IDB_PUT = """() => new Promise((resolve, reject) => {
+  const open = indexedDB.open('auth', 1);
+  open.onupgradeneeded = () => open.result.createObjectStore('kv');
+  open.onsuccess = () => {
+    const tx = open.result.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put('token', 'jwt');
+    tx.oncomplete = () => { open.result.close(); resolve(true); };
+  };
+  open.onerror = () => reject(open.error);
+})"""
+_IDB_NAMES = "async () => (await indexedDB.databases()).map(d => d.name)"
+
+
+def test_reset_clears_indexeddb_on_a_second_origin_that_holds_no_local_storage(
+    chromium, tmp_path: Path, serve_dir: Callable[[Path], str],
+) -> None:
+    """Checker B cycle-1 W2: `storage_state()` lists only origins with localStorage, so an SSO
+    origin whose login lives in IndexedDB alone was never cleared."""
+    base, sso = _site(tmp_path, "app", serve_dir), _site(tmp_path, "sso", serve_dir)
+    context = chromium.new_context()
+    page = context.new_page()
+    page.goto(f"{base}/index.html")
+    other = context.new_page()
+    other.goto(f"{sso}/index.html")
+    other.evaluate(_IDB_PUT)  # IndexedDB only: no localStorage on this origin
+    assert other.evaluate(_IDB_NAMES) == ["auth"]  # the fixture is real
+    session = SimpleNamespace(
+        project=SimpleNamespace(base_url=f"{base}/"), _context=context, _page=page, page=page,
+        goto=lambda url: page.goto(url))
+    reset_to_logged_out(session)
+    probe = context.new_page()
+    probe.goto(f"{sso}/index.html")
+    assert probe.evaluate(_IDB_NAMES) == []  # the IndexedDB-only origin is cleared too
+    context.close()

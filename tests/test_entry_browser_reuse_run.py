@@ -36,7 +36,7 @@ class _Ctx:
     def clear_cookies(self) -> None:
         self.log.append("clear_cookies")
 
-    def storage_state(self) -> dict:
+    def storage_state(self, **_kw) -> dict:
         return {"cookies": [], "origins": [{"origin": SSO, "localStorage": []}]}
 
     def new_cdp_session(self, _page):

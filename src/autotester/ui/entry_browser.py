@@ -10,7 +10,7 @@ logged-in session to the logged-in cases that follow, instead of a wiped launch 
 * Order. `order_entry_cases` runs the logged-out cases (wrong password, empty submit, any
   "logged out" precondition) first and the login case(s) last, so the login survives the entry leg.
 * Hand-off. After a PASSED login case `lend()` gives its session to the ordinary cases (no reset,
-  no relaunch); an ERRORED one among them, or any poisoned entry case, discards it.
+  no relaunch); an ERRORED one among them stops the lending, a poisoned entry case discards it.
 * Identity. A `{{SECRET:KEY}}` credential set that is neither within nor around the browser's
   (another account) gets its own launch (one browser is
   live at a time: they share the `{slug}-entry-test` profile and a second sync-Playwright driver
@@ -52,9 +52,14 @@ def logs_in(case: Case, project: Project) -> bool:
             and not requires_unauthenticated(case))
 
 
+def _is_project_login(case: Case, project: Project) -> bool:
+    return project.login_case_id is not None and case.id == project.login_case_id
+
+
 def order_entry_cases(cases: list[Case], project: Project) -> list[Case]:
-    """Logged-out cases first, login cases last; every other order is kept."""
-    return sorted(cases, key=lambda case: logs_in(case, project))
+    """Logged-out cases first, login cases last, the project's own login case the very last (its
+    account is the one lent); every other order is kept."""
+    return sorted(cases, key=lambda c: (logs_in(c, project), _is_project_login(c, project)))
 
 
 def _prime(session: Any, case: Case) -> None:
@@ -107,16 +112,20 @@ class EntryBrowserPool:
                 or getattr(session, "_restore_error", None) or session is not self._session):
             self._drop(session)
             return
-        self._logged_in = passed and logs_in(case, self.project)
+        # a named project login is the only account lent (W1); else any passed happy login
+        named = self.project.login_case_id is None or _is_project_login(case, self.project)
+        self._logged_in = passed and named and logs_in(case, self.project)
 
     def lend(self) -> Any:
         """The logged-in session for the ordinary cases that follow a passed login, else None."""
         return self._session if self._logged_in and self._session is not None else None
 
     def note_shared(self, result: RawResult) -> None:
-        """An ordinary case ran in the lent session: an ERRORED one may have broken it."""
+        """An ordinary case ran in the lent session: an ERRORED one may have broken it, so stop
+        lending it. It is NOT closed here: the tier loop is still running on it (and relaunches
+        it itself if the browser died); `close()` ends it with the run (F1, checker B)."""
         if result.outcome is Outcome.ERRORED:
-            self._drop()
+            self._logged_in = False
 
     def close(self) -> None:
         self._drop()

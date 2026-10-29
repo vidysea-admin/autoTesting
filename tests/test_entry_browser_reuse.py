@@ -238,13 +238,6 @@ def test_the_next_entry_case_resets_a_lent_session_back_to_logged_out() -> None:
     assert session.log[-1] == "reset" and pool.lend() is None
 
 
-def test_an_errored_shared_case_discards_the_lent_session() -> None:
-    pool, session = _logged_in_pool()
-    pool.lend()
-    pool.note_shared(_done(_case(9), Outcome.ERRORED, "TargetClosedError"))
-    assert session.closed and pool.lend() is None
-
-
 def test_a_passing_shared_case_keeps_the_lent_session_logged_in() -> None:
     pool, session = _logged_in_pool()
     pool.lend()
