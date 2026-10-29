@@ -40,8 +40,9 @@ class _Ctx:
         return {"cookies": [], "origins": [{"origin": SSO, "localStorage": []}]}
 
     def new_cdp_session(self, _page):
-        return SimpleNamespace(send=lambda m, a: self.log.append(f"cdp {m} {a['origin']}"),
-                               detach=lambda: None)
+        return SimpleNamespace(
+            send=lambda m, a=None: self.log.append(f"cdp {m} {a['origin']}" if a else f"cdp {m}"),
+            detach=lambda: None)
 
 
 SSO = "https://sso.demo.test"  # a second origin the previous case held web storage for
@@ -75,15 +76,17 @@ def test_reset_closes_stray_pages_clears_cookies_and_storage_then_lands_on_the_s
         "close popup", "clear_cookies", f"goto {BASE}",
         f"cdp Storage.clearDataForOrigin {BASE}",
         f"cdp Storage.clearDataForOrigin {SSO}",  # W1: every origin the context holds storage for
+        "cdp Network.clearBrowserCache",  # cycle-1: the HTTP cache, after the origins
         "evaluate storage",  # F1: CDP has no sessionStorage type; the page clear always runs
         f"goto {BASE}",  # and the app then starts from the cleared state
     ]
 
 
-def test_reset_still_clears_page_storage_when_the_devtools_clear_is_unavailable() -> None:
+def test_reset_fails_closed_when_devtools_is_unavailable_because_the_cache_cannot_be_cleared():
     log: list[str] = []
-    reset_to_logged_out(_reset_session(log, cdp_ok=False))
-    assert log[-2:] == ["evaluate storage", f"goto {BASE}"] and "clear_cookies" in log
+    with pytest.raises(RuntimeError, match="no cdp"):
+        reset_to_logged_out(_reset_session(log, cdp_ok=False))  # the pool then relaunches wiped
+    assert "clear_cookies" in log and "evaluate storage" not in log
 
 
 def test_reset_fails_closed_when_the_page_storage_clear_fails() -> None:

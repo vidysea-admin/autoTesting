@@ -233,6 +233,39 @@ def test_relogin_resets_the_relaunched_browser_first_and_marks_it_logged_in_agai
     assert pool.lend() is session and session.state.evidence_prefix == ""
 
 
+def test_relogin_leaves_the_screenshot_counter_where_the_ordinary_cases_had_it() -> None:
+    """Checker B cycle-0 F1: the replay numbers its files under `<id>-relogin/`, so the lent
+    session's running count must come back, or the next ordinary case overwrites earlier ones."""
+    pool = _pool()
+    login = _case(1)
+    session = pool.acquire(login)
+    pool.release(login, session, _done(login), passed=True)
+    session.state.screenshots = 6  # ordinary cases already wrote 6 screenshots in the run root
+
+    def grade(case: Case, sess: object) -> Verdict:
+        assert sess.state.screenshots == 0  # the replay's own files start from 01 under its prefix
+        sess.state.screenshots = 2
+        return Verdict(run_id="r", case_id=case.id, grader_provider="mock", result=Result.PASS)
+
+    assert pool.relogin(grade) is None
+    assert session.state.screenshots == 6 and session.state.evidence_prefix == ""
+
+
+def test_a_failed_replay_also_restores_the_screenshot_counter() -> None:
+    pool = _pool()
+    login = _case(1)
+    session = pool.acquire(login)
+    pool.release(login, session, _done(login), passed=True)
+    session.state.screenshots = 6
+
+    def grade(case: Case, sess: object) -> Verdict:
+        sess.state.screenshots = 1
+        raise RuntimeError("login page changed")
+
+    assert "login page changed" in (pool.relogin(grade) or "")
+    assert session.state.screenshots == 6
+
+
 def test_relogin_with_no_remembered_login_case_names_the_reason() -> None:
     pool = _pool()
     reason = pool.relogin(lambda case, sess: pytest.fail("nothing to replay"))

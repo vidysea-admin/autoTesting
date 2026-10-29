@@ -134,6 +134,7 @@ class EntryBrowserPool:
         self._logged_in = False  # lendable again only once the replay has passed
         if session is None or login is None:
             return "browser relaunched and the login was lost: no login case to replay"
+        shots = session.state.screenshots  # the ordinary cases' running count, not the replay's
         try:
             self._reset(session, login)
             _prime(session, login)
@@ -143,7 +144,9 @@ class EntryBrowserPool:
         except Exception as exc:
             failure = f"{type(exc).__name__}: {exc}"
         if session is self._session:
-            session.state.evidence_prefix = ""  # ordinary cases keep the shared-run layout
+            # ordinary cases keep the shared-run layout and numbering: the replay's files sit under
+            # `<id>-relogin/`, so restarting the count would overwrite earlier cases' screenshots
+            session.state.evidence_prefix, session.state.screenshots = "", shots
         if failure is not None:
             return (f"browser relaunched and the login was lost: re-login ({login.id}) "
                     f"{failure}; remaining cases not run")
