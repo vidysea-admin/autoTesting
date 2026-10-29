@@ -39,6 +39,27 @@ def _normalise_name(name: str) -> str:
     return text[:40]
 
 
+_LAYOUT_TOGGLE = re.compile(
+    r"^(?:collapse|expand|toggle|show|hide|minimi[sz]e|maximi[sz]e)\s+(?:the\s+|main\s+)?"
+    r"(?:side\s?bar|side\s?nav\w*|side\s?panel|navigation(?:\s+(?:menu|drawer|panel|bar))?"
+    r"|nav(?:\s+(?:menu|bar))?)$")
+
+
+def is_layout_toggle(el: ElementRef) -> bool:
+    """A control that only folds or unfolds page chrome ("Collapse sidebar", "Toggle navigation").
+
+    Pressing one never reaches a new screen: the URL stays and the sidebar's labels flip,
+    which moves the structural signature. `same_screen` reads this so such a press is
+    recorded as SAME_SCREEN instead of minting a duplicate screen per toggle state."""
+    return el.role in ("button", "switch") and bool(_LAYOUT_TOGGLE.match(_normalise_name(el.name)))
+
+
+def same_screen(node: ScreenNode, new: ScreenNode, pressed: ElementRef) -> bool:
+    """Whether landing on `new` after pressing `pressed` on `node` is still `node`."""
+    return new.id == node.id or (
+        is_layout_toggle(pressed) and new.url_template == node.url_template)
+
+
 def structural_signature(elements: list[ElementRef]) -> str:
     """Content hash of the sorted, deduplicated `(role, normalised-name)` set
     of VISIBLE, non-row elements. Row/list-item elements are excluded so two

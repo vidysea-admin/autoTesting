@@ -15,9 +15,10 @@ import time
 from typing import TYPE_CHECKING
 
 from autotester.browser.observe import observe
-from autotester.schema.screen_graph import ScreenNode
+from autotester.schema.screen_graph import ElementRef, ScreenNode
 from autotester.stages import explore_replay
-from autotester.stages.screen_identity import node_from
+from autotester.stages import explore_summary as persisted
+from autotester.stages.screen_identity import is_layout_toggle, node_from
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime
@@ -141,6 +142,36 @@ def _replay_discovery(rt: ExploreRuntime, node: ScreenNode, depth: int) -> str |
     if _matches(rt, node):
         return None
     return f"re-performing {edge.name or edge.target!r} landed on a different screen"
+
+
+def note_revealed(rt: ExploreRuntime, node: ScreenNode, toggle: ElementRef,
+                  seen: ScreenNode) -> None:
+    """A layout toggle left the crawl on `node` (SAME_SCREEN). Any control now visible that the
+    node did not know joins THE SAME node's elements -- persisted, so coverage counts it -- and
+    remembers `toggle` as its revealer; the click loop then explores it like any other control.
+    No node is minted: identity is untouched (the toggle's other effects, e.g. flipped labels,
+    stay ignored)."""
+    known = {(e.role, e.selector) for e in rt.nodes.get(node.id, node).elements}
+    fresh = [e for e in seen.elements if e.visible and not is_layout_toggle(e)
+             and (e.role, e.selector) not in known]
+    if not fresh:
+        return
+    for el in fresh:
+        rt.revealed_by[(node.id, el.selector)] = toggle
+    grown = rt.nodes.get(node.id, node)
+    grown = grown.model_copy(update={"elements": [*grown.elements, *fresh]})
+    rt.nodes[node.id] = grown
+    rt.store.update_node(persisted.scrubbed(rt, grown))
+
+
+def press_revealer(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> None:
+    """Before trying a control a layout toggle revealed, press that toggle again: returning to
+    the screen reloaded it and hid the control. The toggle was itself policy-cleared when first
+    pressed, so this adds no action the safety guard has not already seen."""
+    toggle = rt.revealed_by.get((node.id, el.selector))
+    if toggle is not None:
+        rt.session.click(toggle.selector)
+        rt.session.settle(timeout_ms=rt.bounds.settle_ms)
 
 
 def why_lost(rt: ExploreRuntime) -> str:

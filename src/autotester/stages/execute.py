@@ -99,6 +99,7 @@ def _drain_network_evidence(session: BrowserSession) -> None:
     keeps every pre-existing run_case call unaffected."""
     if session.observer is None:
         return
+    session.observer.drain_api_responses()  # crawl-only attribution buffer; nobody reads it here
     responses = session.observer.drain_responses()
     if not responses:
         return
