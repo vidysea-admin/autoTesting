@@ -1,0 +1,109 @@
+{
+ "tests": [
+  "tests/test_store_config.py",
+  "tests/test_mongo_guard_uri.py"
+ ],
+ "mutations": [
+  {
+   "name": "a: database name read from os.environ",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "(uri)[cfg.database]",
+   "new": "(uri)[os.environ.get(\"AUTOTESTER_DB\", cfg.database)]",
+   "kills": [
+    "test_environment_and_data_root_have_no_effect_on_the_name"
+   ]
+  },
+  {
+   "name": "c: forbidden-name check removed",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "if value.casefold() in FORBIDDEN_DATABASES:",
+   "new": "if False:",
+   "kills": [
+    "test_system_databases_are_refused_case_folded[admin]"
+   ]
+  },
+  {
+   "name": "d: URI-path clash check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if _uri_path_database(uri).casefold() == cfg.database.casefold():",
+   "new": "if False:",
+   "kills": [
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester]"
+   ]
+  },
+  {
+   "name": "f: extra=forbid removed",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "extra=\"forbid\"",
+   "new": "extra=\"ignore\"",
+   "kills": [
+    "test_the_model_is_frozen_and_forbids_extra_keys"
+   ]
+  },
+  {
+   "name": "l: plain-identifier pattern check removed",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "if DATABASE_PATTERN.fullmatch(value) is None:",
+   "new": "if False:",
+   "kills": [
+    "test_names_that_are_not_plain_identifiers_are_refused[a.b]"
+   ]
+  },
+  {
+   "name": "m: config resolved from the data root",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "return code_root() / \"pyproject.toml\"",
+   "new": "return __import__(\"autotester.core.paths\", fromlist=[\"x\"]).repo_root() / \"pyproject.toml\"",
+   "kills": [
+    "test_environment_and_data_root_have_no_effect_on_the_name"
+   ]
+  },
+  {
+   "name": "s: URI path read with urlsplit instead of the driver's parser (F1)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "return parse_uri(\"mongodb://\" + rest, validate=False)[\"database\"] or \"\"",
+   "new": "return __import__(\"urllib.parse\").parse.urlsplit(uri).path.lstrip(\"/\")",
+   "kills": [
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester.x]",
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://u:p#x@h/autotester]",
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester]"
+   ]
+  },
+  {
+   "name": "s2: any URI scheme accepted (F1)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "(\"mongodb\", \"mongodb+srv\").index(scheme)  # ValueError for any other scheme",
+   "new": "pass",
+   "kills": [
+    "test_a_non_mongodb_uri_is_refused_without_echoing_it[http://h/x]"
+   ]
+  },
+  {
+   "name": "s3: parse failure raised chained to the driver error (M9)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "    except Exception:\n        pass\n",
+   "new": "    except Exception as exc:\n        raise StoreConfigError(\"the store connection string is not a valid mongodb:// URI\") from exc\n",
+   "kills": [
+    "test_a_non_mongodb_uri_is_refused_without_echoing_it[ftp://u:CANARY-p4ssw0rd-9f3a@h/x]"
+   ]
+  },
+  {
+   "name": "s4: parse failure message carries the URI (M9)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "    raise StoreConfigError(\"the store connection string is not a valid mongodb:// URI\")",
+   "new": "    raise StoreConfigError(f\"bad connection string {uri}\")",
+   "kills": [
+    "test_a_non_mongodb_uri_is_refused_without_echoing_it[ftp://u:CANARY-p4ssw0rd-9f3a@h/x]"
+   ]
+  },
+  {
+   "name": "z: a non-table level in the config is not a refusal (F8)",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "table = table.get(key) if isinstance(table, dict) else None",
+   "new": "table = table.get(key)",
+   "kills": [
+    "test_a_missing_table_missing_key_or_unknown_key_stops_startup[tool-is-a-string]"
+   ]
+  }
+ ]
+}

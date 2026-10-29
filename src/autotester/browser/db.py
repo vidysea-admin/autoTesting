@@ -16,6 +16,7 @@ from typing import Any
 from autotester.core.redact import Redactor
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.run import Evidence
+from autotester.schema.store_config import load_store_config
 
 
 class ReadOnlyCollection:
@@ -35,7 +36,13 @@ class ReadOnlyCollection:
 
 
 def connect_read_only(uri: str, db_name: str, collection_name: str) -> ReadOnlyCollection:
-    """Open a read-only handle. `uri` carries credentials — never log or store it."""
+    """Open a read-only handle. `uri` carries credentials — never log or store it.
+
+    Refuses the AutoTester store database (mongo-store M10): its `auth_users`, `auth_sessions`,
+    `secrets` and `browser_sessions` hold hashes and sealed credentials, and a test case must not be
+    able to turn them into `Evidence`. Checked BEFORE a client exists."""
+    if db_name.casefold() == load_store_config().database.casefold():
+        raise ValueError("the AutoTester store database cannot be the target of a DB assertion")
     from pymongo import MongoClient
 
     client: Any = MongoClient(uri)

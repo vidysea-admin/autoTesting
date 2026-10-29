@@ -1,0 +1,136 @@
+{
+ "tests": [
+  "tests/test_mongo_guard_surface.py",
+  "tests/test_mongo_guard_scan.py"
+ ],
+ "mutations": [
+  {
+   "name": "g: aggregate verb added",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "    def delete_one(self, filter: Mapping[str, Any]) -> bool:",
+   "new": "    def aggregate(self, pipeline: list[dict[str, Any]]) -> list[Any]:\n        return list(_REGISTRY[self].aggregate(pipeline))\n\n    def delete_one(self, filter: Mapping[str, Any]) -> bool:",
+   "kills": [
+    "test_the_public_surface_is_exactly_the_frozen_list"
+   ]
+  },
+  {
+   "name": "h: insert-only collections get the full verb set",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "kind = InsertOnlyCollection if name in INSERT_ONLY else GuardedCollection",
+   "new": "kind = GuardedCollection",
+   "kills": [
+    "test_insert_only_collections_have_no_replace_update_or_delete[approvals]"
+   ]
+  },
+  {
+   "name": "i: delete_many scope check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "        _scoped(filter)",
+   "new": "        pass",
+   "kills": [
+    "test_writes_need_a_filter_and_delete_many_needs_a_project_or_key"
+   ]
+  },
+  {
+   "name": "j: immutable field check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if str(name).split(\".\")[0] in IMMUTABLE_FIELDS:",
+   "new": "if False:",
+   "kills": [
+    "test_update_operators_are_limited_and_immutable_fields_are_untouchable"
+   ]
+  },
+  {
+   "name": "k: update operator allow-list removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if not update or set(update) - UPDATE_OPERATORS:",
+   "new": "if not update:",
+   "kills": [
+    "test_update_operators_are_limited_and_immutable_fields_are_untouchable"
+   ]
+  },
+  {
+   "name": "n: read side may target the store database",
+   "file": "src/autotester/browser/db.py",
+   "old": "if db_name.casefold() == load_store_config().database.casefold():",
+   "new": "if False:",
+   "kills": [
+    "test_the_read_side_refuses_the_store_database_before_creating_a_client"
+   ]
+  },
+  {
+   "name": "q: script operators allowed in filters",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if key in FORBIDDEN_QUERY_KEYS:",
+   "new": "if False:",
+   "kills": [
+    "test_script_and_function_operators_are_refused_in_every_filter"
+   ]
+  },
+  {
+   "name": "r: live smoke collection allowed under CI",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "and not any(k.upper() == \"CI\" for k in os.environ)",
+   "new": "and True",
+   "kills": [
+    "test_live_smoke_collection_needs_the_flag_and_no_ci"
+   ]
+  },
+  {
+   "name": "u: a src caller injects a config path into the fence (F2)",
+   "file": "src/autotester/browser/db.py",
+   "old": "from autotester.schema.store_config import load_store_config\n",
+   "new": "from autotester.schema.store_config import load_store_config\nfrom autotester.store.mongo_guard import GuardedStore\n\n_ROGUE = lambda uri: GuardedStore(uri, config_path=None)  # noqa: E731\n",
+   "kills": [
+    "test_no_src_or_scripts_call_injects_a_config_path_or_factory_into_the_fence"
+   ]
+  },
+  {
+   "name": "v: collections expose the raw driver collection again (F3)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "        _REGISTRY[self] = raw  # no attribute or method of this object returns it\n",
+   "new": "        _REGISTRY[self] = raw\n\n    def _raw(self) -> Any:\n        return _REGISTRY[self]\n",
+   "kills": [
+    "test_no_walk_of_the_guarded_objects_reaches_a_driver_or_fake_object",
+    "test_a_collection_hands_out_no_driver_object_through_any_attribute_or_method",
+    "test_no_forbidden_name_is_reachable_on_any_guarded_object"
+   ]
+  },
+  {
+   "name": "w: find projection not checked (F4)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "_check_query([filter or {}, projection or {}])",
+   "new": "_check_query(filter or {})",
+   "kills": [
+    "test_the_find_projection_is_checked_like_a_filter"
+   ]
+  },
+  {
+   "name": "x: replacement _id not checked (F5)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "        if \"_id\" in replacement and replacement[\"_id\"] != filter.get(\"_id\"):\n            raise ValueError(\"a replacement cannot change or introduce _id\")\n",
+   "new": "",
+   "kills": [
+    "test_a_replacement_cannot_carry_another_id_or_a_forbidden_operator"
+   ]
+  },
+  {
+   "name": "y: update operator value shape not checked (F5)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "        if not isinstance(fields, Mapping):\n            raise ValueError(\"an update operator takes a document of fields\")\n",
+   "new": "",
+   "kills": [
+    "test_an_update_whose_operator_value_is_not_a_document_is_refused"
+   ]
+  },
+  {
+   "name": "aa: an exec() call in a third file (F6)",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "import functools\n",
+   "new": "import functools\nexec(\"pass\")\n",
+   "kills": [
+    "test_exactly_two_files_touch_the_driver_and_they_are_the_allowed_two"
+   ]
+  }
+ ]
+}

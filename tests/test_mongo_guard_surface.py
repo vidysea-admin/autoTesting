@@ -1,0 +1,287 @@
+"""mongo-store M6, M7, M47: the closed verb set, insert-only collections, the collection allow-list.
+
+The surface is pinned as an EXACT list: adding a verb (an `aggregate`, a `command`, a `drop`) turns
+the equality red, which is how a widening gets noticed in review rather than in production.
+"""
+
+from __future__ import annotations
+
+import gc
+import inspect
+from typing import Any
+
+import pytest
+from fake_mongo import FakeMongoServer, open_store
+
+from autotester.store.mongo_guard import (
+    COLLECTIONS,
+    INSERT_ONLY,
+    GuardedBucket,
+    GuardedCollection,
+    GuardedStore,
+    InsertOnlyCollection,
+    StoreDuplicateKey,
+)
+
+READ_INSERT = {"count_documents", "create_index", "find", "find_one", "insert_one"}
+MUTATING = {"delete_many", "delete_one", "replace_one", "update_one"}
+FORBIDDEN = ("aggregate", "command", "bulk_write", "watch", "drop", "drop_collection",
+             "drop_database", "rename", "with_options", "get_database", "get_default_database",
+             "list_database_names", "client", "database", "db", "_client", "_db", "__getattr__",
+             "_raw", "_collection", "_handle")
+
+
+def _public(obj: object) -> set[str]:
+    return {n for n in dir(obj) if not n.startswith("_")}
+
+
+@pytest.fixture
+def store() -> GuardedStore:
+    client = FakeMongoServer().client()
+    return open_store("mongodb://h/", client)
+
+
+def _callable_results(obj: Any) -> list[Any]:
+    """Results of every zero-argument method (private ones too), and what a function closes over."""
+    found: list[Any] = []
+    if type(obj).__module__ not in {"autotester.store.mongo_guard", __name__}:
+        return found  # library objects (pydantic) have methods that are not ours to call
+    for name in dir(obj):
+        if name.startswith("__"):
+            continue
+        member = getattr(obj, name, None)
+        if inspect.ismethod(member) or inspect.isfunction(member):
+            func = getattr(member, "__func__", member)
+            found += [c.cell_contents for c in (func.__closure__ or ())]
+            found += list(func.__defaults__ or ()) + list((func.__kwdefaults__ or {}).values())
+            required = [p for p in inspect.signature(member).parameters.values()
+                        if p.default is p.empty and p.kind in (p.POSITIONAL_ONLY,
+                                                                p.POSITIONAL_OR_KEYWORD)]
+            if not required:
+                found.append(member())
+    return found
+
+
+def _walk(obj: Any, seen: set[int], depth: int = 0) -> list[Any]:
+    """Every object reachable through `__dict__`s, attributes and zero-argument method calls."""
+    if id(obj) in seen or depth > 6:
+        return []
+    seen.add(id(obj))
+    found = [obj]
+    if isinstance(obj, dict):
+        values = list(obj.values())
+    elif isinstance(obj, list | tuple | set | frozenset):
+        values = list(obj)
+    elif isinstance(obj, str | bytes | int | float | bool | type(None)):
+        values = []
+    else:
+        values = list(getattr(obj, "__dict__", {}).values())
+        names = [n for n in dir(obj) if not n.startswith("__") and not n.startswith("model_")]
+        values += [v for v in (getattr(obj, n, None) for n in names) if not callable(v)]
+        values += _callable_results(obj)
+    for value in values:
+        found += _walk(value, seen, depth + 1)
+    return found
+
+
+def test_the_public_surface_is_exactly_the_frozen_list(store: GuardedStore) -> None:
+    assert _public(store) == {"bucket", "collection", "collection_names", "ensure_marker",
+                              "identity", "ping"}
+    assert _public(GuardedCollection) == READ_INSERT | MUTATING
+    assert _public(InsertOnlyCollection) == READ_INSERT
+    assert _public(GuardedBucket) == {"delete", "download", "revisions", "upload"}
+
+
+def test_no_forbidden_name_is_reachable_on_any_guarded_object(store: GuardedStore) -> None:
+    for obj in (store, store.collection("projects"), store.collection("approvals"),
+                store.bucket()):
+        for name in FORBIDDEN:
+            assert getattr(obj, name, None) is None, (type(obj).__name__, name)
+
+
+def test_no_walk_of_the_guarded_objects_reaches_a_driver_or_fake_object(
+        store: GuardedStore) -> None:
+    reachable = []
+    for root in (store, store.collection("projects"), store.bucket()):
+        reachable += _walk(root, set())
+    modules = {type(o).__module__.split(".")[0] for o in reachable}
+    assert not modules & {"pymongo", "gridfs", "fake_mongo"}, modules
+
+
+def test_the_walker_itself_finds_a_client_hidden_in_an_instance_dict() -> None:
+    class Leaky:
+        def __init__(self) -> None:
+            self.inner = {"deep": [FakeMongoServer().client()]}
+
+    modules = {type(o).__module__ for o in _walk(Leaky(), set())}
+    assert "fake_mongo" in modules
+
+
+@pytest.mark.parametrize("shape", ["private-method", "public-method", "closure", "default"])
+def test_the_walker_finds_a_client_handed_out_by_a_method_or_hidden_in_a_callable(
+        shape: str) -> None:
+    client = FakeMongoServer().client()
+
+    class Leaky:
+        pass
+
+    leaky = Leaky()
+    if shape == "private-method":
+        Leaky._raw = lambda self: client  # type: ignore[attr-defined]
+    elif shape == "public-method":
+        Leaky.get = lambda self: {"x": [client]}  # type: ignore[attr-defined]
+    elif shape == "closure":
+        leaky.hook = lambda: client  # type: ignore[attr-defined]
+    else:
+        leaky.hook = lambda seen=client: seen  # type: ignore[attr-defined]
+    modules = {type(o).__module__ for o in _walk(leaky, set())}
+    assert "fake_mongo" in modules
+
+
+def test_the_walker_stays_quiet_about_an_innocent_object() -> None:
+    class Fine:
+        def _name(self) -> str:
+            return "x"
+
+    assert {type(o).__module__ for o in _walk(Fine(), set())} <= {"builtins", __name__}
+
+
+def test_a_collection_hands_out_no_driver_object_through_any_attribute_or_method(
+        store: GuardedStore) -> None:
+    for obj in (store.collection("projects"), store.collection("approvals"), store.bucket(), store):
+        for name in dir(obj):
+            if name.startswith("__") or name in {"find", "find_one", "count_documents"}:
+                continue
+            member = getattr(obj, name)
+            if callable(member) and not [p for p in inspect.signature(member).parameters.values()
+                                         if p.default is p.empty]:
+                result = member()
+                assert type(result).__module__.split(".")[0] not in {"pymongo", "gridfs",
+                                                                       "fake_mongo"}, name
+            else:
+                assert type(member).__module__.split(".")[0] not in {"pymongo", "gridfs",
+                                                                       "fake_mongo"}, name
+
+
+def test_the_store_holds_no_uri_after_construction() -> None:
+    client = FakeMongoServer().client()
+    uri = "mongodb://user:CANARY-held@h/"
+    guarded = open_store(uri, client)
+    holders = [r for r in gc.get_referrers(uri) if r is guarded.__dict__]
+    assert holders == [] and "CANARY-held" not in str(guarded.__dict__)
+
+
+@pytest.mark.parametrize("name", sorted(INSERT_ONLY))
+def test_insert_only_collections_have_no_replace_update_or_delete(
+        store: GuardedStore, name: str) -> None:
+    col = store.collection(name)
+    assert type(col) is InsertOnlyCollection
+    for verb in MUTATING:
+        assert not hasattr(col, verb)
+    col.insert_one({"_id": "a", "p": "x"})
+    assert col.find_one({"_id": "a"}) == {"_id": "a", "p": "x"}
+    with pytest.raises(StoreDuplicateKey):
+        col.insert_one({"_id": "a", "p": "x"})
+
+
+def test_every_other_collection_is_the_full_closed_verb_set(store: GuardedStore) -> None:
+    assert all(type(store.collection(n)) is GuardedCollection for n in COLLECTIONS - INSERT_ONLY)
+
+
+def test_collection_names_are_a_closed_set(store: GuardedStore) -> None:
+    for name in ("anything_else", "system.users", "fs.files", "", "projects ", "Projects"):
+        with pytest.raises(ValueError):
+            store.collection(name)
+
+
+def test_live_smoke_collection_needs_the_flag_and_no_ci(
+        store: GuardedStore, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("CI", raising=False)
+    monkeypatch.delenv("AUTOTESTER_LIVE_MONGO_TEST", raising=False)
+    with pytest.raises(ValueError):
+        store.collection("t_x")
+    monkeypatch.setenv("AUTOTESTER_LIVE_MONGO_TEST", "1")
+    assert store.collection("t_smoke_1") is not None
+    for bad in ("anything_else", "t_X", "T_x", "t_" + "a" * 31, "t_", "t_a.b"):
+        with pytest.raises(ValueError):
+            store.collection(bad)
+    monkeypatch.setenv("CI", "true")
+    with pytest.raises(ValueError):
+        store.collection("t_smoke_1")
+
+
+def test_update_operators_are_limited_and_immutable_fields_are_untouchable(
+        store: GuardedStore) -> None:
+    col = store.collection("auth_users")
+    col.insert_one({"_id": 1, "p": "x", "generation": 1, "n": 0})
+    assert col.update_one({"_id": 1}, {"$set": {"n": 5}}) is True
+    assert col.update_one({"_id": 1}, {"$inc": {"n": 1}}) is True
+    assert col.find_one({"_id": 1})["n"] == 6  # type: ignore[index]
+    assert col.update_one({"_id": 2}, {"$setOnInsert": {"n": 0}, "$set": {"p": "x"}},
+                          upsert=True) is True
+    for update in ({"$unset": {"n": ""}}, {"$push": {"n": 1}}, {"$rename": {"n": "m"}},
+                   {"$set": {"generation": 2}}, {"$inc": {"generation": 1}},
+                   {"$set": {"_id": 9}}, {"$set": {"generation.x": 1}}, {}, {"n": 1}):
+        with pytest.raises(ValueError):
+            col.update_one({"_id": 1}, update)
+    assert col.find_one({"_id": 1})["generation"] == 1  # type: ignore[index]
+
+
+def test_writes_need_a_filter_and_delete_many_needs_a_project_or_key(store: GuardedStore) -> None:
+    col = store.collection("cases")
+    for p in ("a", "a", "b"):
+        col.insert_one({"p": p, "k": p})
+    for call in (lambda: col.delete_one({}), lambda: col.update_one({}, {"$set": {"x": 1}}),
+                 lambda: col.replace_one({}, {"x": 1}), lambda: col.delete_many({}),
+                 lambda: col.delete_many({"x": 1}), lambda: col.delete_many({"p": ""}),
+                 lambda: col.delete_many({"p": {"$exists": True}}),
+                 lambda: col.delete_many({"p": {"$ne": "a"}}), lambda: col.delete_many({"k": None}),
+                 lambda: col.delete_many({"p": {"$in": []}}),
+                 lambda: col.delete_many({"p": {"$in": [1]}})):
+        with pytest.raises(ValueError):
+            call()
+    assert col.count_documents({}) == 3
+    assert col.delete_many({"p": "a"}) == 2
+    assert col.delete_many({"k": {"$in": ["b"]}}) == 1
+
+
+def test_script_and_function_operators_are_refused_in_every_filter(store: GuardedStore) -> None:
+    col = store.collection("cases")
+    for flt in ({"$where": "1"}, {"a": {"$function": {}}}, {"$or": [{"$where": "1"}]}):
+        for call in (col.find, col.find_one, col.count_documents, col.delete_one):
+            with pytest.raises(ValueError):
+                call(flt)
+
+
+def test_the_find_projection_is_checked_like_a_filter(store: GuardedStore) -> None:
+    col = store.collection("cases")
+    col.insert_one({"_id": 1, "p": "a"})
+    for kwargs in ({"projection": {"z": {"$function": {"body": "x"}}}},
+                   {"projection": {"$where": "1"}}, {"projection": [{"$function": {}}]}):
+        for target in (col, store.collection("approvals")):
+            with pytest.raises(ValueError):
+                target.find({}, **kwargs)
+    assert col.find({}, projection={"p": 1}) == [{"_id": 1, "p": "a"}]
+
+
+def test_a_replacement_cannot_carry_another_id_or_a_forbidden_operator(store: GuardedStore) -> None:
+    col = store.collection("cases")
+    col.insert_one({"_id": 1, "p": "a"})
+    for flt, doc in (({"_id": 1}, {"_id": 2, "p": "b"}), ({"p": "a"}, {"_id": 1, "p": "b"}),
+                     ({"_id": {"$in": [1]}}, {"_id": 1}), ({"_id": 1}, {"x": {"$where": "1"}})):
+        with pytest.raises(ValueError):
+            col.replace_one(flt, doc)
+    assert col.replace_one({"_id": 1}, {"_id": 1, "p": "c"}) is True
+    assert col.replace_one({"_id": 1}, {"p": "d"}) is True
+    assert col.find_one({"_id": 1}) == {"_id": 1, "p": "d"}
+    state = store.collection("server_state")
+    with pytest.raises(ValueError):
+        state.replace_one({"_id": "heartbeat"}, {"_id": "marker", "database": "x"}, upsert=True)
+
+
+def test_an_update_whose_operator_value_is_not_a_document_is_refused(store: GuardedStore) -> None:
+    col = store.collection("cases")
+    col.insert_one({"_id": 1, "p": "a"})
+    for update in ({"$set": "abc"}, {"$set": None}, {"$inc": 5}, {"$set": ["a"]}):
+        with pytest.raises(ValueError, match="document of fields"):
+            col.update_one({"_id": 1}, update)
