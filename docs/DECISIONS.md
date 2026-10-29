@@ -2918,3 +2918,22 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-118, crawl-guidance
 
 **Changes-authorized:** src/autotester/stages/explore_guidance.py, the persona build path in stages/portal_persona.py, schema/crawl_guidance.py, schema/screen_graph.py and schema/portal_persona.py (additive annotation fields), and their tests. No ARCHITECTURE.md prose and no enforcement path.
+
+## D-120 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Umesh's answer on 2026-10-29 about where AutoTester's data lives.
+- AutoTester's own state moves out of files into one MongoDB database named `autotester`, split across several collections. The state covers the users and auth store, projects, cases, runs, crawls, the KG and persona graph, approvals and bug events. Screenshots and videos go to GridFS in the same database.
+- The database sits on the server that `PATHLYNKS_MONGO_URI` names, in the repo-root `.env`. No new server or key is needed.
+- AutoTester may create, read, update and delete documents, collections and indexes **only inside the `autotester` database**. Every other database on that server stays read-only. This includes Pathlynks's own data, which `browser/db.py` keeps read-only by construction.
+- Dropping the `autotester` database needs a human gate.
+- The file store stays as the local and test backend. The backend is chosen from configuration, so CI and unit tests never need Mongo.
+
+**Why:** On Cloud Run the files under `/data` are wiped on every deploy, so accounts and projects keep disappearing (live-deployment memory, docker/DEPLOY.md). The files also grow heavy. One database with collections persists across deploys without a GCS volume. Umesh chose this over the GCS-volume proposal.
+
+**Result:** A design read and a contract come first, then maker-checker units: a store seam, a Mongo backend, a per-store switch-over, migrating the existing data, and the Cloud Run configuration. The GCS-volume request to DevOps is withdrawn. DevOps instead needs the URI as a Cloud Run secret, plus network access from Cloud Run to the Mongo server.
+
+**Approved-by:** Umesh (chat 2026-10-29: "PATHLYNKS_MONGO_URI ye .env mai hai ek db bnaao autotester and isme collections bnaao and store all the KG and all ... sara data iss db mai store hoga in multiple collections"; "db tho ek hi rakho, ek new collection bnaa lo")
+
+**Links:** D-018, D-109, mongo-store
+
+**Changes-authorized:** The design read and the contract `qa/contracts/mongo-store.md`. Code changes follow in units cited against this entry. The write permission is limited to the `autotester` database. No enforcement path changes. ARCHITECTURE.md prose (storage and security model sections) may change under this entry once the contract has passed.
