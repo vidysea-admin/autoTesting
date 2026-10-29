@@ -1,6 +1,6 @@
 # Manifest - error-text-hardening
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** findings F1, F2, F3 of `qa/verdicts/error-text-split-token.b.md` (typed U+E000 not blanked; pretty-printed newlines between blocks; 50k `<br>` stalls the read), plus Umesh's 2026-10-29 scope addition (letters-only case-insensitive secret floor 12 -> 8).
 **Branch:** `fix/error-text-hardening` (worktree `D:/autoTesting/.claude/worktrees/errtext-harden`), on top of `fix/error-text-followups` @ `2c5eeb95`. Not merged, not pushed.
