@@ -11,6 +11,9 @@ logged-in session to the logged-in cases that follow, instead of a wiped launch 
   "logged out" precondition) first and the login case(s) last, so the login survives the entry leg.
 * Hand-off. After a PASSED login case `lend()` gives its session to the ordinary cases (no reset,
   no relaunch); an ERRORED one among them stops the lending, a poisoned entry case discards it.
+* Relaunch. A lent session whose browser died is relaunched without its login (a session cookie
+  is not in the profile); `relogin` replays the login case in it, or names why it could not, so no
+  later case is graded as logged in on a logged-out page.
 * Identity. A `{{SECRET:KEY}}` credential set that is neither within nor around the browser's
   (another account) gets its own launch (one browser is
   live at a time: they share the `{slug}-entry-test` profile and a second sync-Playwright driver
@@ -28,9 +31,10 @@ from typing import Any
 
 from autotester.core.redact import placeholder_keys
 from autotester.schema.case import Case
-from autotester.schema.enums import CaseClass, Outcome
+from autotester.schema.enums import CaseClass, Outcome, Result
 from autotester.schema.project import Project
 from autotester.schema.run import RawResult
+from autotester.schema.verdict import Verdict
 from autotester.stages.entry_precondition import requires_unauthenticated
 
 __all__ = ["EntryBrowserPool", "context_key", "logs_in", "order_entry_cases"]
@@ -80,6 +84,7 @@ class EntryBrowserPool:
         self._session: Any = None
         self._key = ""  # the identity the live browser serves; '' = none yet
         self._logged_in = False  # the live browser holds a login a passed case just made
+        self._login: Case | None = None  # the case that made it, replayed by `relogin`
 
     def _fits(self, key: str) -> bool:
         """Same account: either credential set contains the other (a wrong-password case uses
@@ -115,10 +120,35 @@ class EntryBrowserPool:
         # a named project login is the only account lent (W1); else any passed happy login
         named = self.project.login_case_id is None or _is_project_login(case, self.project)
         self._logged_in = passed and named and logs_in(case, self.project)
+        self._login = case if self._logged_in else None
 
     def lend(self) -> Any:
         """The logged-in session for the ordinary cases that follow a passed login, else None."""
         return self._session if self._logged_in and self._session is not None else None
+
+    def relogin(self, grade: Callable[[Case, Any], Verdict]) -> str | None:
+        """The lent browser was relaunched and its login is gone: reset it, replay the login case
+        (`grade` runs and grades it) and keep lending it. None on success, else the named reason
+        the rest of the tier stops with. The replay is not a second result for the login case."""
+        session, login = self._session, self._login
+        self._logged_in = False  # lendable again only once the replay has passed
+        if session is None or login is None:
+            return "browser relaunched and the login was lost: no login case to replay"
+        try:
+            self._reset(session, login)
+            _prime(session, login)
+            session.state.evidence_prefix = f"{login.id}-relogin"
+            replayed = grade(login, session).result is Result.PASS
+            failure = None if replayed else "did not pass"
+        except Exception as exc:
+            failure = f"{type(exc).__name__}: {exc}"
+        if session is self._session:
+            session.state.evidence_prefix = ""  # ordinary cases keep the shared-run layout
+        if failure is not None:
+            return (f"browser relaunched and the login was lost: re-login ({login.id}) "
+                    f"{failure}; remaining cases not run")
+        self._logged_in = True
+        return None
 
     def note_shared(self, result: RawResult) -> None:
         """An ordinary case ran in the lent session: an ERRORED one may have broken it, so stop
@@ -133,7 +163,7 @@ class EntryBrowserPool:
     def _drop(self, session: Any = None) -> None:
         target = session if session is not None else self._session
         if target is not None and target is self._session:
-            self._session, self._key, self._logged_in = None, "", False
+            self._session, self._key, self._logged_in, self._login = None, "", False, None
         if target is not None:
             with contextlib.suppress(Exception):  # the bounded teardown already traced it
                 target.close()

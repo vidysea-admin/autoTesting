@@ -105,7 +105,7 @@ def test_a_closed_browser_case_is_relaunched_and_the_relaunched_session_stays_op
                                  error="TargetClosedError: Target page has been closed")}
     pool, session, saved, ran = _login_then_ordinary(monkeypatch, tmp_path, plan)
     assert session.relaunches == 1 and not session.closed
-    assert ran == ["plain-1", "plain-2", "plain-3"]
+    assert ran == ["plain-1", "case-1", "plain-2", "plain-3"]  # case-1: the login replay (W3)
     assert saved["plain-1"] is Result.INCONCLUSIVE  # browser closed: the case tested nothing
     assert saved["plain-2"] is Result.PASS and saved["plain-3"] is Result.PASS
     pool.close()
@@ -173,3 +173,67 @@ def test_a_run_without_the_project_login_case_lends_nothing() -> None:
     session = pool.acquire(other_b)
     pool.release(other_b, session, _done(other_b), passed=True)
     assert pool.lend() is None  # identity cannot be confirmed: fall back to the shared profile
+
+
+# --- checker B cycle-2 W3: a relaunch of the lent session loses the login ----------------------
+
+_CLOSED = RawResult(case_id="plain-1", outcome=Outcome.ERRORED,
+                    error="TargetClosedError: Target page has been closed")
+
+
+def test_a_relaunched_lent_session_replays_the_login_before_the_next_ordinary_case(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    pool, session, saved, ran = _login_then_ordinary(monkeypatch, tmp_path, {"plain-1": _CLOSED})
+    # the login case (case-1) ran again right after the relaunch, before plain-2 and plain-3
+    assert ran == ["plain-1", "case-1", "plain-2", "plain-3"]
+    assert session.relaunches == 1 and not session.closed
+    assert saved["plain-2"] is Result.PASS and saved["plain-3"] is Result.PASS
+    assert "case-1" not in saved  # the replay is not a second result for the login case
+    assert session.state.evidence_prefix == ""  # ordinary cases keep the shared-run layout
+    assert pool.lend() is session  # still a logged-in session
+    pool.close()
+
+
+def test_a_login_replay_that_fails_stops_the_tier_with_a_named_reason_not_a_logged_out_pass(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    errors: dict[str, str | None] = {}
+    monkeypatch.setattr(run_execution, "grade_errored_result", lambda case, result, judge, run_id,
+                        store: Verdict(run_id=run_id, case_id=case.id, grader_provider="mock",
+                                       result=Result.INCONCLUSIVE))
+    monkeypatch.setattr(_Store, "save_result",
+                        lambda self, run_id, r: errors.update({r.case_id: r.error}), raising=False)
+    bad_login = RawResult(case_id="case-1", outcome=Outcome.ERRORED, error="login page changed")
+    pool, _session, saved, ran = _login_then_ordinary(
+        monkeypatch, tmp_path, {"plain-1": _CLOSED, "case-1": bad_login})
+    assert ran == ["plain-1", "case-1"]  # plain-2 and plain-3 never ran logged out
+    assert saved["plain-2"] is Result.INCONCLUSIVE and saved["plain-3"] is Result.INCONCLUSIVE
+    for case_id in ("plain-2", "plain-3"):
+        assert "login was lost" in (errors[case_id] or "") and "case-1" in (errors[case_id] or "")
+    assert pool.lend() is None  # not trusted for a later tier either
+    pool.close()
+
+
+def test_relogin_resets_the_relaunched_browser_first_and_marks_it_logged_in_again() -> None:
+    resets: list[str] = []
+    pool = _pool(resets)
+    login = _case(1)
+    session = pool.acquire(login)
+    pool.release(login, session, _done(login), passed=True)
+    resets.clear()
+    ran: list[tuple[str, str]] = []
+
+    def grade(case: Case, sess: object) -> Verdict:
+        ran.append((case.id, sess.state.evidence_prefix))
+        return Verdict(run_id="r", case_id=case.id, grader_provider="mock", result=Result.PASS)
+
+    assert pool.relogin(grade) is None
+    assert resets == ["reset"] and ran == [("case-1", "case-1-relogin")]
+    assert pool.lend() is session and session.state.evidence_prefix == ""
+
+
+def test_relogin_with_no_remembered_login_case_names_the_reason() -> None:
+    pool = _pool()
+    reason = pool.relogin(lambda case, sess: pytest.fail("nothing to replay"))
+    assert reason is not None and "login was lost" in reason

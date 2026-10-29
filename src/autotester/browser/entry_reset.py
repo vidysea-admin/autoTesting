@@ -4,9 +4,10 @@ One job: D-115 (1) runs a run's entry cases in ONE Chromium instead of one wiped
 each, so what the wipe used to guarantee (every entry case starts logged out, AT-733 / RU5) is
 re-established here, in place, before each reuse. Closes stray tabs, clears the context's cookies,
 lands on the project's start URL through `session.goto` (so allowed-domains scoping, B6, still
-applies) and clears that origin's web storage. Any failure raises: the caller then discards the
-browser and launches a fresh wiped one, so a case never runs on state this function could not
-clear. Native dialogs need no handling: Playwright auto-dismisses them when no handler is set.
+applies) and clears that origin's web storage and the browser's HTTP cache. Any failure raises:
+the caller then discards the browser and launches a fresh wiped one, so a case never runs on state
+this function could not clear. Native dialogs need no handling: Playwright auto-dismisses them
+when no handler is set.
 """
 
 from __future__ import annotations
@@ -38,11 +39,14 @@ def _known_origins(session: Any, base: str) -> list[str]:
 
 def _clear_devtools_storage(session: Any, origins: list[str]) -> None:
     """DevTools `clearDataForOrigin` (local storage, IndexedDB, caches, service workers). It has no
-    session-storage type, so `reset_to_logged_out` always follows it with the page's own clear."""
+    session-storage type, so `reset_to_logged_out` always follows it with the page's own clear.
+    It does not reach the HTTP cache either, so `Network.clearBrowserCache` empties that (a
+    `max-age` document fetched while logged in would otherwise be served to the logged-out case)."""
     cdp = session._context.new_cdp_session(session._page)
     try:
         for origin in origins:
             cdp.send("Storage.clearDataForOrigin", {"origin": origin, "storageTypes": "all"})
+        cdp.send("Network.clearBrowserCache")  # last: a failure here loses no origin
     finally:
         with contextlib.suppress(Exception):
             cdp.detach()

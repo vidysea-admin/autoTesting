@@ -8,6 +8,8 @@ Two `serve_dir` servers are two loopback origins. Skipped when no Chromium binar
 
 from __future__ import annotations
 
+import http.server
+import threading
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from types import SimpleNamespace
@@ -106,3 +108,47 @@ def test_reset_clears_indexeddb_on_a_second_origin_that_holds_no_local_storage(
     probe.goto(f"{sso}/index.html")
     assert probe.evaluate(_IDB_NAMES) == []  # the IndexedDB-only origin is cleared too
     context.close()
+
+
+class _CachedPage(http.server.BaseHTTPRequestHandler):
+    """`/cached`: LOGGED-IN-ONLY with a `sid` cookie, PLEASE-LOGIN without; freshness 10 minutes."""
+
+    def log_message(self, *_args: object) -> None:
+        pass
+
+    def do_GET(self) -> None:
+        mine = "sid=" in (self.headers.get("Cookie") or "")
+        body = b"LOGGED-IN-ONLY" if mine else b"PLEASE-LOGIN"
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html")
+        self.send_header("Cache-Control", "private, max-age=600")
+        self.end_headers()
+        self.wfile.write(b"<!doctype html><title>t</title><h1 id=h>" + body + b"</h1>")
+
+
+def test_reset_drops_the_http_cache_so_a_logged_out_case_never_sees_a_cached_login(
+    chromium,
+) -> None:
+    """Checker B cycle-2 W1: a document served `max-age` while logged in stayed in the HTTP cache
+    after the reset, so the next logged-out entry case was handed the authenticated body without a
+    request. The wiped-profile launch this unit replaces removed the cache with the directory."""
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _CachedPage)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+    try:
+        context = chromium.new_context()
+        page = context.new_page()
+        context.add_cookies([{"name": "sid", "value": "s", "url": base}])
+        page.goto(f"{base}/cached")
+        assert page.inner_text("#h") == "LOGGED-IN-ONLY"  # the fixture is real, and now cached
+        session = SimpleNamespace(
+            project=SimpleNamespace(base_url=f"{base}/"), _context=context, _page=page,
+            page=page, goto=lambda url: page.goto(url))
+        reset_to_logged_out(session)
+        assert context.cookies() == []
+        page.goto(f"{base}/cached")
+        assert page.inner_text("#h") == "PLEASE-LOGIN"  # fetched fresh, not the cached login
+        context.close()
+    finally:
+        server.shutdown()
+        server.server_close()
