@@ -83,7 +83,7 @@ def crawl_fields(rt: ExploreRuntime) -> dict[str, Any]:
     return rt.guidance.crawl_fields() if rt.guidance is not None else {}
 
 
-def fold(kept: list[GuidanceAnnotation] | None, *notes: GuidanceAnnotation
+def merge_notes(kept: list[GuidanceAnnotation] | None, *notes: GuidanceAnnotation
          ) -> list[GuidanceAnnotation]:
     """`kept` plus `notes`, one per (candidate set, prompt version, model), newest 5 (G7)."""
     out = list(kept or [])
@@ -105,7 +105,7 @@ def graft(persona: PortalPersona, nodes: list[ScreenNode]) -> PortalPersona:
         label = known.name if known else (node.name or node.title or node.url_template)
         graph.add_node(GraphNode.make("screen", node.id, label))
         stored = graph.node(f"screen:{node.id}")
-        stored.guidance = fold(stored.guidance, *(node.guidance or []))
+        stored.guidance = merge_notes(stored.guidance, *(node.guidance or []))
     return persona.model_copy(update={"graph": graph})
 
 
@@ -245,7 +245,7 @@ class Guidance:
 
     def _remember(self, node: ScreenNode, note: GuidanceAnnotation) -> None:
         """D-119: the ranking lives on the crawl's own node; the persona build grafts it later."""
-        node.guidance = fold(node.guidance, note)
+        node.guidance = merge_notes(node.guidance, note)
 
     # -- record ----------------------------------------------------------------------------
     def _note_served(self, tag: str) -> None:
