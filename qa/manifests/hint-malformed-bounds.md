@@ -1,6 +1,6 @@
 # Manifest - hint-malformed-bounds
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Security trigger:** YES (light) - touches the consent refusal text (`core/consent.py`, `schema/approval.py`, D-018/D-112). No ceiling, signing, row shape or `approve` behaviour changes; only what a refusal prints.
 **Authority:** non-blocking notes N1 and N2 in `qa/verdicts/cli-clamp-and-standing-help.b.md` (Residual notes).
