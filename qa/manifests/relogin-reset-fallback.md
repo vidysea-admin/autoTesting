@@ -1,6 +1,6 @@
 # Manifest - relogin-reset-fallback
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Authority:** checker-B verdict of `entry-reset-cache-relogin` (`qa/verdicts/entry-reset-cache-relogin.b.md`), non-blocking observation O1; D-115 item 1.
 **Branch:** `fix/relogin-reset-fallback` from `fix/entry-reset-cache-relogin` (e4cb7db2). Not merged, not pushed.
