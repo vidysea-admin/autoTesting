@@ -1,47 +1,45 @@
 # Verdict - entry-browser-reuse (checker A, Mode A)
 
-**Verdict:** FAIL
-**Cycle checked:** 0
-**Unit:** entry-browser-reuse, branch `fix/entry-browser-reuse`, code head ba66be50 (worktree `D:/autoTesting/.claude/worktrees/entry-browser-reuse`)
-**Authority:** D-115 item (1) (`docs/DECISIONS.md`, D-115 `Changes-authorized`: `ui/run_execution.py`, `browser/*`, their tests; no enforcement path touched).
-**Judged against:** `qa/manifests/entry-browser-reuse.md` criteria 1-9, `qa/contracts/ui-run.md` RU5 (an entry case starts from a genuinely logged-out state), `core-invariants.md` C2/C12, `browser-and-secrets.md` B5-B9. No contract names this unit; the manifest and D-115 are the source.
+**Verdict:** PASS
+**Cycle checked:** 1
+**Unit:** entry-browser-reuse, branch `fix/entry-browser-reuse`, code head ff3cb1f6 (worktree `D:/autoTesting/.claude/worktrees/entry-browser-reuse`)
+**Authority:** D-115 item (1) plus Umesh's 2026-10-29 chat direction quoted in the manifest ("login huaa use kro, baar baar logout kyu hi krna, fast kro kaam").
+**Judged against:** `qa/manifests/entry-browser-reuse.md` criteria 1-10, `qa/contracts/ui-run.md` RU5, `core-invariants.md` C2/C12, `browser-and-secrets.md` B5-B9. No contract names this unit; manifest and D-115 are the source.
 
-## Blocking finding
-
-**F1 (criterion 2 fails on the real browser): `reset_to_logged_out` does not clear `sessionStorage`.**
-`src/autotester/browser/entry_reset.py:33` clears origin storage with CDP `Storage.clearDataForOrigin {storageTypes: "all"}`. That CDP call has no session-storage type, so it leaves `sessionStorage` untouched. The only code that clears `sessionStorage` is the JS fallback (`entry_reset.py:18,38`), and the fallback runs only when the CDP session raises (`entry_reset.py:37`). On a normal Chromium the CDP path succeeds, so `sessionStorage` survives into the next entry case.
-
-Proof against real headless Chromium, loopback fixture server (script `reset_proof.py` in the checker scratchpad, run through `BrowserSession(...).start()` and the shipped `reset_to_logged_out`). The start page (`/`) sets nothing, so the surviving value cannot have been re-set by the reload:
-```
-BEFORE {'cookies': ['sid','vis'], 'ls': 'L', 'ss': 'S', 'pages': 2, 'url': '.../other/page'}
-AFTER  {'cookies': [],            'ls': None, 'ss': 'S', 'pages': 1, 'url': '.../'}
-```
-Cookies (including HttpOnly), localStorage, the extra tab and the URL reset correctly. `sessionStorage` still holds `S`.
-
-Why it matters: sessionStorage is a common place for SPA auth tokens. An entry login case that follows a logged-in case would then start with the token present, which is exactly the hidden-login failure the manifest's design choice ("Pooled cases are reset to logged out") exists to prevent, and it weakens RU5 / AT-733 (start state genuinely logged out). The unit tests cannot see it: `tests/test_entry_browser_reuse_run.py:65-75` drive fakes only, and the CDP-succeeds fake asserts only that the CDP command was sent (`:69`). The manifest itself flags that real Chromium was never exercised.
-
-Smallest fix (edit in place, `entry_reset.py::_clear_origin_storage`): run the page's own `localStorage.clear(); sessionStorage.clear()` after the CDP clear as well, not only in the fallback (and clear sessionStorage for the final page origin if it differs from base). Add one real-Chromium test over the `serve_dir` fixture (tests/conftest.py:136) that sets all three kinds of state, resets, and asserts empty. Re-submit at Fix cycle 1.
+## Cycle-0 FAIL closed
+F1 (sessionStorage survived the reset) is closed. `src/autotester/browser/entry_reset.py:63` now always runs the page's own `localStorage.clear(); sessionStorage.clear()` after the DevTools clear; `:26-34` also covers every origin in `context.storage_state()['origins']` (checker B W1). Proof on real headless Chromium: `tests/test_entry_reset_live.py` (HttpOnly cookie, localStorage and sessionStorage in one tab, localStorage on a second origin, extra tab) passes. Falsification by me, in memory only, no file edited: patching `entry_reset._CLEAR_STORAGE_JS` to `() => {}` and re-running that test gives `1 failed`, so line 63 is load-bearing.
 
 ## Criteria
-
 | # | Result | Evidence |
 |---|---|---|
-| 1 one launch, one wipe, one close | PASS | `tests/test_entry_browser_reuse_run.py::test_six_entry_cases_of_one_identity_cost_one_launch_one_wipe_one_close` passes; pool logic `src/autotester/ui/entry_browser.py:68-85` (`_fits`, `acquire`); wipe lives only in `open_session` (`ui/run_execution.py:97-117`). |
-| 2 reset to logged out before each reuse | FAIL | See F1. Cookies, extra tabs, URL, localStorage verified on real Chromium; sessionStorage not cleared. Fail-closed on reset error is correct: `entry_browser.py:75-79` drops and relaunches wiped. |
-| 3 own launch for different identity / logged-out / adversarial | PASS | `entry_browser.py:40-47` `context_key` (None for `requires_unauthenticated` or adversarial tier), `:68-74` drops on mismatch, `:91` closes after an isolated case. Tests pass. One live browser at a time holds: `_drop` precedes `_open` (`:73-81`). |
-| 4 crash does not poison next case | PASS | `entry_browser.py:89-92` discards on ERRORED, latched `_restore_error`, or no result; `run_execution.py:151-154` passes `outcome[0]`. An `acquire` that raises leaves `_session` None so nothing stale is reused. |
-| 5 save before close, one bounded close | PASS | `_save_case` at `run_execution.py:148` precedes `pool.release` (`:152`); the end-of-leg close is `pool.close()` in `finally` (`:213-215`) -> `BrowserSession.close` -> `browser/teardown.py::close_session` (`session.py:` close). `test_run_teardown_stall.py::test_an_entry_case_is_saved_before_a_slow_close...` passes. |
-| 6 secrets and allowed_domains unchanged | PASS | `git diff master...HEAD` touches no `browser/session.py`, `secrets.py`, `evidence.py`. Reset navigates via `session.goto` (`entry_reset.py:50`), which runs `check_destination`. Credential identity read via `placeholder_keys` over step target/value (`entry_browser.py:45-46`). |
-| 7 per-case evidence/video | PASS | `entry_browser.py:50-56` `_prime` sets `evidence_prefix`, `screenshots=0`, clears `secret_locators` and `hitl` per acquire; masking code untouched; reset traced as `entry_reset` and counted housekeeping (`run_execution.py:116-118`). |
-| 8 both run shapes use the pool | PASS | `_run_cases_serially` (`:164-166`) and the parallel path both go through `_run_entry_cases` (`:199-215`); pool closed before the shared session / fan-out. `_run_entry_case` keeps its signature plus optional `pool=`; the no-pool path owns and closes a private pool (`:136,152-155`). |
-| 9 design rules | PASS | `uv run ruff check src tests scripts`: All checks passed. `uv run autotester doctor`: clean (advisory D-087 citation lines only). `run_execution.py` 264, `entry_browser.py` 103, `entry_reset.py` 52 lines; no function over 50. |
+| 1 one pool per run | PASS | `stages/run_launcher.py:210` creates the pool, `:223` passes `pool=pool` to every serial tier, `:225-226` closes once in `finally`. `tests/test_entry_browser_reuse_serial.py::test_a_launched_run_shares_one_entry_browser_across_its_tiers` passes. |
+| 2 order | PASS | `ui/entry_browser.py:46-57` (`logs_in`, `order_entry_cases`; stable sort, so logged-out cases keep their order); applied at `ui/run_execution.py:239`. Ordering tests pass. |
+| 3 reset only when needed, fail closed | PASS | `entry_browser.py:85-100` `acquire` resets only a browser that already ran something, and `_drop`s then relaunches wiped if the reset raises (`:92-93`). `lend` hands a session over with no reset (`:112-114`). Real-Chromium reset proof above. |
+| 4 login hand-off | PASS, proved live | `entry_browser.py:102-119`, `run_execution.py:158-200`. Fake-based tests pass; I added a real-browser probe (below). |
+| 5 different account gets own launch | PASS for entry cases | `entry_browser.py:79-83` `_fits` (subset either way; empty fits any), `:87-88` drops on mismatch. Probe: an ADMIN case after a USER login got a new launch and the old one was closed (`_context is None`). See W1 for the ordinary-case path. |
+| 6 crash does not poison next | PASS | `entry_browser.py:106-109` discards on ERRORED, `_restore_error`, no result, or a foreign session; `:116-119` `note_shared` discards after an ERRORED lent case. Tests pass. |
+| 7 save before close, one bounded close | PASS | `_save_case` `run_execution.py:148` precedes `pool.release` `:153`; the only run-level close is `pool.close()` `run_launcher.py:226` -> `_drop` -> `session.close()` -> `browser/teardown.py::close_session`. `test_run_teardown_stall.py` passes. |
+| 8 secrets, allowed_domains, masking, video unchanged | PASS | `git diff 63445fbe..HEAD --stat` touches no `browser/session.py`, `secrets.py`, `evidence.py`, `video.py`. Reset navigates only via `session.goto` (`entry_reset.py:59,64` -> `check_destination`). `_prime` (`entry_browser.py:60-65`) clears `secret_locators`/`hitl`, zeroes `screenshots`, sets `evidence_prefix` per entry case. Per-case video swaps to a fresh page per case (`browser/video.py:106-133`) inside the same context, so cookies and storage survive the swap (probe). |
+| 9 parallel path | PASS | `_run_cases_in_parallel` still calls `_run_entry_cases(...)` without a pool, which owns and closes its private pool before the fan-out (`run_execution.py:226-245`). `test_ui_runs_serial_entry_order.py`, `test_ui_runs_parallel_trace.py` pass. |
+| 10 design rules | PASS | `uv run ruff check src tests scripts`: All checks passed. `uv run autotester doctor`: `doctor: clean` (D-087 advisory lines only). Sizes: run_execution.py 293, run_launcher.py 288, entry_browser.py 130, entry_reset.py 64; no function over 50 (doctor). |
 
 ## Re-run evidence
-- Targeted pytest (manifest list, `-o addopts=`, one at a time): run 1 `1 failed, 95 passed, 1 skipped` (failure: `tests/test_run_teardown_stall_wiring.py::test_a_launched_run_records_phase_totals_and_unaccounted_seconds`); the same 10 files re-run: `96 passed, 1 skipped`; that wiring file alone 4 more times: `8 passed` each. Treated as a timing flake, not blamed on this unit: the test asserts `excluded_s["housekeeping"] >= 0.05` against a `time.sleep(0.06)` wipe (`tests/test_run_teardown_stall_wiring.py:71,86`), and the first run overlapped a `uv` env sync. Not reproduced in 5 further runs; mentioned so the maker is not surprised if it recurs.
-- `uv run ruff check src tests scripts`: All checks passed.
-- `uv run autotester doctor`: `doctor: clean`.
-- Real Chromium reset proof: output above.
+- Manifest pytest list, one invocation, `-o addopts=`: `111 passed, 1 skipped, 1 warning in 38.64s`. `tests/test_entry_reset_live.py` run alone: `1 passed` (not the skip).
+- Real-Chromium hand-off probe (scratchpad `ebr_c1_probe.py`: loopback server that sets an HttpOnly cookie on `/login`; real `BrowserSession(record_video=True)`, real `EntryBrowserPool`, shipped `reset_to_logged_out`):
+  `{"login_before":"OUT","login_after":"IN","lent_same_object":true,"ordinary_in_lent":"IN","diff_account_new_launch":true,"old_closed":true,"diff_acct_state":"OUT","reuse_same":true,"after_reset":"OUT","launches":2,"all_closed":true}`
+  Meaning: the login survives `end_case_video`/`begin_case_video` page swaps into the lent session (no re-login); a different credential set launches a new browser and closes the old; a reuse after reset is logged out; nothing is left open.
 
-## Not judged / residual (not blocking)
-- Only origins of base URL and the post-`goto` page URL get storage cleared (`entry_reset.py:51`); a login that lives on another origin keeps that origin's storage across a reuse. Cookies are context-wide so are covered. Worth a line in the fix or the manifest.
-- Maker reported no separate red run; process note only.
+## The two questions asked
+**Is sharing one browser with adversarial-tier and logged-out cases safe? Yes, within what the manifest claims.** An entry case on a reused browser always passes through `acquire` -> reset first (`entry_browser.py:89-93`); the first case on a browser launches wiped (RU5 wipe kept in `open_session`, `run_execution.py` `_entry_pool`). The reset clears cookies (incl. HttpOnly), local/session storage, IndexedDB/caches/service workers (`storageTypes: "all"`), stray tabs and the URL. Secrets: `SecretStore`/`Redactor` are per run and untouched; `secret_locators` is reset per entry case, and a stale locator can only over-mask. Adversarial-tier non-entry cases never share the pool browser: `lend()` is None after any reset (`_logged_in=False`, `entry_browser.py:98`), so `_run_normal_cases` closes the pool first and uses the shared-profile session (`run_execution.py:166-172`). allowed_domains: the reset and every navigation go through `session.goto`. Residual: the on-disk Chromium profile (HTTP cache, history) is not re-wiped between pooled cases; not a login carrier (checker B, cycle 0).
+
+**Can a lent session reach a case of a different account? Structurally yes, harmless today.** See W1.
+
+## Warnings (non-blocking)
+**W1. `lend()` has no identity guard.** `entry_browser.py:112-114` takes no argument and `_run_normal_cases` (`run_execution.py:166,183`) runs every non-entry case of the tier in the lent session regardless of its `context_key`. A project with two credential sets whose ordinary cases use the second account would run them as the first (a possible false pass or masked permission bug). No test covers it. Not exploitable now: every project in `projects/*/cases.jsonl` uses one credential set (pathlynks: `PATHLYNKS_USER_EMAIL`/`_PASSWORD` only), and Group 11 multi-role runs use another path. Cheap fix before a multi-account project lands: `lend(cases)` returns None when any case's `context_key` is non-empty and not `_fits` the pool's key, plus one test.
+**W2. D-115 text is now contradicted and no DECISIONS entry records the change.** D-115 item 1 says logged-out cases, adversarial probes and different roles "still get their own context"; cycle 1 shares one browser (after a reset) for logged-out and adversarial entry cases, on Umesh's later chat instruction quoted only in the manifest. Different roles still get their own launch. Owner action: append a D-entry via `scripts/append_decision.ps1` superseding that clause, citing Umesh 2026-10-29. Not a code defect.
+**W3. `qa/contracts/ui-run.md` RU5 wording lags the design.** RU5 says the wipe is "the only thing that makes that start state true" and is required before an entry case. Under D-115 the wipe happens at launch only; later entry cases get the logged-out reset. The fail-closed intent holds (reset failure -> discard -> wiped relaunch, `entry_browser.py:92-93`, tested), but the contract text should be amended by the checker/Approver, not the maker. Raised so it is not lost.
+**W4. Whole-run real-browser coverage is fakes plus probe.** `BrowserRecovery` on a lent session (`run_execution.py:183`): a restart of the entry-test profile loses session-only cookies, so later ordinary cases would run logged out and fail. Same exposure as the old shared profile, not new, not tested.
+**W5. Process:** I did not reproduce the maker's red-first runs, only the green ones and the falsification above.
+
+## Not judged
+The Mode B adversarial sweep for cycle 1 is a separate seat.
