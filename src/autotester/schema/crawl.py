@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.core.ids import content_id, run_id
 from autotester.schema.base import Artifact
@@ -259,7 +259,12 @@ class Crawl(Artifact):
                                   "None only on a crawl recorded before this field existed")
     approval_production: bool | None = Field(
         default=None, description="that approval's `production` flag, copied at the gate")
-    provider: str = "mock"
+    provider: str | None = Field(
+        default=None,
+        description="the model provider that judged this crawl; None for every shipped crawl, "
+        "which makes no model call (explore.md X4). A record written before this field was "
+        "honest says 'mock' (the old schema default, not a stub judge) and reads back as None",
+    )
     guidance: CrawlGuidance | None = None
     """G8: set only when guidance was active; `provider` then names the serving model."""
     started_at: str | None = None
@@ -280,6 +285,11 @@ class Crawl(Artifact):
     noise_counts: list[NoiseCount] = Field(default_factory=list)
     coverage: CrawlCoverage | None = Field(
         default=None, description="V7; None on a crawl recorded before coverage existed")
+    @field_validator("provider", mode="before")
+    @classmethod
+    def _legacy_mock_default(cls, value: object) -> object:
+        return None if value == "mock" else value
+
     heartbeat_at: str | None = None
     """AT-483: refreshed mid-BFS by `explore_node`, alongside a fresh snapshot of the
     progress counts above -- absent (None, and so omitted from disk by `write_json`'s

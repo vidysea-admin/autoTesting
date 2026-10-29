@@ -30,17 +30,25 @@ terminal. Before this, `ui/app.py` could only view state the CLI had already pro
   (matching the convention every real-run script already follows) so a key set via `.env` (or
   the future `/settings/providers` page) is genuinely usable from the web UI, not just from a
   script that happens to call `load_dotenv` itself.
-- **RU5 — an entry-screen case never runs on a profile that was not removed (added 2026-10-11; issue
-  AT-733; `core-invariants.md` C12(b)).** An entry-screen case (`_is_entry_case`) is meant to start
-  from a genuinely logged-out state, which is why it gets a dedicated profile, `ProjectPaths(f"{slug}-entry-test").profile_dir`
-  (`profiles/<slug>-entry-test`), wiped before its run (amendment log, 2026-09-04). The wipe is the
-  only thing that makes that start state true, so it is a measurement and fails closed.
-  - Before the case's browser starts, the profile directory is removed and then **positively
+- **RU5 — an entry-screen case never runs on a profile that was not removed, nor on a session that
+  was not reset (added 2026-10-11; issue AT-733; `core-invariants.md` C12(b); amended 2026-10-29,
+  D-115/D-116).** An entry-screen case (`_is_entry_case`) is meant to start from a genuinely
+  logged-out state, which is why it gets a dedicated profile, `ProjectPaths(f"{slug}-entry-test").profile_dir`
+  (`profiles/<slug>-entry-test`). That profile is wiped at **each browser launch** (not before every
+  case), and a run reuses its one entry browser: before an entry case that follows another case on
+  that browser, the session is reset to logged out (cookies, local and session storage on every
+  stored origin, extra tabs). A different account gets its own launch, and a passed login's session
+  is lent, unreset, only to the following logged-in cases. The wipe and the reset are the only
+  things that make the logged-out start state true, so each is a measurement and fails closed.
+  - Before each launch of the entry browser, the profile directory is removed and then **positively
     established absent**. These are all failures: the removal raises (`OSError`, `PermissionError`),
     the directory is still present afterwards, or the presence check itself raises, so that absence
     cannot be determined. A directory that was already absent before the wipe is success. A
     presence test that reports "absent" when it errors (for example `os.path.lexists`) is the fail-open
     shape C12 forbids and does not satisfy this criterion.
+  - A reset that raises is the same failure shape: the pool discards that browser and launches a
+    fresh wiped one (which itself fails closed as above); the case never runs on state the reset could
+    not clear.
   - On any such failure the case's `RawResult` is `ERRORED`, its error names the profile path and the
     cause (scrubbed like any other case error), and its verdict comes from `grade_errored_result`
     (the existing errored-result path, so never PASS and never FAIL). No `BrowserSession` is started
@@ -107,3 +115,12 @@ terminal. Before this, `ui/app.py` could only view state the CLI had already pro
   `grade_errored_result`" (the contract states the property, not the grader's current label), "presence
   cannot be determined" is named a failure explicitly, and the optional Windows locked-file probe is
   assigned to the checker. **Links:** AT-733; C12(b); D-080; D-081; `qa/briefs/at733-bounded.md`.
+- 2026-10-29 · routine (wording follows D-116; the fail-closed requirement is unchanged and extended
+  to the reset) · **RU5 amended: profile wiped per launch, session reset before each entry case that
+  reuses the browser.** D-115 item 1 and D-116 (Umesh, chat: "login huaa use kro, baar baar logout kyu
+  hi krna") replace "one wiped-profile launch per entry case" with one entry browser per run, so
+  "wiped before its run" was no longer true of every case. RU5 now states the per-launch wipe, the
+  logged-out reset between cases, one launch per account and the unreset lend of a passed login, and
+  requires the reset to fail closed (discard, relaunch wiped). Raised as checker A cycle 1 W3 and
+  checker B cycle 1 W3. · why: D-115, D-116, `qa/verdicts/entry-browser-reuse.md` (cycle 2 PASS).
+  **Links:** D-115; D-116; entry-browser-reuse.

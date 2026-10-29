@@ -69,7 +69,6 @@
   "skipped_unchanged": 0,
   "approval_id": "appr_ID",
   "approval_production": false,
-  "provider": "mock",
   "started_at":"T",
   "finished_at":"T",
   "stop_reason": "frontier empty",

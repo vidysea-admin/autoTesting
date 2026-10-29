@@ -112,9 +112,10 @@ def test_zero_means_not_asked_and_other_kinds_are_not_widened() -> None:
     assert derive_grant_bounds(ApprovalKind.ADVERSARIAL, 7, 3, 60.0) == GrantBounds(7, 3, 60.0)
 
 
-def test_a_non_finite_wall_clock_passes_through_untouched() -> None:
-    got = derive_grant_bounds(ApprovalKind.LIVE_CASE, 4, 4, float("inf"))
-    assert got.wall_clock_s == float("inf")
+def test_a_non_finite_wall_clock_is_rejected_not_passed_through() -> None:
+    # F2 (cli-clamp): was "passes through untouched"; see tests/test_grant_clamp_notes.py
+    with pytest.raises(ValueError, match="non-negative and finite"):
+        derive_grant_bounds(ApprovalKind.LIVE_CASE, 4, 4, float("inf"))
 
 
 # -- (2) the refusal hint uses it --------------------------------------------------------------

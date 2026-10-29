@@ -195,6 +195,12 @@ NEVER_A_COMMAND = (ast.Tuple, ast.List, ast.Dict, ast.Set)
 safe to exempt from the hole report without knowing its value."""
 
 
+KNOWN_NUMERIC_IMPORTS = frozenset({"MAX_GRANT_PROBES"})
+"""Imported names bound to an ARITHMETIC expression of ints (`schema.approval`:
+`MAX_GRANT_ACTIONS * PROBES_PER_ACTION`), which `_module_level_names` cannot prove numeric (a
+BinOp may be `"ab" * 2`). Named one by one, never by shape, so the hole report keeps its teeth."""
+
+
 def _module_level_names(tree: ast.Module) -> set[str]:
     """Names this module binds to something that CANNOT be a command string.
 
@@ -279,7 +285,7 @@ def unresolved_in_source(src_dir: Path) -> list[tuple[Path, int]]:
         source, module = path.read_text(encoding="utf-8"), _module_name(path, src_dir)
         tree = ast.parse(source)
         constants = _imported_constants(tree, module, index)
-        bound = _imported_names(tree, module, names)
+        bound = _imported_names(tree, module, names) | KNOWN_NUMERIC_IMPORTS
         out += [(path.relative_to(src_dir), line)
                 for line in unresolved_in(source, constants, bound)]
     return out

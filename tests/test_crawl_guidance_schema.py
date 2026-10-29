@@ -55,7 +55,7 @@ def test_an_old_crawl_json_still_loads_and_has_no_guidance() -> None:
     text = support.baseline("crawl.json").replace("\r\n", "\n")
     text = re.sub(r'"created_at":"T"', '"created_at": "2026-10-29T05:05:03.445295Z"', text)
     crawl = Crawl.model_validate_json(text)
-    assert crawl.guidance is None and crawl.provider == "mock"
+    assert crawl.guidance is None and crawl.provider is None
     assert "guidance" not in crawl.model_dump(exclude_none=True)
 
 

@@ -171,6 +171,18 @@ def _recorded_for(rt: ExploreRuntime, edge: ScreenEdge) -> TypedAction | None:
                  if t.element.selector == edge.target and t.action is edge.action), None)
 
 
+def press_revealer(rt: ExploreRuntime, node_id: str, selector: str) -> None:
+    """Before trying (or replaying) a control a layout toggle revealed, press that toggle again:
+    returning to the screen reloaded it and hid the control. Keyed by node id AND selector.
+    The toggle was itself policy-cleared when first pressed, so this adds no action the safety
+    guard has not already seen; it counts as an action (`actions_used`) like any other press."""
+    toggle = rt.revealed_by.get((node_id, selector))
+    if toggle is not None:
+        rt.frontier.actions_used += 1
+        rt.session.click(toggle.selector)
+        rt.session.settle(timeout_ms=rt.bounds.settle_ms)
+
+
 def perform(rt: ExploreRuntime, edge: ScreenEdge) -> str | None:
     """Re-perform `edge` from the screen it was recorded on. None on success.
 
@@ -203,6 +215,7 @@ def perform(rt: ExploreRuntime, edge: ScreenEdge) -> str | None:
         return refused
     element = _element_for(rt, edge)
     try:
+        press_revealer(rt, edge.from_node, edge.target)  # a revealed control needs its toggle
         rt.session.click(edge.target)
     except NavigationRefused as exc:
         return _refusal_of(rt, edge.from_node, element, edge.action, exc)

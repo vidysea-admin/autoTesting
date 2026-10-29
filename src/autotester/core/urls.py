@@ -6,12 +6,19 @@ normalised into a screen-identity path — `stages/ingest.py` A2 and
 A numeric/uuid/ULID/hex/date-shaped path segment is templated to `{id}` or
 `{date}` so `/students/1` and `/students/2` collapse to the same identity,
 while `/students/me` (not id-shaped) is left alone.
+
+Opaque tokens never reach a stored template either: a JWT or long base64 token
+becomes `{token}`, an email address `{email}`, a prefixed order id such as
+`ORD-2024-00081` `{id}`, and `;jsessionid=...` matrix parameters are dropped
+(they are session state, not a screen). Plain word segments (`/dashboard`,
+`/covid-19`, `/class-12`) match none of these shapes, so their template -- and
+every screen id derived from it -- is unchanged.
 """
 
 from __future__ import annotations
 
 import re
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 _NUMERIC = re.compile(r"^\d+$")
 _UUID = re.compile(
@@ -21,11 +28,59 @@ _ULID = re.compile(r"^[0-9A-HJKMNP-TV-Z]{26}$")  # Crockford base32, no I/L/O/U
 _HEX = re.compile(r"^[0-9a-f]{16,}$", re.IGNORECASE)
 _DATE = re.compile(r"^\d{4}-\d{2}(-\d{2})?$")
 _INDEX_SEGMENTS = {"index.html", "index.htm"}
+_EMAIL = re.compile(r"^[^@\s/;]+@[^@\s/;]+\.[A-Za-z]{2,}$")
+_JWT = re.compile(r"^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$")  # base64url '{"'
+_BASE64 = re.compile(r"^[A-Za-z0-9_+=-]{20,}$")
+_PREFIXED_ID = re.compile(r"^[A-Z]{2,10}(?:[-_]\d+)+$")  # ORD-2024-00081, INV-00081
+
+
+def _is_base64_token(segment: str) -> bool:
+    """A 20+ char run mixing digits, upper and lower case, that is not hyphenated words."""
+    if not _BASE64.match(segment):
+        return False
+    words = [part for part in re.split(r"[-_]", segment) if part.isalpha()]
+    return (
+        len(words) < 2
+        and any(c.isdigit() for c in segment)
+        and any(c.isupper() for c in segment)
+        and any(c.islower() for c in segment)
+    )
+
+
+def _is_prefixed_id(segment: str) -> bool:
+    """`ORD-2024-00081` / `INV-00081`; `COVID-19` and `FY-2024` (one short group) stay words."""
+    if not _PREFIXED_ID.match(segment):
+        return False
+    groups = re.findall(r"\d+", segment)
+    return len(groups) >= 2 or len(groups[0]) >= 5
+
+
+def _is_prefixed_opaque_id(segment: str) -> bool:
+    """`crawl_01M3SPT02KH34KF61NYK8P1VBZ`, `cus_<uuid>`: a word, `_`, then a ULID/UUID/long hex."""
+    prefix, sep, rest = segment.partition("_")
+    return bool(sep) and prefix.isalpha() and bool(
+        _ULID.match(rest) or _UUID.match(rest) or _HEX.match(rest)
+    )
+
+
+def _template_opaque(segment: str) -> str | None:
+    if _EMAIL.match(unquote(segment)):
+        return "{email}"
+    if _is_prefixed_opaque_id(segment):
+        return "{id}"
+    if _JWT.match(segment) or _is_base64_token(segment):
+        return "{token}"
+    if _is_prefixed_id(segment):
+        return "{id}"
+    return None
 
 
 def _template_segment(segment: str) -> str:
     if not segment:
         return segment
+    opaque = _template_opaque(segment)
+    if opaque:
+        return opaque
     if _DATE.match(segment):
         return "{date}"
     if _NUMERIC.match(segment) or _UUID.match(segment) or _ULID.match(segment) or _HEX.match(
@@ -82,7 +137,8 @@ def absolute_url(url: str) -> str:
 
 def url_template(url: str, *, keep_host: bool = True, fold_index: bool = False) -> str:
     """Normalise `url` to a screen-identity path: strip query/fragment,
-    collapse repeated slashes, template id/date-shaped segments, and drop a
+    collapse repeated slashes, drop `;matrix=params`, template id/date-shaped
+    segments and opaque tokens (`{token}`, `{email}`, prefixed ids), and drop a
     trailing slash (the root `/` is kept as-is).
 
     **Idempotent for path-shaped input only** — `url_template(p) == p` for any
@@ -118,7 +174,8 @@ def url_template(url: str, *, keep_host: bool = True, fold_index: bool = False) 
     only `stages/screen_identity.py::node_from` and `screen_url_pattern`
     below pass `fold_index=True`."""
     parts = urlsplit(url)
-    segments = [seg for seg in parts.path.split("/") if seg != ""]
+    # `;k=v` matrix parameters (`;jsessionid=...`) are session state, not part of the screen.
+    segments = [seg for seg in (s.split(";", 1)[0] for s in parts.path.split("/")) if seg != ""]
     if fold_index and segments and segments[-1] in _INDEX_SEGMENTS:
         segments = segments[:-1]
     templated = "/".join(_template_segment(seg) for seg in segments)

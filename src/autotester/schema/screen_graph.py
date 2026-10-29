@@ -58,6 +58,21 @@ class ElementRef(BaseModel):
     )
 
 
+class ApiCall(BaseModel):
+    """One successful first-party API request a screen made: method + path pattern + status.
+
+    The path is `url_template`'d (ids collapse), query-less and host-less, so it is a stable
+    key that can be compared against a reference endpoint map; `count` is how many times the
+    crawl saw that exact (method, path, status) while on the screen."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    method: str
+    path: str
+    status: int
+    count: int = 1
+
+
 class PageObservation(BaseModel):
     """One page-visit's raw material: its url/title and interactive elements."""
 
@@ -91,6 +106,12 @@ class ScreenNode(Artifact):
     guidance: list[GuidanceAnnotation] | None = Field(
         default=None, description="crawl-guidance (D-119): this screen's rankings, grafted onto "
         "PortalPersona.graph by the persona build")
+    api_calls: list[ApiCall] = Field(
+        default_factory=list,
+        description="successful (status < 400) first-party XHR/fetch requests seen while on "
+        "this screen, one row per (method, path pattern, status); [] on a node recorded before "
+        "this field existed or one that made none",
+    )
 
     def model_post_init(self, _context: object) -> None:
         if not self.id:
@@ -110,6 +131,11 @@ class ScreenEdge(Artifact):
     name: str = ""
     outcome: EdgeOutcome
     reason: str | None = None
+    error_class: str | None = Field(
+        default=None,
+        description="for an `errored` edge: the exception class name (e.g. 'TimeoutError') or "
+        "'ReturnLost'; `reason` then holds its redacted, single-line, bounded message",
+    )
 
     def model_post_init(self, _context: object) -> None:
         if not self.id:

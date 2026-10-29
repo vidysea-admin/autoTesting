@@ -45,7 +45,10 @@ The explorer composes `BrowserSession` methods; it never reaches past them.
 A `ScreenNode` id is a pure function of `(templated URL path, structural signature of the visible
 non-row interactive elements)` — never URL alone, never a model's free-text description. Two list
 pages differing only in row data are ONE screen; two states at one URL offering different controls
-are TWO. The same page always yields the same id, whenever it is visited.
+are TWO. The same page always yields the same id, whenever it is visited. One recorded
+exception (2026-10-29): pressing a button/switch named collapse/expand/toggle/show/hide + sidebar /
+side nav / navigation menu at an unchanged `url_template` is recorded SAME_SCREEN, not a new node
+(`screen_identity.same_screen`); ids and `structural_signature` are unchanged.
 **Verify:** `/students/1/` and `/students/2/` collapse to a single `/students/{id}` node, and the
 same-URL filter toggle produces a second `/` node — both against a real browser.
 
@@ -152,7 +155,7 @@ the file unloadable. Claim only what the ordering supports.
 ### X12 — The crawl is DOM-driven and deterministic; a model may ORDER controls, never choose or perform one
 **Default (guidance off, the shipped default): `run_crawl` takes no provider at all.** No stop
 condition, no action choice, and no safety decision depends on model output — a crawl completes
-with `provider=mock`, byte-identical to the pre-D-118 crawl. **Amended 2026-10-29 (D-118):** when
+with `provider=None`, byte-identical to the pre-D-118 crawl. **Amended 2026-10-29 (D-118):** when
 and only when per-project guidance is switched on (`qa/contracts/crawl-guidance.md`, G1-G12), an
 injected `providers.base.Provider` may be handed ONE screen's code-built, numbered candidate
 controls and return a RANKING of them. The model never adds a control, never performs one, never
@@ -658,3 +661,9 @@ only the pure-function tests).
   `explore_name_screen_v1` deliberately NOT built" is unchanged (guidance orders controls; it does
   not name screens). Not yet built: Units 1-5 of D-118 follow; this amendment alone authorizes none
   of them to PASS without their own checker verdict.
+
+- 2026-10-29 · routine · /checker (unit `crawl-record-gaps`, cycle 0) · **X3 and X12 clarified**
+  (no criterion removed): X12's "completes with `provider=mock`" restated as `provider=None` (the
+  maker's change to `Crawl.provider`, issue gap (d)); X3 gains the one named layout-toggle exception
+  the same unit shipped (gap (a)), recorded so the contract and `screen_identity.py` agree. X3's
+  verify case (same-URL filter toggle = second node) still passes: `tests/test_explore_traversal.py`.

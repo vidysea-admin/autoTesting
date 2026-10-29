@@ -5,8 +5,8 @@ invent a click or a navigation** — `execute.md` E5 ("`run_case` performs
 exactly the actions in `case.steps`") stays intact; the explorer never routes
 through `run_case` except for the human-authored login bootstrap case. Every
 bound can end the crawl and name itself in `Crawl.stop_reason`, and no stop
-condition depends on provider output — a crawl completes with `provider=mock`
-(X4). Per-node work lives in `explore_node.py`; safety in `explore_safety.py`.
+condition depends on provider output — a crawl makes no model call and records
+`provider=None` (X4). Per-node work lives in `explore_node.py`; safety in `explore_safety.py`.
 """
 
 from __future__ import annotations
@@ -65,15 +65,13 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
     """Run the human-authored login case through `run_case` — the ONLY place
     the explorer types anything, and the only pre-crawl form submit (X10).
 
-    **AT-226.** A persistent browser profile can already hold a live session,
-    in which case the login page itself redirects away before the case's own
-    FILL step ever runs — the field it names is not on the page at all, and
-    `run_case` blocks for the full step timeout before reporting ERRORED.
-    Checked once, before the case runs, against the case's own NAVIGATE step:
-    if the browser lands somewhere other than the login page itself, the
-    session is already authenticated and the case is skipped rather than run
-    to a guaranteed timeout — a login page that redirects away from itself
-    has already done its job, no app-specific marker needed."""
+    **AT-226.** A persistent browser profile can already hold a live session, in which case the
+    login page itself redirects away before the case's own FILL step ever runs — the field it
+    names is not on the page at all, and `run_case` blocks for the full step timeout before
+    reporting ERRORED. Checked once, before the case runs, against the case's own NAVIGATE step:
+    if the browser lands somewhere other than the login page itself, the session is already
+    authenticated and the case is skipped rather than run to a guaranteed timeout — a login page
+    that redirects away from itself has already done its job, no app-specific marker needed."""
     login_step = next(
         (s for s in sorted(case.steps, key=lambda s: s.order) if s.action is Action.NAVIGATE),
         None,
@@ -86,13 +84,12 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
             rt, case, result.failing_step, login_step and login_step.target):
         rt.stop_reason = f"login case did not complete (AT-889): {result.error}"
         return False
-    # AT-528: a COMPLETED step sequence is NOT proof of authentication — run_case
-    # observes, it never judges (E1); the live Pathlynks crawl
-    # crawl_01M31V5GHN91TE38MMB4BKM6HF completed while the app rendered "Invalid
-    # credentials" (expected.visible_text is best-effort settle, never a gate).
-    # The product's own verdict during the bootstrap is a first-party 401 on the
-    # login API — precise, app-reported, fixture-neutral. A signed-out crawl may
-    # never read COMPLETED: end LOGIN_FAILED naming the evidence.
+    # AT-528: a COMPLETED step sequence is NOT proof of authentication — run_case observes, it
+    # never judges (E1); the live Pathlynks crawl crawl_01M31V5GHN91TE38MMB4BKM6HF completed while
+    # the app rendered "Invalid credentials" (expected.visible_text is best-effort settle, never a
+    # gate). The product's own verdict during the bootstrap is a first-party 401 on the login API
+    # — precise, app-reported, fixture-neutral. A signed-out crawl may never read COMPLETED: end
+    # LOGIN_FAILED naming the evidence.
     _console, failed, _dialogs, _popups = rt.observer.drain()
     auth_401 = [(u, why) for u, why in failed if why.rstrip().endswith("401")]
     if auth_401:
@@ -141,6 +138,7 @@ def _seed(rt: ExploreRuntime) -> ScreenNode | None:
     operator watching a live crawl can tell the product was down from the
     crawl was refused by its own domain guard.
     """
+    rt.take_responses(None)  # the login case's traffic belongs to no screen
     try:
         rt.session.goto(rt.project.base_url)
         rt.session.settle(timeout_ms=rt.bounds.settle_ms)
@@ -152,6 +150,7 @@ def _seed(rt: ExploreRuntime) -> ScreenNode | None:
         rt.seed_error = f"{type(exc).__name__}: {exc}"
         return None
     node = node_from(observation, rt.crawl.id, rt.project.slug, depth=0)
+    rt.take_responses(node.id)
     node = node.model_copy(update={"screenshot_ref": explore_node.capture(rt, node)})
     rt.nodes[node.id] = node
     rt.store.add_node(explore_summary.scrubbed(rt, node))
@@ -206,13 +205,15 @@ def _terminal_status(rt: ExploreRuntime, completed: bool, login_case: Case | Non
 def _fold_network_evidence(rt: ExploreRuntime) -> None:
     """T-170/NA1: fold first-party responses into NETWORK evidence, once,
     at the end (no per-step RawResult to fold into, unlike execute.py)."""
+    rt.take_responses(None)
     for item in network_capture.first_party_evidence(
-            rt.observer.drain_responses(), rt.project, rt.policy, rt.session.secrets.redactor()):
+            rt.net_log, rt.project, rt.policy, rt.session.secrets.redactor()):
         rt.store.add_crawl_network(rt.crawl.id, item)
 
 
 def _finish(rt: ExploreRuntime, status: CrawlStatus) -> Crawl:
     _fold_network_evidence(rt)
+    explore_summary.apply_api_calls(rt)
     crawl = rt.crawl.model_copy(update={
         "status": status,
         "stop_reason": rt.session.secrets.scrub_optional(rt.stop_reason),  # AT-350

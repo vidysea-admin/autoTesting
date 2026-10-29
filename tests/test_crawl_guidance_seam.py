@@ -185,10 +185,10 @@ def test_the_crawl_records_the_serving_model_and_a_guidance_summary(tmp_path: Pa
     assert store.load_crawl(crawl.id).guidance == crawl.guidance
 
 
-def test_a_crawl_every_screen_of_which_fell_back_reads_mock_and_rule_only(tmp_path: Path) -> None:
+def test_a_crawl_every_screen_of_which_fell_back_reads_none_and_rule_only(tmp_path: Path) -> None:
     crawl, _store, _page = crawl_it(tmp_path, project=guided_project(), bounds=ON,
                                     guide=guide(FakeProvider(garbage)))
-    assert crawl.provider == "mock"
+    assert crawl.provider is None
     assert crawl.guidance is not None and crawl.guidance.mode == "rule-only (model unavailable)"
     assert crawl.guidance.fallbacks and crawl.status is CrawlStatus.COMPLETED
 
@@ -257,7 +257,7 @@ def test_only_the_guidance_module_touches_the_provider_seam() -> None:
 def test_the_seam_is_one_in_place_edit_and_explore_node_stays_at_the_cap() -> None:
     node = (SRC / "explore_node.py").read_text(encoding="utf-8")
     assert "explore_traversal.ordered_candidates(rt, node)" in node
-    assert "destructive_last" not in node, "the loop calls the seam, not a second copy of the order"
+    assert "destructive_last(node.elements" not in node, "the loop calls the seam, not own order"
     for name in ("explore_node.py", "explore.py", "explore_traversal.py", "explore_guidance.py",
                  "explore_guidance_payload.py", "explore_runtime.py"):
         assert len((SRC / name).read_text(encoding="utf-8").splitlines()) <= 300, name

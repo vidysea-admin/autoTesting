@@ -2918,3 +2918,97 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-118, crawl-guidance
 
 **Changes-authorized:** src/autotester/stages/explore_guidance.py, the persona build path in stages/portal_persona.py, schema/crawl_guidance.py, schema/screen_graph.py and schema/portal_persona.py (additive annotation fields), and their tests. No ARCHITECTURE.md prose and no enforcement path.
+
+## D-120 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Umesh's answer on 2026-10-29 about where AutoTester's data lives.
+- AutoTester's own state moves out of files into one MongoDB database named `autotester`, split across several collections. The state covers the users and auth store, projects, cases, runs, crawls, the KG and persona graph, approvals and bug events. Screenshots and videos go to GridFS in the same database.
+- The database sits on the server that `PATHLYNKS_MONGO_URI` names, in the repo-root `.env`. No new server or key is needed.
+- AutoTester may create, read, update and delete documents, collections and indexes **only inside the `autotester` database**. Every other database on that server stays read-only. This includes Pathlynks's own data, which `browser/db.py` keeps read-only by construction.
+- Dropping the `autotester` database needs a human gate.
+- The file store stays as the local and test backend. The backend is chosen from configuration, so CI and unit tests never need Mongo.
+
+**Why:** On Cloud Run the files under `/data` are wiped on every deploy, so accounts and projects keep disappearing (live-deployment memory, docker/DEPLOY.md). The files also grow heavy. One database with collections persists across deploys without a GCS volume. Umesh chose this over the GCS-volume proposal.
+
+**Result:** A design read and a contract come first, then maker-checker units: a store seam, a Mongo backend, a per-store switch-over, migrating the existing data, and the Cloud Run configuration. The GCS-volume request to DevOps is withdrawn. DevOps instead needs the URI as a Cloud Run secret, plus network access from Cloud Run to the Mongo server.
+
+**Approved-by:** Umesh (chat 2026-10-29: "PATHLYNKS_MONGO_URI ye .env mai hai ek db bnaao autotester and isme collections bnaao and store all the KG and all ... sara data iss db mai store hoga in multiple collections"; "db tho ek hi rakho, ek new collection bnaa lo")
+
+**Links:** D-018, D-109, mongo-store
+
+**Changes-authorized:** The design read and the contract `qa/contracts/mongo-store.md`. Code changes follow in units cited against this entry. The write permission is limited to the `autotester` database. No enforcement path changes. ARCHITECTURE.md prose (storage and security model sections) may change under this entry once the contract has passed.
+
+## D-121 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Umesh's refinement of D-120, given on 2026-10-29. The name of the Mongo database is set in ONE committed config file in the repo. Its value is `autotester`. The name is not hardcoded and not kept in `.env`. Only the connection URI, `PATHLYNKS_MONGO_URI`, stays in `.env`.
+
+The backend reads the name once, validated by a Pydantic model with `extra="forbid"`. No API takes a database name per call. The name is refused at startup in three cases:
+- it is empty or not a plain identifier;
+- it is `admin`, `local` or `config`;
+- it is a database that the read-only product checks use.
+
+**Why:** A name in a committed file can be changed by a reviewed commit and a push, without DevOps. Changes to `.env` need the DevOps team. The startup refusal keeps the guard from D-120: the Mongo user can write elsewhere, so the code is the only fence.
+
+**Result:** This is folded into the mongo-store design read and its contract.
+
+**Approved-by:** Umesh (chat 2026-10-29: "db name config file mai daal .env mai nhi taaki tu khud update krr lee and push krr paaye. for the .env thing we need to have help of devops team")
+
+**Links:** D-120, mongo-store
+
+**Changes-authorized:** The config file named by the mongo-store contract, and the backend that reads it. No enforcement path.
+
+## D-122 | 2026-10-29 | type: decision | status: ACTIVE
+
+**Supersedes:** D-002 -- Only the storage clause is superseded: "no Mongo for AutoTester's own state". It is removed because Umesh chose MongoDB for that state (D-120, D-121). The file store is wiped on every Cloud Run deploy, which loses accounts and projects. The new storage model is better because it persists across deploys and keeps the repo light. Every other clause of D-002 stands.
+
+**What:** Umesh gave four answers on 2026-10-29 about the mongo-store design (`.work/mongo-store-design.md`).
+1. **New modules are approved** under the edit-in-place rule: `store/mongo_guard.py`, `store/mongo_backend.py`, `store/mongo_routes.py`, `store/blobs.py`, `auth/store.py`, `auth/store_sqlite.py`, `auth/store_mongo.py` and `cli_store.py`.
+2. **The database name is configured in `pyproject.toml`**, in the table `[tool.autotester.store]`, as `database = "autotester"`.
+3. **The write fence is an allowlist of one.** AutoTester writes only to the configured store database and never to any other database on the server. There is no `product_databases` list to maintain. Every other database counts as foreign. Startup refuses three cases:
+   - the configured name is `admin`, `local` or `config`;
+   - the configured name is the database in the URI path;
+   - an existing database holds collections but no AutoTester store identity marker.
+4. **Credentials and browser sessions also move into the tool**, so that every feature works on the deployed service. This covers the project and role login values entered through the UI, and the Chromium `storage_state` sessions. They are stored in the `autotester` database **encrypted at rest**, using authenticated encryption. The key never goes into the database, a log or a prompt. The key is derived (HKDF, purpose label `autotester-store-secrets-v1`) from the existing `AUTOTESTER_APPROVAL_KEY` environment value, so DevOps has nothing new to add. If that key is missing, the credential store fails closed.
+   - `{{SECRET:KEY}}` substitution at `page.fill()` time is unchanged.
+   - Scoping to `allowed_domains` is unchanged.
+   - `assert_no_raw_secrets` and screenshot masking are unchanged.
+   - Values are still never shown to the model.
+   - Only the at-rest location changes: an encrypted Mongo document, where it used to be a `.env` line or a `profiles/` directory.
+
+**Why:** Umesh wants the full functionality on the deployed tool, saying "local mai kyu rakhneegee tool mai chaiye naa saari functiality". The Cloud Run filesystem is wiped on every deploy. Encryption keeps a Mongo dump from exposing login values. Deriving the key from the existing secret avoids a DevOps change.
+
+**Result:** These answers are folded into the mongo-store contract. The credential-store and session-store units are CRITICAL and get a dual check. CLAUDE.md "Credentials (hard boundary)" and ARCHITECTURE.md security-model prose are updated in the docs unit after those units pass. The repo-root `.env` stays the local/dev source and the place the master key lives.
+
+**Approved-by:** Umesh (chat 2026-10-29: "Haan, dono approve"; "pyproject.toml"; "all except auttester baaki kisi mai nhi"; "nhi ye bhi deploye hona chaiyee naa like local mai kyu rakhneegee tool mai chaiye naa saari functiality")
+
+**Links:** D-002, D-018, D-120, D-121, mongo-store
+
+**Changes-authorized:** The new modules listed above. `pyproject.toml` `[tool.autotester.store]`. `core/paths.py` `code_root()`. The `browser/db.py` refusal of the store database. Later, under the docs unit, CLAUDE.md Credentials and ARCHITECTURE.md storage and security prose. No enforcement path.
+
+## D-123 | 2026-10-29 | type: decision | status: ACTIVE
+
+**Supersedes:** D-122 -- This replaces only item 4's at-rest encryption: the HKDF key derived from `AUTOTESTER_APPROVAL_KEY` and the authenticated encryption. That part is removed because Umesh declined it. The Mongo server is now IP-protected, and encryption would add a key-rotation failure mode, a new module and a new direct dependency for no protection he needs today. The new rule is better for him: there is no lost-login-on-key-change failure, and there are no new modules or dependencies. Items 1-3 of D-122 and the rest of item 4 stand.
+
+**What:** Credentials (project and role login values entered through the UI) and Chromium session state are stored in the `autotester` database **without application-level encryption**. Their protection is:
+- the server's IP allowlist;
+- the write fence (D-121, D-122 item 3);
+- `browser/db.py` refusing to read the store database;
+- and every rule that already applies to secret values:
+  - `{{SECRET:KEY}}` substitution only at `page.fill()`, scoped to `allowed_domains`;
+  - `assert_no_raw_secrets` before every model call;
+  - `Redactor.scrub` on logs;
+  - masked screenshots;
+  - values never shown to a model;
+  - values shown in the UI only to a credentials.view holder.
+
+No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
+
+**Why:** Umesh, 2026-10-29: the server is IP-protected, and "encypt krna hi kyu hai mat kro". The residual risk, recorded so it is never forgotten, is that anyone who can read the `autotester` database or its backups can read the login values in plain text. Umesh owns this call and may revisit it.
+
+**Result:** The mongo-store contract criteria for sealing and encryption (M31-M36 as written, M47) are amended by the checker to plain storage with the same access and redaction rules. U11 drops the crypto work.
+
+**Approved-by:** Umesh (chat 2026-10-29: "ignore it, it was a past thing., server is now ip protected"; "ignore it for now"; "encypt krna hi kyu hai mat kro")
+
+**Links:** D-122, D-120, mongo-store
+
+**Changes-authorized:** The `qa/contracts/mongo-store.md` credential criteria, by the checker. No enforcement path.

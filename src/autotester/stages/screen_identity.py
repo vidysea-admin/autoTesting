@@ -39,6 +39,39 @@ def _normalise_name(name: str) -> str:
     return text[:40]
 
 
+_LAYOUT_TOGGLE = re.compile(
+    r"^(?:collapse|expand|toggle|show|hide|minimi[sz]e|maximi[sz]e)\s+(?:the\s+|main\s+)?"
+    r"(?:side\s?bar|side\s?nav\w*|side\s?panel|navigation(?:\s+(?:menu|drawer|panel|bar))?"
+    r"|nav(?:\s+(?:menu|bar))?)$")
+
+
+def is_layout_toggle(el: ElementRef) -> bool:
+    """A control that only folds or unfolds page chrome ("Collapse sidebar", "Toggle navigation").
+
+    Pressing one never reaches a new screen: the URL stays and the sidebar's labels flip,
+    which moves the structural signature. `same_screen` reads this so such a press is
+    recorded as SAME_SCREEN instead of minting a duplicate screen per toggle state."""
+    return el.role in ("button", "switch") and bool(_LAYOUT_TOGGLE.match(_normalise_name(el.name)))
+
+
+def same_screen(node: ScreenNode, new: ScreenNode, pressed: ElementRef,
+                *, revealed: bool = False) -> bool:
+    """Whether landing on `new` after pressing `pressed` on `node` is still `node`.
+
+    Same signature, or the same URL where only page chrome moved: the pressed control is a layout
+    toggle, or a `revealed` control (one a toggle made visible) whose press shows nothing the node
+    does not already hold -- e.g. a sub-menu expander that leaves the nav open. A press that
+    shows a control the node never had (a dialog) is a new state and stays a new screen."""
+    if new.id == node.id:
+        return True
+    if new.url_template != node.url_template:
+        return False
+    if is_layout_toggle(pressed):
+        return True
+    known = {(e.role, e.selector) for e in node.elements}
+    return revealed and all((e.role, e.selector) in known for e in new.elements if e.visible)
+
+
 def structural_signature(elements: list[ElementRef]) -> str:
     """Content hash of the sorted, deduplicated `(role, normalised-name)` set
     of VISIBLE, non-row elements. Row/list-item elements are excluded so two

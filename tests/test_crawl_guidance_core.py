@@ -208,7 +208,7 @@ def test_a_crawl_that_fell_back_everywhere_is_labelled_rule_only(tmp_path: Path)
         g.order(rt, screen(f"node_{i}"), controls(3, prefix=f"S{i}"))
     fields = g.crawl_fields()
     assert fields["guidance"].mode == "rule-only (model unavailable)"
-    assert "provider" not in fields, "a crawl no model served stays 'mock'"
+    assert "provider" not in fields, "a crawl no model served stays None (X4)"
     assert fields["guidance"].fallbacks
 
 
