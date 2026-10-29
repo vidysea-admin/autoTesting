@@ -1,54 +1,59 @@
 # Verdict B (adversarial) - entry-browser-reuse
 
-Cycle checked: 1
-Head reviewed: ff3cb1f6
-Verdict: FAIL
+Cycle checked: 2
+Code head reviewed: 33ebc6b8 (HEAD ea99579f adds only `qa/contracts/ui-run.md` and `qa/verdicts/entry-browser-reuse.md`; `git diff 33ebc6b8 ea99579f --stat` shows no `src/` or `tests/` change)
+Verdict: PASS (3 warnings, none blocking)
 
-(The cycle 0 B verdict, PASS at ba66be50, is in git history; this file replaces it.)
+(The cycle 1 B verdict, FAIL at ff3cb1f6, is in git history; this file replaces it.)
 
-Judged against: `qa/manifests/entry-browser-reuse.md` (Fix cycle 1), D-115 item 1 (`docs/DECISIONS.md`, D-115), `qa/contracts/ui-run.md` RU5, `core-invariants.md` C12, `browser-and-secrets.md`.
+Judged against: `qa/manifests/entry-browser-reuse.md` (Fix cycle 2), D-115 item 1, D-116 (master `a6e03fa4`), `qa/contracts/ui-run.md` RU5, `core-invariants.md` C12.
 
-## Commands re-run by the checker (this worktree, one pytest at a time, `-o addopts=`)
-- Manifest list (12 files: test_entry_browser_reuse, _run, _serial, test_entry_reset_live, test_run_teardown_stall, _wiring, test_ui_runs_serial_entry_order, _resilience, _entry_screenshot_namespace, test_unauth_entry_case, test_ui_runs_serial_entry_mix_live, test_ui_runs_parallel_trace) -> `111 passed, 1 skipped`. The skip is `test_ui_runs_serial_entry_mix_live.py:64`, a RAM gate (2649 MB free < 3584 MB floor), so no repo test drives the real pool + real Chromium + run loop together; the probes below do.
-- `tests/test_entry_reset_live.py` alone: `1 passed` (it ran; it was not the skipped one).
-- `uv run ruff check src tests scripts` -> All checks passed. `uv run autotester doctor` -> `doctor: clean`.
+## Commands re-run by the checker (this worktree, `-o addopts=`, 2 files per pytest call, one at a time)
+| Files | Result |
+|---|---|
+| `test_entry_browser_reuse_lent.py`, `test_entry_reset_live.py` | 8 passed |
+| `test_entry_browser_reuse.py`, `test_entry_browser_reuse_run.py` | 30 passed |
+| `test_entry_browser_reuse_serial.py`, `test_run_teardown_stall.py` | 23 passed |
+| `test_run_teardown_stall_wiring.py`, `test_ui_runs_serial_entry_order.py` | 29 passed |
+| `test_ui_runs_serial_resilience.py`, `test_ui_runs_serial_entry_screenshot_namespace.py` | 9 passed |
+| `test_unauth_entry_case.py`, `test_ui_runs_serial_entry_mix_live.py` | 11 passed (the live mix test ran this time) |
+| `test_ui_runs_parallel_trace.py` | 8 passed |
+Total 118 passed, 0 failed, 0 skipped (matches the manifest's 118). `uv run ruff check src tests scripts` -> All checks passed. Full suite not run (low-memory host, instructed).
+`uv run autotester doctor` -> exit 1, see W2 (a dangling D-116 citation, not a code or design-rule finding). File sizes: run_execution.py 293, run_launcher.py 288, entry_browser.py 139, entry_reset.py 66.
 
-## Blocking finding
+## Cycle 1 findings re-verified on real headless Chromium (loopback server, real `EntryBrowserPool`, real `_run_entry_case` / `_run_normal_cases`, `run_case` real, grader stubbed; probes `.work/ebr_probe_c1_a.py`, `_b`, `_c`, re-run unchanged)
+- F1 CLOSED. Probe a, a lent session with `p1` ERRORED (`NavigationRefused`): `p2 completed`, `p3 completed` (was "session not started"). `note_shared` now only sets `_logged_in = False` (`ui/entry_browser.py:123-128`); the loop owns the session and `pool.close()` closes it once.
+- W1 CLOSED. Probe c, `login_case_id = c1` (account A), cases c1 (A), c2 (B), c3 (wrong password A): order `c3, c2, c1` (`order_entry_cases` `entry_browser.py:59-62`), live cookie after the entry leg `sessA`, `lend()` returns the session, the ordinary case ran as A.
+- W2 CLOSED. Probe b, an origin holding only IndexedDB and CacheStorage: IndexedDB record gone (`db-absent(created-empty)`), cache entry gone, base-origin cookies and storage gone (`_known_origins` uses `storage_state(indexed_db=True)`, `entry_reset.py:31`).
 
-**F1. One ERRORED logged-in case closes the lent browser while the loop keeps using it; every remaining case in the tier then ERRORs with "session not started".**
-- `ui/run_execution.py:196` calls `pool.note_shared(result)` after each ordinary case that ran in the lent session. `ui/entry_browser.py:116-119` `note_shared` calls `_drop()`, which calls `target.close()` (`:124-130`), for any `Outcome.ERRORED`. But `_run_normal_cases` (`run_execution.py:171-196`) keeps looping on the same `session` object (`:178`, `:189`), which `BrowserSession.close()` has just set to `_context = _page = None` (`browser/session.py:137-144`). The next case hits `session.page` and gets `RuntimeError("session not started")` (`browser/session.py:165-168`).
-- `ERRORED` is any exception in a step (`stages/execute.py:164-167`: a locator timeout, a refused navigation, a budget stop), the commonest non-pass outcome in a real run. Before this unit the shared-profile session was not closed by an ERRORED case; the tier carried on, and AT-888 `BrowserRecovery` handled a genuinely closed browser. The recover path is worse: `run_execution.py:186-188` relaunches the session (`recovery.recover()`), then `:196` `note_shared(result)` still sees the original ERRORED result and closes the freshly relaunched browser.
-- Reproduced on real headless Chromium with a loopback server, a real `EntryBrowserPool`, a real `_run_entry_case` (login case, PASS, session lent), then a real `_run_normal_cases` over three ordinary cases (probe `.work/ebr_probe_c1_a.py`, gitignored; `run_case` real, grader stubbed):
-  ```
-  login saved: [('c1', 'completed', '')]
-  ordinary: ('p1', 'errored', "NavigationRefused: host 'evil.invalid' is outside allowed domains ['127.0.0.1']")
-  ordinary: ('p2', 'errored', 'RuntimeError: session not started')
-  ordinary: ('p3', 'errored', 'RuntimeError: session not started')
-  ```
-  p2 and p3 are healthy cases (`/state`, `/app` on the allowed host); they never ran.
-- Why the unit's tests missed it: `tests/test_entry_browser_reuse.py:241-245` (`test_an_errored_shared_case_discards_the_lent_session`) asserts only the pool-level discard (`session.closed and pool.lend() is None`), never that the next ordinary case in the loop still runs; `tests/test_entry_browser_reuse_serial.py` runs only passing ordinary cases.
-- Smallest fix, edit in place: an ordinary case's ERRORED outcome must not close a session the tier loop is still using. Either drop the `note_shared` close (let `BrowserRecovery` and the end-of-run `pool.close()` do their jobs, as the shared-profile loop always did), or make `note_shared` only detach the pool's reference (`_session = None`, no `close()`) and have `_run_normal_cases` own closing a detached session. Add regression tests through `_run_normal_cases`: first lent case ERRORED, second and third must still run; and the `is_browser_closed` -> `recover()` path (the relaunched session must stay open). Use a fake session that raises on use after `close()`.
+## New adversarial probes (cycle 2), all real Chromium (probes `.work/ebr_probe_c2_a.py` .. `_e.py`, share `.work/ebr_probe_c2_base.py`)
+Held:
+1. Browser crash mid lent tier (`_a`: `p1` closes the context itself). `p1 errored (TargetClosedError)`, `recovery.recover()` relaunched in place, `p2 completed`, `p3 completed`; the pool still owns the same session object (`pool._session is sess` True); after `pool.close()` `_context` and `_playwright` are None. No second driver (AT-576).
+2. Browser crash mid entry case (`_e`: `c1` closes the context). `c1 errored`, `release` discarded it (`release` `entry_browser.py:107-114`), the next entry case got a fresh wiped browser (`cookies of live: []`), `c2 completed`.
+3. Multi-tier driver hygiene (`_c`, start/close events logged from `BrowserSession.start/close`): tier 1 login + ordinary case ran in the lent entry-test session (no relaunch, evidence at the run root `01-step01-navigate.png`); tier 2 wrong-password entry case reset in place, then its ordinary case closed the pool's browser BEFORE the shared-profile browser started (`close ebr-entry-test` precedes `start ebr`); tier 3 ordinary-only started and closed its own. Never two live drivers.
+4. `login_case_id` absent from the run (`_d`, `login_case_id = "not-here"`, passed happy login): nothing lent, `pool._session` None afterwards, the ordinary case ran in the shared-profile session.
+5. Browsers left open: after probes a-e, 0 processes whose command line carries the probe profile directories (`Get-CimInstance Win32_Process`, `ebrc1_`).
+6. Accounts and secrets: a credential set that is neither within nor around the live browser's drops it and launches a fresh wiped one (`_fits`, `entry_browser.py:84-88`; unit tests `test_a_different_identity_gets_its_own_browser` in the 30-pass file); only the named project login is lent (probe c, tests `test_another_accounts_passed_login_is_not_lent_when_the_project_names_its_login`, `test_a_run_without_the_project_login_case_lends_nothing`). `browser/session.py`, `browser/secrets.py` untouched by the unit; `_prime` (`entry_browser.py:65-70`) clears `secret_locators` and `hitl` per entry acquire.
 
-## Warnings (non-blocking, fold in with the fix)
+## Warnings (non-blocking)
 
-**W1. A lent session can belong to a different account than the project's login.** `lend()` (`entry_browser.py:112-114`) never consults `project.login_case_id`; `order_entry_cases` (`:55-57`) only sorts login cases last in their original order, so the LAST credentialed happy case wins. Reproduced (`.work/ebr_probe_c1_c.py`): project with `login_case_id = c1` (account A), cases c1 (A), c2 (B), c3 (wrong password for A). Run order c3, c1, c2; the live cookie after the entry leg is `sessB`; `lend()` returned the B session and the ordinary case ran as B. Pathlynks today has one credential pair (`PATHLYNKS_USER_EMAIL/PASSWORD`, `projects/pathlynks/project.json`), so it does not trigger there; a multi-role project (Group 11) would run its ordinary cases under whichever role logged in last, not the saved-login role they ran under before this unit. Cheap fix: lend only when the passed login case is `project.login_case_id` (or has the same `context_key`), else fall back to the shared-profile session; and order the `login_case_id` case last. Account separation itself held: a different credential set always dropped the live browser and launched a fresh one (`entry_browser.py:79-88`; in the probe the A session was closed before B opened).
+**W1. The HTTP cache survives the reset, so a logged-out entry case can be served an authenticated document.**
+Repro: `uv run python .work/ebr_probe_c2_b.py` (real Chromium). A page that returns `LOGGED-IN-ONLY` with `Cache-Control: private, max-age=600` when the cookie is present and `PLEASE-LOGIN` otherwise. After a passed login case the logged-in session fetches it; then `pool.acquire` of the next (wrong-password) entry case reuses the SAME browser and runs `reset_to_logged_out`. Output:
+```
+logged-in sees: LOGGED-IN-ONLY
+same browser: True
+after reset sees: LOGGED-IN-ONLY | cookies: []
+```
+Cookies are empty and the reset passed, yet the case navigates to a page and gets the authenticated body from cache without a request. The wiped-profile launch this unit replaces removed the cache with the directory (RU5/C12 start state); `_clear_devtools_storage` (`entry_reset.py:39-48`) uses `Storage.clearDataForOrigin` "all", which does not include the HTTP cache. Realistic only when an authenticated document is served with freshness headers (an `unauthenticated access to a protected route` case would then see content it should not); Pathlynks responses were not measured. Cheap fix in place: in the same CDP session send `Network.clearBrowserCache` (and `Network.clearBrowserCookies` as belt and braces) in `_clear_devtools_storage`, with a live test beside `test_entry_reset_live.py`; or at minimum add "HTTP cache is not cleared" to the manifest Known limits. Recommend doing it before the first headed Pathlynks run.
 
-**W2. Reset leaves IndexedDB and CacheStorage of an origin that holds no localStorage.** `entry_reset.py:26-34` finds extra origins from `context.storage_state()["origins"]`, which lists only origins with localStorage. Reproduced on the real pooled `BrowserSession` (`.work/ebr_probe_c1_b.py`): a second origin (other port, allowed host) holding only an IndexedDB record and a CacheStorage entry kept both after the reset (`origin3 idb: IDBTOKEN`, `origin3 cache: c`), while cookies, base-origin localStorage and sessionStorage, and the second origin's localStorage were gone. Exploitable only for a login that lives solely in IndexedDB on a non-base origin; Pathlynks is single-origin. A fix may use `storage_state(indexed_db=True)` where available, or the residual goes into the manifest Known limits.
+**W2. `autotester doctor` is not clean on this branch: dangling D-116 citations.**
+`git show 33ebc6b8:docs/DECISIONS.md | grep -c "^## D-116"` -> 0 (D-116 is on master `a6e03fa4`, committed after this branch point `63445fbe`). At 33ebc6b8 the manifest cites D-116 at `qa/manifests/entry-browser-reuse.md:10` and `:65` -> 2 `decision-citation-dangling` violations (the first doctor run of this check: `2 violation(s)`); at HEAD ea99579f `qa/contracts/ui-run.md:35,118,120,125,126` and the verdict files add 10 more -> `12 violation(s)`, exit 1. The manifest line 71 claim "`autotester doctor`: clean" and criterion 10 are therefore not true on the branch as it stands. This is a branch-ordering defect, not a code defect: a merge with master carries D-116 and removes all of them. Condition for merge: merge master into the branch (or merge into master) and re-run `uv run autotester doctor` -> must print `doctor: clean`.
 
-**W3. Decision and contract text lag the direction change.** D-115 item 1 (`docs/DECISIONS.md`) still says a different role account, a logged-out case and an adversarial probe "still get their own context". Cycle 1 shares one browser with logged-out and adversarial-tier entry cases after a reset, on Umesh's chat line of 2026-10-29 about reusing the login, which does not speak to adversarial cases. The security argument holds (every such case starts after a reset, verified below), but it should be one `append_decision.ps1` entry (Approver Umesh) amending D-115 item 1, and RU5's "wiped before its run" for reused browsers; the checker will fold the RU5 amendment on PASS. Not a code finding.
+**W3. After a relaunch of the lent session the remaining ordinary cases run logged out, silently.**
+Repro: `uv run python .work/ebr_probe_c2_a.py` -> `cookies after relaunch: []` (the probe's login cookie is a session cookie; the persistent profile does not restore it) and `lend: False`; `p2`, `p3` ran in the relaunched browser with no login and are judged as ordinary cases. `BrowserRecovery` has always had this property for session-cookie logins on the shared profile ("login continues from saved cookies", `stages/browser_recovery.py` docstring), so this is not a regression, but the lent session now has no saved-profile login to fall back on (known limit, manifest), so it applies to every relaunch in a lent tier. Suggested follow-up (not for this unit): after `recovery.recover()` on a lent session, stop the tier with the named reason or re-run the login, rather than grade logged-out cases as logged-in ones.
 
-**W4. Known limit confirmed, not new:** the lent session keeps the `{slug}-entry-test` profile, not the shared project profile (manifest Known limits). Accepted as documented.
+## Accepted, documented (manifest Known limits), unchanged from cycle 1
+Only the real-Chromium reset is proven live; the lent session keeps the `{slug}-entry-test` profile (tier 2 and later ordinary cases after a wrong-password reset use the shared-profile session, probe `_c`); CacheStorage on an origin with no localStorage or IndexedDB cannot be listed.
 
-## Adversarial checks that held (real headless Chromium, loopback, persistent context via `BrowserSession.start()`)
-- Closure of checker A cycle-0 F1 (sessionStorage survives reset): `tests/test_entry_reset_live.py` passes on real Chromium (`entry_reset.py:63` page-level `localStorage.clear(); sessionStorage.clear()`). In the real pooled flow, a login case left an HttpOnly cookie, sessionStorage `tok` and localStorage `ls` on `/app`, plus a second origin's localStorage; the next `pool.acquire` of a logged-out case reused the same browser and read `app state [ss,ls,cookie]: [null,null,""]`, cookies `[]`, second-origin localStorage `None`, and the stray tabs were closed.
-- Different accounts never share a live browser unless one credential set contains the other (`_fits`, `entry_browser.py:79-83`); one live driver at a time (AT-576) held.
-- Browser left open: after `pool.close()` the session's `_context is None` in every probe; `stages/run_launcher.py:210-226` closes the run's pool in `finally`; the parallel path keeps a per-tier pool closed before fan-out (`run_execution.py:226-244`).
-- allowed_domains: reset and every case navigation go through `session.goto` -> `check_destination` (`browser/session.py:178-183`); an off-domain target was refused (`NavigationRefused`) in the probe; `browser/session.py` and `browser/secrets.py` are untouched by the unit (`git diff master --stat`).
-- Secrets: no change to `SecretStore.resolve` or masking; `_prime` (`entry_browser.py:60-66`) clears `secret_locators`, `hitl` and the screenshot counter on each entry acquire. The lent session keeps the login case's `secret_locators`, which only over-masks.
-- Save before close: `_save_case` (`run_execution.py:148`) precedes `pool.release` (`:150-152`); the single bounded close is `BrowserSession.close` -> `browser/teardown.py::close_session`.
-- Order: logged-out cases first, login last (`order_entry_cases`). On the real Pathlynks case file, 7 cases are entry cases and `logs_in` is true only for the 3 happy credentialed ones (one is retired); `auth_wrong_creds` and `input_empty` are false.
-
-## What the maker must do for cycle 2
-1. Fix F1 in place (`ui/entry_browser.py::note_shared` and/or `ui/run_execution.py::_run_normal_cases`), tests first, with the loop-level regression tests named above.
-2. Fold W1 (lend only to the project's login account) or state in the manifest why not; fix W2 or add it to Known limits; request the D-115 amendment (W3).
-3. Re-submit at Fix cycle 2. Probes are re-runnable from the worktree root: `uv run python .work/ebr_probe_c1_a.py` (also `_b`, `_c`; they share `.work/ebr_probe_c1.py`).
+## Close-out
+PASS for the code at 33ebc6b8. The merge condition is W2 (doctor clean after master is merged). W1 should be fixed or added to Known limits before a real Pathlynks run; W3 is a follow-up note. No finding blocks.
