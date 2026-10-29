@@ -36,9 +36,15 @@ class _Ctx:
     def clear_cookies(self) -> None:
         self.log.append("clear_cookies")
 
+    def storage_state(self) -> dict:
+        return {"cookies": [], "origins": [{"origin": SSO, "localStorage": []}]}
+
     def new_cdp_session(self, _page):
         return SimpleNamespace(send=lambda m, a: self.log.append(f"cdp {m} {a['origin']}"),
                                detach=lambda: None)
+
+
+SSO = "https://sso.demo.test"  # a second origin the previous case held web storage for
 
 
 class _Page:
@@ -65,14 +71,30 @@ def _reset_session(log: list[str], *, cdp_ok: bool = True):
 def test_reset_closes_stray_pages_clears_cookies_and_storage_then_lands_on_the_start_url() -> None:
     log: list[str] = []
     reset_to_logged_out(_reset_session(log))
-    assert log == ["close popup", "clear_cookies", f"goto {BASE}",
-                   f"cdp Storage.clearDataForOrigin {BASE}"]
+    assert log == [
+        "close popup", "clear_cookies", f"goto {BASE}",
+        f"cdp Storage.clearDataForOrigin {BASE}",
+        f"cdp Storage.clearDataForOrigin {SSO}",  # W1: every origin the context holds storage for
+        "evaluate storage",  # F1: CDP has no sessionStorage type; the page clear always runs
+        f"goto {BASE}",  # and the app then starts from the cleared state
+    ]
 
 
-def test_reset_falls_back_to_page_storage_when_the_devtools_clear_is_unavailable() -> None:
+def test_reset_still_clears_page_storage_when_the_devtools_clear_is_unavailable() -> None:
     log: list[str] = []
     reset_to_logged_out(_reset_session(log, cdp_ok=False))
-    assert log[-1] == "evaluate storage" and "clear_cookies" in log
+    assert log[-2:] == ["evaluate storage", f"goto {BASE}"] and "clear_cookies" in log
+
+
+def test_reset_fails_closed_when_the_page_storage_clear_fails() -> None:
+    log: list[str] = []
+    session = _reset_session(log)
+
+    def broken(js: str) -> None:
+        raise RuntimeError("page crashed")
+    session.page.evaluate = broken
+    with pytest.raises(RuntimeError, match="page crashed"):
+        reset_to_logged_out(session)  # the pool then discards the browser (fail closed)
 
 
 def test_reset_goes_through_the_session_so_allowed_domains_scoping_applies() -> None:
@@ -91,7 +113,10 @@ def test_reset_goes_through_the_session_so_allowed_domains_scoping_applies() -> 
 # --- run_execution wiring -------------------------------------------------------------------
 
 def _wire(monkeypatch: pytest.MonkeyPatch, events: list[str],
-          outcomes: dict[str, RawResult] | None = None) -> None:
+          outcomes: dict[str, RawResult] | None = None,
+          verdicts: dict[str, Result] | None = None) -> dict[str, object]:
+    """Fake the browser and the grader; returns {case id: the session it ran in}."""
+    ran_in: dict[str, object] = {}
     class Session(FakeSession):
         def __init__(self, *a, **k) -> None:
             super().__init__(*a, **k)
@@ -103,16 +128,18 @@ def _wire(monkeypatch: pytest.MonkeyPatch, events: list[str],
 
     def graded(case, session, judge, run_id, store):
         events.append(f"run {case.id}")
+        ran_in[case.id] = session
         result = (outcomes or {}).get(case.id) or RawResult(case_id=case.id,
                                                             outcome=Outcome.COMPLETED)
-        return result, Verdict(run_id=run_id, case_id=case.id, result=Result.PASS,
-                               grader_provider="mock")
+        return result, Verdict(run_id=run_id, case_id=case.id, grader_provider="mock",
+                               result=(verdicts or {}).get(case.id, Result.PASS))
 
     monkeypatch.setattr(run_execution, "BrowserSession", Session)
     monkeypatch.setattr(run_execution, "_wipe_entry_profile", lambda _p: events.append("wipe"))
     monkeypatch.setattr(run_execution, "_run_and_grade_resilient", graded)
     monkeypatch.setattr(run_execution, "reset_to_logged_out",
                         lambda session: events.append("reset"))
+    return ran_in
 
 
 class _Store:
@@ -129,9 +156,13 @@ class _Store:
 def _run_entry(cases: list[Case], events: list[str], tmp_path: Path) -> None:
     secrets = SimpleNamespace(redactor=lambda: Redactor({}))
     budget = SimpleNamespace(check_start=lambda: None, check=lambda: None)
-    run_execution._run_entry_cases(cases, PROJECT, secrets, tmp_path, "demo",
-                                   SimpleNamespace(trace=None), "r1", _Store(events),
-                                   budget=budget)
+    judge = SimpleNamespace(trace=None)
+    pool = run_execution._entry_pool(PROJECT, secrets, tmp_path, "demo", judge, budget)
+    try:
+        run_execution._run_entry_cases(cases, PROJECT, secrets, tmp_path, "demo", judge, "r1",
+                                       _Store(events), budget=budget, pool=pool)
+    finally:
+        pool.close()
 
 
 def test_six_entry_cases_of_one_identity_cost_one_launch_one_wipe_one_close(
@@ -147,17 +178,18 @@ def test_six_entry_cases_of_one_identity_cost_one_launch_one_wipe_one_close(
     assert len(saves) == 6 and max(saves) < events.index("close")  # every case saved before it
 
 
-def test_the_launch_count_of_a_mixed_run_pays_only_for_isolation(
+def test_wrong_credentials_and_empty_submit_share_the_browser_and_login_runs_last(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 ) -> None:
     events: list[str] = []
     _wire(monkeypatch, events)
-    cases = [_case(0), _case(1), _case(2, klass=CaseClass.AUTH_WRONG_CREDS), _case(3),
-             _case(4, klass=CaseClass.AUTH_WRONG_CREDS), _case(5)]
-    _run_entry(cases, events, tmp_path)
-    # shared, shared | wrong-creds | shared | wrong-creds | shared  =  5 browsers (was 6)
-    assert len(FakeSession.launched) == 5
-    assert events.count("wipe") == 5 and events.count("close") == 5
+    login, wrong = _case(0), _case(1, klass=CaseClass.AUTH_WRONG_CREDS)
+    empty = _case(2, klass=CaseClass.INPUT_EMPTY, keys=())
+    _run_entry([login, wrong, empty], events, tmp_path)
+    assert [e for e in events if e.startswith("run ")] == [
+        f"run {wrong.id}", f"run {empty.id}", f"run {login.id}"]
+    assert len(FakeSession.launched) == 1 and events.count("wipe") == 1
+    assert events.count("reset") == 2  # logged out before the 2nd and 3rd; none before the 1st
 
 
 def test_a_case_that_crashes_before_a_result_is_errored_and_the_next_case_still_runs(

@@ -1,11 +1,11 @@
-"""D-115 (1): the entry browser pool (entry-browser-reuse): reuse, isolation, crash recovery.
+"""D-115 (1): the entry browser pool (entry-browser-reuse): reuse, order, hand-off, crash recovery.
 The reset and the run wiring are in `test_entry_browser_reuse_run.py`.
 
 Fakes only -- no browser, no network. A fake session counts launches, resets and closes, so the
-tests pin: how many Chromium launches a run costs, that every reused case starts logged out
-(a login case after a logged-in case still proves login), that a different identity, a
-logged-out or an adversarial case gets its own browser, that a crashed case never poisons the
-next, and that a graded case is saved before any teardown.
+tests pin: how many Chromium launches a run costs; that a case needing a logged-out page is reset
+first; that login cases run last and their logged-in session is lent to the logged-in cases that
+follow (Umesh 2026-10-29: "login huaa use kro, baar baar logout kyu hi krna"); that a different
+identity gets its own browser; and that a crashed case never poisons the next.
 """
 
 from __future__ import annotations
@@ -20,7 +20,12 @@ from autotester.schema.enums import Action, CaseClass, CaseKind, Outcome
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
 from autotester.schema.run import RawResult
-from autotester.ui.entry_browser import EntryBrowserPool, context_key
+from autotester.ui.entry_browser import (
+    EntryBrowserPool,
+    context_key,
+    logs_in,
+    order_entry_cases,
+)
 
 BASE = "https://demo.test"
 PROJECT = Project(slug="demo", name="Demo", base_url=BASE, allowed_domains=["demo.test"])
@@ -127,7 +132,7 @@ def test_credential_free_cases_join_whatever_identity_the_browser_serves() -> No
     assert len(FakeSession.launched) == 1
 
 
-# --- the pool: isolation --------------------------------------------------------------------
+# --- the pool: identity, and no isolation for logged-out / adversarial cases ------------------
 
 def test_a_different_identity_gets_its_own_browser() -> None:
     pool = _pool()
@@ -139,32 +144,112 @@ def test_a_different_identity_gets_its_own_browser() -> None:
     assert "reset" not in second.log  # a fresh launch, not a reset
 
 
+def test_a_case_using_some_of_the_same_credentials_is_the_same_identity() -> None:
+    """Wrong password fills the email secret but a literal password: still the same account."""
+    pool = _pool()
+    login, wrong = _case(1, keys=("EMAIL", "PASSWORD")), _case(2, keys=("EMAIL",))
+    s1 = pool.acquire(wrong)
+    pool.release(wrong, s1, _done(wrong))
+    assert pool.acquire(login) is s1  # {EMAIL} then {EMAIL, PASSWORD}
+    pool.release(login, s1, _done(login))
+    assert pool.acquire(wrong) is s1 and len(FakeSession.launched) == 1
+
+
 @pytest.mark.parametrize("make", [
     lambda n: _case(n, klass=CaseClass.AUTH_WRONG_CREDS),
-    lambda n: _case(n, klass=CaseClass.SERVER_ERROR),
     lambda n: _case(n, klass=CaseClass.DEEPLINK_UNAUTH),
-    lambda n: _case(n, preconditions=["user is logged out"]),
+    lambda n: _case(n, keys=(), preconditions=["user is logged out"]),
 ])
-def test_adversarial_and_logged_out_cases_get_their_own_browser_closed_straight_after(
-    make,
-) -> None:
+def test_a_case_needing_a_logged_out_page_reuses_the_browser_after_a_reset(make) -> None:
     pool = _pool()
-    plain, special, after = _case(1), make(2), _case(3)
-    s1 = pool.acquire(plain)
-    pool.release(plain, s1, _done(plain))
+    first, special = _case(1), make(2)
+    s1 = pool.acquire(first)
+    pool.release(first, s1, _done(first))
     s2 = pool.acquire(special)
-    assert s2 is not s1 and s1.closed  # not reused, and the shared one made way for it
-    pool.release(special, s2, _done(special))
-    assert s2.closed  # its own browser dies with it, never carried to a neighbour
-    s3 = pool.acquire(after)
-    assert s3 is not s2 and len(FakeSession.launched) == 3
+    assert s2 is s1 and not s1.closed and s1.log.count("reset") == 1
+    assert len(FakeSession.launched) == 1
 
 
-def test_context_key_is_none_for_isolated_cases_and_the_sorted_secret_keys_otherwise() -> None:
+def test_context_key_is_the_sorted_secret_keys() -> None:
     assert context_key(_case(1, keys=("B", "A"))) == "A,B"
     assert context_key(_case(1, keys=())) == ""
-    assert context_key(_case(1, klass=CaseClass.AUTH_EXPIRED_SESSION)) is None
-    assert context_key(_case(1, klass=CaseClass.DEEPLINK_UNAUTH)) is None
+    assert context_key(_case(1, klass=CaseClass.AUTH_WRONG_CREDS)) == "USER"
+
+
+# --- order: logged-out cases first, the login case last ----------------------------------------
+
+def test_logs_in_is_the_happy_path_credentialed_case() -> None:
+    assert logs_in(_case(1), PROJECT)
+    assert not logs_in(_case(2, klass=CaseClass.AUTH_WRONG_CREDS), PROJECT)
+    assert not logs_in(_case(3, klass=CaseClass.INPUT_EMPTY, keys=()), PROJECT)
+    assert not logs_in(_case(4, preconditions=["visitor is logged out"]), PROJECT)
+    assert not logs_in(_case(5, keys=()), PROJECT)
+
+
+def test_the_project_login_case_counts_as_the_login_even_when_not_happy() -> None:
+    odd = _case(6, klass=CaseClass.INPUT_BOUNDARY)
+    assert logs_in(odd, PROJECT.model_copy(update={"login_case_id": odd.id}))
+
+
+def test_order_entry_cases_puts_login_last_and_keeps_every_other_order() -> None:
+    wrong = _case(1, klass=CaseClass.AUTH_WRONG_CREDS)
+    login_a = _case(2)
+    empty = _case(3, klass=CaseClass.INPUT_EMPTY, keys=())
+    login_b = _case(4, keys=("USER", "PASS"))
+    ordered = order_entry_cases([login_a, wrong, empty, login_b], PROJECT)
+    assert [c.id for c in ordered] == [wrong.id, empty.id, login_a.id, login_b.id]
+
+
+# --- hand-off: the logged-in session is lent, not logged out ----------------------------------
+
+def _logged_in_pool():
+    pool, login = _pool(), _case(1)
+    session = pool.acquire(login)
+    pool.release(login, session, _done(login), passed=True)
+    return pool, session
+
+
+def test_a_passed_login_case_leaves_its_session_to_lend_without_a_reset() -> None:
+    pool, session = _logged_in_pool()
+    assert pool.lend() is session
+    assert session.log == ["start"] and not session.closed  # no reset, no close, no re-login
+
+
+def test_lend_is_none_unless_the_last_case_was_a_passed_login_on_a_healthy_browser() -> None:
+    pool, login = _pool(), _case(1)
+    s = pool.acquire(login)
+    pool.release(login, s, _done(login))  # not passed
+    assert pool.lend() is None
+    other = _case(2, klass=CaseClass.INPUT_EMPTY, keys=())
+    s = pool.acquire(other)
+    pool.release(other, s, _done(other), passed=True)  # passed, but it never logged in
+    assert pool.lend() is None
+    bad = _case(3)
+    s = pool.acquire(bad)
+    pool.release(bad, s, _done(bad, Outcome.ERRORED, "boom"), passed=True)
+    assert pool.lend() is None
+
+
+def test_the_next_entry_case_resets_a_lent_session_back_to_logged_out() -> None:
+    pool, session = _logged_in_pool()
+    pool.lend()
+    wrong = _case(2, klass=CaseClass.AUTH_WRONG_CREDS)
+    assert pool.acquire(wrong) is session
+    assert session.log[-1] == "reset" and pool.lend() is None
+
+
+def test_an_errored_shared_case_discards_the_lent_session() -> None:
+    pool, session = _logged_in_pool()
+    pool.lend()
+    pool.note_shared(_done(_case(9), Outcome.ERRORED, "TargetClosedError"))
+    assert session.closed and pool.lend() is None
+
+
+def test_a_passing_shared_case_keeps_the_lent_session_logged_in() -> None:
+    pool, session = _logged_in_pool()
+    pool.lend()
+    pool.note_shared(_done(_case(9)))
+    assert pool.lend() is session and not session.closed
 
 
 # --- the pool: a crash never poisons the next case ------------------------------------------

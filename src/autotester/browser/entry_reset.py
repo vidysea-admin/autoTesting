@@ -23,19 +23,27 @@ def _origin(url: str) -> str | None:
     return f"{parts.scheme}://{parts.netloc}" if parts.scheme in ("http", "https") else None
 
 
-def _clear_origin_storage(session: Any, origins: list[str]) -> None:
-    """Storage of the page's origins: DevTools `clearDataForOrigin` (all types, service workers
-    and IndexedDB included), else the page's own localStorage and sessionStorage."""
+def _known_origins(session: Any, base: str) -> list[str]:
+    """Every origin whose state could hold a login: the start URL's, the page's now, and each one
+    the context holds web storage for (an SSO host the previous case signed in on)."""
     try:
-        cdp = session._context.new_cdp_session(session._page)
-        try:
-            for origin in origins:
-                cdp.send("Storage.clearDataForOrigin", {"origin": origin, "storageTypes": "all"})
-        finally:
-            with contextlib.suppress(Exception):
-                cdp.detach()
-    except Exception:  # no DevTools session: the page's own storage still goes
-        session.page.evaluate(_CLEAR_STORAGE_JS)
+        stored = [o.get("origin") for o in session._context.storage_state().get("origins", [])]
+    except Exception:  # unreadable state: the two known origins still clear
+        stored = []
+    found = (_origin(base), _origin(session.page.url), *(_origin(o or "") for o in stored))
+    return [o for o in dict.fromkeys(found) if o]
+
+
+def _clear_devtools_storage(session: Any, origins: list[str]) -> None:
+    """DevTools `clearDataForOrigin` (local storage, IndexedDB, caches, service workers). It has no
+    session-storage type, so `reset_to_logged_out` always follows it with the page's own clear."""
+    cdp = session._context.new_cdp_session(session._page)
+    try:
+        for origin in origins:
+            cdp.send("Storage.clearDataForOrigin", {"origin": origin, "storageTypes": "all"})
+    finally:
+        with contextlib.suppress(Exception):
+            cdp.detach()
 
 
 def reset_to_logged_out(session: Any) -> None:
@@ -45,8 +53,12 @@ def reset_to_logged_out(session: Any) -> None:
         if page is not keep:
             with contextlib.suppress(Exception):
                 page.close()
-    context.clear_cookies()
     base = session.project.base_url
+    origins = _known_origins(session, base)  # read before the clear empties the list
+    context.clear_cookies()
     session.goto(base)
-    origins = [o for o in dict.fromkeys((_origin(base), _origin(session.page.url))) if o]
-    _clear_origin_storage(session, origins)
+    origins = list(dict.fromkeys([*origins, *_known_origins(session, base)]))
+    with contextlib.suppress(Exception):  # no DevTools session: the page's own clear still runs
+        _clear_devtools_storage(session, origins)
+    session.page.evaluate(_CLEAR_STORAGE_JS)  # sessionStorage lives only here; a failure raises
+    session.goto(base)  # the app starts from the cleared state, not from what it held in memory

@@ -430,7 +430,7 @@
 | `ui/case_form.py` | Rendering the add-a-case form. Contract: qa/contracts/ui.md. |
 | `ui/crawl_view.py` | HTML fragments for the crawl pages — split from `routes_crawls.py` to keep |
 | `ui/credential_guard.py` | Credential-guard helpers: refuse a real secret typed into any UI text field. |
-| `ui/entry_browser.py` | One browser per run for the entry (login-type) cases, with isolation where identity differs. |
+| `ui/entry_browser.py` | One browser per run for the entry (login-type) cases, and the login it leaves behind. |
 | `ui/env_editor.py` | The one legitimate WRITE path to the repo-root `.env` (every other module |
 | `ui/error_pages.py` | App-wide `HTTPException` -> HTML page, split out of `ui/app.py` to keep that |
 | `ui/helpers.py` | Shared request-validation and lookup helpers used by every UI route module. |

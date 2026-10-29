@@ -17,6 +17,7 @@ from autotester.browser import teardown
 from autotester.core.redact import Redactor
 from autotester.core.trace import TraceWriter, phase_summary, read_spans, traced_phase
 from autotester.schema.enums import Outcome, Result
+from autotester.schema.project import Project
 from autotester.schema.run import RawResult
 from autotester.schema.trace import PhaseSpan
 from autotester.schema.verdict import Verdict
@@ -268,8 +269,9 @@ def test_an_entry_case_is_saved_before_a_slow_close_and_the_close_costs_no_budge
     budget = RunBudget(_approval(max_actions=100, wall_clock_s=0.25),
                        housekeeping_allowance_s=60.0)
     secrets = SimpleNamespace(redactor=lambda: Redactor({}))
+    project = Project(slug="p", name="P", base_url="https://p.test", allowed_domains=["p.test"])
 
-    got = run_execution._run_entry_case(case, SimpleNamespace(slug="p"), secrets, tmp_path, "p",
+    got = run_execution._run_entry_case(case, project, secrets, tmp_path, "p",
                                         SimpleNamespace(trace=trace), "r1", Store(),
                                         budget=budget)
 

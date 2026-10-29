@@ -63,7 +63,7 @@ from autotester.stages.run_gates import (
 from autotester.stages.ux_wiring import advise_after_run
 from autotester.stages.video_retention import prune_old_videos_safely
 from autotester.store.project_store import ProjectStore
-from autotester.ui.run_execution import _run_cases_in_parallel, _run_cases_serially
+from autotester.ui.run_execution import _entry_pool, _run_cases_in_parallel, _run_cases_serially
 
 __all__ = ["DEFAULT_SEAMS", "LaunchRefused", "Prepared", "RunSeams", "is_entry_case",
            "launch_run", "prepare_run", "require_declared_values", "require_live_case_approval"]
@@ -207,19 +207,23 @@ def run_cases_traced(
         project, store.load_flowspec(), store)
     started = ctx.clock()
     snapshot = list(zip(cases, entry_flags, strict=True))
-    for tier in tiers_to_run(cat):
-        tier_cases = [case for case, _ in snapshot if TIER_BY_CLASS[case.case_class] == tier]
-        tier_flags = [flag for case, flag in snapshot if TIER_BY_CLASS[case.case_class] == tier]
-        if plan.n > 1:
-            _run_cases_in_parallel(
-                tier_cases, tier_flags, plan, project, secrets, run_dir, slug, judge, run_id,
-                store, approval, budget=budget,
-            )
-        else:
-            _run_cases_serially(
-                tier_cases, tier_flags, project, secrets, run_dir, paths, slug, judge, run_id,
-                store, budget=budget,
-            )
+    pool = _entry_pool(project, secrets, run_dir, slug, judge, budget)  # D-115: one per run
+    try:
+        for tier in tiers_to_run(cat):
+            tier_cases = [case for case, _ in snapshot if TIER_BY_CLASS[case.case_class] == tier]
+            tier_flags = [flag for case, flag in snapshot if TIER_BY_CLASS[case.case_class] == tier]
+            if plan.n > 1:
+                _run_cases_in_parallel(
+                    tier_cases, tier_flags, plan, project, secrets, run_dir, slug, judge, run_id,
+                    store, approval, budget=budget,
+                )
+            else:
+                _run_cases_serially(
+                    tier_cases, tier_flags, project, secrets, run_dir, paths, slug, judge, run_id,
+                    store, budget=budget, pool=pool,
+                )
+    finally:
+        pool.close()
     assert ctx.trace is not None
     ctx.trace.record_stage(StageCheckpoint(
         stage=StageName.EXECUTE, status="failed" if budget.stop_reason else "done",
