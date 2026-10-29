@@ -9,10 +9,12 @@ from __future__ import annotations
 import inspect
 import logging
 import traceback
+from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import pytest
-from fake_mongo import FakeBucket, FakeMongoClient, FakeMongoServer
+from fake_mongo import FakeBucket, FakeMongoClient, FakeMongoServer, open_store, seams
 
 import autotester.store.mongo_guard as guard_module
 from autotester.store.mongo_guard import (
@@ -31,7 +33,7 @@ GOOD_URIS = ["mongodb://h/", "mongodb://h/scratch", "mongodb://h/?authSource=adm
 def make(server: FakeMongoServer,
          uri: str = "mongodb://h/") -> tuple[GuardedStore, FakeMongoClient]:
     client = server.client()
-    return GuardedStore(uri, client_factory=lambda _uri: client, bucket_factory=FakeBucket), client
+    return open_store(uri, client), client
 
 
 def workload(store: GuardedStore) -> None:
@@ -77,14 +79,34 @@ def test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload(
     "mongodb://h/autotester", "mongodb://h/Autotester", "mongodb://h/AUTOTESTER?x=1",
     f"mongodb://u:{CANARY}@h1,h2/autotester?replicaSet=r",
     f"mongodb+srv://u:{CANARY}@cluster0.example.net/autotester",
+    "mongodb://h/%61utotester", "mongodb://h/%41utotester?x=1",
+    "mongodb://h/%61%75%74%6f%74%65%73%74%65%72", "mongodb://h/%41UTOTESTER?x=1",
+    f"mongodb://u:{CANARY}@h1,h2/%61utotester?replicaSet=r",
 ])
 def test_a_uri_path_naming_the_store_database_is_refused_before_any_client(uri: str) -> None:
     def never(_uri: str) -> Any:
         raise AssertionError("client created")
 
     with pytest.raises(StoreConfigError) as caught:
-        GuardedStore(uri, client_factory=never)
+        open_store(uri, client_factory=never)
     assert CANARY not in str(caught.value)
+
+
+@pytest.mark.parametrize("uri", [
+    "mongodb://h/", "mongodb://h/scratch", "mongodb://h/%61utotester", "mongodb://h/%41utotester?x=1",
+    "mongodb://h/%2Bx", "mongodb://h/a%2Db", "mongodb://u:p%40ss@h1,h2/db_1?replicaSet=r",
+])
+def test_the_path_is_decoded_exactly_as_the_driver_decodes_it(uri: str) -> None:
+    from pymongo.uri_parser import parse_uri
+
+    driver = parse_uri(uri, validate=False)["database"]
+    assert (guard_module._uri_path_database(uri) or None) == driver
+
+
+def test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash() -> None:
+    assert guard_module._uri_path_database("mongodb://h/auto+tester") == "auto tester"
+    assert guard_module._uri_path_database("mongodb://h/auto%2Btester") == "auto+tester"
+    open_store("mongodb://h/auto+tester", FakeMongoServer().client())
 
 
 @pytest.mark.parametrize("uri", ["http://h/x", "h/x", "", "ftp://u:" + CANARY + "@h/x"])
@@ -93,7 +115,7 @@ def test_a_non_mongodb_uri_is_refused_without_echoing_it(uri: str) -> None:
         raise AssertionError("client created")
 
     with pytest.raises(StoreConfigError) as caught:
-        GuardedStore(uri, client_factory=never)
+        open_store(uri, client_factory=never)
     assert CANARY not in str(caught.value)
 
 
@@ -120,12 +142,53 @@ def test_signatures_take_no_database_parameter() -> None:
     assert seen > 20
 
 
+def test_the_constructor_takes_a_uri_and_nothing_else() -> None:
+    params = inspect.signature(GuardedStore.__init__).parameters
+    assert list(params) == ["self", "uri"]
+
+
+def test_no_public_path_builds_a_store_on_another_database(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    other = tmp_path / "pyproject.toml"
+    other.write_text('[tool.autotester.store]' + chr(10) + 'database = "pathlynks_prod"' + chr(10),
+                     encoding="utf-8")
+    server = FakeMongoServer()
+    client = server.client()
+    attempts: list[Callable[[], object]] = [
+        lambda: GuardedStore("mongodb://h/", config_path=other),
+        lambda: GuardedStore("mongodb://h/", other),
+        lambda: GuardedStore("mongodb://h/", client_factory=lambda _u: client),
+        lambda: GuardedStore("mongodb://h/", bucket_factory=FakeBucket),
+        lambda: GuardedStore("mongodb://h/", config=other),
+        lambda: GuardedStore("mongodb://h/", database="pathlynks_prod"),
+        lambda: GuardedStore("mongodb://h/pathlynks_prod", client_factory=lambda _u: client),
+    ]
+    for attempt in attempts:
+        with pytest.raises(TypeError):
+            attempt()
+    for key in ("AUTOTESTER_STORE_CONFIG", "AUTOTESTER_STORE_DATABASE", "AUTOTESTER_DB",
+                "MONGODB_DB", "AUTOTESTER_ROOT"):
+        monkeypatch.setenv(key, str(other if "CONFIG" in key else tmp_path))
+    store, spy = make(server, "mongodb://h/pathlynks_prod")
+    store.collection("projects").insert_one({"_id": "a", "p": "a"})
+    assert set(spy.accessed) == {"autotester"} and set(server.databases) == {"autotester"}
+    assert client.accessed == [] and "pathlynks_prod" not in server.databases
+
+
+def test_the_seams_are_restored_after_use_so_one_test_cannot_leak_into_the_next() -> None:
+    before = dict(guard_module._SEAM)
+    with seams(client_factory=lambda _u: None):
+        assert guard_module._SEAM["client_factory"] is not None
+    assert before == guard_module._SEAM
+    assert before == {"config_path": None, "client_factory": None, "bucket_factory": None}
+
+
 def test_an_existing_unmarked_database_with_collections_is_somebody_elses() -> None:
     server = FakeMongoServer()
     server.seed_foreign("autotester", "customers")
     client = server.client()
     with pytest.raises(StoreConfigError):
-        GuardedStore("mongodb://h/", client_factory=lambda _u: client)
+        open_store("mongodb://h/", client)
     assert set(client.accessed) == {"autotester"}
     assert server.databases["autotester"]["customers"].docs == [{"_id": "foreign", "keep": True}]
 

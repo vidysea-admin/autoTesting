@@ -10,7 +10,7 @@ import gc
 from typing import Any
 
 import pytest
-from fake_mongo import FakeBucket, FakeMongoServer
+from fake_mongo import FakeMongoServer, open_store
 
 from autotester.store.mongo_guard import (
     COLLECTIONS,
@@ -36,8 +36,7 @@ def _public(obj: object) -> set[str]:
 @pytest.fixture
 def store() -> GuardedStore:
     client = FakeMongoServer().client()
-    return GuardedStore("mongodb://h/", client_factory=lambda _u: client,
-                        bucket_factory=FakeBucket)
+    return open_store("mongodb://h/", client)
 
 
 def _walk(obj: Any, seen: set[int], depth: int = 0) -> list[Any]:
@@ -95,7 +94,7 @@ def test_the_walker_itself_finds_a_client_hidden_in_an_instance_dict() -> None:
 def test_the_store_holds_no_uri_after_construction() -> None:
     client = FakeMongoServer().client()
     uri = "mongodb://user:CANARY-held@h/"
-    guarded = GuardedStore(uri, client_factory=lambda _u: client)
+    guarded = open_store(uri, client)
     holders = [r for r in gc.get_referrers(uri) if r is guarded.__dict__]
     assert holders == [] and "CANARY-held" not in str(guarded.__dict__)
 

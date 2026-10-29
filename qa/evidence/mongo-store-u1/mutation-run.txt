@@ -1,15 +1,15 @@
 KILLED  a: database name read from os.environ  (pytest exit 1)
     claims to kill : tests/test_store_config.py::test_environment_and_data_root_have_no_effect_on_the_name
-    actually failed: tests/test_store_config.py::test_environment_and_data_root_have_no_effect_on_the_name
+    actually failed: tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_store_config.py::test_environment_and_data_root_have_no_effect_on_the_name
 KILLED  b: database name read from the URI path  (pytest exit 1)
     claims to kill : tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch]
-    actually failed: tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch], tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://user:CANARY-p4ssw0rd-9f3a@h1,h2/pathlynks?replicaSet=r]
+    actually failed: tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch], tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://user:CANARY-p4ssw0rd-9f3a@h1,h2/pathlynks?replicaSet=r]
 KILLED  c: forbidden-name check removed  (pytest exit 1)
     claims to kill : tests/test_store_config.py::test_system_databases_are_refused_case_folded[admin]
     actually failed: tests/test_store_config.py::test_system_databases_are_refused_case_folded[Admin], tests/test_store_config.py::test_system_databases_are_refused_case_folded[CoNfIg], tests/test_store_config.py::test_system_databases_are_refused_case_folded[LOCAL], tests/test_store_config.py::test_system_databases_are_refused_case_folded[admin], tests/test_store_config.py::test_system_databases_are_refused_case_folded[config], tests/test_store_config.py::test_system_databases_are_refused_case_folded[local]
 KILLED  d: URI-path clash check removed  (pytest exit 1)
     claims to kill : tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester]
-    actually failed: tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[], tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[ftp://u:CANARY-p4ssw0rd-9f3a@h/x], tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[h/x], tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[http://h/x], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb+srv://u:CANARY-p4ssw0rd-9f3a@cluster0.example.net/autotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/AUTOTESTER?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/Autotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://u:CANARY-p4ssw0rd-9f3a@h1,h2/autotester?replicaSet=r]
+    actually failed: tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[], tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[ftp://u:CANARY-p4ssw0rd-9f3a@h/x], tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[h/x], tests/test_mongo_guard.py::test_a_non_mongodb_uri_is_refused_without_echoing_it[http://h/x], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb+srv://u:CANARY-p4ssw0rd-9f3a@cluster0.example.net/autotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41UTOTESTER?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41utotester?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61%75%74%6f%74%65%73%74%65%72], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/AUTOTESTER?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/Autotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://u:CANARY-p4ssw0rd-9f3a@h1,h2/%61utotester?replicaSet=r], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://u:CANARY-p4ssw0rd-9f3a@h1,h2/autotester?replicaSet=r]
 KILLED  e1: unmarked non-empty database check removed  (pytest exit 1)
     claims to kill : tests/test_mongo_guard.py::test_an_existing_unmarked_database_with_collections_is_somebody_elses
     actually failed: tests/test_mongo_guard.py::test_an_existing_unmarked_database_with_collections_is_somebody_elses
@@ -19,41 +19,27 @@ KILLED  e2: foreign marker check removed  (pytest exit 1)
 KILLED  f: extra=forbid removed  (pytest exit 1)
     claims to kill : tests/test_store_config.py::test_the_model_is_frozen_and_forbids_extra_keys
     actually failed: tests/test_store_config.py::test_a_missing_table_missing_key_or_unknown_key_stops_startup[leftover-key], tests/test_store_config.py::test_a_missing_table_missing_key_or_unknown_key_stops_startup[unknown-key], tests/test_store_config.py::test_the_model_is_frozen_and_forbids_extra_keys
-KILLED  g: aggregate verb added  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_the_public_surface_is_exactly_the_frozen_list
-    actually failed: tests/test_mongo_guard_surface.py::test_no_forbidden_name_is_reachable_on_any_guarded_object, tests/test_mongo_guard_surface.py::test_the_public_surface_is_exactly_the_frozen_list
-KILLED  h: insert-only collections get the full verb set  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[approvals]
-    actually failed: tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[approval_revocations], tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[approvals], tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[bug_events], tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[delivery_records]
-KILLED  i: delete_many scope check removed  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_writes_need_a_filter_and_delete_many_needs_a_project_or_key
-    actually failed: tests/test_mongo_guard_surface.py::test_writes_need_a_filter_and_delete_many_needs_a_project_or_key
-KILLED  j: immutable field check removed  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
-    actually failed: tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
-KILLED  k: update operator allow-list removed  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
-    actually failed: tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
 KILLED  l: plain-identifier pattern check removed  (pytest exit 1)
     claims to kill : tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[a.b]
     actually failed: tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[$x], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[-a], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[1abc], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[a.b], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[a/b], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[a\x00b], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[caf\xe9], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[ok\n], tests/test_store_config.py::test_names_that_are_not_plain_identifiers_are_refused[x y]
 KILLED  m: config resolved from the data root  (pytest exit 1)
     claims to kill : tests/test_store_config.py::test_environment_and_data_root_have_no_effect_on_the_name
-    actually failed: tests/test_store_config.py::test_environment_and_data_root_have_no_effect_on_the_name
-KILLED  n: read side may target the store database  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_scan.py::test_the_read_side_refuses_the_store_database_before_creating_a_client
-    actually failed: tests/test_mongo_guard_scan.py::test_the_read_side_refuses_the_store_database_before_creating_a_client
+    actually failed: tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_store_config.py::test_environment_and_data_root_have_no_effect_on_the_name
 KILLED  o: marker protection removed  (pytest exit 1)
     claims to kill : tests/test_mongo_guard.py::test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter
     actually failed: tests/test_mongo_guard.py::test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter
 KILLED  p: driver message (URI) echoed in StoreUnavailable  (pytest exit 1)
     claims to kill : tests/test_mongo_guard.py::test_a_failing_ping_and_write_never_echo_the_uri
     actually failed: tests/test_mongo_guard.py::test_a_failing_connect_never_echoes_the_uri, tests/test_mongo_guard.py::test_a_failing_ping_and_write_never_echo_the_uri
-KILLED  q: script operators allowed in filters  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_script_and_function_operators_are_refused_in_every_filter
-    actually failed: tests/test_mongo_guard_surface.py::test_script_and_function_operators_are_refused_in_every_filter
-KILLED  r: live smoke collection allowed under CI  (pytest exit 1)
-    claims to kill : tests/test_mongo_guard_surface.py::test_live_smoke_collection_needs_the_flag_and_no_ci
-    actually failed: tests/test_mongo_guard_surface.py::test_live_smoke_collection_needs_the_flag_and_no_ci
+KILLED  s: URI path compared without percent-decoding (F1)  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41utotester?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester], tests/test_mongo_guard.py::test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/%61utotester]
+    actually failed: tests/test_mongo_guard.py::test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash, tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41UTOTESTER?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41utotester?x=1], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61%75%74%6f%74%65%73%74%65%72], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester], tests/test_mongo_guard.py::test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://u:CANARY-p4ssw0rd-9f3a@h1,h2/%61utotester?replicaSet=r], tests/test_mongo_guard.py::test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/%2Bx], tests/test_mongo_guard.py::test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/%41utotester?x=1], tests/test_mongo_guard.py::test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/%61utotester], tests/test_mongo_guard.py::test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/a%2Db]
+KILLED  s2: URI path decoded without plus handling (F1)  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash
+    actually failed: tests/test_mongo_guard.py::test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash
+KILLED  t: constructor takes a config path again (F2)  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_mongo_guard.py::test_the_constructor_takes_a_uri_and_nothing_else
+    actually failed: tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_mongo_guard.py::test_signatures_take_no_database_parameter, tests/test_mongo_guard.py::test_the_constructor_takes_a_uri_and_nothing_else
 
-19/19 mutations killed
+14/14 mutations killed
+A exit 0

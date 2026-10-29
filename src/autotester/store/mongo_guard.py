@@ -14,9 +14,8 @@ import re
 import weakref
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
-from urllib.parse import urlsplit
+from urllib.parse import unquote_plus, urlsplit
 
 from autotester.schema.store_config import StoreConfig, StoreConfigError, load_store_config
 
@@ -41,6 +40,8 @@ IMMUTABLE_FIELDS = frozenset({"_id", "generation"})
 FORBIDDEN_QUERY_KEYS = frozenset({"$where", "$function", "$accumulator"})
 SMOKE_COLLECTION = re.compile(r"t_[a-z0-9_]{1,30}")
 MARKER_ID, MARKER_COLLECTION, SCHEMA_VERSION, BUCKET_NAME = "marker", "server_state", 1, "blobs"
+_SEAM: dict[str, Any] = {"config_path": None, "client_factory": None,
+                         "bucket_factory": None}  # private: set only by tests/fake_mongo.seams
 # store -> (db handle, bucket factory); out of instance `__dict__` so no attribute walk finds it
 _REGISTRY: weakref.WeakKeyDictionary[Any, Any] = weakref.WeakKeyDictionary()
 
@@ -205,7 +206,7 @@ def _uri_path_database(uri: str) -> str:
     parts = urlsplit(uri)
     if parts.scheme not in ("mongodb", "mongodb+srv"):
         raise StoreConfigError("the store connection string must be a mongodb:// URI")
-    return parts.path.lstrip("/")
+    return unquote_plus(parts.path.lstrip("/"))  # as pymongo.uri_parser decodes it
 
 
 def _default_client(uri: str) -> Any:
@@ -223,17 +224,15 @@ def _default_bucket(handle: Any, name: str) -> Any:
 class GuardedStore:
     """Holds the one connection. No attribute returns a client, a database or a database name."""
 
-    def __init__(self, uri: str, *, config_path: Path | None = None,
-                 client_factory: Callable[[str], Any] | None = None,
-                 bucket_factory: Callable[[Any, str], Any] | None = None) -> None:
-        cfg: StoreConfig = load_store_config(config_path)
+    def __init__(self, uri: str) -> None:
+        cfg: StoreConfig = load_store_config(_SEAM["config_path"])
         if _uri_path_database(uri).casefold() == cfg.database.casefold():
             raise StoreConfigError("the connection string path names the store database")
         try:
-            database = (client_factory or _default_client)(uri)[cfg.database]
+            database = (_SEAM["client_factory"] or _default_client)(uri)[cfg.database]
         except Exception as exc:  # a driver message may quote the URI: keep the class name only
             raise StoreUnavailable(f"cannot open the state store ({type(exc).__name__})") from None
-        _REGISTRY[self] = (database, bucket_factory or _default_bucket)
+        _REGISTRY[self] = (database, _SEAM["bucket_factory"] or _default_bucket)
         self._cfg, self._marked = cfg, False
         self._verify_identity(database)
 

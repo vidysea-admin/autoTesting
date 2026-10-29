@@ -98,6 +98,76 @@ def test_the_scan_leaves_innocent_code_alone(tmp_path: Path) -> None:
     assert scan(tmp_path, ("src",)) == {}
 
 
+INJECTION = {"config_path", "client_factory", "bucket_factory"}
+SEAM_HOME = "src/autotester/store/mongo_guard.py"
+
+
+def _injections(tree: ast.AST) -> list[str]:
+    """Calls that hand the fence a config path or a factory, and any touch of its private seam."""
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            callee = node.func
+            name = callee.id if isinstance(callee, ast.Name) else getattr(callee, "attr", "")
+            if name == "GuardedStore":
+                keys = {k.arg for k in node.keywords}
+                if keys & INJECTION or None in keys or len(node.args) > 1 or any(
+                        isinstance(a, ast.Starred) for a in node.args):
+                    found.append("GuardedStore(...) with an injected argument")
+        ident = node.id if isinstance(node, ast.Name) else getattr(node, "attr", "")
+        if ident == "_SEAM" or (isinstance(node, ast.alias) and node.name == "_SEAM"):
+            found.append("_SEAM")
+    return found
+
+
+def _injection_scan(root: Path) -> dict[str, list[str]]:
+    hits: dict[str, list[str]] = {}
+    for folder in ("src", "scripts"):
+        for path in sorted((root / folder).rglob("*.py")):
+            rel = path.relative_to(root).as_posix()
+            found = _injections(ast.parse(path.read_text(encoding="utf-8")))
+            if found and rel != SEAM_HOME:
+                hits[rel] = found
+    return hits
+
+
+def test_no_src_or_scripts_call_injects_a_config_path_or_factory_into_the_fence() -> None:
+    assert _injection_scan(code_root()) == {}
+
+
+NL = chr(10)
+IMPORT = "from autotester.store.mongo_guard import GuardedStore"
+AS_G = "import autotester.store.mongo_guard as g"
+
+
+@pytest.mark.parametrize("snippet", [
+    IMPORT + NL + "GuardedStore(u, config_path=p)" + NL,
+    AS_G + NL + "g.GuardedStore(u, client_factory=f)" + NL,
+    "GuardedStore(u, bucket_factory=f)" + NL,
+    "GuardedStore(u, **kw)" + NL,
+    "GuardedStore(u, other)" + NL,
+    "GuardedStore(*args)" + NL,
+    AS_G + NL + "g._SEAM['config_path'] = p" + NL,
+    "from autotester.store.mongo_guard import _SEAM" + NL,
+], ids=["config_path", "attr-client_factory", "bucket_factory", "kwargs", "positional-2nd",
+        "starred", "seam-write", "seam-import"])
+def test_the_injection_scan_flags_each_way_in(tmp_path: Path, snippet: str) -> None:
+    for folder in ("src", "scripts"):
+        (tmp_path / folder).mkdir(exist_ok=True)
+    (tmp_path / "src" / "rogue.py").write_text(snippet, encoding="utf-8")
+    assert set(_injection_scan(tmp_path)) == {"src/rogue.py"}
+    (tmp_path / "src" / "rogue.py").unlink()
+    (tmp_path / "scripts" / "rogue.py").write_text(snippet, encoding="utf-8")
+    assert set(_injection_scan(tmp_path)) == {"scripts/rogue.py"}
+
+
+def test_the_injection_scan_leaves_a_plain_construction_alone(tmp_path: Path) -> None:
+    for folder in ("src", "scripts"):
+        (tmp_path / folder).mkdir()
+    (tmp_path / "src" / "fine.py").write_text("GuardedStore(uri)" + NL, encoding="utf-8")
+    assert _injection_scan(tmp_path) == {}
+
+
 class _SpyClient:
     constructed: ClassVar[list[str]] = []
 

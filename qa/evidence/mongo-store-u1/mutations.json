@@ -1,181 +1,137 @@
 {
-  "tests": [
-    "tests/test_store_config.py",
-    "tests/test_mongo_guard.py",
-    "tests/test_mongo_guard_surface.py",
-    "tests/test_mongo_guard_scan.py"
-  ],
-  "mutations": [
-    {
-      "name": "a: database name read from os.environ",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "(uri)[cfg.database]",
-      "new": "(uri)[os.environ.get(\"AUTOTESTER_DB\", cfg.database)]",
-      "kills": [
-        "test_environment_and_data_root_have_no_effect_on_the_name"
-      ]
-    },
-    {
-      "name": "b: database name read from the URI path",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "(uri)[cfg.database]",
-      "new": "(uri)[_uri_path_database(uri) or cfg.database]",
-      "kills": [
-        "test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch]"
-      ]
-    },
-    {
-      "name": "c: forbidden-name check removed",
-      "file": "src/autotester/schema/store_config.py",
-      "old": "if value.casefold() in FORBIDDEN_DATABASES:",
-      "new": "if False:",
-      "kills": [
-        "test_system_databases_are_refused_case_folded[admin]"
-      ]
-    },
-    {
-      "name": "d: URI-path clash check removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "if _uri_path_database(uri).casefold() == cfg.database.casefold():",
-      "new": "if False:",
-      "kills": [
-        "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester]"
-      ]
-    },
-    {
-      "name": "e1: unmarked non-empty database check removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "elif _translate(handle.list_collection_names):",
-      "new": "elif False:",
-      "kills": [
-        "test_an_existing_unmarked_database_with_collections_is_somebody_elses"
-      ]
-    },
-    {
-      "name": "e2: foreign marker check removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "if str(marker.get(\"database\", \"\")).casefold() != self._cfg.database.casefold():",
-      "new": "if False:",
-      "kills": [
-        "test_a_marker_for_another_name_stops_startup"
-      ]
-    },
-    {
-      "name": "f: extra=forbid removed",
-      "file": "src/autotester/schema/store_config.py",
-      "old": "extra=\"forbid\"",
-      "new": "extra=\"ignore\"",
-      "kills": [
-        "test_the_model_is_frozen_and_forbids_extra_keys"
-      ]
-    },
-    {
-      "name": "g: aggregate verb added",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "    def delete_one(self, filter: Mapping[str, Any]) -> bool:",
-      "new": "    def aggregate(self, pipeline: list[dict[str, Any]]) -> list[Any]:\n        return list(self._raw().aggregate(pipeline))\n\n    def delete_one(self, filter: Mapping[str, Any]) -> bool:",
-      "kills": [
-        "test_the_public_surface_is_exactly_the_frozen_list"
-      ]
-    },
-    {
-      "name": "h: insert-only collections get the full verb set",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "return (InsertOnlyCollection if name in INSERT_ONLY else GuardedCollection)(self, name)",
-      "new": "return GuardedCollection(self, name)",
-      "kills": [
-        "test_insert_only_collections_have_no_replace_update_or_delete[approvals]"
-      ]
-    },
-    {
-      "name": "i: delete_many scope check removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "        _scoped(filter)",
-      "new": "        pass",
-      "kills": [
-        "test_writes_need_a_filter_and_delete_many_needs_a_project_or_key"
-      ]
-    },
-    {
-      "name": "j: immutable field check removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "if str(name).split(\".\")[0] in IMMUTABLE_FIELDS:",
-      "new": "if False:",
-      "kills": [
-        "test_update_operators_are_limited_and_immutable_fields_are_untouchable"
-      ]
-    },
-    {
-      "name": "k: update operator allow-list removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "if not update or set(update) - UPDATE_OPERATORS:",
-      "new": "if not update:",
-      "kills": [
-        "test_update_operators_are_limited_and_immutable_fields_are_untouchable"
-      ]
-    },
-    {
-      "name": "l: plain-identifier pattern check removed",
-      "file": "src/autotester/schema/store_config.py",
-      "old": "if DATABASE_PATTERN.fullmatch(value) is None:",
-      "new": "if False:",
-      "kills": [
-        "test_names_that_are_not_plain_identifiers_are_refused[a.b]"
-      ]
-    },
-    {
-      "name": "m: config resolved from the data root",
-      "file": "src/autotester/schema/store_config.py",
-      "old": "return code_root() / \"pyproject.toml\"",
-      "new": "return __import__(\"autotester.core.paths\", fromlist=[\"x\"]).repo_root() / \"pyproject.toml\"",
-      "kills": [
-        "test_environment_and_data_root_have_no_effect_on_the_name"
-      ]
-    },
-    {
-      "name": "n: read side may target the store database",
-      "file": "src/autotester/browser/db.py",
-      "old": "if db_name.casefold() == load_store_config().database.casefold():",
-      "new": "if False:",
-      "kills": [
-        "test_the_read_side_refuses_the_store_database_before_creating_a_client"
-      ]
-    },
-    {
-      "name": "o: marker protection removed",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "ident == MARKER_ID or (selects and not isinstance(ident, str))",
-      "new": "False",
-      "kills": [
-        "test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter"
-      ]
-    },
-    {
-      "name": "p: driver message (URI) echoed in StoreUnavailable",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "f\"state store unavailable ({type(exc).__name__})\"",
-      "new": "f\"state store unavailable ({exc})\"",
-      "kills": [
-        "test_a_failing_ping_and_write_never_echo_the_uri"
-      ]
-    },
-    {
-      "name": "q: script operators allowed in filters",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "if key in FORBIDDEN_QUERY_KEYS:",
-      "new": "if False:",
-      "kills": [
-        "test_script_and_function_operators_are_refused_in_every_filter"
-      ]
-    },
-    {
-      "name": "r: live smoke collection allowed under CI",
-      "file": "src/autotester/store/mongo_guard.py",
-      "old": "and \"CI\" not in os.environ",
-      "new": "and True",
-      "kills": [
-        "test_live_smoke_collection_needs_the_flag_and_no_ci"
-      ]
-    }
-  ]
+ "tests": [
+  "tests/test_store_config.py",
+  "tests/test_mongo_guard.py"
+ ],
+ "mutations": [
+  {
+   "name": "a: database name read from os.environ",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "(uri)[cfg.database]",
+   "new": "(uri)[os.environ.get(\"AUTOTESTER_DB\", cfg.database)]",
+   "kills": [
+    "test_environment_and_data_root_have_no_effect_on_the_name"
+   ]
+  },
+  {
+   "name": "b: database name read from the URI path",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "(uri)[cfg.database]",
+   "new": "(uri)[_uri_path_database(uri) or cfg.database]",
+   "kills": [
+    "test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch]"
+   ]
+  },
+  {
+   "name": "c: forbidden-name check removed",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "if value.casefold() in FORBIDDEN_DATABASES:",
+   "new": "if False:",
+   "kills": [
+    "test_system_databases_are_refused_case_folded[admin]"
+   ]
+  },
+  {
+   "name": "d: URI-path clash check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if _uri_path_database(uri).casefold() == cfg.database.casefold():",
+   "new": "if False:",
+   "kills": [
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester]"
+   ]
+  },
+  {
+   "name": "e1: unmarked non-empty database check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "elif _translate(handle.list_collection_names):",
+   "new": "elif False:",
+   "kills": [
+    "test_an_existing_unmarked_database_with_collections_is_somebody_elses"
+   ]
+  },
+  {
+   "name": "e2: foreign marker check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if str(marker.get(\"database\", \"\")).casefold() != self._cfg.database.casefold():",
+   "new": "if False:",
+   "kills": [
+    "test_a_marker_for_another_name_stops_startup"
+   ]
+  },
+  {
+   "name": "f: extra=forbid removed",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "extra=\"forbid\"",
+   "new": "extra=\"ignore\"",
+   "kills": [
+    "test_the_model_is_frozen_and_forbids_extra_keys"
+   ]
+  },
+  {
+   "name": "l: plain-identifier pattern check removed",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "if DATABASE_PATTERN.fullmatch(value) is None:",
+   "new": "if False:",
+   "kills": [
+    "test_names_that_are_not_plain_identifiers_are_refused[a.b]"
+   ]
+  },
+  {
+   "name": "m: config resolved from the data root",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "return code_root() / \"pyproject.toml\"",
+   "new": "return __import__(\"autotester.core.paths\", fromlist=[\"x\"]).repo_root() / \"pyproject.toml\"",
+   "kills": [
+    "test_environment_and_data_root_have_no_effect_on_the_name"
+   ]
+  },
+  {
+   "name": "o: marker protection removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "ident == MARKER_ID or (selects and not isinstance(ident, str))",
+   "new": "False",
+   "kills": [
+    "test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter"
+   ]
+  },
+  {
+   "name": "p: driver message (URI) echoed in StoreUnavailable",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "f\"state store unavailable ({type(exc).__name__})\"",
+   "new": "f\"state store unavailable ({exc})\"",
+   "kills": [
+    "test_a_failing_ping_and_write_never_echo_the_uri"
+   ]
+  },
+  {
+   "name": "s: URI path compared without percent-decoding (F1)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "return unquote_plus(parts.path.lstrip(\"/\"))  # as pymongo.uri_parser decodes it",
+   "new": "return parts.path.lstrip(\"/\")",
+   "kills": [
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester]",
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41utotester?x=1]",
+    "test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/%61utotester]"
+   ]
+  },
+  {
+   "name": "s2: URI path decoded without plus handling (F1)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "return unquote_plus(parts.path.lstrip(\"/\"))  # as pymongo.uri_parser decodes it",
+   "new": "return __import__(\"urllib.parse\").parse.unquote(parts.path.lstrip(\"/\"))",
+   "kills": [
+    "test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash"
+   ]
+  },
+  {
+   "name": "t: constructor takes a config path again (F2)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "    def __init__(self, uri: str) -> None:\n        cfg: StoreConfig = load_store_config(_SEAM[\"config_path\"])",
+   "new": "    def __init__(self, uri: str, config_path: Path | None = None) -> None:\n        cfg: StoreConfig = load_store_config(config_path or _SEAM[\"config_path\"])",
+   "kills": [
+    "test_the_constructor_takes_a_uri_and_nothing_else",
+    "test_no_public_path_builds_a_store_on_another_database"
+   ]
+  }
+ ]
 }

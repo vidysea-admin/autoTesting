@@ -9,7 +9,7 @@ import tomllib
 from pathlib import Path
 
 import pytest
-from fake_mongo import FakeMongoServer
+from fake_mongo import FakeMongoServer, open_store
 from pydantic import ValidationError
 
 from autotester.core.paths import code_root, repo_root
@@ -19,7 +19,6 @@ from autotester.schema.store_config import (
     clear_store_config_cache,
     load_store_config,
 )
-from autotester.store.mongo_guard import GuardedStore
 
 URI = "mongodb://h/"
 
@@ -53,7 +52,7 @@ def test_the_committed_file_names_autotester_and_the_loader_returns_it() -> None
 def test_system_databases_are_refused_case_folded(tmp_path: Path, name: str) -> None:
     path = _cfg(tmp_path, _store_table(name))
     with pytest.raises(StoreConfigError):
-        GuardedStore(URI, config_path=path, client_factory=_never_a_client)
+        open_store(URI, config_path=path, client_factory=_never_a_client)
     with pytest.raises(ValidationError):
         StoreConfig(database=name)
 
@@ -66,7 +65,7 @@ def test_names_that_are_not_plain_identifiers_are_refused(tmp_path: Path, name: 
     body = "[tool.autotester.store]\ndatabase = " + repr(name).replace("'", '"') + "\n"
     path = _cfg(tmp_path, body)
     with pytest.raises((StoreConfigError, ValidationError)):
-        GuardedStore(URI, config_path=path, client_factory=_never_a_client)
+        open_store(URI, config_path=path, client_factory=_never_a_client)
     with pytest.raises(ValidationError):
         StoreConfig(database=name)
 
@@ -95,12 +94,12 @@ def test_a_missing_table_missing_key_or_unknown_key_stops_startup(
         tmp_path: Path, body: str) -> None:
     path = _cfg(tmp_path, body)
     with pytest.raises(StoreConfigError):
-        GuardedStore(URI, config_path=path, client_factory=_never_a_client)
+        open_store(URI, config_path=path, client_factory=_never_a_client)
 
 
 def test_a_missing_config_file_stops_startup(tmp_path: Path) -> None:
     with pytest.raises(StoreConfigError):
-        GuardedStore(URI, config_path=tmp_path / "nope.toml", client_factory=_never_a_client)
+        open_store(URI, config_path=tmp_path / "nope.toml", client_factory=_never_a_client)
 
 
 def test_the_model_is_frozen_and_forbids_extra_keys() -> None:
@@ -120,7 +119,7 @@ def test_environment_and_data_root_have_no_effect_on_the_name(
     data_root.mkdir()
     monkeypatch.setenv("AUTOTESTER_ROOT", str(data_root))
     client = FakeMongoServer().client()
-    GuardedStore(URI, client_factory=lambda _uri: client)
+    open_store(URI, client)
     assert client.accessed == ["autotester"]
     assert set(client.accessed) == {load_store_config().database}
 

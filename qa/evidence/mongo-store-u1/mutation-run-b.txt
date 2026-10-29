@@ -1,0 +1,30 @@
+KILLED  g: aggregate verb added  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_the_public_surface_is_exactly_the_frozen_list
+    actually failed: tests/test_mongo_guard_surface.py::test_no_forbidden_name_is_reachable_on_any_guarded_object, tests/test_mongo_guard_surface.py::test_the_public_surface_is_exactly_the_frozen_list
+KILLED  h: insert-only collections get the full verb set  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[approvals]
+    actually failed: tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[approval_revocations], tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[approvals], tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[bug_events], tests/test_mongo_guard_surface.py::test_insert_only_collections_have_no_replace_update_or_delete[delivery_records]
+KILLED  i: delete_many scope check removed  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_writes_need_a_filter_and_delete_many_needs_a_project_or_key
+    actually failed: tests/test_mongo_guard_surface.py::test_writes_need_a_filter_and_delete_many_needs_a_project_or_key
+KILLED  j: immutable field check removed  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
+    actually failed: tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
+KILLED  k: update operator allow-list removed  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
+    actually failed: tests/test_mongo_guard_surface.py::test_update_operators_are_limited_and_immutable_fields_are_untouchable
+KILLED  n: read side may target the store database  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_scan.py::test_the_read_side_refuses_the_store_database_before_creating_a_client
+    actually failed: tests/test_mongo_guard_scan.py::test_the_read_side_refuses_the_store_database_before_creating_a_client
+KILLED  q: script operators allowed in filters  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_script_and_function_operators_are_refused_in_every_filter
+    actually failed: tests/test_mongo_guard_surface.py::test_script_and_function_operators_are_refused_in_every_filter
+KILLED  r: live smoke collection allowed under CI  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_surface.py::test_live_smoke_collection_needs_the_flag_and_no_ci
+    actually failed: tests/test_mongo_guard_surface.py::test_live_smoke_collection_needs_the_flag_and_no_ci
+KILLED  u: a src caller injects a config path into the fence (F2)  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_scan.py::test_no_src_or_scripts_call_injects_a_config_path_or_factory_into_the_fence
+    actually failed: tests/test_mongo_guard_scan.py::test_no_src_or_scripts_call_injects_a_config_path_or_factory_into_the_fence
+
+9/9 mutations killed
+B exit 0

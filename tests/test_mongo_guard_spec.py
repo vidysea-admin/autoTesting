@@ -8,16 +8,22 @@ drifting off the code it mutates.
 from __future__ import annotations
 
 import json
+from pathlib import Path
+
+import pytest
 
 from autotester.core.paths import code_root
 
-SPEC = code_root() / "qa" / "evidence" / "mongo-store-u1" / "mutations.json"
+SPECS = [code_root() / "qa" / "evidence" / "mongo-store-u1" / n
+         for n in ("mutations.json", "mutations-b.json")]
 
 
-def test_the_mutation_spec_targets_real_text_and_real_tests() -> None:
-    spec = json.loads(SPEC.read_text(encoding="utf-8"))
+@pytest.mark.parametrize("spec_path", SPECS, ids=lambda p: p.name)
+def test_the_mutation_spec_targets_real_text_and_real_tests(spec_path: Path) -> None:
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    assert len(spec["tests"]) <= 2, "the machine runs at most two test files per pytest call"
     tests = {name: (code_root() / name).read_text(encoding="utf-8") for name in spec["tests"]}
-    assert len(spec["mutations"]) >= 7
+    assert len(spec["mutations"]) >= 4
     for mutation in spec["mutations"]:
         source = (code_root() / mutation["file"]).read_text(encoding="utf-8")
         source = source.replace(chr(13) + chr(10), chr(10))

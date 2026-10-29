@@ -9,12 +9,16 @@ records each database name asked of it. No socket is ever opened.
 from __future__ import annotations
 
 import io
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 from gridfs.errors import NoFile
 from pymongo.errors import AutoReconnect, DuplicateKeyError
+
+import autotester.store.mongo_guard as guard
 
 
 def _match(doc: dict[str, Any], flt: dict[str, Any]) -> bool:
@@ -215,3 +219,23 @@ class FakeBucket:
 
     def delete(self, file_id: Any) -> None:
         self._files.delete_one({"_id": file_id})
+
+
+@contextmanager
+def seams(*, client_factory: Callable[[str], Any] | None = None, config_path: Path | None = None,
+          bucket_factory: Callable[[Any, str], Any] | None = FakeBucket) -> Iterator[None]:
+    """The ONLY way tests reach the guard's private seams (`guard._SEAM`); restored on exit."""
+    saved = dict(guard._SEAM)
+    guard._SEAM.update(client_factory=client_factory, config_path=config_path,
+                       bucket_factory=bucket_factory)
+    try:
+        yield
+    finally:
+        guard._SEAM.update(saved)
+
+
+def open_store(uri: str = "mongodb://h/", client: FakeMongoClient | None = None, *,
+               client_factory: Callable[[str], Any] | None = None,
+               config_path: Path | None = None) -> guard.GuardedStore:
+    with seams(client_factory=client_factory or (lambda _uri: client), config_path=config_path):
+        return guard.GuardedStore(uri)
