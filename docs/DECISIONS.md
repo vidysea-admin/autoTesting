@@ -2937,3 +2937,22 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-018, D-109, mongo-store
 
 **Changes-authorized:** The design read and the contract `qa/contracts/mongo-store.md`. Code changes follow in units cited against this entry. The write permission is limited to the `autotester` database. No enforcement path changes. ARCHITECTURE.md prose (storage and security model sections) may change under this entry once the contract has passed.
+
+## D-121 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Umesh's refinement of D-120, given on 2026-10-29. The name of the Mongo database is set in ONE committed config file in the repo. Its value is `autotester`. The name is not hardcoded and not kept in `.env`. Only the connection URI, `PATHLYNKS_MONGO_URI`, stays in `.env`.
+
+The backend reads the name once, validated by a Pydantic model with `extra="forbid"`. No API takes a database name per call. The name is refused at startup in three cases:
+- it is empty or not a plain identifier;
+- it is `admin`, `local` or `config`;
+- it is a database that the read-only product checks use.
+
+**Why:** A name in a committed file can be changed by a reviewed commit and a push, without DevOps. Changes to `.env` need the DevOps team. The startup refusal keeps the guard from D-120: the Mongo user can write elsewhere, so the code is the only fence.
+
+**Result:** This is folded into the mongo-store design read and its contract.
+
+**Approved-by:** Umesh (chat 2026-10-29: "db name config file mai daal .env mai nhi taaki tu khud update krr lee and push krr paaye. for the .env thing we need to have help of devops team")
+
+**Links:** D-120, mongo-store
+
+**Changes-authorized:** The config file named by the mongo-store contract, and the backend that reads it. No enforcement path.
