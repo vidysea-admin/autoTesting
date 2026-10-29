@@ -50,6 +50,12 @@ class ElementRef(BaseModel):
         "'' for any non-input and for a graph stored before AT-650. The typing gate "
         "(`stages/explore_safety.py::typing_target_allowed`) reads it, never the name alone",
     )
+    field_label: str | None = Field(
+        default=None, exclude=True,
+        description="crawl-guidance G3: set by enumerate.js for a data-bearing form control only "
+        "(aria-label / <label> / placeholder text, never the value or option text); '' = none. "
+        "In memory only (exclude=True): never persisted, so crawl artifacts are unchanged",
+    )
 
 
 class PageObservation(BaseModel):

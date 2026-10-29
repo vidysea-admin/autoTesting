@@ -1,7 +1,7 @@
 // Enumerate interactive elements on the current page. Loaded by
 // browser/observe.py via page.evaluate(). Returns an array of
 // {role, name, selector, enabled, visible, obscured, href, is_form_submit, in_row,
-// target_blank, tag} objects, one per interactive element found.
+// target_blank, tag, type, field_label} objects, one per interactive element found.
 //
 // Selector priority: data-testid > a stable (non-generated-looking) #id >
 // [aria-label] > a role+name locator with an nth index > an xpath fallback.
@@ -76,6 +76,30 @@
     return "";
   }
 
+  // crawl-guidance G3: a data-bearing control's NAME can be its value or option text (nameOf),
+  // which must never leave the machine. This reports its label sources only: aria-label,
+  // aria-labelledby, an associated <label> (control text removed), a placeholder. null = not a
+  // data field. Additive: nameOf, selectors and every other key are unchanged.
+  function fieldLabelOf(el, tag, type) {
+    const caption = ["submit", "button", "reset", "image"].includes(type);
+    const field = (["input", "textarea", "select"].includes(tag) && !caption) ||
+      el.isContentEditable;
+    if (!field) return null;
+    const aria = el.getAttribute("aria-label");
+    if (aria && aria.trim()) return aria.trim().slice(0, 60);
+    const ref = document.getElementById(el.getAttribute("aria-labelledby") || "");
+    if (ref && ref.innerText && ref.innerText.trim()) return ref.innerText.trim().slice(0, 60);
+    const label = el.labels && el.labels[0];
+    if (label) {
+      const copy = label.cloneNode(true);
+      copy.querySelectorAll("input, select, textarea, option").forEach((n) => n.remove());
+      const text = (copy.textContent || "").trim().replace(/\s+/g, " ");
+      if (text) return text.slice(0, 60);
+    }
+    const hint = el.getAttribute("placeholder");
+    return hint && hint.trim() ? hint.trim().slice(0, 60) : "";
+  }
+
   function isGeneratedId(id) {
     return /^[0-9]+$/.test(id) || /[0-9a-f]{8}/.test(id) || id.length > 40;
   }
@@ -145,6 +169,7 @@
       target_blank: el.getAttribute("target") === "_blank",
       tag: tag,
       type: tag === "input" ? (el.type || "").toLowerCase() : "",
+      field_label: fieldLabelOf(el, tag, type),
     });
   }
   return out;

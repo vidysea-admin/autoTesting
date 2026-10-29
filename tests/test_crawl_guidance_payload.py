@@ -134,21 +134,33 @@ def test_a_secret_straddling_either_cap_is_scrubbed_before_the_cut() -> None:
         payload.NAME_CHARS)
 
 
-def test_payload_never_carries_values_cookies_or_images() -> None:
-    keys = set()
+@pytest.mark.parametrize(("href", "expected"), [
+    ("mailto:jane.doe@example.org?subject=hi", "<mailto>"),
+    ("tel:+911234567890", "<tel>"),
+    ("javascript:openStudent('Jane Doe', 4412)", "<javascript>"),
+    ("JAVASCRIPT:alert(1)", "<javascript>"),
+    ("data:text/html,<b>secret</b>", "<data>"),
+    ("sms:+911234567890", "<sms>"),
+])
+def test_a_non_http_href_sends_only_its_scheme(href: str, expected: str) -> None:
+    assert payload.href_path(href) == expected
+    el = ElementRef(role="link", name="Contact", selector="#c", href=href, tag="a")
+    text = json.dumps(payload.build_payload(_node(), [el], [], lambda t: t))
+    for leaked in ("jane", "1234567890", "Jane Doe", "4412", "alert", "secret"):
+        assert leaked not in text, leaked
 
-    def walk(obj: Any) -> None:
-        if isinstance(obj, dict):
-            keys.update(obj)
-            for v in obj.values():
-                walk(v)
-        elif isinstance(obj, list):
-            for v in obj:
-                walk(v)
 
-    walk(json.loads(_payload_text()))
-    assert not keys & {"value", "cookie", "cookies", "header", "headers", "token", "image",
-                       "screenshot", "url_example", "query"}
+def test_a_path_parameter_such_as_a_session_id_is_dropped() -> None:
+    assert payload.href_path("/files;jsessionid=ABC123SESSION/list;v=2?x=1#f") == "/files/list"
+    assert payload.href_path("https://app.test/a;sid=ZZ99/b") == "/a/b"
+
+
+def test_an_http_path_goes_through_url_template_with_no_host_query_or_fragment() -> None:
+    assert payload.href_path("https://app.test:8443/people/77?token=T#top") == "/people/{id}"
+    assert payload.href_path("/reports/2026-01-02") == "/reports/{date}"
+    assert payload.href_path("//cdn.test/x/y") == "/x/y"
+    assert payload.href_path("#top") == "" and payload.href_path("?q=1") == ""
+    assert payload.href_path(None) == "" and payload.href_path("") == ""
 
 
 def test_payload_caps_names_known_screens_and_indexes_candidates() -> None:

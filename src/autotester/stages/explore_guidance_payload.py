@@ -9,8 +9,11 @@ drop or invent one.
 
 Sent per screen: url template (query and fragment stripped, never the example URL), title, depth,
 known screen templates (capped). Sent per control: index, role, name (trimmed, scrubbed), tag,
-type, is_form_submit, in_row, has_href and the href PATH only. A control inside a list row has
-its name replaced by a fixed placeholder (rows are where student names live) and no href.
+type, is_form_submit, in_row, has_href and the href PATH only (http(s) only, templated; any
+other scheme is just `<mailto>`, `<tel>` ...). A form control (input, textarea, select) sends its
+label text (aria-label, <label>, placeholder) or `<field:type>`, never its value or option text.
+A control inside a list row has its name replaced by a fixed placeholder (rows are where student
+names live) and no href.
 Never sent: images, input values, cookies, headers, tokens, query strings, the example URL.
 """
 
@@ -22,6 +25,7 @@ from typing import Any, TypeVar
 from urllib.parse import urlsplit
 
 from autotester.core.ids import content_hash
+from autotester.core.urls import url_template
 from autotester.schema.screen_graph import ElementRef, ScreenNode
 
 T = TypeVar("T")
@@ -31,13 +35,28 @@ NAME_CHARS = 60
 TITLE_CHARS = 80
 KNOWN_CAP = 30
 ROW_PLACEHOLDER = "<row item>"
+FIELD_TAGS = ("input", "textarea", "select")
+CAPTION_TYPES = ("submit", "button", "reset", "image")
+"""A button-like input's `value` is its caption, not user data, so its name is still sent."""
 
 
 def href_path(href: str | None) -> str:
-    """The path of a link and nothing else: no host, query string or fragment."""
+    """What a link may say: an http(s) path templated by `core/urls.url_template` with no host,
+    `;params`, query or fragment; any other scheme (mailto, tel, javascript, data) as `<scheme>`
+    only, since its payload is an address, a number or code. "" when there is no path."""
     if not href:
         return ""
-    return urlsplit(href).path
+    parts = urlsplit(href.strip())
+    if parts.scheme and parts.scheme.lower() not in ("http", "https"):
+        return f"<{parts.scheme.lower()}>"
+    path = "/".join(seg.split(";")[0] for seg in parts.path.split("/"))
+    return url_template(path, keep_host=False) if path.strip() else ""
+
+
+def is_field(el: ElementRef) -> bool:
+    """A data-bearing form control: its name may be its value or option text (B1)."""
+    return el.field_label is not None or (
+        el.tag in FIELD_TAGS and el.type not in CAPTION_TYPES)
 
 
 def _template(url_template: str) -> str:
@@ -51,7 +70,8 @@ def candidate_hash(cands: list[ElementRef]) -> str:
 
 
 def _control(i: int, el: ElementRef, scrub: Callable[[str | None], str | None]) -> dict[str, Any]:
-    name = ROW_PLACEHOLDER if el.in_row else (scrub(el.name.strip()) or "")  # scrub, THEN cut
+    shown = (el.field_label or f"<field:{el.type or el.tag}>") if is_field(el) else el.name
+    name = ROW_PLACEHOLDER if el.in_row else (scrub(shown.strip()) or "")  # scrub, THEN cut
     path = "" if el.in_row else scrub(href_path(el.href)) or ""
     return {"i": i, "role": el.role, "name": name[:NAME_CHARS], "tag": el.tag, "type": el.type,
             "is_form_submit": el.is_form_submit, "in_row": el.in_row,
