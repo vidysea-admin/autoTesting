@@ -7,7 +7,7 @@ A-W1/W2, B-W1/W2/W4 (`qa/verdicts/crawl-record-gaps.md`, `.b.md`).
 **Branch:** `fix/crawl-record-gaps` (worktree `.claude/worktrees/crawl-gaps`)
 **Date:** 2026-10-29
 **Fix cycle:** 2
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Dual check:** no
 **Not changed (as instructed):** `core/urls.py` templating. No real crawl; whole suite not run.
 
