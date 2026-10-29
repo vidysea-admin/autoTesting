@@ -1,6 +1,6 @@
 # Manifest - cli-clamp-and-standing-help
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Security trigger:** YES (light) - touches the consent grant derivation (`schema/approval.py::derive_grant_bounds`, D-018/D-112). It only adds input rejection and a message; no ceiling, signing or row shape changes. Single checker is enough.
 **Authority:** `qa/verdicts/auto-size-budget.b.md` findings F1 (line 36), F2 (line 37) and the `--standing` scoping ask; D-112 item 2 keeps the 2000-action / 24h / 40000-probe ceilings.
