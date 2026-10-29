@@ -155,7 +155,8 @@ the file unloadable. Claim only what the ordering supports.
 ### X12 — The crawl is DOM-driven and deterministic; a model may ORDER controls, never choose or perform one
 **Default (guidance off, the shipped default): `run_crawl` takes no provider at all.** No stop
 condition, no action choice, and no safety decision depends on model output — a crawl completes
-with `provider=None`, byte-identical to the pre-D-118 crawl. **Amended 2026-10-29 (D-118):** when
+with `provider=None` (a `crawl.json` stored before 2026-10-29 with `provider="mock"` reads back as
+`None`), byte-identical to the pre-D-118 crawl. **Amended 2026-10-29 (D-118):** when
 and only when per-project guidance is switched on (`qa/contracts/crawl-guidance.md`, G1-G12), an
 injected `providers.base.Provider` may be handed ONE screen's code-built, numbered candidate
 controls and return a RANKING of them. The model never adds a control, never performs one, never
@@ -667,3 +668,12 @@ only the pure-function tests).
   maker's change to `Crawl.provider`, issue gap (d)); X3 gains the one named layout-toggle exception
   the same unit shipped (gap (a)), recorded so the contract and `screen_identity.py` agree. X3's
   verify case (same-URL filter toggle = second node) still passes: `tests/test_explore_traversal.py`.
+
+- 2026-10-29 · routine · /checker (unit `crawl-guidance`, cycle 3) · **X12 merge hunk reviewed and
+  completed** (no criterion removed or loosened): the maker's merge of master `a238d406` into
+  `feat/crawl-guidance` (`99dfd6b3`) took the D-118 rewrite of X12 and master's `provider=None`
+  wording, which is the correct union (X12's guidance carve-out, Falsifiable line and the D-118
+  amendment-log entry are intact; X3 and every other section are byte-identical to master). The one
+  piece the merge dropped was master's parenthetical that a pre-2026-10-29 stored `provider="mock"`
+  reads back as `None`; restored in X12 above. A maker does not edit contracts, so this was folded in
+  by the checker; the maker's conflict resolution itself was otherwise right.

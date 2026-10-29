@@ -165,10 +165,11 @@ An explicit list turns the implicit Gemini tier **off** (`providers/model_chain.
 guidance text goes to Gemini. The untagged `ollama_chat/deepseek-v4.1-flash` default
 (`providers/ollama_cloud.py:17`) is a **different, older snapshot** and must not be used for
 guidance. If neither pinned model is available, guidance falls back (G4); it never substitutes an
-unlisted model. `Crawl.provider` (default `"mock"`, `schema/crawl.py:255`) records the serving label
-— the exact tag of the model that answered, `"mock"` only when no model did — and the crawl carries a
-`guidance` summary: mode, models served, calls, KG-annotation hits, fallbacks with reasons, model
-seconds and tokens (from `provider.usage`). A crawl never reads `mock` while a model served it.
+unlisted model. `Crawl.provider` (default `None`, `schema/crawl.py:262`; a legacy stored `"mock"` reads back as
+`None`, `schema/crawl.py:288`) records the serving label — the exact tag of the model that answered,
+`None` only when no model did — and the crawl carries a `guidance` summary: mode, models served,
+calls, KG-annotation hits, fallbacks with reasons, model seconds and tokens (from
+`provider.usage`). A crawl never reads `None` while a model served it.
 **Verify:** a fake chain whose first tier fails records the second tier's tag; an all-fail run records
 no model and `rule-only`; the spec string the code builds equals the pinned list byte for byte; a
 grep shows no `gemini` model id reachable from the guidance path.
@@ -260,3 +261,9 @@ the raw crawl artifacts, not copied from the maker's summary.
   `Crawl.provider` (G8), module/prompt/size rules (G9-G11), and the held measurement (G12). **(3)**
   Per-project opt-in (G5) is stricter than the design's "per-crawl flag", following D-118 item 3.
   Companion amendments: `explore.md` X12 and `crawl-traversal.md` CR6, same date.
+- 2026-10-29 · routine · /checker (unit `crawl-guidance`, cycle 3) · **G8 default label corrected**
+  (no criterion removed or loosened): G8 said `Crawl.provider` defaults to `"mock"` at
+  `schema/crawl.py:255`. Master (merged at `a238d406`, unit `crawl-record-gaps`) changed the default
+  to `None` and reads a legacy `"mock"` back as `None`; G8 now says so, and "no model served" is
+  `None`, not `"mock"`. The behaviour G8 judges (the serving model's exact tag; `None` when none did)
+  is unchanged and is asserted by `tests/test_crawl_guidance_seam.py:182,191`.

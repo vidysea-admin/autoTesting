@@ -136,3 +136,9 @@ Own repro (scratch `repro_c1.py`: full `run_crawl` over the fixture site, a capt
 # Cycle 2 (Checker A, contract) - appended
 
 **Cycle checked:** 2 - A criteria re-confirmed. `git diff ce318eba..cfa6e90f` touches no G1/G2/G4-G8 code (only `enumerate.js`, `schema/screen_graph.py`, `stages/explore_guidance_payload.py`, tests); G5 byte-identical vs `b1ffaf27` (fake driver and real Chromium, see `crawl-guidance.b.md`), G9 greps empty, G11 sizes <= 300, `doctor` clean, `ruff` clean, five guidance test files green (26 + 38 + 20 + 21). Contract result for A is unchanged (PASS on G1-G11). The unit does NOT close: checker B cycle 2 is FAIL on one G3 residual (ARIA custom widget text reaches the payload), see `qa/verdicts/crawl-guidance.b.md`.
+
+---
+
+# Cycle 3 (Checker A, contract) - appended
+
+**Cycle checked:** 3 - A criteria re-confirmed. Source `8d2fe29d` (includes merge `99dfd6b3` of master `a238d406`). G1-G11 hold; G12 HELD, not judged. G5: guidance-off `crawl.json`/`nodes.jsonl`/`edges.jsonl` byte-identical to a pristine `git archive a238d406` in 6 fake-driver cases (69313 bytes) and 17 real-Chromium artifact files. G3: the cycle-2 ARIA-widget defect is closed (50-case real-`enumerate.js` probe, see `crawl-guidance.b.md` cycle 3); six non-blocking residuals N1-N6 are listed there. G8 contract text corrected to `Crawl.provider` default `None` (amendment-log line added in `qa/contracts/crawl-guidance.md`); the `explore.md` X12 merge hunk was reviewed, found correct, and the dropped legacy-`mock` parenthetical restored (amendment-log line added). Evidence: ruff clean (incl. F821/F401/F811/F841), `autotester doctor` clean, 232 modules import, 45 explore/crawl/observe/persona/screen-identity test files green in 23 two-file pytest calls (560 passed). Combined with Checker B cycle 3: PASS.
