@@ -63,3 +63,60 @@ File sizes (G11): `enumerate.js` 206, `explore_guidance_payload.py` 145, `tests/
 
 ## Re-check scope
 None required for this PASS. N7 is cheap hardening for one small maker commit; N8-N10 are observations.
+
+---
+
+# Cycle 1 - re-check of N7 (maker fix `54dedb4a`)
+
+Cycle checked: 1
+Source checked: branch `fix/crawl-guidance-residuals` head `54dedb4a` (`git diff 9371f6dd..54dedb4a -- src tests`: `enumerate.js` +`hiddenBelow` at `:104-119`, `textOutsideFields` at `:121-134`; `tests/test_crawl_guidance_egress.py` +8 shapes, +1 test)
+Contract: `qa/contracts/crawl-guidance.md` G3, G5.
+VERDICT: PASS
+SCOREBOARD: N7 CLOSED for the rule the maker stated (display:none, [hidden], noscript, script, style, template, closed `<details>`, own-parent `visibility:hidden`). Four exotic hidden-text shapes still reach the label (N11, non-blocking, below). No regression elsewhere; cycle-0 closures N1, N2, N3, N5 re-verified.
+
+Method as cycle 0: real `enumerate.js` in headless Chromium, random non-word planted values, `innerText` of the target as an in-page oracle (`gr/hidden2.py`, 33 shapes); reverts in a `git archive` scratch copy or in memory only; no stash, no `src/` or `tests/` edit, no merge or push.
+
+## FINDINGS
+No F items.
+
+### N7 - CLOSED
+`gr/hidden2.py head`, label vs the `innerText` oracle: no leak and the same visible text for `display:none`; `[hidden]`; nested `display:none` > `display:block`; `display:none` > `display:inline` child; `visibility:hidden` parent; `visibility:hidden` outer with the text in an inner span; `visibility:collapse`; closed `<details>` (body, direct text, nested closed inside open, nested `<b>` in summary: the `<summary>` is kept, `Name Sum`); open `<details>` kept; `<noscript>`; `<template>`; closed `<dialog>`; a shadow host with `display:none` and a slotted child; a slot with an unassigned `slot="nope"` child. Better than the oracle: a `visibility:hidden` outer with a `visibility:visible` child gives `Name Shown`; a hidden root with a `display:none` child gives `Name` (innerText gave the child's text too).
+- The root is always read: `display:none` root, `[hidden]` root, `visibility:hidden` root with a visible child, a `display:none` `<label>`: all give the useful label (`Name Lbl`). Labels get the same rule (`label-hidden-child` -> `Name`).
+- Kept like the old `innerText`, as the maker stated: `opacity:0`, off-screen (`left:-9999px`), `aria-hidden`. Unchanged from before.
+- Cycle-0 probe re-run on `54dedb4a` (`gr/probe_res.py head`, 47 shapes): the previously leaking `noscript`, `display:none`, `hidden`, `visibility:hidden`, closed-details and `hidden-in-label` shapes are now clean. Leaks left are exactly the ones the old code also had by design or by the cycle-0 ruling: `aria-hidden`, off-screen, a hidden WHOLE target (root read), a button caption in a label.
+- N1, N2, N3, N5 shapes: still clean (no LEAK in any `n1-*`, `n2-*`, `n3-*`, `n5-*`, shadow, iframe, template case).
+
+### Load-bearing proof
+- Scratch `git archive HEAD` with `enumerate.js` from `2e17d653` (the venv python, `PYTHONPATH` = scratch `src;tests`): `tests/test_crawl_guidance_egress.py -o addopts=` fails `test_residual_shapes_never_send_a_planted_value` with `failures` = exactly the 8 new shapes `n7-display-none, n7-hidden-attr, n7-nested-hidden, n7-visibility-hidden, n7-closed-details, n7-noscript, n7-label-display-none, n7-hidden-target-hidden-child`; none of the 23 earlier shapes is in the list.
+- In-memory mutation of each clause of `hiddenBelow` (`gr/hidden2.py m-*`): drop `display === "none"` -> 12 shapes leak (`display-none`, `hidden-attr`, `dialog-closed`, `label-hidden-child` among them); drop the `visibility` clause -> `vis-hidden-parent`, `vis-collapse` and others leak; drop the SCRIPT/STYLE/NOSCRIPT/TEMPLATE list -> `noscript` leaks; drop `closed` -> the 4 details shapes leak. Each clause has a planted shape in `SHAPES` (`n7-display-none`, `n7-visibility-hidden`, `n7-noscript`, `n7-closed-details`); the `[hidden]` attribute and the dialog case ride on `display:none`.
+- Deviation from `checkVisibility`: accepted. Root-relative `getComputedStyle` keeps a hidden target readable, which an absolute `checkVisibility` would not; probes `root-display-none`, `root-hidden-attr`, `root-vis-hidden-child-ok` confirm.
+
+### N11 (new, non-blocking) - four exotic hidden-text shapes still reach the label
+`hiddenBelow` (`enumerate.js:104-119`) reads computed `display` / `visibility` and a few tags, so it cannot see content that is not rendered for another reason. The old `innerText` excluded these; the new code sends them (`gr/hidden2.py head`, 4 FAILs of 33):
+- `content-visibility:hidden` on a descendant (`<div style="content-visibility:hidden">V</div>`): label `Name V`.
+- `hidden="until-found"` (computes to `content-visibility:hidden`, not `display:none`): label `Name V`.
+- Shadow DOM: default-slot text of a host whose shadow root has no `<slot>` (`<x-h2>V</x-h2>`), and a slotted child whose `<slot>` sits inside a `display:none` element of the shadow tree: label `Name V`.
+Ruling, as for N7 in cycle 0: hidden page text is not an input value, typed value or option text, so no G3 criterion fails, and each needs unusual markup (an accordion using `content-visibility` or `until-found` is the realistic one). Fix direction if taken: also skip a text node when a descendant's computed `contentVisibility` is `hidden` (same `getComputedStyle(p)` the loop already makes); for the shadow cases skip a text node whose parent has no `assignedSlot` while its host has a shadow root. A later check needs only `gr/hidden2.py head` (expect no FAIL) plus the egress test file.
+
+### G5 and regressions
+- `gr/keydiff.py` (old `e947c8f2` vs new `enumerate.js`, 127 pages: all attack cases, real-label cases, every `tests/fixtures/**/*.html`): ZERO differences in any key other than `field_label`; field-ness changes only on the 11 intended shapes.
+- 13 real-label cases: unchanged from cycle 0 (10 identical to the old output; `First *`, `Date of birth`, `Fi rst name` are the carried cosmetic N9, which the maker left as is with a reason: joining without a space would turn adjacent blocks into `AB`).
+- Perf (`gr/perf.py`, `gr/perf2.py`, old vs new): 3000 labelled inputs 933 vs 910 ms; one 20000-node labelledby target 23 vs 109 ms (a `getComputedStyle` per ancestor); 300 inputs with 20-node targets 58 vs 75 ms. Acceptable.
+
+## COMMANDS (from `D:/autoTesting/.claude/worktrees/guidance-residuals`, 2 files per pytest call, `-o addopts=`)
+```
+uv run python gr/hidden2.py head | old | m-closed | m-vis | m-tags | m-none      # old = 2e17d653 enumerate.js
+uv run python gr/probe_res.py head ; gr/keydiff.py ; gr/perf.py ; gr/perf2.py
+git archive HEAD + enumerate.js from 2e17d653 ; pytest tests/test_crawl_guidance_egress.py -vv   -> fails with exactly the 8 n7-* shapes
+uv run pytest tests/test_crawl_guidance_egress.py tests/test_crawl_guidance_payload.py -o addopts=   -> 37 passed
+uv run pytest tests/test_crawl_guidance_seam.py tests/test_crawl_guidance_core.py -o addopts=        -> 47 passed (see note)
+uv run pytest tests/test_crawl_guidance_kg.py tests/test_crawl_guidance_schema.py -o addopts=        -> 22 passed
+uv run pytest tests/test_observe.py tests/test_explore_modal.py -o addopts=                          -> 16 passed
+uv run pytest tests/test_explore_typing_input_type.py tests/test_marker_blocks.py -o addopts=        -> 23 passed
+uv run ruff check src tests scripts                                                                   -> All checks passed!
+uv run autotester doctor                                                                              -> doctor: clean
+```
+Note (flake report): the seam + core pair failed once (`7 failed, 37 passed, 3 errors`, 30 s) on its first run this cycle while the machine was under memory pressure, then passed on re-runs (`47 passed`, about 67 s each). The failing names were not captured. This cycle's delta reaches those tests only through `enumerate.js`, and guidance-off byte identity is shown independently by `keydiff.py` (zero non-`field_label` diffs), so I attribute it to a transient resource failure; a maker run of that pair on a quiet machine should confirm. File sizes (G11): `enumerate.js` 221, egress test 200, both <= 300. Full suite not run.
+
+## Re-check scope
+None required. N11 is optional hardening; N9 remains cosmetic.
