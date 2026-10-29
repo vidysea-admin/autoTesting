@@ -11,6 +11,10 @@
 // key (case, NFC/NFD, sharp s, Kelvin sign, full-width forms) with a plain indexOf scan, so a
 // huge typed value cannot throw. A <br> or block boundary counts as a space.
 //
+// Bounded: the message is read in ONE iterative TreeWalker pass (no clone, no DOM mutation) under
+// node and character caps, per excerpt and per run. Over a cap the excerpt is replaced whole by
+// MASK, never truncated, so a hostile page can neither stall a run nor leak a typed value.
+//
 // Hard limits (documented, not hidden): (a) contenteditable regions are never read as message
 // text (their content is whatever the user typed); (b) text that lives inside an iframe is never
 // read -- iframes (and their fallback content) are dropped, and `document.querySelectorAll` does
@@ -40,9 +44,16 @@
   }
 
   const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
-  const SEP = '\uE000'; // marks an inserted <br>/block separator until collapse() reads it
-  const BLOCKS = 'br,p,div,li,ul,ol,dl,dt,dd,tr,td,th,table,section,article,header,footer,'
-    + 'h1,h2,h3,h4,h5,h6,blockquote,pre,hr,form,fieldset';
+  const BLOCKS = new Set(('br,p,div,li,ul,ol,dl,dt,dd,tr,td,th,table,section,article,header,'
+    + 'footer,h1,h2,h3,h4,h5,h6,blockquote,pre,hr,form,fieldset').split(','));
+  // Scan caps (a hostile page must not stall the run). Over a cap the excerpt is replaced WHOLE
+  // by MASK -- never truncated, because the unscanned tail could hold a typed value.
+  const MAX_NODES = 20000;
+  const MAX_CHARS = 1000000;
+  const RUN_NODES = 60000;
+  const RUN_CHARS = 3000000;
+  const MASK = '[excerpt masked: over the scan limit]';
+  const run = { nodes: 0, chars: 0 };
 
   // Matching key: NFKD, combining marks dropped, upper then lower case (sharp s -> ss, Kelvin
   // sign -> k, full-width -> ASCII). It can change length, so foldMap() keeps, per folded
@@ -127,34 +138,78 @@
     return out + text.slice(last);
   }
 
-  // Same result as norm(raw with SEP read as a space), plus gap[] (see blank()).
-  function collapse(raw) {
+  // `parts` are text-node strings, with null at every <br>/block boundary (no sentinel character,
+  // so a private-use character in the page or in a typed value is just text). Same result as
+  // norm() with a boundary read as a space, plus gap[] (see blank()). A run of whitespace is
+  // "inserted" (gap) when it touches a boundary and holds no real space; whitespace that holds a
+  // line break is source formatting (`</p>\n  <p>`), not a space the page showed, but a space or
+  // tab without one (`<p>Alice </p>`) is real.
+  function collapse(parts) {
     let text = '';
     const gap = [];
     let real = false;
+    let fmt = false;
     let sep = false;
-    for (const ch of raw) {
-      if (ch === SEP) { sep = true; continue; }
-      if (/\s/.test(ch)) { real = true; continue; }
-      if (text && (real || sep)) { text += ' '; gap.push(!real); }
-      real = false;
-      sep = false;
-      text += ch;
-      for (let i = 0; i < ch.length; i++) gap.push(false);
+    for (const part of parts) {
+      if (part === null) { sep = true; continue; }
+      for (const chunk of part.match(/\s+|\S+/g) || []) {
+        if (/^\s/.test(chunk)) {
+          if (/[\r\n]/.test(chunk)) fmt = true; else real = true;
+          continue;
+        }
+        if (text && (real || fmt || sep)) { text += ' '; gap.push(sep && !real); }
+        real = fmt = sep = false;
+        text += chunk;
+        for (let i = 0; i < chunk.length; i++) gap.push(false);
+      }
     }
     return { text, gap };
   }
 
+  // One iterative TreeWalker pass over the live subtree: no clone, no DOM mutation. Dropped
+  // elements (DROP) and everything under them are skipped. Returns the parts, or null when a
+  // node/character cap (per excerpt or per run) is hit.
+  function partsOf(root) {
+    const parts = [];
+    const closers = [];
+    let nodes = 0;
+    let chars = 0;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    let node = root;
+    for (;;) {
+      let descend = true;
+      let closes = false;
+      if (node !== root) {
+        nodes++; run.nodes++;
+        if (node.nodeType === Node.TEXT_NODE) {
+          chars += node.data.length; run.chars += node.data.length;
+          parts.push(node.data);
+          descend = false;
+        } else if (node.matches(DROP)) {
+          descend = false;
+        } else if (BLOCKS.has(node.localName)) {
+          parts.push(null);
+          closes = true;
+        }
+        if (nodes > MAX_NODES || chars > MAX_CHARS || run.nodes > RUN_NODES
+            || run.chars > RUN_CHARS) return null;
+      }
+      if (descend && walker.firstChild()) { closers.push(closes); node = walker.currentNode; continue; }
+      if (closes) parts.push(null);
+      for (;;) {
+        if (walker.nextSibling()) { node = walker.currentNode; break; }
+        if (walker.currentNode === root) return parts;
+        walker.parentNode();
+        if (closers.pop()) parts.push(null);
+        if (walker.currentNode === root) return parts;
+      }
+    }
+  }
+
   function messageText(el) {
-    const clone = el.cloneNode(true);
-    clone.querySelectorAll(DROP).forEach((n) => n.remove());
-    // a <br> or block boundary is a visual separator: give it a space so text on either side
-    // is neither run together nor able to hide a typed value split across lines
-    clone.querySelectorAll(BLOCKS).forEach((n) => {
-      if (n.localName === 'br' || n.localName === 'hr') n.replaceWith(SEP);
-      else { n.prepend(SEP); n.append(SEP); }
-    });
-    const { text, gap } = collapse(clone.textContent);
+    const parts = partsOf(el);
+    if (parts === null) return MASK;
+    const { text, gap } = collapse(parts);
     return blank(text, gap);
   }
 
@@ -166,6 +221,7 @@
     if (!isVisible(el)) continue;
     const text = messageText(el);
     if (text) out.push(text);
+    if (run.nodes > RUN_NODES || run.chars > RUN_CHARS) break; // budget spent: nothing more is read
   }
   return out;
 })()

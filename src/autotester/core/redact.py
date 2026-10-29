@@ -53,7 +53,7 @@ __all__ = [
 MASK = "[REDACTED]"
 # F9: a secret echoed in ANOTHER case is masked too, but only for values long enough that an
 # ordinary word cannot be one: CI_MIN_LEN with a non-letter in it, or CI_MIN_LETTERS letters only.
-CI_MIN_LEN, CI_MIN_LETTERS = 8, 12
+CI_MIN_LEN, CI_MIN_LETTERS = 8, 8  # letters-only floor 12 -> 8 (Umesh 2026-10-29)
 PLACEHOLDER_RE = re.compile(r"\{\{SECRET:([A-Z0-9_]+)\}\}")
 
 # AT-780: heuristic masks for personal data that is NOT a declared secret. They are guesses,
