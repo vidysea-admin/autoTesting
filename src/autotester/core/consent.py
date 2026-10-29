@@ -24,8 +24,9 @@ from autotester.schema.approval import (
     PROBES_PER_ACTION,
     STANDING_KINDS,
     RunApproval,
+    derive_grant_bounds,
     grant_clamp_warning,
-    hint_grant_bounds,
+    invalid_bounds_message,
 )
 from autotester.schema.approval_revocation import ApprovalRevocation, revoked_ids
 from autotester.schema.enums import ApprovalKind
@@ -140,27 +141,29 @@ def prepare_account_grant(
                             wall_clock_s=wall_clock_s, now=moment)
 
 
-def _grant_command(
+def _grant_advice(
     project: str, kind: ApprovalKind, target: str,
     actions: int, probes: int, wall_clock_s: float, production: bool,
 ) -> str:
-    """The command that would actually let THIS run proceed (bounds included: found by running
-    it, an operator who pasted a bound-less one got a second refusal), sized by
-    `hint_grant_bounds` (never raises)."""
-    actions, probes, wall_clock_s = hint_grant_bounds(kind, actions, probes, wall_clock_s)
+    """The tail of a refusal. A malformed bound is NAMED with its reason and no `approve` command
+    follows (`approve` would reject it); else the command that lets THIS run proceed."""
+    if note := invalid_bounds_message(actions, probes, wall_clock_s):
+        return note
+    bounds = derive_grant_bounds(kind, actions, probes, wall_clock_s)
     parts = [
         f"uv run autotester approve {project} --kind {kind.value}",
         f'--target "{target}"',
         '--scope "<what this run may touch>"',
         "--granted-by <name> --expires <YYYY-MM-DD>",
     ]
-    for flag, value in (("--max-actions", actions), ("--max-probes", probes),
-                        ("--wall-clock", wall_clock_s)):
-        if value:
-            parts.append(f"{flag} {value}")
+    parts += [f"{flag} {value}" for flag, value in zip(
+        ("--max-actions", "--max-probes", "--wall-clock"), bounds, strict=True) if value]
     if production:
         parts.append("--production")
-    return " ".join(parts)
+    keep = ("\nTo keep it valid until revoked, replace --expires <YYYY-MM-DD> with --standing."
+            if kind in STANDING_KINDS else "")
+    return (grant_clamp_warning(kind, actions, probes, wall_clock_s)
+            + "\nGrant one with:\n  " + " ".join(parts) + keep)
 
 
 def _shortfalls(
@@ -260,10 +263,7 @@ def require_approval(
     )
     raise ApprovalRequired(
         f"refusing to start a {kind.value} run against {target} — {detail}"
-        f"{grant_clamp_warning(kind, actions, probes, wall_clock_s)}\nGrant one with:\n  "
-        f"{_grant_command(project, kind, target, actions, probes, wall_clock_s, production)}"
-        + ("\nTo keep it valid until revoked, replace --expires <YYYY-MM-DD> with --standing."
-           if kind in STANDING_KINDS else "")
+        f"{_grant_advice(project, kind, target, actions, probes, wall_clock_s, production)}"
     )
 
 
