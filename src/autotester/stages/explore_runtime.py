@@ -31,6 +31,7 @@ from autotester.stages.explore_safety import DialogBreaker
 from autotester.store.project_store import ProjectStore
 
 if TYPE_CHECKING:
+    from autotester.stages.explore_guidance import Guidance
     from autotester.stages.explore_replay import TypedAction
 
 
@@ -79,6 +80,9 @@ class ExploreRuntime:
     until the non-destructive frontier is drained. `explore_traversal.drain_deferred` empties it."""
     skipped_unchanged: int = 0
     """CR3/CR5: screens skipped as unchanged. Counted apart from `screens`."""
+    guidance: Guidance | None = None
+    """crawl-guidance G5: None (the default) is today's crawl exactly; set only by `run_crawl`
+    through `explore_guidance.attach` (guide passed + project opted in + bounds on)."""
     frontier_exhausted: bool = False
     """CR5, and the property the whole unit rests on: set TRUE only where the
     traversal loop really drained the queue. `run_crawl` reads THIS to decide

@@ -45,7 +45,8 @@ from typing import TYPE_CHECKING
 
 from autotester.schema.enums import Action, EdgeOutcome, IssueKind, TraversalStrategy
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
-from autotester.stages.explore_safety import is_destructive
+from autotester.stages import crawl_coverage
+from autotester.stages.explore_safety import destructive_last, is_destructive
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime
@@ -101,6 +102,23 @@ def _descendant_of(
     if not children:
         return None
     return max(children, key=lambda node_id: (nodes[node_id].depth, node_id))
+
+
+def ordered_candidates(rt: ExploreRuntime, node: ScreenNode) -> list[ElementRef]:
+    """The order `_click_loop` tries a screen's controls in (D-040, crawl-guidance G1/G9).
+
+    Guidance off (`rt.guidance is None`): `destructive_last` verbatim, today's order. Guidance on:
+    only the ORDINARY, pressable half is handed to the model; unpressable controls and the whole
+    destructive tail keep their rule position, so no destructive control is ever placed ahead of
+    an ordinary one, and nothing is added, dropped or made pressable by the model."""
+    rule = destructive_last(node.elements, rt.policy)
+    if rt.guidance is None:
+        return rule
+    split = sum(1 for el in node.elements if not is_destructive(el, rt.policy))
+    ordinary, destructive = rule[:split], rule[split:]
+    ready = [el for el in ordinary if crawl_coverage.is_candidate(el)]
+    rest = [el for el in ordinary if not crawl_coverage.is_candidate(el)]
+    return [*rt.guidance.order(rt, node, ready), *rest, *destructive]
 
 
 def defer_destructive(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> bool:

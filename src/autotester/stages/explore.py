@@ -26,6 +26,7 @@ from autotester.schema.screen_graph import CrawlFrontier, ScreenNode
 from autotester.stages import (
     crawl_coverage,
     explore_consent,
+    explore_guidance,
     explore_incremental,
     explore_node,
     explore_status,
@@ -225,6 +226,7 @@ def _finish(rt: ExploreRuntime, status: CrawlStatus) -> Crawl:
         "skipped_unchanged": rt.skipped_unchanged,  # CR3/CR5: visible on every surface
         "noise_counts": [NoiseCount(host=h, count=c) for h, c in sorted(rt.noise.items())],
         "coverage": crawl_coverage.of_run(rt, status),  # V7
+        **explore_guidance.crawl_fields(rt),  # G8: {} unless guidance was active
     })
     rt.crawl = crawl
     explore_summary.save_crawl(rt, crawl)
@@ -246,6 +248,7 @@ def run_crawl(
     clock: Callable[[], float] = time.monotonic,
     strategy: TraversalStrategy = TraversalStrategy.BFS,
     incremental: bool = False,
+    guide: explore_guidance.Guidance | None = None,
 ) -> Crawl:
     """Crawl `project` breadth-first within `bounds`, refusing anything
     `policy` denies. Returns the finished `Crawl` envelope; the graph itself
@@ -275,6 +278,7 @@ def run_crawl(
         breaker=DialogBreaker(crawl.bounds.dialog_repeat_limit), clock=clock,
         started=clock(), frontier=CrawlFrontier(), strategy=strategy,
         persona=explore_incremental.load_index(store, enabled=incremental),
+        guidance=explore_guidance.attach(guide, project, bounds),
     )
     try:
         return _walk(rt, login_case)
