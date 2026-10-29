@@ -59,6 +59,38 @@ def test_f6_inline_markup_still_joins_text_nodes(real_page) -> None:  # noqa: F8
     assert "Taken" in joined and "sorry" in joined and "ice" not in joined
 
 
+SPLITS = [
+    "<p>Alice</p><p>99</p>",
+    "Alice<br>99",
+    "<table><tr><td>Alice</td><td>99</td></tr></table>",
+    "<div>Alice</div><div>99</div>",
+]
+
+
+@pytest.mark.parametrize("echo", SPLITS)
+def test_f6b_unspaced_typed_value_split_across_blocks_is_blanked(
+        real_page, echo) -> None:  # noqa: F811
+    joined = scrape(real_page, f"""<input value="Alice99">
+<div role=alert>No user {echo} found</div>""")
+
+    assert joined == "No user [input] found"
+
+
+def test_f6b_spaced_and_unspaced_echoes_in_one_message_are_both_blanked(
+        real_page) -> None:  # noqa: F811
+    joined = scrape(real_page, """<input value="Alice99"><input value="Bob 77">
+<div role=alert>Taken: <p>Alice</p><p>99</p> and <p>Bob</p><p>77</p> and Alice99 ok</div>""")
+
+    assert joined == "Taken: [input] and [input] and [input] ok"
+
+
+def test_f6b_real_whitespace_next_to_a_separator_is_not_removed(real_page) -> None:  # noqa: F811
+    joined = scrape(real_page, """<input value="Alice99">
+<div role=alert>Seen <p>Alice </p><p>99</p> here</div>""")
+
+    assert joined == "Seen Alice 99 here"  # a genuine space: not the typed value
+
+
 # -- F7: long typed values -------------------------------------------------------------
 
 

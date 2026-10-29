@@ -40,6 +40,7 @@
   }
 
   const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+  const SEP = '\uE000'; // marks an inserted <br>/block separator until collapse() reads it
   const BLOCKS = 'br,p,div,li,ul,ol,dl,dt,dd,tr,td,th,table,section,article,header,footer,'
     + 'h1,h2,h3,h4,h5,h6,blockquote,pre,hr,form,fieldset';
 
@@ -81,14 +82,37 @@
   // Plain indexOf scan (no RegExp, so a huge typed value cannot throw). Matches are collected as
   // [start, end) ranges in the ORIGINAL text, so one blanked value is never re-matched inside the
   // marker of another; only overlapping ranges merge.
-  function blank(text) {
-    const { folded, starts, ends } = foldMap(text);
+  // Typed-value ranges [start, end) in `view`, translated to `text` offsets through `map`
+  // (map[i] = offset in `text` of view[i]; null when the view IS the text).
+  function spansIn(view, map) {
+    const { folded, starts, ends } = foldMap(view);
     const spans = [];
     for (const v of typed) {
       for (let at = folded.indexOf(v); at !== -1; at = folded.indexOf(v, at + v.length)) {
-        spans.push([starts[at], ends[at + v.length - 1]]);
+        const [from, to] = [starts[at], ends[at + v.length - 1]];
+        spans.push(map ? [map[from], map[to - 1] + 1] : [from, to]);
       }
     }
+    return spans;
+  }
+
+  // `text` is the message with whitespace collapsed; gap[i] is true where the space at text[i]
+  // was only a <br>/block separator we inserted. A typed value is matched against `text` AND
+  // against `text` with those inserted spaces removed (a value with no space that the page split
+  // across blocks, `<p>Alice</p><p>99</p>`), so both echoes are blanked.
+  // Plain indexOf scan (no RegExp, so a huge typed value cannot throw). Ranges are in the ORIGINAL
+  // text, so one blanked value is never re-matched inside the marker of another; only overlapping
+  // ranges merge.
+  function blank(text, gap) {
+    const map = [];
+    let joined = '';
+    for (let i = 0; i < text.length; i++) {
+      if (gap[i]) continue;
+      joined += text[i];
+      map.push(i);
+    }
+    const spans = spansIn(text, null);
+    if (joined.length !== text.length) for (const sp of spansIn(joined, map)) spans.push(sp);
     spans.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
     let out = '';
     let last = 0;
@@ -103,16 +127,35 @@
     return out + text.slice(last);
   }
 
+  // Same result as norm(raw with SEP read as a space), plus gap[] (see blank()).
+  function collapse(raw) {
+    let text = '';
+    const gap = [];
+    let real = false;
+    let sep = false;
+    for (const ch of raw) {
+      if (ch === SEP) { sep = true; continue; }
+      if (/\s/.test(ch)) { real = true; continue; }
+      if (text && (real || sep)) { text += ' '; gap.push(!real); }
+      real = false;
+      sep = false;
+      text += ch;
+      for (let i = 0; i < ch.length; i++) gap.push(false);
+    }
+    return { text, gap };
+  }
+
   function messageText(el) {
     const clone = el.cloneNode(true);
     clone.querySelectorAll(DROP).forEach((n) => n.remove());
     // a <br> or block boundary is a visual separator: give it a space so text on either side
     // is neither run together nor able to hide a typed value split across lines
     clone.querySelectorAll(BLOCKS).forEach((n) => {
-      if (n.localName === 'br' || n.localName === 'hr') n.replaceWith(' ');
-      else { n.prepend(' '); n.append(' '); }
+      if (n.localName === 'br' || n.localName === 'hr') n.replaceWith(SEP);
+      else { n.prepend(SEP); n.append(SEP); }
     });
-    return blank(norm(clone.textContent));
+    const { text, gap } = collapse(clone.textContent);
+    return blank(text, gap);
   }
 
   const out = [];
