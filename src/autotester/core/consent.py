@@ -24,7 +24,8 @@ from autotester.schema.approval import (
     PROBES_PER_ACTION,
     STANDING_KINDS,
     RunApproval,
-    derive_grant_bounds,
+    grant_clamp_warning,
+    hint_grant_bounds,
 )
 from autotester.schema.approval_revocation import ApprovalRevocation, revoked_ids
 from autotester.schema.enums import ApprovalKind
@@ -145,8 +146,8 @@ def _grant_command(
 ) -> str:
     """The command that would actually let THIS run proceed (bounds included: found by running
     it, an operator who pasted a bound-less one got a second refusal), sized by
-    `derive_grant_bounds`."""
-    actions, probes, wall_clock_s = derive_grant_bounds(kind, actions, probes, wall_clock_s)
+    `hint_grant_bounds` (never raises)."""
+    actions, probes, wall_clock_s = hint_grant_bounds(kind, actions, probes, wall_clock_s)
     parts = [
         f"uv run autotester approve {project} --kind {kind.value}",
         f'--target "{target}"',
@@ -258,8 +259,8 @@ def require_approval(
         else "the approvals that exist do not cover it:\n  - " + "\n  - ".join(rejections)
     )
     raise ApprovalRequired(
-        f"refusing to start a {kind.value} run against {target} — {detail}\n"
-        "Grant one with:\n  "
+        f"refusing to start a {kind.value} run against {target} — {detail}"
+        f"{grant_clamp_warning(kind, actions, probes, wall_clock_s)}\nGrant one with:\n  "
         f"{_grant_command(project, kind, target, actions, probes, wall_clock_s, production)}"
         + ("\nTo keep it valid until revoked, replace --expires <YYYY-MM-DD> with --standing."
            if kind in STANDING_KINDS else "")

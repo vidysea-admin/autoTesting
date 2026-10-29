@@ -73,6 +73,17 @@ class GrantBounds(NamedTuple):
     wall_clock_s: float
 
 
+def _margined(value: float, ceiling: float) -> float:
+    """`value` x the safety margin, in whole units, saturating at `ceiling` (never overflowing)."""
+    return ceiling if value >= ceiling / GRANT_SAFETY_MARGIN else float(math.ceil(
+        value * GRANT_SAFETY_MARGIN))
+
+
+def _is_valid_bounds(*values: float) -> bool:
+    """True when every bound is a real number, >= 0 and finite (a bool is not a bound)."""
+    return all(not isinstance(v, bool) and 0 <= v < math.inf for v in values)
+
+
 def derive_grant_bounds(
     kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
 ) -> GrantBounds:
@@ -80,14 +91,57 @@ def derive_grant_bounds(
     `approve` with the flags omitted and the UI pre-fill all call it. A LIVE_CASE run's planned
     actions and time get `GRANT_SAFETY_MARGIN`, in whole units, within the grant ceilings;
     probes are `max(floor, actions x PROBES_PER_ACTION)` (the D-068 brake) up to
-    `MAX_GRANT_PROBES`. 0 means not asked; any other kind passes through unchanged."""
+    `MAX_GRANT_PROBES`. 0 means not asked; any other kind passes through unchanged. A negative,
+    NaN or infinite input raises `ValueError`; an input so large its margin would overflow
+    saturates at the ceiling."""
+    if not _is_valid_bounds(actions, probes, wall_clock_s):
+        raise ValueError(f"grant bounds must be non-negative and finite, got actions={actions}, "
+                         f"probes={probes}, wall_clock_s={wall_clock_s}")
     if kind is not ApprovalKind.LIVE_CASE:
         return GrantBounds(actions, probes, wall_clock_s)
-    wide = min(math.ceil(actions * GRANT_SAFETY_MARGIN), MAX_GRANT_ACTIONS) if actions else 0
-    wall = (min(float(math.ceil(wall_clock_s * GRANT_SAFETY_MARGIN)), MAX_GRANT_WALL_CLOCK_S)
-            if wall_clock_s and math.isfinite(wall_clock_s) else wall_clock_s)
+    wide = int(_margined(actions, MAX_GRANT_ACTIONS)) if actions else 0
+    wall = _margined(wall_clock_s, MAX_GRANT_WALL_CLOCK_S) if wall_clock_s else wall_clock_s
     wide_probes = min(max(probes, wide * PROBES_PER_ACTION), MAX_GRANT_PROBES) if probes else 0
     return GrantBounds(wide, wide_probes, wall)
+
+
+def hint_grant_bounds(
+    kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
+) -> GrantBounds:
+    """`derive_grant_bounds` for a REFUSAL message: the refusal path must never crash, so
+    malformed bounds (negative / NaN / infinite, e.g. `explore --wall-clock inf`) are echoed
+    unchanged and the gate refuses them as it always did. `approve` stays strict."""
+    if not _is_valid_bounds(actions, probes, wall_clock_s):
+        return GrantBounds(actions, probes, wall_clock_s)
+    return derive_grant_bounds(kind, actions, probes, wall_clock_s)
+
+
+def _whole_seconds(seconds: float) -> str:
+    """Seconds rounded UP to a whole number (no scientific notation, so 86400.0004 never reads
+    as '86400s > 86400s'); a non-finite value is shown as-is."""
+    return str(math.ceil(seconds)) if math.isfinite(seconds) else str(seconds)
+
+
+def grant_clamp_warning(
+    kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
+) -> str:
+    """F1: '' unless a LIVE_CASE plan itself exceeds a grant ceiling, in which case the derived
+    (clamped) grant cannot cover the run and a plain note names each bound, planned vs ceiling.
+    Starts with a newline so it appends to a message."""
+    if kind is not ApprovalKind.LIVE_CASE:
+        return ""
+    over = [f"{name}: planned {planned}{unit} > ceiling {ceiling}{unit}"
+            for name, planned, ceiling, unit, is_over in (
+                ("actions", actions, MAX_GRANT_ACTIONS, "", actions > MAX_GRANT_ACTIONS),
+                ("probes", probes, MAX_GRANT_PROBES, "", probes > MAX_GRANT_PROBES),
+                ("wall clock", _whole_seconds(wall_clock_s),
+                 _whole_seconds(MAX_GRANT_WALL_CLOCK_S), "s",
+                 wall_clock_s > MAX_GRANT_WALL_CLOCK_S))
+            if is_over]
+    if not over:
+        return ""
+    return ("\nthis plan is over a grant ceiling, so the grant below is clamped and will not "
+            "cover the run (" + "; ".join(over) + "). Split the cases into smaller runs.")
 
 
 class RunApproval(Artifact):
