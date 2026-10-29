@@ -72,6 +72,9 @@ warn_unused_ignores = true
 module = "tests.*"
 strict = false
 
+[tool.autotester.store]
+database = "autotester"  # D-121/D-122: the ONLY database the store may write; required, no default
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

@@ -212,6 +212,7 @@
 | `schema/server_settings.py` | Admin-set server limits (D-072 G6 and item 10): run concurrency and the upload size ceiling. |
 | `schema/sheet_plan.py` | The shapes of a tracker-sheet sync PLAN (T-199b dry run; contract TB9, TB10, TB11, TB13 in part). |
 | `schema/state_probe.py` | A state probe: what to read, as whom, and what change the action must leave behind (MP33). |
+| `schema/store_config.py` | The ONE source of the store database name (D-121, D-122; contract mongo-store M1, M4). |
 | `schema/subagent.py` | The shape of one subagent of the lead tester (T-180, D-042, AL8-AL10): its name, the skill |
 | `schema/teaching.py` | Structured, locator-cited teaching material and its model reading. |
 | `schema/teaching_run.py` | Immutable teaching inputs, materialization and per-source resumable receipts. |
@@ -414,6 +415,7 @@
 | `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
+| `store/mongo_guard.py` | The only door to the AutoTester Mongo database (contract mongo-store M1-M12; D-120..D-122). |
 | `store/notification_prefs.py` | Persist only a numeric account's report-email preference, defaulting safely to off. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
@@ -844,6 +846,8 @@
 | `ReaderKind` (`schema/state_probe.py`) | `counter` and `list` read a number (a count of items for a list); `status` reads a state. |
 | `StateFault` (`schema/state_probe.py`) | How a change failed. The values appear verbatim in the finding title. |
 | `StateProbe` (`schema/state_probe.py`) | One state reader, the action that changes it, and who must see the change. |
+| `StoreConfigError` (`schema/store_config.py`) | The store configuration, the connection string or the target database is unsafe. |
+| `StoreConfig` (`schema/store_config.py`) | `[tool.autotester.store]`: exactly one key, required, with no default (M1, M4). |
 | `SubagentName` (`schema/subagent.py`) |  |
 | `SubagentSpec` (`schema/subagent.py`) | One subagent. Frozen: the allowlist cannot be widened after construction. |
 | `SubagentInvocation` (`schema/subagent.py`) | What ONE subagent is handed (AL9): its own prompt, the task text, the files the lead |

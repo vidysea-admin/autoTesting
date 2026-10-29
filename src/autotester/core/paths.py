@@ -12,10 +12,15 @@ from pathlib import Path
 from autotester.core.repo_docs import RepoDocs
 from autotester.core.safe_names import SLUG_PATTERN, UnsafeName, safe_name
 
-__all__ = ["ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "repo_root", "team_path",
-           "work_dir"]
+__all__ = ["ENV_ROOT", "SLUG_PATTERN", "ProjectPaths", "RepoDocs", "code_root", "repo_root",
+           "team_path", "work_dir"]
 
 ENV_ROOT = "AUTOTESTER_ROOT"
+
+
+def code_root() -> Path:
+    """The code tree (committed config, D-121). NEVER moved by `AUTOTESTER_ROOT`, the data root."""
+    return Path(__file__).resolve().parents[3]
 
 
 def repo_root() -> Path:
@@ -23,7 +28,7 @@ def repo_root() -> Path:
     override = os.environ.get(ENV_ROOT)
     if override:
         return Path(override).resolve()
-    return Path(__file__).resolve().parents[3]
+    return code_root()
 
 
 class ProjectPaths:
@@ -54,11 +59,8 @@ class ProjectPaths:
 
     @property
     def env_file(self) -> Path:
-        """One credential file for the whole repo, at the root (Umesh, 2026-09-03).
-
-        Keys are namespaced per project (`PATHLYNKS_*`) and declared in each
-        project's `SecretRef[]`; a project can only resolve the keys it declares.
-        """
+        """One credential file for the whole repo, at the root (Umesh, 2026-09-03). Keys are
+        namespaced per project (`PATHLYNKS_*`); a project resolves only its `SecretRef[]` keys."""
         return self.root / ".env"
 
     @property
@@ -186,8 +188,7 @@ class ProjectPaths:
         return self.run_dir(run_id) / "bundles"
 
     def run_trace(self, run_id: str) -> Path:
-        """The redacted per-run trace (D-041 phase 1, RT1) -- `trace_id`
-        equals `run_id`, never re-minted (RT2)."""
+        """The redacted per-run trace (D-041 phase 1, RT1); `trace_id` == `run_id` (RT2)."""
         return self.run_dir(run_id) / "trace.jsonl"
 
     def run_ux_report(self, run_id: str) -> Path:
@@ -244,8 +245,7 @@ class ProjectPaths:
 
     @property
     def crawl_summaries_dir(self) -> Path:
-        """Tracked, redacted one-file summaries of finished crawls (the full crawl dir is
-        gitignored), so a done_check can pass from a clean checkout."""
+        """Tracked, redacted crawl summaries (the full crawl dir is gitignored)."""
         return self.dir / "crawl_summaries"
 
     def crawl_summary(self, crawl_id: str) -> Path:
