@@ -2832,3 +2832,31 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-111, D-018, d111-standing-approval, qa/verdicts/6c-1028-batch2.md
 
 **Changes-authorized:** `src/autotester/auth/policy.py` (the access.approve row for the revoke route) and its policy-table test. No ARCHITECTURE.md prose and no enforcement path.
+
+## D-114 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Ratifies, under D-112, the auto-size-budget changes to `src/autotester/stages/run_gates.py` (`derive_live_case_grant`, which feeds the gate's own request for the planned cases into `derive_grant_bounds`) and `src/autotester/ui/routes_credentials.py` (the grant form carries and prefills the derived bounds). D-112's `Changes-authorized` list did not name these two files; both are where the derived bound is computed and shown, and neither is an enforcement path.
+
+**Why:** Checker A on auto-size-budget (W1) and checker B (F3) flagged the two files as outside D-112's authorized list. Asked in chat on 2026-10-29, Umesh answered "and ratify".
+
+**Result:** No code change; the changes already shipped in fix/auto-size-budget (dual PASS cycle 0) and are on master via integrate/1028 (6c-1028-batch2 run 3 GREEN), pushed at dd9f050d.
+
+**Approved-by:** Umesh (chat 2026-10-29: "and ratify")
+
+**Links:** D-112, auto-size-budget, qa/verdicts/auto-size-budget.md, qa/verdicts/auto-size-budget.b.md
+
+**Changes-authorized:** `src/autotester/stages/run_gates.py`, `src/autotester/ui/routes_credentials.py` and their tests, for the D-112 derived-bound work only. No ARCHITECTURE.md prose and no enforcement path.
+
+## D-115 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** (1) **One browser per run for entry cases.** A UI/CLI case run reuses one Chromium browser and one logged-in context across its entry (login-type) cases instead of launching a wiped-profile browser per case. Before each case the runner resets page state (close extra pages and dialogs, navigate to the case's start URL); the case's own login steps still run when the case is a login case, so a login case still proves login. The browser is closed once, at the end of the run, through the bounded teardown (D-112). Cases that need a clean or different identity (a different role account, a logged-out case, an adversarial probe) still get their own context. (2) **Retire duplicate Pathlynks cases.** Cases in `projects/pathlynks/cases.jsonl` that test the same flow with the same steps and assertions as another case are retired through the shipped retire path (never deleted), keeping the case with the longest pass history; each retirement names the case it duplicates.
+
+**Why:** run-01M617NCNB8RBBME2RSH9ZQ87P spent ~13 of 17 minutes in per-case Chromium teardown on a memory-starved host (stall-diagnosis.md), and duplicate login cases doubled run time and reported one bug twice. Asked in chat (options A reuse vs B fresh per case; retire duplicates yes/no), Umesh answered on 2026-10-29: "yes do retire duplicates and reuse the same chorme". Accepted risk: state left by one case can affect the next; the per-case reset and separate contexts for identity changes bound it.
+
+**Result:** Maker unit entry-browser-reuse (dual check; it touches the run path and credentials substitution), tests first, in `ui/run_execution.py` and the browser session layer. Duplicate retirement is a data change in projects/pathlynks with the retired list shown to Umesh.
+
+**Approved-by:** Umesh (chat 2026-10-29: "yes do retire duplicates and reuse the same chorme")
+
+**Links:** D-112, run-teardown-stall, run-01M617NCNB8RBBME2RSH9ZQ87P, .work/pathlynks-explore/stall-diagnosis.md
+
+**Changes-authorized:** `src/autotester/ui/run_execution.py`, the browser session/teardown modules under `src/autotester/browser/`, the run launcher, and their tests; `projects/pathlynks/cases.jsonl` retirements via the shipped retire path. No ARCHITECTURE.md prose and no enforcement path.
