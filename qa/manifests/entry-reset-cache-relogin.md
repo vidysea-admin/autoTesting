@@ -1,6 +1,6 @@
 # Manifest - entry-reset-cache-relogin
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 1
 **Cycle 1:** fixes checker B cycle-0 F1 (blocking), W1 (both checkers) and W2 (`qa/verdicts/entry-reset-cache-relogin.b.md`, `.md`); criteria 7-9 below. Criterion 1's "a failure of the cache call loses no origin" is superseded by criterion 8.
 **Authority:** checker-B cycle-2 verdict of `entry-browser-reuse` (`qa/verdicts/entry-browser-reuse.b.md`, warnings W1 and W3), D-115 item 1, D-116.
