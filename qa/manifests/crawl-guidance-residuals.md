@@ -1,11 +1,12 @@
 # Manifest — crawl-guidance-residuals
 
 Status: ready-for-check
-Fix cycle: 0
+Fix cycle: 1
+Prior verdict: cycle 0 PASS (`qa/verdicts/crawl-guidance-residuals.md`, 9371f6dd) with non-blocking N7, taken here
 Unit: crawl-guidance-residuals: the non-blocking G3 egress residuals N1, N2, N3, N5 from checker B's cycle-3 PASS (`.work/cg-verdict-b-c3.md`, "NON-BLOCKING RESIDUALS"). N4 (aria-labelledby target that only displays a value: inherent, checker recommends no fix) and N6 (path-segment PII, grids of <=3 rows) are left as the checker ruled.
 Contract: qa/contracts/crawl-guidance.md G3 (egress); G5 (guidance-off byte-identity) must stay green. G12 stays HELD. Contract not edited.
 Branch: fix/crawl-guidance-residuals (worktree D:/autoTesting/.claude/worktrees/guidance-residuals), cut from feat/crawl-guidance e947c8f2
-Code/test SHA: the commit that carries this manifest (see `git log -1` on the branch)
+Code/test SHA: cycle 0 = 2e17d653; cycle 1 = the commit that carries this manifest (see `git log -1` on the branch)
 
 ## Criteria (all under G3: no control value, shown text or option text reaches the prompt)
 
@@ -47,3 +48,29 @@ The full suite was NOT run (machine memory; another agent is running tests).
 - `textOutsideFields` reads text nodes (no `innerText`), so a label / labelledby text no longer depends on CSS visibility and whitespace is collapsed (`Name \nQQQ` style newlines are gone). `aria-labelledby` may reference hidden elements by spec, so this is intended.
 - N1's `base-select` shape depends on Chromium supporting customizable select; it was RED before the fix on Chromium 151, and on an older browser it is simply inert (passes without proving).
 - A later check needs only: the new egress tests, the five guidance test files, doctor and ruff, plus `probe_aria.py head` from the cycle-3 scratchpad if available.
+
+## Cycle 1 repair (N7: hidden descendants of a label / labelledby tree)
+
+**Rule, stated precisely** (`enumerate.js:104-119` `hiddenBelow`, called from `textOutsideFields` `:121-134`). The root (the `<label>` or the `aria-labelledby` target) is always read, even when it is itself hidden (ARIA allows a hidden target). A text node strictly below the root is skipped when any element between it and the root (root excluded) is: computed `display:none` (covers `[hidden]`, `<noscript>` and inline `display:none`), a `<script>`/`<style>`/`<noscript>`/`<template>`, or a `<details>` that is not `open` and the path to the text does not go through its `<summary>`; or when the text's own parent is `visibility:hidden`/`collapse` while the root is visible. Text under a visible-again child of a hidden root is kept. Not filtered (as with the old `innerText`): `opacity:0`, off-screen positioning, `aria-hidden`.
+- Deviation from the suggested `checkVisibility({visibilityProperty:true})`: it is absolute, so every descendant of a hidden target would fail it and the hidden target would become unreadable. The root-relative `getComputedStyle` rule above keeps the target readable and needs no fallback for browsers lacking `checkVisibility`.
+- `textOutsideFields` still skips fields (N1-N3 unchanged); labels get the same rule (stricter than the old `textContent`, safe direction).
+
+**Tests, written first, RED then GREEN** (`tests/test_crawl_guidance_egress.py`, now 200 lines; `SHAPES` grew from 15 to 23 planted markups, all random non-word values, 5-char-slice leak check, `model.calls == 1`):
+- new shapes: n7-display-none, n7-hidden-attr, n7-nested-hidden, n7-visibility-hidden, n7-closed-details, n7-noscript, n7-label-display-none, n7-hidden-target-hidden-child.
+- RED before the fix: `test_residual_shapes_never_send_a_planted_value` failed with exactly those 8 shapes listed (the 15 cycle-0 shapes were not in the list).
+- new `test_a_hidden_target_stays_readable_and_visible_text_is_kept` pins the keep side: `<span id=t hidden>Hidden Lbl</span>` -> `Hidden Lbl`; `display:none` target `Hid <b>Vis</b>` -> `Hid Vis`; open `<details>` with `<summary>` -> `Name More Open`; plain `<label>Work <b>email</b> <input>` -> `Work email`. These stay useful plain-label cases and passed before and after.
+- GREEN after: `tests/test_crawl_guidance_egress.py` -> `8 passed`.
+
+**N9 (adjacent text nodes joined with a space): left as is.** Joining without a space would turn `<div>A</div><div>B</div>` into `AB`, a worse label than today's `A B`; not trivial, cosmetic only.
+
+Verify commands (cycle 1, 2 files per pytest call, `-o addopts=`):
+```
+uv run pytest tests/test_crawl_guidance_egress.py tests/test_crawl_guidance_payload.py -o addopts=   -> 37 passed
+uv run pytest tests/test_crawl_guidance_seam.py tests/test_crawl_guidance_core.py -o addopts=        -> 47 passed  (guidance-off byte-identity)
+uv run pytest tests/test_crawl_guidance_kg.py tests/test_crawl_guidance_schema.py -o addopts=        -> 22 passed
+uv run pytest tests/test_observe.py tests/test_explore_modal.py -o addopts=                          -> 16 passed
+uv run pytest tests/test_explore_typing_input_type.py tests/test_marker_blocks.py -o addopts=        -> 23 passed
+uv run ruff check src tests scripts                                                                   -> All checks passed!
+uv run autotester doctor                                                                              -> doctor: clean
+```
+Sizes: `enumerate.js` 221, egress test 200 (both <= 300). Full suite not run.

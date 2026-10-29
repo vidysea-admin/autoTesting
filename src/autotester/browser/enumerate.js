@@ -99,16 +99,31 @@
       el.isContentEditable || roles.some((r) => FIELD_ROLES.includes(r)) ||
       FIELD_POPUPS.includes(popup) || !!el.closest("select, datalist");
   }
-  // The text of `root` with every field inside it (and a root that is itself a field) left out:
-  // a field's text is a value or the option texts, not a caption.
+  // Rendered text only: a text node under `root` is skipped when an element between it and `root`
+  // (root excluded) is display:none / [hidden] / <noscript> / <template> / <script> / <style> /
+  // the closed body of a <details>, or when its own parent is visibility:hidden while `root` is
+  // visible. `root` itself is read even when hidden (ARIA lets a label target be hidden).
+  function hiddenBelow(root, text) {
+    const rootHidden = window.getComputedStyle(root).visibility !== "visible";
+    for (let n = text, p = text.parentElement; p && p !== root; n = p, p = p.parentElement) {
+      const hidden = window.getComputedStyle(p);
+      const closed = p.tagName === "DETAILS" && !p.open && n.tagName !== "SUMMARY";
+      if (hidden.display === "none" || closed ||
+        ["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"].includes(p.tagName)) return true;
+      if (n === text && !rootHidden && hidden.visibility !== "visible") return true;
+    }
+    return false;
+  }
+  // The text of `root` with every field inside it (and a root that is itself a field) and every
+  // hidden descendant left out: a field's text is a value or the option texts, not a caption.
   function textOutsideFields(root) {
     if (isFieldEl(root)) return "";
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const parts = [];
     for (let t = walker.nextNode(); t; t = walker.nextNode()) {
-      let keep = true;
+      let keep = !hiddenBelow(root, t);
       for (let p = t.parentElement; p && keep; p = p === root ? null : p.parentElement) {
-        keep = !isFieldEl(p) && !["SCRIPT", "STYLE"].includes(p.tagName);
+        keep = !isFieldEl(p);
       }
       if (keep) parts.push(t.nodeValue);
     }

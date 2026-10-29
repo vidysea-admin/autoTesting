@@ -133,6 +133,21 @@ SHAPES = {
     "n5-fallback-combobox": ('<div role="foo combobox" tabindex="0">{V}</div>'),
     "n5-fallback-textbox": ('<div role="presentation textbox" tabindex="0">{V}</div>'),
     "n5-fallback-padded-upper": ('<div role="  generic  LISTBOX " tabindex="0">{V}</div>'),
+    # N7: hidden descendants of a visible label / labelledby tree are not rendered text
+    "n7-display-none": ('<div id="t">Name <span style="display:none">{V}</span></div>'
+                        '<input aria-labelledby="t">'),
+    "n7-hidden-attr": '<div id="t">Name <span hidden>{V}</span></div><input aria-labelledby="t">',
+    "n7-nested-hidden": ('<div id="t">Name <div hidden><p><b>{V}</b></p></div></div>'
+                         '<input aria-labelledby="t">'),
+    "n7-visibility-hidden": ('<div id="t">Name <span style="visibility:hidden">{V}</span></div>'
+                             '<input aria-labelledby="t">'),
+    "n7-closed-details": ('<div id="t">Name <details><summary>More</summary>{V}</details></div>'
+                          '<input aria-labelledby="t">'),
+    "n7-noscript": '<div id="t">Name <noscript>{V}</noscript></div><input aria-labelledby="t">',
+    "n7-label-display-none": ('<label>Field <span style="display:none">{V}</span>'
+                              '<input id="i1"></label>'),
+    "n7-hidden-target-hidden-child": ('<div id="t" hidden>Name <span style="display:none">{V}'
+                                      '</span></div><input aria-labelledby="t">'),
 }
 
 
@@ -164,3 +179,22 @@ def test_a_role_fallback_list_is_read_token_by_token_for_an_old_stored_graph() -
     body = payload.build_payload(screen(), refs, [], lambda t: t)
     assert [c["name"] for c in body["controls"]] == [
         "<field:combobox>", "<field:textbox>", "<field:listbox>"]
+
+
+def test_a_hidden_target_stays_readable_and_visible_text_is_kept(page_factory: tuple) -> None:
+    """N7 rule: only hidden descendants inside the tree are skipped; the labelledby TARGET (or
+    label) itself is read even when hidden (ARIA allows it), and an open <details>, a <summary>
+    and plain visible markup stay in the label."""
+    page, _visit = page_factory
+    cases = {
+        "Hidden Lbl": '<span id="t" hidden>Hidden Lbl</span><input aria-labelledby="t">',
+        "Hid Vis": ('<div id="t" style="display:none">Hid <b>Vis</b></div>'
+                    '<input aria-labelledby="t">'),
+        "Name More Open": ('<div id="t">Name <details open><summary>More</summary>Open</details>'
+                           '</div><input aria-labelledby="t">'),
+        "Work email": '<label>Work <b>email</b> <input id="i1"></label>',
+    }
+    for want, markup in cases.items():
+        page.set_content(markup)
+        labels = [c.field_label for c in enumerate_elements(page) if c.tag == "input"]
+        assert labels == [want], (want, labels)
