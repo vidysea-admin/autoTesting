@@ -5,7 +5,6 @@ memory-starved host is warned about. Fakes only -- no browser, no network, no mo
 from __future__ import annotations
 
 import sys
-import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -26,7 +25,7 @@ from autotester.schema.project import Project
 from autotester.schema.run import RawResult
 from autotester.schema.trace import PhaseSpan
 from autotester.schema.verdict import Verdict
-from autotester.stages import run_launcher
+from autotester.stages import run_budget, run_launcher
 from autotester.stages.parallel_run import ParallelPlan
 from autotester.stages.run_launcher import RunSeams, launch_run, warn_if_memory_starved
 from autotester.store.project_store import ProjectStore
@@ -40,6 +39,9 @@ class _Judge:
 
     def available(self) -> bool:
         return True
+
+
+WIPE_S = 45.0  # fake seconds the entry-profile wipe takes (under the 60 s allowance: uncapped)
 
 
 # --- (a) the saved Run carries the phase summary --------------------------------------------
@@ -68,7 +70,12 @@ def test_a_launched_run_records_phase_totals_and_unaccounted_seconds(
                         grader_provider="mock"))
 
     monkeypatch.setattr(BrowserSession, "start", lambda self: self)
-    monkeypatch.setattr(run_execution, "_wipe_entry_profile", lambda _p: time.sleep(0.06))
+    # No wall-clock sensitivity: run_budget reads an injected clock and the slow wipe is a jump
+    # of that clock, so the assertions below are exact however loaded the host is.
+    clock = SimpleNamespace(now=1000.0)
+    monkeypatch.setattr(run_budget, "time", SimpleNamespace(monotonic=lambda: clock.now))
+    monkeypatch.setattr(run_execution, "_wipe_entry_profile",
+                        lambda _p: setattr(clock, "now", clock.now + WIPE_S))
     monkeypatch.setattr(run_execution, "run_and_grade_case_resilient", graded)
     seams = RunSeams(judge_factory=_Judge, free_ram_mb=lambda: 16000.0,
                      planner=lambda project, **_kw: ParallelPlan(1, 1, 1, "config", 16000.0, 4))
@@ -82,9 +89,11 @@ def test_a_launched_run_records_phase_totals_and_unaccounted_seconds(
     assert saved.unaccounted_s is not None and saved.unaccounted_s >= 0.0
     # D-112 / F2: the seconds held off the approval clock are in run.json, auditable
     assert saved.excluded_s is not None and set(saved.excluded_s) == {
-        "judging", "housekeeping", "total"}
-    assert saved.excluded_s["housekeeping"] >= 0.05  # the slowed profile wipe
-    assert saved.excluded_s["total"] >= saved.excluded_s["housekeeping"] - 0.001
+        "judging", "housekeeping", "total", "acted_during_exclusion"}
+    assert saved.excluded_s["housekeeping"] == WIPE_S  # exactly the slowed profile wipe
+    assert saved.excluded_s["total"] == WIPE_S  # ...and that is what was held off the clock
+    assert saved.excluded_s["judging"] == 0.0
+    assert saved.excluded_s["acted_during_exclusion"] == 0.0  # R1: a serial run never overlaps
     spans = read_spans(store.paths.run_trace(run.id), include_phases=True)
     assert any(isinstance(s, PhaseSpan) and s.phase == "save_result" for s in spans)
 

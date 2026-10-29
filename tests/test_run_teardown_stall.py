@@ -209,7 +209,7 @@ def test_excluded_seconds_report_each_kind_and_the_union(clock) -> None:
     with budget.housekeeping():
         clock.now += 10
     assert budget.excluded_report() == pytest.approx(
-        {"judging": 30.0, "housekeeping": 20.0, "total": 40.0})
+        {"judging": 30.0, "housekeeping": 20.0, "total": 40.0, "acted_during_exclusion": 0.0})
 
 
 def test_excluded_total_is_capped_at_the_combined_allowance(clock) -> None:

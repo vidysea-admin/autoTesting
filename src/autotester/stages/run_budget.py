@@ -99,6 +99,7 @@ class RunBudget:
         self._lock = threading.Lock()
         self._actions_used = 0
         self._probes_used = 0
+        self._overlapped = 0  # spends made while an excluded scope was open (R1, see report)
         self._start = time.monotonic()
         self._stop_reason: str | None = None
 
@@ -138,12 +139,16 @@ class RunBudget:
 
     def excluded_report(self) -> dict[str, float]:
         """Seconds held off the approval clock, for the run record: each kind as measured and
-        the `total` actually subtracted (the union, capped at the combined allowance)."""
+        the `total` actually subtracted (the union, capped at the combined allowance).
+        `acted_during_exclusion` makes the by-design overlap (R1) visible: how many spends
+        (actions / probes) were made while a scope was open, i.e. while the shared clock was
+        paused for every worker. 0 in a serial run, where the one thread in a scope cannot act."""
         with self._lock:
             now = time.monotonic()
             return {"judging": self._judge.spent(now),
                     "housekeeping": self._housekeeping.spent(now),
-                    "total": self._excluded.excluded(now)}
+                    "total": self._excluded.excluded(now),
+                    "acted_during_exclusion": float(self._overlapped)}
 
     @property
     def judge_s_used(self) -> float:
@@ -190,8 +195,9 @@ class RunBudget:
             if probes_after > approval.max_probes:
                 self._stop_reason = self._stop_reason or "max_probes"
                 return False
-            self._actions_used = actions_after
-            self._probes_used = probes_after
+            self._actions_used, self._probes_used = actions_after, probes_after
+            if (actions or probes) and self._excluded.active:
+                self._overlapped += 1
             return True
 
     def check(self, *, actions: int = 0, probes: int = 0) -> None:
@@ -245,19 +251,15 @@ WALL_CLOCK_PER_ACTION_S = 8.0
 REQUEST at the consent gate -- `BrowserSession.settle`'s own 8000 ms ceiling
 (`browser/session.py:237`) in seconds.
 
-Why this exists at all (AT-660): `RunBudget` now reads `wall_clock_s = 0` as
-"no time granted", so a run must be covered by an approval with a positive wall
-clock. If the preflight asked for `require_approval`'s default of `0.0`, a
-zero-time approval would sail through the gate and then refuse every case
-mid-run -- the worse place for a refusal. Asking for a real number moves that
+Why (AT-660): `RunBudget` reads `wall_clock_s = 0` as "no time granted", so a run
+needs an approval with a positive wall clock; asking for `require_approval`'s default
+`0.0` would pass the gate and then refuse every case mid-run. A real number moves that
 refusal to preflight, before a browser opens.
 
-Deliberately an OVER-estimate: a run refused for want of headroom is the
-fail-closed direction, a run killed halfway through is not. It is NOT a policy
-ceiling -- it bounds nothing and caps nothing; it only sizes the request (CN10:
-a maximum is a gate decision, not a build's). Duplicated from
-`browser/session.py`'s 8000 ms default rather than imported because that module
-is at the 300-line design cap and cannot take an exported constant (AT-681)."""
+Deliberately an OVER-estimate (a run refused for headroom is the fail-closed direction).
+NOT a policy ceiling: it only sizes the request (CN10: a maximum is a gate decision).
+Duplicated from `browser/session.py`'s 8000 ms default because that module is at the
+300-line cap and cannot take an exported constant (AT-681)."""
 
 
 def wall_clock_request_s(cases: list[Case]) -> float:

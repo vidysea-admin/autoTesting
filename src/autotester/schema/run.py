@@ -166,7 +166,9 @@ class Run(Artifact):
         description="D-112: seconds held OFF the approval's wall clock, which counts only time "
                     "acting on the target -- `judging`, `housekeeping` (each as measured) and "
                     "`total` (their union, capped at the combined allowance, as actually "
-                    "subtracted); None = NOT RECORDED (an older run), never zero",
+                    "subtracted); `acted_during_exclusion` is a COUNT, not seconds: spends made "
+                    "while a scope was open, when the shared clock was paused for every "
+                    "worker (0 = serial). None = NOT RECORDED (an older run), never zero",
     )
     bounds: RunBounds | None = Field(
         default=None,
