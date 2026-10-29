@@ -1,7 +1,7 @@
 {
  "tests": [
   "tests/test_store_config.py",
-  "tests/test_mongo_guard.py"
+  "tests/test_mongo_guard_uri.py"
  ],
  "mutations": [
   {
@@ -11,15 +11,6 @@
    "new": "(uri)[os.environ.get(\"AUTOTESTER_DB\", cfg.database)]",
    "kills": [
     "test_environment_and_data_root_have_no_effect_on_the_name"
-   ]
-  },
-  {
-   "name": "b: database name read from the URI path",
-   "file": "src/autotester/store/mongo_guard.py",
-   "old": "(uri)[cfg.database]",
-   "new": "(uri)[_uri_path_database(uri) or cfg.database]",
-   "kills": [
-    "test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch]"
    ]
   },
   {
@@ -38,24 +29,6 @@
    "new": "if False:",
    "kills": [
     "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester]"
-   ]
-  },
-  {
-   "name": "e1: unmarked non-empty database check removed",
-   "file": "src/autotester/store/mongo_guard.py",
-   "old": "elif _translate(handle.list_collection_names):",
-   "new": "elif False:",
-   "kills": [
-    "test_an_existing_unmarked_database_with_collections_is_somebody_elses"
-   ]
-  },
-  {
-   "name": "e2: foreign marker check removed",
-   "file": "src/autotester/store/mongo_guard.py",
-   "old": "if str(marker.get(\"database\", \"\")).casefold() != self._cfg.database.casefold():",
-   "new": "if False:",
-   "kills": [
-    "test_a_marker_for_another_name_stops_startup"
    ]
   },
   {
@@ -86,51 +59,50 @@
    ]
   },
   {
-   "name": "o: marker protection removed",
+   "name": "s: URI path read with urlsplit instead of the driver's parser (F1)",
    "file": "src/autotester/store/mongo_guard.py",
-   "old": "ident == MARKER_ID or (selects and not isinstance(ident, str))",
-   "new": "False",
+   "old": "return parse_uri(\"mongodb://\" + rest, validate=False)[\"database\"] or \"\"",
+   "new": "return __import__(\"urllib.parse\").parse.urlsplit(uri).path.lstrip(\"/\")",
    "kills": [
-    "test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter"
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/autotester.x]",
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://u:p#x@h/autotester]",
+    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester]"
    ]
   },
   {
-   "name": "p: driver message (URI) echoed in StoreUnavailable",
+   "name": "s2: any URI scheme accepted (F1)",
    "file": "src/autotester/store/mongo_guard.py",
-   "old": "f\"state store unavailable ({type(exc).__name__})\"",
-   "new": "f\"state store unavailable ({exc})\"",
+   "old": "(\"mongodb\", \"mongodb+srv\").index(scheme)  # ValueError for any other scheme",
+   "new": "pass",
    "kills": [
-    "test_a_failing_ping_and_write_never_echo_the_uri"
+    "test_a_non_mongodb_uri_is_refused_without_echoing_it[http://h/x]"
    ]
   },
   {
-   "name": "s: URI path compared without percent-decoding (F1)",
+   "name": "s3: parse failure raised chained to the driver error (M9)",
    "file": "src/autotester/store/mongo_guard.py",
-   "old": "return unquote_plus(parts.path.lstrip(\"/\"))  # as pymongo.uri_parser decodes it",
-   "new": "return parts.path.lstrip(\"/\")",
+   "old": "    except Exception:\n        pass\n",
+   "new": "    except Exception as exc:\n        raise StoreConfigError(\"the store connection string is not a valid mongodb:// URI\") from exc\n",
    "kills": [
-    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%61utotester]",
-    "test_a_uri_path_naming_the_store_database_is_refused_before_any_client[mongodb://h/%41utotester?x=1]",
-    "test_the_path_is_decoded_exactly_as_the_driver_decodes_it[mongodb://h/%61utotester]"
+    "test_a_non_mongodb_uri_is_refused_without_echoing_it[ftp://u:CANARY-p4ssw0rd-9f3a@h/x]"
    ]
   },
   {
-   "name": "s2: URI path decoded without plus handling (F1)",
+   "name": "s4: parse failure message carries the URI (M9)",
    "file": "src/autotester/store/mongo_guard.py",
-   "old": "return unquote_plus(parts.path.lstrip(\"/\"))  # as pymongo.uri_parser decodes it",
-   "new": "return __import__(\"urllib.parse\").parse.unquote(parts.path.lstrip(\"/\"))",
+   "old": "    raise StoreConfigError(\"the store connection string is not a valid mongodb:// URI\")",
+   "new": "    raise StoreConfigError(f\"bad connection string {uri}\")",
    "kills": [
-    "test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash"
+    "test_a_non_mongodb_uri_is_refused_without_echoing_it[ftp://u:CANARY-p4ssw0rd-9f3a@h/x]"
    ]
   },
   {
-   "name": "t: constructor takes a config path again (F2)",
-   "file": "src/autotester/store/mongo_guard.py",
-   "old": "    def __init__(self, uri: str) -> None:\n        cfg: StoreConfig = load_store_config(_SEAM[\"config_path\"])",
-   "new": "    def __init__(self, uri: str, config_path: Path | None = None) -> None:\n        cfg: StoreConfig = load_store_config(config_path or _SEAM[\"config_path\"])",
+   "name": "z: a non-table level in the config is not a refusal (F8)",
+   "file": "src/autotester/schema/store_config.py",
+   "old": "table = table.get(key) if isinstance(table, dict) else None",
+   "new": "table = table.get(key)",
    "kills": [
-    "test_the_constructor_takes_a_uri_and_nothing_else",
-    "test_no_public_path_builds_a_store_on_another_database"
+    "test_a_missing_table_missing_key_or_unknown_key_stops_startup[tool-is-a-string]"
    ]
   }
  ]

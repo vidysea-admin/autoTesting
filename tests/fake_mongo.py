@@ -9,6 +9,7 @@ records each database name asked of it. No socket is ever opened.
 from __future__ import annotations
 
 import io
+import traceback
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -239,3 +240,13 @@ def open_store(uri: str = "mongodb://h/", client: FakeMongoClient | None = None,
                config_path: Path | None = None) -> guard.GuardedStore:
     with seams(client_factory=client_factory or (lambda _uri: client), config_path=config_path):
         return guard.GuardedStore(uri)
+
+
+CANARY = "CANARY-p4ssw0rd-9f3a"
+
+
+def assert_no_canary(exc: BaseException, capsys: Any, caplog: Any) -> None:
+    """M9: the URI password appears in no exception text, traceback, stdout, stderr or log."""
+    text = "".join(traceback.format_exception(exc)) + str(exc) + repr(exc)
+    out = capsys.readouterr()
+    assert CANARY not in text + out.out + out.err + caplog.text

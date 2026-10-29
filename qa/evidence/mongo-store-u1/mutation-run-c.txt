@@ -1,0 +1,21 @@
+KILLED  b: database name read from the URI path  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch]
+    actually failed: tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch], tests/test_mongo_guard.py::test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://user:CANARY-p4ssw0rd-9f3a@h1,h2/pathlynks?replicaSet=r]
+KILLED  e1: unmarked non-empty database check removed  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_an_existing_unmarked_database_with_collections_is_somebody_elses
+    actually failed: tests/test_mongo_guard.py::test_an_existing_unmarked_database_with_collections_is_somebody_elses
+KILLED  e2: foreign marker check removed  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_a_marker_for_another_name_stops_startup
+    actually failed: tests/test_mongo_guard.py::test_a_marker_for_another_name_stops_startup
+KILLED  o: marker protection removed  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter
+    actually failed: tests/test_mongo_guard.py::test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter
+KILLED  p: driver message (URI) echoed in StoreUnavailable  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_a_failing_ping_and_write_never_echo_the_uri
+    actually failed: tests/test_mongo_guard.py::test_a_failing_connect_never_echoes_the_uri, tests/test_mongo_guard.py::test_a_failing_ping_and_write_never_echo_the_uri
+KILLED  t: constructor takes a config path again (F2)  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_mongo_guard.py::test_the_constructor_takes_a_uri_and_nothing_else
+    actually failed: tests/test_mongo_guard.py::test_no_public_path_builds_a_store_on_another_database, tests/test_mongo_guard.py::test_signatures_take_no_database_parameter, tests/test_mongo_guard.py::test_the_constructor_takes_a_uri_and_nothing_else
+
+6/6 mutations killed
+mutations-c.json exit 0

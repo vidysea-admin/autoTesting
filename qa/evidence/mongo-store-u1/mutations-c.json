@@ -1,0 +1,62 @@
+{
+ "tests": [
+  "tests/test_mongo_guard.py"
+ ],
+ "mutations": [
+  {
+   "name": "b: database name read from the URI path",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "(uri)[cfg.database]",
+   "new": "(uri)[_uri_path_database(uri) or cfg.database]",
+   "kills": [
+    "test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload[mongodb://h/scratch]"
+   ]
+  },
+  {
+   "name": "e1: unmarked non-empty database check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "elif _translate(handle.list_collection_names):",
+   "new": "elif False:",
+   "kills": [
+    "test_an_existing_unmarked_database_with_collections_is_somebody_elses"
+   ]
+  },
+  {
+   "name": "e2: foreign marker check removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "if str(marker.get(\"database\", \"\")).casefold() != self._cfg.database.casefold():",
+   "new": "if False:",
+   "kills": [
+    "test_a_marker_for_another_name_stops_startup"
+   ]
+  },
+  {
+   "name": "o: marker protection removed",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "ident == MARKER_ID or (selects and not isinstance(ident, str))",
+   "new": "False",
+   "kills": [
+    "test_the_marker_cannot_be_written_deleted_or_reached_by_a_broad_filter"
+   ]
+  },
+  {
+   "name": "p: driver message (URI) echoed in StoreUnavailable",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "f\"state store unavailable ({type(exc).__name__})\"",
+   "new": "f\"state store unavailable ({exc})\"",
+   "kills": [
+    "test_a_failing_ping_and_write_never_echo_the_uri"
+   ]
+  },
+  {
+   "name": "t: constructor takes a config path again (F2)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "    def __init__(self, uri: str) -> None:\n        cfg: StoreConfig = load_store_config(_SEAM[\"config_path\"])",
+   "new": "    def __init__(self, uri: str, config_path: Path | None = None) -> None:\n        cfg: StoreConfig = load_store_config(config_path or _SEAM[\"config_path\"])",
+   "kills": [
+    "test_the_constructor_takes_a_uri_and_nothing_else",
+    "test_no_public_path_builds_a_store_on_another_database"
+   ]
+  }
+ ]
+}

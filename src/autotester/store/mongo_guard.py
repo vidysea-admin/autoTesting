@@ -1,10 +1,9 @@
 """The only door to the AutoTester Mongo database (contract mongo-store M1-M12; D-120..D-122).
 
-The code is the only fence: the Mongo user can write other databases, so this is the single
-`MongoClient` site for writes (`browser/db.py` is the read-only one; an AST test pins both). The
-database is `client[StoreConfig.database]` and nothing else: no API takes a database name, the URI
-path never selects one, and the closed verb set has no `aggregate`, `command`, `bulk_write`,
-`drop*` or `rename`. The URI is parsed only to REFUSE a clash and never stored, logged or echoed.
+The code is the only fence (the Mongo user can write other databases): the single write
+`MongoClient` site, `client[StoreConfig.database]` and nothing else. No API takes a database name,
+the URI never selects one (it is parsed as the driver parses it, only to REFUSE a clash, and is
+never stored, logged or echoed), and the verb set has no `aggregate`, `command`, `drop*`, `rename`.
 """
 
 from __future__ import annotations
@@ -15,7 +14,12 @@ import weakref
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from typing import Any
-from urllib.parse import unquote_plus, urlsplit
+
+from gridfs import GridFSBucket
+from gridfs.errors import NoFile
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError, PyMongoError
+from pymongo.uri_parser import parse_uri
 
 from autotester.schema.store_config import StoreConfig, StoreConfigError, load_store_config
 
@@ -40,9 +44,9 @@ IMMUTABLE_FIELDS = frozenset({"_id", "generation"})
 FORBIDDEN_QUERY_KEYS = frozenset({"$where", "$function", "$accumulator"})
 SMOKE_COLLECTION = re.compile(r"t_[a-z0-9_]{1,30}")
 MARKER_ID, MARKER_COLLECTION, SCHEMA_VERSION, BUCKET_NAME = "marker", "server_state", 1, "blobs"
-_SEAM: dict[str, Any] = {"config_path": None, "client_factory": None,
-                         "bucket_factory": None}  # private: set only by tests/fake_mongo.seams
-# store -> (db handle, bucket factory); out of instance `__dict__` so no attribute walk finds it
+# Private seams, set only by tests/fake_mongo.seams; the registry keeps driver objects out of
+# every instance `__dict__` (store -> (db, bucket factory); collection/bucket -> raw object).
+_SEAM: dict[str, Any] = {"config_path": None, "client_factory": None, "bucket_factory": None}
 _REGISTRY: weakref.WeakKeyDictionary[Any, Any] = weakref.WeakKeyDictionary()
 
 
@@ -59,9 +63,6 @@ class StoreNotFound(KeyError):
 
 
 def _translate(call: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
-    from gridfs.errors import NoFile
-    from pymongo.errors import DuplicateKeyError, PyMongoError
-
     try:
         return call(*args, **kwargs)
     except DuplicateKeyError:
@@ -93,6 +94,8 @@ def _check_update(update: Mapping[str, Any]) -> None:
     if not update or set(update) - UPDATE_OPERATORS:
         raise ValueError("update operators are limited to $set, $setOnInsert and $inc")
     for fields in update.values():
+        if not isinstance(fields, Mapping):
+            raise ValueError("an update operator takes a document of fields")
         for name in fields:
             if str(name).split(".")[0] in IMMUTABLE_FIELDS:
                 raise ValueError(f"field {name} is immutable")
@@ -113,36 +116,34 @@ def _scoped(filter_: Mapping[str, Any]) -> None:
 class InsertOnlyCollection:
     """Read, insert and index. The whole surface of an insert-only collection (M7)."""
 
-    def __init__(self, store: GuardedStore, name: str) -> None:
+    def __init__(self, store: GuardedStore, name: str, raw: Any) -> None:
         self._store, self._name = store, name
-
-    def _raw(self) -> Any:
-        return _REGISTRY[self._store][0][self._name]
+        _REGISTRY[self] = raw  # no attribute or method of this object returns it
 
     def find(self, filter: Mapping[str, Any] | None = None, *, projection: Any = None,
              sort: Any = None, limit: int = 0) -> list[dict[str, Any]]:
-        _check_query(filter or {})
+        _check_query([filter or {}, projection or {}])
         kwargs = {k: v for k, v in (("projection", projection), ("sort", sort), ("limit", limit))
                   if v}
-        return list(_translate(self._raw().find, dict(filter or {}), **kwargs))
+        return list(_translate(_REGISTRY[self].find, dict(filter or {}), **kwargs))
 
     def find_one(self, filter: Mapping[str, Any] | None = None) -> dict[str, Any] | None:
         _check_query(filter or {})
-        return _translate(self._raw().find_one, dict(filter or {}))  # type: ignore[no-any-return]
+        return _translate(_REGISTRY[self].find_one, dict(filter or {}))  # type: ignore[no-any-return]
 
     def count_documents(self, filter: Mapping[str, Any] | None = None) -> int:
         _check_query(filter or {})
-        return int(_translate(self._raw().count_documents, dict(filter or {})))
+        return int(_translate(_REGISTRY[self].count_documents, dict(filter or {})))
 
     def insert_one(self, document: Mapping[str, Any]) -> Any:
         self._store._before_write(self._name, document)
-        return _translate(self._raw().insert_one, dict(document)).inserted_id
+        return _translate(_REGISTRY[self].insert_one, dict(document)).inserted_id
 
     def create_index(self, keys: list[tuple[str, int]], *, unique: bool = False,
                      name: str | None = None) -> str:
         self._store._before_write(self._name, {})
         extra = {"name": name} if name else {}
-        return str(_translate(self._raw().create_index, keys, unique=unique, **extra))
+        return str(_translate(_REGISTRY[self].create_index, keys, unique=unique, **extra))
 
 
 class GuardedCollection(InsertOnlyCollection):
@@ -151,8 +152,12 @@ class GuardedCollection(InsertOnlyCollection):
     def replace_one(self, filter: Mapping[str, Any], replacement: Mapping[str, Any], *,
                     upsert: bool = False) -> bool:
         _require_filter(filter)
+        _check_query(replacement)
+        if "_id" in replacement and replacement["_id"] != filter.get("_id"):
+            raise ValueError("a replacement cannot change or introduce _id")
         self._store._before_write(self._name, filter, selects=True)
-        result = _translate(self._raw().replace_one, dict(filter), dict(replacement), upsert=upsert)
+        result = _translate(_REGISTRY[self].replace_one, dict(filter), dict(replacement),
+                            upsert=upsert)
         return bool(result.matched_count or result.upserted_id is not None)
 
     def update_one(self, filter: Mapping[str, Any], update: Mapping[str, Any], *,
@@ -160,19 +165,19 @@ class GuardedCollection(InsertOnlyCollection):
         _require_filter(filter)
         _check_update(update)
         self._store._before_write(self._name, filter, selects=True)
-        result = _translate(self._raw().update_one, dict(filter), dict(update), upsert=upsert)
+        result = _translate(_REGISTRY[self].update_one, dict(filter), dict(update), upsert=upsert)
         return bool(result.matched_count or result.upserted_id is not None)
 
     def delete_one(self, filter: Mapping[str, Any]) -> bool:
         _require_filter(filter)
         self._store._before_write(self._name, filter, selects=True)
-        return bool(_translate(self._raw().delete_one, dict(filter)).deleted_count)
+        return bool(_translate(_REGISTRY[self].delete_one, dict(filter)).deleted_count)
 
     def delete_many(self, filter: Mapping[str, Any]) -> int:
         _require_filter(filter)
         _scoped(filter)
         self._store._before_write(self._name, filter, selects=True)
-        return int(_translate(self._raw().delete_many, dict(filter)).deleted_count)
+        return int(_translate(_REGISTRY[self].delete_many, dict(filter)).deleted_count)
 
 
 class GuardedBucket:
@@ -202,23 +207,19 @@ class GuardedBucket:
 
 
 def _uri_path_database(uri: str) -> str:
-    """Parse only (no DNS, no connection): the database a URI path names, or ''."""
-    parts = urlsplit(uri)
-    if parts.scheme not in ("mongodb", "mongodb+srv"):
-        raise StoreConfigError("the store connection string must be a mongodb:// URI")
-    return unquote_plus(parts.path.lstrip("/"))  # as pymongo.uri_parser decodes it
+    """The database the DRIVER reads from `uri` (same parser, no DNS), or ''. Any failure is one
+    fixed `StoreConfigError`, raised outside the `except` so nothing chained carries the URI."""
+    scheme, _, rest = uri.partition("://")
+    try:
+        ("mongodb", "mongodb+srv").index(scheme)  # ValueError for any other scheme
+        return parse_uri("mongodb://" + rest, validate=False)["database"] or ""
+    except Exception:
+        pass
+    raise StoreConfigError("the store connection string is not a valid mongodb:// URI")
 
 
 def _default_client(uri: str) -> Any:
-    from pymongo import MongoClient
-
     return MongoClient(uri, appname="autotester", serverSelectionTimeoutMS=5000)
-
-
-def _default_bucket(handle: Any, name: str) -> Any:
-    from gridfs import GridFSBucket
-
-    return GridFSBucket(handle, bucket_name=name)
 
 
 class GuardedStore:
@@ -232,7 +233,7 @@ class GuardedStore:
             database = (_SEAM["client_factory"] or _default_client)(uri)[cfg.database]
         except Exception as exc:  # a driver message may quote the URI: keep the class name only
             raise StoreUnavailable(f"cannot open the state store ({type(exc).__name__})") from None
-        _REGISTRY[self] = (database, _SEAM["bucket_factory"] or _default_bucket)
+        _REGISTRY[self] = (database, _SEAM["bucket_factory"] or GridFSBucket)
         self._cfg, self._marked = cfg, False
         self._verify_identity(database)
 
@@ -250,8 +251,7 @@ class GuardedStore:
 
     def _before_write(self, collection: str, target: Mapping[str, Any], *,
                       selects: bool = False) -> None:
-        """`selects`: `target` is a filter; on `server_state` it must name one `_id`, so that no
-        broad filter can reach the marker."""
+        """`selects`: `target` is a filter; on `server_state` it must name one `_id`."""
         ident = target.get("_id")
         if collection == MARKER_COLLECTION and (
                 ident == MARKER_ID or (selects and not isinstance(ident, str))):
@@ -273,12 +273,14 @@ class GuardedStore:
     def collection(self, name: str) -> GuardedCollection | InsertOnlyCollection:
         if name not in COLLECTIONS and not self._smoke_allowed(name):
             raise ValueError(f"collection {name!r} is not in the closed COLLECTIONS set")
-        return (InsertOnlyCollection if name in INSERT_ONLY else GuardedCollection)(self, name)
+        kind = InsertOnlyCollection if name in INSERT_ONLY else GuardedCollection
+        return kind(self, name, _REGISTRY[self][0][name])
 
     @staticmethod
     def _smoke_allowed(name: str) -> bool:
         """M47: the human-run live smoke only, never under CI."""
-        return (os.environ.get("AUTOTESTER_LIVE_MONGO_TEST") == "1" and "CI" not in os.environ
+        return (os.environ.get("AUTOTESTER_LIVE_MONGO_TEST") == "1"
+                and not any(k.upper() == "CI" for k in os.environ)
                 and SMOKE_COLLECTION.fullmatch(name) is not None)
 
     def bucket(self) -> GuardedBucket:
@@ -288,8 +290,7 @@ class GuardedStore:
     def collection_names(self) -> list[str]:
         return sorted(_translate(_REGISTRY[self][0].list_collection_names))
 
-    def identity(self) -> dict[str, str]:
-        """The configured database name is not a secret (`autotester store ping` prints it)."""
+    def identity(self) -> dict[str, str]:  # the configured name is not a secret
         return {"database": self._cfg.database}
 
     def ping(self) -> None:

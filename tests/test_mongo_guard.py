@@ -8,13 +8,19 @@ from __future__ import annotations
 
 import inspect
 import logging
-import traceback
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
 
 import pytest
-from fake_mongo import FakeBucket, FakeMongoClient, FakeMongoServer, open_store, seams
+from fake_mongo import (
+    CANARY,
+    FakeBucket,
+    FakeMongoClient,
+    FakeMongoServer,
+    assert_no_canary,
+    open_store,
+    seams,
+)
 
 import autotester.store.mongo_guard as guard_module
 from autotester.store.mongo_guard import (
@@ -25,7 +31,6 @@ from autotester.store.mongo_guard import (
     StoreUnavailable,
 )
 
-CANARY = "CANARY-p4ssw0rd-9f3a"
 GOOD_URIS = ["mongodb://h/", "mongodb://h/scratch", "mongodb://h/?authSource=admin",
              f"mongodb://user:{CANARY}@h1,h2/pathlynks?replicaSet=r"]
 
@@ -73,50 +78,6 @@ def test_the_spy_sees_exactly_the_configured_database_across_the_whole_workload(
     assert {n: server.databases[n]["users"].docs for n in names} == foreign
     assert set(server.databases) == {"autotester", *names}
     assert all(set(server.databases[n].collections) == {"users"} for n in names)
-
-
-@pytest.mark.parametrize("uri", [
-    "mongodb://h/autotester", "mongodb://h/Autotester", "mongodb://h/AUTOTESTER?x=1",
-    f"mongodb://u:{CANARY}@h1,h2/autotester?replicaSet=r",
-    f"mongodb+srv://u:{CANARY}@cluster0.example.net/autotester",
-    "mongodb://h/%61utotester", "mongodb://h/%41utotester?x=1",
-    "mongodb://h/%61%75%74%6f%74%65%73%74%65%72", "mongodb://h/%41UTOTESTER?x=1",
-    f"mongodb://u:{CANARY}@h1,h2/%61utotester?replicaSet=r",
-])
-def test_a_uri_path_naming_the_store_database_is_refused_before_any_client(uri: str) -> None:
-    def never(_uri: str) -> Any:
-        raise AssertionError("client created")
-
-    with pytest.raises(StoreConfigError) as caught:
-        open_store(uri, client_factory=never)
-    assert CANARY not in str(caught.value)
-
-
-@pytest.mark.parametrize("uri", [
-    "mongodb://h/", "mongodb://h/scratch", "mongodb://h/%61utotester", "mongodb://h/%41utotester?x=1",
-    "mongodb://h/%2Bx", "mongodb://h/a%2Db", "mongodb://u:p%40ss@h1,h2/db_1?replicaSet=r",
-])
-def test_the_path_is_decoded_exactly_as_the_driver_decodes_it(uri: str) -> None:
-    from pymongo.uri_parser import parse_uri
-
-    driver = parse_uri(uri, validate=False)["database"]
-    assert (guard_module._uri_path_database(uri) or None) == driver
-
-
-def test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash() -> None:
-    assert guard_module._uri_path_database("mongodb://h/auto+tester") == "auto tester"
-    assert guard_module._uri_path_database("mongodb://h/auto%2Btester") == "auto+tester"
-    open_store("mongodb://h/auto+tester", FakeMongoServer().client())
-
-
-@pytest.mark.parametrize("uri", ["http://h/x", "h/x", "", "ftp://u:" + CANARY + "@h/x"])
-def test_a_non_mongodb_uri_is_refused_without_echoing_it(uri: str) -> None:
-    def never(_uri: str) -> Any:
-        raise AssertionError("client created")
-
-    with pytest.raises(StoreConfigError) as caught:
-        open_store(uri, client_factory=never)
-    assert CANARY not in str(caught.value)
 
 
 def test_signatures_take_no_database_parameter() -> None:
@@ -250,13 +211,6 @@ def test_identity_reports_the_configured_name_and_nothing_secret() -> None:
     assert "autotester" in repr(store) and CANARY not in repr(store)
 
 
-def _assert_no_canary(exc: BaseException, capsys: pytest.CaptureFixture[str],
-                      caplog: pytest.LogCaptureFixture) -> None:
-    text = "".join(traceback.format_exception(exc)) + str(exc) + repr(exc)
-    out = capsys.readouterr()
-    assert CANARY not in text + out.out + out.err + caplog.text
-
-
 def test_a_failing_connect_never_echoes_the_uri(
         capsys: pytest.CaptureFixture[str], caplog: pytest.LogCaptureFixture) -> None:
     server = FakeMongoServer(down_message=f"connect failed for mongodb://u:{CANARY}@h/x")
@@ -264,7 +218,7 @@ def test_a_failing_connect_never_echoes_the_uri(
     with caplog.at_level(logging.DEBUG), pytest.raises(StoreUnavailable) as caught:
         make(server, f"mongodb://u:{CANARY}@h/x")
     assert "AutoReconnect" in str(caught.value)
-    _assert_no_canary(caught.value, capsys, caplog)
+    assert_no_canary(caught.value, capsys, caplog)
 
 
 def test_a_failing_ping_and_write_never_echo_the_uri(
@@ -276,12 +230,5 @@ def test_a_failing_ping_and_write_never_echo_the_uri(
                    lambda: store.bucket().upload("f", b"x", metadata={})):
         with caplog.at_level(logging.DEBUG), pytest.raises(StoreUnavailable) as caught:
             action()
-        _assert_no_canary(caught.value, capsys, caplog)
+        assert_no_canary(caught.value, capsys, caplog)
     assert CANARY not in repr(store) and CANARY not in str(vars(store))
-
-
-def test_a_malformed_uri_rejected_by_the_driver_never_echoes_itself(
-        capsys: pytest.CaptureFixture[str], caplog: pytest.LogCaptureFixture) -> None:
-    with pytest.raises(StoreUnavailable) as caught:
-        GuardedStore(f"mongodb://u:{CANARY}@h:notaport/x")
-    _assert_no_canary(caught.value, capsys, caplog)

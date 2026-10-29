@@ -17,7 +17,13 @@ from autotester.browser.db import connect_read_only
 from autotester.core.paths import code_root
 
 ALLOWED = {"src/autotester/browser/db.py", "src/autotester/store/mongo_guard.py"}
-DRIVER_ROOTS = {"pymongo", "gridfs"}
+DRIVER_ROOTS = {"pymongo", "gridfs", "motor", "mongoengine", "beanie", "umongo"}
+# Resolves schema classes by dotted path; a literal driver import there is still flagged.
+NON_LITERAL = "import of a non-literal module name"
+NON_LITERAL_OK = {"src/autotester/providers/isolated.py"}
+MONGO_CLIS = {"mongosh", "mongo", "mongodump", "mongoexport", "mongoimport", "mongorestore"}
+LAUNCHERS = {"run", "Popen", "call", "check_call", "check_output", "system", "popen", "spawn",
+             "execv", "execvp", "startfile"}
 DOOR_ATTRS = {"get_database", "get_default_database", "list_database_names", "drop_database"}
 
 
@@ -35,9 +41,20 @@ def _reasons(tree: ast.AST) -> list[str]:
             if name == "MongoClient":
                 reasons.append("MongoClient(")
             first = node.args[0] if node.args else None
-            if name in {"import_module", "__import__"} and isinstance(first, ast.Constant) \
-                    and str(first.value).split(".")[0] in DRIVER_ROOTS:
-                reasons.append("dynamic driver import")
+            if name in {"import_module", "__import__"}:
+                if not isinstance(first, ast.Constant):
+                    reasons.append(NON_LITERAL)
+                elif str(first.value).split(".")[0] in DRIVER_ROOTS:
+                    reasons.append("dynamic driver import")
+            if name == "getattr" and any(isinstance(a, ast.Constant) and a.value in {
+                    "import_module", "__import__"} for a in node.args[1:2]):
+                reasons.append("getattr import")
+            if name in {"exec", "eval"}:
+                reasons.append(name)
+            if name in LAUNCHERS and any(
+                    isinstance(n, ast.Constant) and str(n.value).lower().removesuffix(".exe")
+                    in MONGO_CLIS for a in node.args for n in ast.walk(a)):
+                reasons.append("mongo command line tool")
         if isinstance(node, ast.Attribute | ast.Name):
             ident = node.attr if isinstance(node, ast.Attribute) else node.id
             if ident in DOOR_ATTRS:
@@ -65,7 +82,10 @@ def scan(root: Path, folders: tuple[str, ...] = ("src", "scripts")) -> dict[str,
 
 
 def test_exactly_two_files_touch_the_driver_and_they_are_the_allowed_two() -> None:
-    assert set(scan(code_root())) == ALLOWED
+    found = scan(code_root())
+    for name in NON_LITERAL_OK:
+        found[name] = [r for r in found.get(name, []) if r != NON_LITERAL]
+    assert {name for name, reasons in found.items() if reasons} == ALLOWED
 
 
 @pytest.mark.parametrize("snippet", [
@@ -79,8 +99,19 @@ def test_exactly_two_files_touch_the_driver_and_they_are_the_allowed_two() -> No
     "def f(c):\n    c.drop_database('x')\n",
     "def f(c):\n    return c.get_default_database()\n",
     "client = MongoClient('mongodb://h')\nrows = client['other']\n",
+    "import motor.motor_asyncio\n",
+    "import mongoengine\n",
+    "import importlib\nimportlib.import_module('py' + 'mongo')\n",
+    "import importlib\nname = 'pymongo'\nimportlib.import_module(name)\n",
+    "import importlib\ngetattr(importlib, 'import_module')('pymongo')\n",
+    "exec('import pymongo')\n",
+    "eval(code)\n",
+    "import subprocess\nsubprocess.run(['mongosh', '--eval', 'x'])\n",
+    "import os\nos.system('x')\nos.popen(['mongodump.exe'])\n",
 ], ids=["from-import", "attr-ctor", "gridfs", "dunder-import", "import_module", "get_database",
-        "list_database_names", "drop_database", "get_default_database", "subscript"])
+        "list_database_names", "drop_database", "get_default_database", "subscript", "motor",
+        "mongoengine", "concat-import", "variable-import", "getattr-import", "exec", "eval",
+        "subprocess-mongosh", "popen-mongodump"])
 def test_the_scan_flags_a_third_file_with_each_pattern(tmp_path: Path, snippet: str) -> None:
     (tmp_path / "src").mkdir()
     (tmp_path / "scripts").mkdir()

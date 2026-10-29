@@ -85,10 +85,14 @@ def test_the_longest_plain_name_is_accepted() -> None:
         '[tool.autotester.store]\ndatabase = "x1"\nextra = 1\n',
         "[tool.autotester.store]\ndatabase = 5\n",
         '[tool.autotester]\nstore = "x1"\n',
+        'tool = "x"\n',
+        '[tool]\nautotester = "x"\n',
+        'tool = 5\n',
         "not = [valid toml",
     ],
     ids=["no-table", "no-tool", "no-key", "only-leftover-key", "leftover-key", "unknown-key",
-         "non-string", "store-not-a-table", "broken-toml"],
+         "non-string", "store-not-a-table", "tool-is-a-string", "autotester-is-a-string",
+         "tool-is-an-int", "broken-toml"],
 )
 def test_a_missing_table_missing_key_or_unknown_key_stops_startup(
         tmp_path: Path, body: str) -> None:

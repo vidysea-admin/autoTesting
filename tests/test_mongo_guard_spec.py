@@ -15,7 +15,7 @@ import pytest
 from autotester.core.paths import code_root
 
 SPECS = [code_root() / "qa" / "evidence" / "mongo-store-u1" / n
-         for n in ("mutations.json", "mutations-b.json")]
+         for n in ("mutations.json", "mutations-b.json", "mutations-c.json")]
 
 
 @pytest.mark.parametrize("spec_path", SPECS, ids=lambda p: p.name)

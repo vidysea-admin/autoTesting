@@ -13,6 +13,7 @@ import functools
 import re
 import tomllib
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
 
@@ -55,7 +56,9 @@ def _load(path: str) -> StoreConfig:
             data = tomllib.load(handle)
     except (OSError, tomllib.TOMLDecodeError) as exc:
         raise StoreConfigError(f"store config unreadable: {type(exc).__name__}") from None
-    table = data.get("tool", {}).get("autotester", {}).get("store")
+    table: Any = data
+    for key in ("tool", "autotester", "store"):  # any level that is not a table is a refusal
+        table = table.get(key) if isinstance(table, dict) else None
     if not isinstance(table, dict):
         raise StoreConfigError("[tool.autotester.store] is missing from the store config file")
     try:
