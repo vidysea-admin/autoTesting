@@ -130,3 +130,9 @@ Own repro (scratch `repro_c1.py`: full `run_crawl` over the fixture site, a capt
 - No live model: the pinned `ollama_chat/...` tags through `ModelChainProvider` stay unproven until Unit 5. Every PASS here is on a fake provider, so Units 1-4 close as "built and proven on a fake, measured effect unproven", never as "guidance works".
 - The lifecycle code review (`senior-software-engineer`, `data-engineer`) is not part of this contract check.
 - Criticality is CRITICAL (dual check): this is Checker A's PASS only; the unit closes when Checker B's verdict (`crawl-guidance.b.md`) is also PASS.
+
+---
+
+# Cycle 2 (Checker A, contract) - appended
+
+**Cycle checked:** 2 - A criteria re-confirmed. `git diff ce318eba..cfa6e90f` touches no G1/G2/G4-G8 code (only `enumerate.js`, `schema/screen_graph.py`, `stages/explore_guidance_payload.py`, tests); G5 byte-identical vs `b1ffaf27` (fake driver and real Chromium, see `crawl-guidance.b.md`), G9 greps empty, G11 sizes <= 300, `doctor` clean, `ruff` clean, five guidance test files green (26 + 38 + 20 + 21). Contract result for A is unchanged (PASS on G1-G11). The unit does NOT close: checker B cycle 2 is FAIL on one G3 residual (ARIA custom widget text reaches the payload), see `qa/verdicts/crawl-guidance.b.md`.
