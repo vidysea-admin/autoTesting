@@ -8,6 +8,7 @@ read the prompt a fake model received.
 
 from __future__ import annotations
 
+import random
 from pathlib import Path
 
 from crawl_guidance_support import FakeProvider, guide, make_rt, reverse, screen
@@ -101,3 +102,65 @@ def test_the_label_field_is_not_persisted_so_crawl_artifacts_stay_byte_identical
     el = ElementRef(role="textbox", name="x", selector="#e", tag="input", field_label="Email")
     assert "field_label" not in el.model_dump(exclude_none=True)
     assert ElementRef.model_validate(el.model_dump()).field_label is None
+
+
+# ---- residuals: checker-B residuals N1, N2, N3, N5 (qa/manifests/crawl-guidance-residuals.md) ----
+# Every planted value is a random non-word string, so no placeholder text can false-match; a leak
+# is the whole value or any 5-character slice of it reaching the captured prompt.
+_RNG = random.Random(20261029)
+_ALPHA = "bcdfghjklmnpqrstvwxz0123456789"
+SHAPES = {
+    "n1-base-select-button": ('<select style="appearance:base-select"><button><selectedcontent>'
+                              '</selectedcontent></button><option selected>{V}</option>'
+                              '<option>other</option></select>'),
+    "n1-select-button": ('<select><button>{V}</button><option>zz</option></select>'),
+    "n1-select-option-onclick": ('<select><option onclick="1">{V}</option></select>'),
+    "n1-select-option-tabindex": ('<select><option tabindex="0">{V}</option></select>'),
+    "n1-datalist-option-tabindex": ('<datalist id="dl"><option tabindex="0">{V}</option>'
+                                    '</datalist><input list="dl">'),
+    "n2-label-combobox": ('<label>Field <div role="combobox">{V}</div><input id="i1"></label>'),
+    "n2-label-contenteditable": ('<label>Field <span contenteditable="true">{V}</span>'
+                                 '<input id="i1"></label>'),
+    "n2-label-listbox": ('<label>Field <div role="listbox"><div role="option">{V}</div></div>'
+                         '<input id="i1"></label>'),
+    "n3-target-select": ('<span id="t">Name <select><option>{V}</option></select></span>'
+                         '<input aria-labelledby="t">'),
+    "n3-target-listbox": ('<div id="t">Name <div role="listbox"><div role="option">{V}</div></div>'
+                          '</div><input aria-labelledby="t">'),
+    "n3-target-editable": ('<div id="t">Name <div contenteditable="true">{V}</div></div>'
+                           '<input aria-labelledby="t">'),
+    "n3-target-is-listbox": ('<div id="t" role="listbox">{V}</div><input aria-labelledby="t">'),
+    "n5-fallback-combobox": ('<div role="foo combobox" tabindex="0">{V}</div>'),
+    "n5-fallback-textbox": ('<div role="presentation textbox" tabindex="0">{V}</div>'),
+    "n5-fallback-padded-upper": ('<div role="  generic  LISTBOX " tabindex="0">{V}</div>'),
+}
+
+
+def _leaks(prompt: str, value: str) -> bool:
+    return value in prompt or any(value[i:i + 5] in prompt for i in range(len(value) - 4))
+
+
+def test_residual_shapes_never_send_a_planted_value(page_factory: tuple, tmp_path: Path) -> None:
+    """N1 (inside select/datalist), N2 (label text), N3 (aria-labelledby target), N5 (role
+    fallback list): the REAL enumerate.js -> ElementRef -> Guidance -> captured prompt."""
+    page, _visit = page_factory
+    failures = []
+    for shape, markup in SHAPES.items():
+        value = "Q" + "".join(_RNG.choice(_ALPHA) for _ in range(11))
+        page.set_content(markup.replace("{V}", value) + '<a href="/reports">Reports</a>')
+        cands = enumerate_elements(page)
+        model = FakeProvider(reverse)
+        guide(model).order(make_rt(tmp_path), screen(), cands)
+        assert model.calls == 1, shape  # a shape that sends nothing proves nothing
+        if _leaks(model.prompts[0], value):
+            failures.append(shape)
+    assert failures == []
+
+
+def test_a_role_fallback_list_is_read_token_by_token_for_an_old_stored_graph() -> None:
+    """N5, Python half: an ElementRef stored with no field_label still finds the field role."""
+    refs = [ElementRef(role=role, name="Zq91xv-secret", selector="#e", tag="div")
+            for role in ("foo combobox", "presentation  TEXTBOX", "generic listbox")]
+    body = payload.build_payload(screen(), refs, [], lambda t: t)
+    assert [c["name"] for c in body["controls"]] == [
+        "<field:combobox>", "<field:textbox>", "<field:listbox>"]

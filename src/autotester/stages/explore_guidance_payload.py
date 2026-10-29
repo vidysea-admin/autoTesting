@@ -13,7 +13,8 @@ type, is_form_submit, in_row, has_href and the href PATH only (http(s) only, tem
 other scheme is just `<mailto>`, `<tel>` ...; a malformed href is `<href>`). A data field (input,
 textarea, select, an ARIA combobox/textbox/searchbox/spinbutton/listbox/option/slider, or a
 button with aria-haspopup) sends its label text (aria-label, aria-labelledby, <label>,
-placeholder) or `<field:kind>`, never its value, displayed text or option text.
+placeholder; text inside a field is left out of a label) or `<field:kind>`, never its value,
+displayed text or option text.
 A control inside a list row has its name replaced by a fixed placeholder (rows are where student
 names live) and no href.
 Never sent: images, input values, cookies, headers, tokens, query strings, the example URL.
@@ -63,12 +64,14 @@ def href_path(href: str | None) -> str:
 
 def is_field(el: ElementRef) -> bool:
     """A data-bearing control: its name may be its value, shown text or option text (B1)."""
-    return (el.field_label is not None or _role(el) in FIELD_ROLES
+    return (el.field_label is not None or bool(_field_role(el))
             or (el.tag in FIELD_TAGS and el.type not in CAPTION_TYPES))
 
 
-def _role(el: ElementRef) -> str:
-    return (el.role.split() or [""])[0].lower()
+def _field_role(el: ElementRef) -> str:
+    """The first token of a role fallback list that is a field role ("foo combobox" -> combobox),
+    "" when none is (N5: a page can put any token first)."""
+    return next((r for r in el.role.lower().split() if r in FIELD_ROLES), "")
 
 
 def _kind(el: ElementRef) -> str:
@@ -76,7 +79,7 @@ def _kind(el: ElementRef) -> str:
     else the tag (a contenteditable or aria-haspopup widget with no field role)."""
     if el.type or el.tag in FIELD_TAGS:
         return el.type or el.tag
-    return _role(el) if _role(el) in FIELD_ROLES else el.tag
+    return _field_role(el) or el.tag
 
 
 def _template(url_template: str) -> str:
