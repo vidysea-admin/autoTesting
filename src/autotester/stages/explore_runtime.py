@@ -86,6 +86,21 @@ class ExploreRuntime:
     `stop_reason`, which a new stop reason (a skip note, a bound qualifier)
     would silently turn into a wrong answer."""
 
+    net_log: list[tuple[str, str, int]] = field(default_factory=list)
+    """Every (method, url, status) the observer has handed over so far, kept whole for the
+    crawl-wide NETWORK evidence now that responses are drained per action (T-170/NA1)."""
+    api_seen: dict[str, list[tuple[str, str, int]]] = field(default_factory=dict)
+    """node id -> the XHR/fetch responses seen while on that screen; folded into
+    `ScreenNode.api_calls` once, in `explore_summary.apply_api_calls`."""
+
+    def take_responses(self, node_id: str | None) -> None:
+        """Drain the observer. Everything joins `net_log`; the XHR/fetch subset is
+        attributed to `node_id` (None: logged only, attributed to no screen)."""
+        self.net_log.extend(self.observer.drain_responses())
+        api = self.observer.drain_api_responses()
+        if node_id is not None and api:
+            self.api_seen.setdefault(node_id, []).extend(api)
+
     @property
     def bounds(self) -> CrawlBounds:
         return self.crawl.bounds

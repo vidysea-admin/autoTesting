@@ -28,24 +28,15 @@ from autotester.stages.explore_safety import (
     typing_allowed,
     typing_target_allowed,
 )
-from autotester.stages.screen_identity import node_from
+from autotester.stages.screen_identity import node_from, same_screen
 
 if TYPE_CHECKING:
     from autotester.stages.explore_runtime import ExploreRuntime
 
 
 def capture(rt: ExploreRuntime, node: ScreenNode) -> str | None:
-    """Screenshot this node through the session (masked, B7). Never fatal â€”
-    a crawl that cannot screenshot still produces a graph.
-
-    AT-114: staying non-fatal is right; staying SILENT was not. `session.
-    screenshot` retries the one transient CDP race AT-036 documents and
-    deliberately re-raises everything else, because everything else is real.
-    A bare `except Exception: return None` threw that distinction away â€” a node
-    with no screenshot looked identical whether the compositor hiccuped twice
-    or the browser had died. The cause is now recorded as an EVIDENCE issue, a
-    kind of its own so a tool failure is never counted as a product bug.
-    """
+    """Screenshot this node through the session (masked, B7). Never fatal, never silent
+    (AT-114): a failure is filed as an EVIDENCE issue (the tool's own, not a product bug)."""
     try:
         return rt.session.screenshot(f"node-{node.id[-6:]}").path
     except Exception as exc:
@@ -76,12 +67,17 @@ def add_issue(rt: ExploreRuntime, node_id: str, kind: IssueKind, detail: str,
         rt.issues += 1
 
 
+MAX_REASON_CHARS = 400  # bound on an edge's cause: Playwright errors carry whole call logs
+
+
 def record_edge(rt: ExploreRuntime, node: ScreenNode, el: ElementRef, action: Action,
                 outcome: EdgeOutcome, reason: str | None = None,
-                to_node: str | None = None) -> ScreenEdge:
+                to_node: str | None = None, error_class: str | None = None) -> ScreenEdge:
+    cause = rt.session.secrets.scrub_optional(reason)  # scrub BEFORE capping
     edge = ScreenEdge(crawl_id=rt.crawl.id, from_node=node.id, to_node=to_node,
-                      action=action, target=el.selector, name=el.name,
-                      outcome=outcome, reason=rt.session.secrets.scrub_optional(reason))
+                      action=action, target=el.selector, name=el.name, outcome=outcome,
+                      reason=" ".join(cause.split())[:MAX_REASON_CHARS] if cause else cause,
+                      error_class=error_class)
     rt.store.add_edge(persisted.scrubbed(rt, edge))
     rt.edges += 1
     return edge
@@ -154,13 +150,14 @@ def _perform(rt: ExploreRuntime, el: ElementRef) -> Action:
 def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEdge:
     """Perform one candidate action and classify where it landed."""
     action = Action.NAVIGATE if (el.role == "link" and el.href) else Action.CLICK
+    rt.take_responses(node.id)  # traffic since the last action is this screen's own load
     try:
         action = _perform(rt, el)
     except NavigationRefused as exc:
         return record_edge(rt, node, el, action, EdgeOutcome.OFF_DOMAIN_REFUSED, str(exc))
     except Exception as exc:
         return record_edge(rt, node, el, action, EdgeOutcome.ERRORED,
-                           f"{type(exc).__name__}: {exc}")
+                           f"{type(exc).__name__}: {exc}", error_class=type(exc).__name__)
     if drain(rt, node.id):
         return record_edge(rt, node, el, action, EdgeOutcome.DIALOG, "dialog repeat limit")
     try:  # X7: the host is re-checked after EVERY action, not only on goto
@@ -169,7 +166,9 @@ def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEd
         add_issue(rt, node.id, IssueKind.NAVIGATION, str(exc))
         return record_edge(rt, node, el, action, EdgeOutcome.OFF_DOMAIN_REFUSED, str(exc))
     new = node_from(observe(rt.session), rt.crawl.id, rt.project.slug, node.depth + 1)
-    if new.id == node.id:
+    same = same_screen(node, new, el)  # a same-URL layout toggle is not a screen
+    rt.take_responses(node.id if same else new.id)
+    if same:
         return record_edge(rt, node, el, action, EdgeOutcome.SAME_SCREEN, None, node.id)
     edge = record_edge(rt, node, el, action, EdgeOutcome.NAVIGATED, None, new.id)
     _enqueue(rt, new, edge)
@@ -258,7 +257,8 @@ def _click_loop(rt: ExploreRuntime, node: ScreenNode, typed: int) -> bool:
             return False
         if not return_to(rt, node):
             record_edge(rt, node, el, Action.BACK, EdgeOutcome.ERRORED,
-                        f"could not return to this screen: {why_lost(rt)}")
+                        f"could not return to this screen: {why_lost(rt)}",
+                    error_class="ReturnLost")
             add_issue(rt, node.id, IssueKind.NAVIGATION,
                       "lost this screen mid-exploration — remaining controls not "
                       f"tried: {why_lost(rt)}")

@@ -5,8 +5,8 @@ invent a click or a navigation** — `execute.md` E5 ("`run_case` performs
 exactly the actions in `case.steps`") stays intact; the explorer never routes
 through `run_case` except for the human-authored login bootstrap case. Every
 bound can end the crawl and name itself in `Crawl.stop_reason`, and no stop
-condition depends on provider output — a crawl completes with `provider=mock`
-(X4). Per-node work lives in `explore_node.py`; safety in `explore_safety.py`.
+condition depends on provider output — a crawl makes no model call and records
+`provider=None` (X4). Per-node work lives in `explore_node.py`; safety in `explore_safety.py`.
 """
 
 from __future__ import annotations
@@ -140,6 +140,7 @@ def _seed(rt: ExploreRuntime) -> ScreenNode | None:
     operator watching a live crawl can tell the product was down from the
     crawl was refused by its own domain guard.
     """
+    rt.take_responses(None)  # the login case's traffic belongs to no screen
     try:
         rt.session.goto(rt.project.base_url)
         rt.session.settle(timeout_ms=rt.bounds.settle_ms)
@@ -151,6 +152,7 @@ def _seed(rt: ExploreRuntime) -> ScreenNode | None:
         rt.seed_error = f"{type(exc).__name__}: {exc}"
         return None
     node = node_from(observation, rt.crawl.id, rt.project.slug, depth=0)
+    rt.take_responses(node.id)
     node = node.model_copy(update={"screenshot_ref": explore_node.capture(rt, node)})
     rt.nodes[node.id] = node
     rt.store.add_node(explore_summary.scrubbed(rt, node))
@@ -205,13 +207,15 @@ def _terminal_status(rt: ExploreRuntime, completed: bool, login_case: Case | Non
 def _fold_network_evidence(rt: ExploreRuntime) -> None:
     """T-170/NA1: fold first-party responses into NETWORK evidence, once,
     at the end (no per-step RawResult to fold into, unlike execute.py)."""
+    rt.take_responses(None)
     for item in network_capture.first_party_evidence(
-            rt.observer.drain_responses(), rt.project, rt.policy, rt.session.secrets.redactor()):
+            rt.net_log, rt.project, rt.policy, rt.session.secrets.redactor()):
         rt.store.add_crawl_network(rt.crawl.id, item)
 
 
 def _finish(rt: ExploreRuntime, status: CrawlStatus) -> Crawl:
     _fold_network_evidence(rt)
+    explore_summary.apply_api_calls(rt)
     crawl = rt.crawl.model_copy(update={
         "status": status,
         "stop_reason": rt.session.secrets.scrub_optional(rt.stop_reason),  # AT-350

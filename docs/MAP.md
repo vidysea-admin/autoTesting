@@ -824,6 +824,7 @@
 | `SlotClaim` (`schema/schedule.py`) | The content of a claim marker: what the winning tick decided, so a crash can be re-driven. |
 | `TickReport` (`schema/schedule.py`) | What one `autotester schedule tick` did: the JSON document of `--output json`. |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
+| `ApiCall` (`schema/screen_graph.py`) | One successful first-party API request a screen made: method + path pattern + status. |
 | `PageObservation` (`schema/screen_graph.py`) | One page-visit's raw material: its url/title and interactive elements. |
 | `ScreenNode` (`schema/screen_graph.py`) | One distinct screen the crawl found. Identity is structural |
 | `ScreenEdge` (`schema/screen_graph.py`) | One candidate action the crawl tried from one screen. |

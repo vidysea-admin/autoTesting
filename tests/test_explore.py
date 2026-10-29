@@ -57,7 +57,7 @@ def test_crawl_runs_without_any_provider(tmp_path: Path) -> None:
     """X4: no stop condition depends on provider output — `run_crawl` takes no
     provider at all, so a crawl cannot stall on a model."""
     crawl, _store, _page = crawl_it(tmp_path)
-    assert crawl.provider == "mock"
+    assert crawl.provider is None
     assert crawl.screens > 0
 
 
