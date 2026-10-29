@@ -1,6 +1,6 @@
 # Manifest — crawl-guidance-residuals
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 1
 Prior verdict: cycle 0 PASS (`qa/verdicts/crawl-guidance-residuals.md`, 9371f6dd) with non-blocking N7, taken here
 Unit: crawl-guidance-residuals: the non-blocking G3 egress residuals N1, N2, N3, N5 from checker B's cycle-3 PASS (`.work/cg-verdict-b-c3.md`, "NON-BLOCKING RESIDUALS"). N4 (aria-labelledby target that only displays a value: inherent, checker recommends no fix) and N6 (path-segment PII, grids of <=3 rows) are left as the checker ruled.
