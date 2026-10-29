@@ -1,12 +1,12 @@
 # Manifest — crawl-guidance
 
 Status: ready-for-check
-Fix cycle: 2
+Fix cycle: 3
 Unit: crawl-guidance Units 1-4 (D-118): schema, guidance core, prompt/chain, seam. Unit 5 (G12 measurement) is NOT built.
 Contract: qa/contracts/crawl-guidance.md (G1-G12), base b1ffaf27
 Branch: feat/crawl-guidance (worktree D:/autoTesting/.claude/worktrees/crawl-guidance)
 Code/test SHA: the `fix(crawl-guidance): cycle 1` commit on the branch; this manifest rides in the same commit
-Prior verdicts: cycle 1 = checker A PASS (ad32c353), checker B FAIL (`qa/verdicts/crawl-guidance.b.md` at ce318eba; B1, B2 below)
+Prior verdicts: cycle 2 = FAIL (verdict fffb06da: G3 custom ARIA widgets; merge master first); cycle 1 = checker A PASS (ad32c353), checker B FAIL (`qa/verdicts/crawl-guidance.b.md` at ce318eba; B1, B2 below)
 Prior FAIL: cycle 0, `qa/verdicts/crawl-guidance.md` at 0ecb057a (reviewed 3e9efa0d, code 9760bac3)
 Authorizing decision for the F1 design: D-119 (ed3a3a09), Approved-by Umesh
 Commits: 92c1e862 (unit 1) · 9760bac3 (units 2-4) · 3e9efa0d (cycle 0 manifest) · 0ecb057a (verdict) · ed3a3a09 (D-119) · cycle 1 fix on top
@@ -38,6 +38,29 @@ Commits: 92c1e862 (unit 1) · 9760bac3 (units 2-4) · 3e9efa0d (cycle 0 manifest
 
 Not changed, and outside this finding: `ElementRef.name` itself, and therefore `nodes.jsonl` on disk, still holds whatever `nameOf` produced (including a prefilled value) as it did before this unit. That is an existing crawl-artifact property (it passes the project redactor, `explore_summary.scrubbed`); it is not an egress path from this unit, but the checker may want it filed separately.
 
+## Cycle 3 repair (verdict fffb06da) -- tests written and seen RED first
+
+**Merge first.** `master` (a238d406) merged into `feat/crawl-guidance` as its own commit (99dfd6b3) before any cycle 3 code. Conflicts and how they were resolved:
+- `schema/crawl.py`: master's `Crawl.provider: str | None = None` kept (an old stored `"mock"` reads back as None, explore.md X4) plus this unit's `guidance: CrawlGuidance | None`. Three of my own assertions that expected the old default `"mock"` now expect None.
+- `schema/screen_graph.py`: `ScreenNode.guidance` (D-119) and master's `ScreenNode.api_calls` both kept.
+- `stages/explore_node.py`: master's queue-based `_click_loop` (toggle-revealed controls appended via `destructive_last(grown[seen:])`) kept; only the first line of the queue is mine (`queue = explore_traversal.ordered_candidates(rt, node)`). My seam test asserted `destructive_last` appeared nowhere in the file, which master's revealed-controls code now legitimately uses; it now asserts `destructive_last(node.elements` is absent (the initial order still comes only from the seam).
+- `docs/DECISIONS.md`: union (D-119, then master's D-120..D-123). `docs/MAP.md`, `docs/SNAPSHOT.md` regenerated.
+- **`qa/contracts/explore.md` was edited, only because the merge forced it** (a union conflict, not a content change by me): X12 keeps this unit's rewrite ("provider=None") and both changelog entries are kept. The maker does not otherwise edit contracts; please look at that hunk.
+- G5 baseline (`tests/fixtures/crawl_guidance/baseline_*`): regenerated from a PRISTINE `a238d406` worktree (no guidance code), not from this branch, so the byte-identical test still compares guidance-off against the true pre-change crawl. The diff against the old baseline is exactly master's: `crawl.json` loses `"provider": "mock"`, `nodes.jsonl` gains `"api_calls":[]`; `edges.jsonl` unchanged. The worktree was removed afterwards.
+- `stages/explore.py` came out at 303 lines after the merge (master was 299, +4 for the seam); two comment/docstring paragraphs were re-wrapped (no word changed) to return to 300.
+- Stale contract text to flag, not mine to edit: `qa/contracts/crawl-guidance.md` G8 still says `Crawl.provider (default "mock")`; after master the default is None, so a rule-only crawl reads None and a guided crawl names the serving model.
+
+**G3 (blocking) -- custom ARIA widgets still sent their displayed value.** A `<div role=combobox tabindex=0>Class 10A</div>` has no `input/textarea/select` tag, so it was treated as a caption and `nameOf` sent `Class 10A`.
+- `browser/enumerate.js` `fieldLabelOf` (field test) and `stages/explore_guidance_payload.py` `is_field` now treat as data fields, in BOTH places: native input/textarea/select (not caption inputs), contenteditable, role in {combobox, textbox, searchbox, spinbutton, listbox, option, slider} (first token of `role`, lower-cased), and any element with `aria-haspopup` in {listbox, tree, grid, true, dialog} (MUI, Ant, react-select buttons that show the chosen value). `aria-haspopup="menu"` is deliberately not a field (a menu button shows a fixed caption).
+- Label sources: aria-label, then aria-labelledby, then an associated `<label>`, then placeholder; else `<field:KIND>` (native tag or type first, then the ARIA role: `<field:combobox>`, `<field:spinbutton>`, `<field:slider>`, `<field:option>`; a contenteditable or haspopup widget with no field role stays `<field:div>`).
+- aria-labelledby fix found while testing: it may list several ids, and MUI lists the widget's OWN id (`aria-labelledby="label self"`), whose text is the displayed value. The helper now reads every id, and skips the control itself and anything that contains it or sits inside it.
+- Residual, declared: `field_label` is `exclude=True` (never persisted, to keep G5 byte-identical), so a stored/old graph can only recognise a widget by tag or role. An old stored `<div role=button aria-haspopup=listbox>` has no way to say it was a field; the live enumerate path (the only one that feeds a payload in these code paths) does carry it.
+- Test (`tests/test_crawl_guidance_egress.py`): the real-Chromium fixture gained 8 shapes: `div role=combobox` (no label), `role=textbox` with aria-label, `role=searchbox` with aria-labelledby, `role=spinbutton`, `role=listbox` with a child `role=option`, `role=slider`, a `role=button aria-haspopup=listbox` whose `aria-labelledby` includes its own id (the MUI case), and a `role=button aria-haspopup=true`. 8 more planted values; labels `Nickname`, `Find student`, `Term`, `Board` must appear and `<field:combobox|spinbutton|slider|option>` must be present. It failed before the fix (`Class10A-Secret` in the prompt) and passes after.
+
+**Opaque tokens in a path (item 2).** `href_path` already calls `url_template`, so master's masking applies. Tests added to the payload file: `/users/{a@b.com, jane.doe@example.org, a JWT, a long base64url token}/edit` come out with no `@`, no `eyJ` and none of the segment text, in `href_path` and in the whole payload; `%3Bjsessionid=...` (and lower-case `%3b`) is cut too. The `%3B` cut was NOT already true: `href_path` split only on a literal `;` (red first), now `re.split(r";|%3b", seg, flags=re.I)`.
+
+**Malformed href (item 3).** `http://[::1/x` makes `urlsplit` raise ValueError, and a raise inside `Guidance.order` was counted as a model strike (three of them open the breaker, so a hostile page could switch guidance off). `href_path` now returns `<href>` for any parse failure (broad `except Exception`, since the page controls the href). Tests: `href_path("http://[::1/x") == "<href>"` (also `https://[bad`) and `test_a_malformed_href_is_not_a_breaker_strike` (a full `order` call: 1 model call, `strikes == 0`, no fallback, breaker closed, `"href_path": "<href>"` in the prompt). Both were red first.
+
 ## Criteria
 
 | # | Evidence in code (file:line) | Test (name, file) |
@@ -63,18 +86,21 @@ Not changed, and outside this finding: `ElementRef.name` itself, and therefore `
 - D-082 item 1: two new stages modules, both with one-job docstrings: `stages/explore_guidance.py` (the call, bounds, fallback, KG reuse) and `stages/explore_guidance_payload.py` (pure: redacted payload, permutation, reorder). No helper was moved out of an existing module.
 
 ## Files changed
-Cycle 0: `git show --stat 9760bac3`. Cycle 1: persona single writer (D-119) and scrub-before-cut. Cycle 2 on top: `browser/enumerate.js` (one additive key and one helper), `schema/screen_graph.py` (`ElementRef.field_label`, `exclude=True`), `stages/explore_guidance_payload.py` (`href_path`, `is_field`, `_control`, docstring), `tests/test_crawl_guidance_payload.py` (weak test replaced by three B2 tests), `tests/test_crawl_guidance_egress.py` (new, one job: the egress rule for a control's name), regenerated `docs/MAP.md`/`docs/SNAPSHOT.md` if the doctor asks. One new test file, no new source module.
-Line counts: explore_node.py 300, schema/portal_persona.py 300, stages/portal_persona.py 300, explore_guidance.py 300, explore.py 299, project.py 289, crawl.py 287, explore_traversal.py 164, enumerate.js 176, screen_graph.py 132, explore_guidance_payload.py 121, explore_runtime.py 99, crawl_guidance.py 84. All <= 300.
+Cycle 0: `git show --stat 9760bac3`. Cycle 1: persona single writer (D-119) and scrub-before-cut. Cycle 3: the master merge (99dfd6b3), then `browser/enumerate.js` (field test, aria-labelledby), `stages/explore_guidance_payload.py` (`FIELD_ROLES`, `is_field`, `_kind`, `href_path`), the egress and payload tests, the seam test line, the G5 baseline fixtures. Cycle 2 on top: `browser/enumerate.js` (one additive key and one helper), `schema/screen_graph.py` (`ElementRef.field_label`, `exclude=True`), `stages/explore_guidance_payload.py` (`href_path`, `is_field`, `_control`, docstring), `tests/test_crawl_guidance_payload.py` (weak test replaced by three B2 tests), `tests/test_crawl_guidance_egress.py` (new, one job: the egress rule for a control's name), regenerated `docs/MAP.md`/`docs/SNAPSHOT.md` if the doctor asks. One new test file, no new source module.
+Line counts (cycle 3): explore_node.py 297, schema/portal_persona.py 300, stages/portal_persona.py 300, explore_guidance.py 300, explore.py 300, crawl.py 297, explore_traversal.py 164, enumerate.js 187, screen_graph.py 158, explore_guidance_payload.py 142. All <= 300.
 
-## Commands run (cycle 2; 2 test files per call, one pytest at a time, no real model call)
-- `uv run pytest tests/test_crawl_guidance_payload.py tests/test_crawl_guidance_egress.py` -> 26 passed (12 failed before the fix, all the new ones)
-- `uv run pytest tests/test_crawl_guidance_core.py tests/test_crawl_guidance_kg.py` -> 38 passed
-- `uv run pytest tests/test_crawl_guidance_schema.py tests/test_observe.py` -> 20 passed
-- `uv run pytest tests/test_crawl_guidance_seam.py` -> 21 passed (includes the byte-identical baseline)
-- `uv run pytest tests/test_explore_typing_input_type.py tests/test_explore_modal.py` -> 14 passed (the other real-enumerate.js tests)
-- `uv run pytest tests/test_explore.py tests/test_explore_bounds_last_node.py` -> 23 passed
+## Commands run (cycle 3; 2 test files per call, one pytest at a time, no real model call, no git stash)
+- merged tree, before any cycle 3 code: `uv run pytest tests/test_crawl_guidance_seam.py` -> 20 passed, 1 failed (the `destructive_last` source assertion, fixed as above) after the baseline regeneration; before the missing `explore_safety` import was restored (a merge slip: master's loop uses it) 12 failed and the crawl aborted with NameError
+- `uv run pytest tests/test_explore.py tests/test_explore_traversal.py` -> 28 passed
+- `uv run pytest tests/test_crawl_toggle_coverage.py tests/test_explore_flows.py` -> 29 passed (master's toggle queue under the seam)
+- red first: `uv run pytest tests/test_crawl_guidance_egress.py` -> 1 failed (Class10A-Secret in the prompt); `uv run pytest tests/test_crawl_guidance_payload.py` -> 5 failed (%3B, 2 malformed, breaker strike, plus one case dropped as not malformed); the opaque-token tests passed at once because master's masking is merged
+- after: `uv run pytest tests/test_crawl_guidance_egress.py tests/test_crawl_guidance_payload.py` -> 34 passed
+- `uv run pytest tests/test_crawl_guidance_kg.py tests/test_crawl_guidance_core.py` -> 38 passed
+- `uv run pytest tests/test_crawl_guidance_schema.py tests/test_crawl_guidance_seam.py` -> 31 passed (includes the byte-identical baseline)
+- `uv run pytest tests/test_crawl_guidance_egress.py tests/test_observe.py` -> 15 passed (the other real-enumerate.js file)
 - `uv run ruff check src tests scripts` -> All checks passed!
-- `uv run autotester doctor` -> see the commit; the full `uv run pytest` was NOT run by me (a full suite is running elsewhere); the checker should run it.
+- `uv run autotester doctor` -> clean (MAP and SNAPSHOT regenerated)
+- The full `uv run pytest` was NOT run by me (a full suite is running elsewhere); the checker should run it.
 
 ## Sabotage evidence (one real-source mutation each, reverted in a `finally`; script `.work/sabotage.py`, gitignored)
 All 12 CAUGHT by the named test file: G1 range filter removed · G1 duplicate filter removed · D-040 destructive tail first · G3 core guard removed · G3 scrub removed · G4 breaker never opens · G6 call cap ignored · G6 per-call cap ignored · G7 reuse key ignoring prompt version · G7 reuse key ignoring model tag · G7 reuse disabled · G8 provider tag not recorded. These 12 ran on the cycle-0 code; the mutated lines (breaker, caps, reuse key, tag) are unchanged in cycle 1 and the test files that caught them pass again. Cycle 1 sabotage is listed in its own section above.

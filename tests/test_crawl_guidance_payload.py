@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import json
 import random
+from pathlib import Path
 from typing import Any
 
 import pytest
+from crawl_guidance_support import FakeProvider, controls, guide, make_rt, reverse, screen
 
 from autotester.schema.crawl_guidance import NextActionRanking
 from autotester.schema.screen_graph import ElementRef, ScreenNode
@@ -174,3 +176,41 @@ def test_payload_caps_names_known_screens_and_indexes_candidates() -> None:
 def test_href_path_keeps_only_the_path() -> None:
     assert payload.href_path("https://evil.test/a/b?x=1#f") == "/a/b"
     assert payload.href_path("/a?b=c") == "/a" and payload.href_path(None) == ""
+
+
+JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+
+
+@pytest.mark.parametrize("segment", ["a@b.com", "jane.doe@example.org", JWT,
+                                     "Zm9vYmFyYmF6cXV4MTIzNDU2Nzg5MGFiY2RlZg"])
+def test_an_email_or_token_path_segment_is_masked(segment: str) -> None:
+    """The url_template opaque-token masking (master a238d406) reaches the payload."""
+    out = payload.href_path(f"/users/{segment}/edit")
+    assert segment not in out and "@" not in out and "eyJ" not in out, out
+    el = ElementRef(role="link", name="Edit", selector="#e", href=f"/users/{segment}/edit", tag="a")
+    assert segment not in json.dumps(payload.build_payload(_node(), [el], [], lambda t: t))
+
+
+def test_an_encoded_semicolon_path_parameter_is_cut_too() -> None:
+    for href in ("/files%3Bjsessionid=ABC123SESSION/list",
+                 "/files%3bjsessionid=ABC123SESSION/list"):
+        out = payload.href_path(href)
+        assert "ABC123SESSION" not in out and "jsessionid" not in out.lower(), out
+        assert out == "/files/list"
+
+
+@pytest.mark.parametrize("href", ["http://[::1/x", "https://[bad"])
+def test_a_malformed_href_sends_the_neutral_token_and_never_raises(href: str) -> None:
+    assert payload.href_path(href) == "<href>"
+
+
+def test_a_malformed_href_is_not_a_breaker_strike(tmp_path: Path) -> None:
+    """A page controls its own hrefs: one that makes urlsplit raise must not cost the crawl its
+    guidance (a raise in order() counts as a model strike)."""
+    cands = [ElementRef(role="link", name="Bad", selector="#a", href="http://[::1/x", tag="a"),
+             *controls(2)]
+    model = FakeProvider(reverse)
+    g = guide(model)
+    g.order(make_rt(tmp_path), screen(), cands)
+    assert model.calls == 1 and g.strikes == 0 and not g.fallbacks and not g.stopped
+    assert '"href_path": "<href>"' in model.prompts[0]

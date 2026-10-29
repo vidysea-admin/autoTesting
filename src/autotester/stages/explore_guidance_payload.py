@@ -10,8 +10,10 @@ drop or invent one.
 Sent per screen: url template (query and fragment stripped, never the example URL), title, depth,
 known screen templates (capped). Sent per control: index, role, name (trimmed, scrubbed), tag,
 type, is_form_submit, in_row, has_href and the href PATH only (http(s) only, templated; any
-other scheme is just `<mailto>`, `<tel>` ...). A form control (input, textarea, select) sends its
-label text (aria-label, <label>, placeholder) or `<field:type>`, never its value or option text.
+other scheme is just `<mailto>`, `<tel>` ...; a malformed href is `<href>`). A data field (input,
+textarea, select, an ARIA combobox/textbox/searchbox/spinbutton/listbox/option/slider, or a
+button with aria-haspopup) sends its label text (aria-label, aria-labelledby, <label>,
+placeholder) or `<field:kind>`, never its value, displayed text or option text.
 A control inside a list row has its name replaced by a fixed placeholder (rows are where student
 names live) and no href.
 Never sent: images, input values, cookies, headers, tokens, query strings, the example URL.
@@ -20,6 +22,7 @@ Never sent: images, input values, cookies, headers, tokens, query strings, the e
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable
 from typing import Any, TypeVar
 from urllib.parse import urlsplit
@@ -36,6 +39,7 @@ TITLE_CHARS = 80
 KNOWN_CAP = 30
 ROW_PLACEHOLDER = "<row item>"
 FIELD_TAGS = ("input", "textarea", "select")
+FIELD_ROLES = ("combobox", "textbox", "searchbox", "spinbutton", "listbox", "option", "slider")
 CAPTION_TYPES = ("submit", "button", "reset", "image")
 """A button-like input's `value` is its caption, not user data, so its name is still sent."""
 
@@ -43,20 +47,36 @@ CAPTION_TYPES = ("submit", "button", "reset", "image")
 def href_path(href: str | None) -> str:
     """What a link may say: an http(s) path templated by `core/urls.url_template` with no host,
     `;params`, query or fragment; any other scheme (mailto, tel, javascript, data) as `<scheme>`
-    only, since its payload is an address, a number or code. "" when there is no path."""
+    only, since its payload is an address, a number or code; `<href>` when the page's own href
+    cannot be parsed (it must never raise: a page controls its hrefs). "" when no path."""
     if not href:
         return ""
-    parts = urlsplit(href.strip())
-    if parts.scheme and parts.scheme.lower() not in ("http", "https"):
-        return f"<{parts.scheme.lower()}>"
-    path = "/".join(seg.split(";")[0] for seg in parts.path.split("/"))
-    return url_template(path, keep_host=False) if path.strip() else ""
+    try:
+        parts = urlsplit(href.strip())
+        if parts.scheme and parts.scheme.lower() not in ("http", "https"):
+            return f"<{parts.scheme.lower()}>"
+        path = "/".join(re.split(r";|%3b", seg, flags=re.I)[0] for seg in parts.path.split("/"))
+        return url_template(path, keep_host=False) if path.strip() else ""
+    except Exception:  # any parse failure is neutral, never a breaker strike
+        return "<href>"
 
 
 def is_field(el: ElementRef) -> bool:
-    """A data-bearing form control: its name may be its value or option text (B1)."""
-    return el.field_label is not None or (
-        el.tag in FIELD_TAGS and el.type not in CAPTION_TYPES)
+    """A data-bearing control: its name may be its value, shown text or option text (B1)."""
+    return (el.field_label is not None or _role(el) in FIELD_ROLES
+            or (el.tag in FIELD_TAGS and el.type not in CAPTION_TYPES))
+
+
+def _role(el: ElementRef) -> str:
+    return (el.role.split() or [""])[0].lower()
+
+
+def _kind(el: ElementRef) -> str:
+    """`<field:KIND>`: the input type, else a native control's tag, else the ARIA field role,
+    else the tag (a contenteditable or aria-haspopup widget with no field role)."""
+    if el.type or el.tag in FIELD_TAGS:
+        return el.type or el.tag
+    return _role(el) if _role(el) in FIELD_ROLES else el.tag
 
 
 def _template(url_template: str) -> str:
@@ -70,7 +90,7 @@ def candidate_hash(cands: list[ElementRef]) -> str:
 
 
 def _control(i: int, el: ElementRef, scrub: Callable[[str | None], str | None]) -> dict[str, Any]:
-    shown = (el.field_label or f"<field:{el.type or el.tag}>") if is_field(el) else el.name
+    shown = (el.field_label or f"<field:{_kind(el)}>") if is_field(el) else el.name
     name = ROW_PLACEHOLDER if el.in_row else (scrub(shown.strip()) or "")  # scrub, THEN cut
     path = "" if el.in_row else scrub(href_path(el.href)) or ""
     return {"i": i, "role": el.role, "name": name[:NAME_CHARS], "tag": el.tag, "type": el.type,

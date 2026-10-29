@@ -18,7 +18,9 @@ from autotester.stages import explore_guidance_payload as payload
 
 VALUES = ["jane.doe@example.org", "Hunter2-prefill", "Atlantis-Secret", "Narnia-Secret",
           "OnlyOptionText-Secret", "typed-search-term", "no-label-value", "draft-body-secret",
-          "editable-secret", "hidden-csrf-token-77"]
+          "editable-secret", "hidden-csrf-token-77", "Class10A-Secret", "nick-Secret",
+          "query-Secret", "spin-Secret", "Autumn-Secret", "slider-Secret", "CBSE-Secret",
+          "Menu-Secret"]
 PAGE = """
 <label for="em">Work email</label><input id="em" type="email" value="jane.doe@example.org">
 <label>Password <input type="password" value="Hunter2-prefill"></label>
@@ -30,6 +32,18 @@ PAGE = """
 <textarea>draft-body-secret</textarea>
 <div contenteditable="true" tabindex="0">editable-secret</div>
 <input type="hidden" value="hidden-csrf-token-77">
+<div role="combobox" tabindex="0">Class10A-Secret</div>
+<div role="textbox" tabindex="0" aria-label="Nickname">nick-Secret</div>
+<span id="lq">Find student</span>
+<div role="searchbox" tabindex="0" aria-labelledby="lq">query-Secret</div>
+<div role="spinbutton" tabindex="0">spin-Secret</div>
+<div role="listbox" tabindex="0" aria-label="Term">
+  <div role="option" tabindex="0">Autumn-Secret</div></div>
+<div role="slider" tabindex="0">slider-Secret</div>
+<span id="lb">Board</span>
+<div id="cb" role="button" aria-haspopup="listbox" aria-labelledby="lb cb"
+  tabindex="0">CBSE-Secret</div>
+<div role="button" aria-haspopup="true" tabindex="0">Menu-Secret</div>
 <button>Save changes</button><input type="submit" value="Send form"><a href="/reports">Reports</a>
 """
 
@@ -52,10 +66,11 @@ def test_prefilled_values_and_option_text_never_leave_the_machine(
         assert value not in model.prompts[0], value
     names = _names(model.prompts[0])
     for label in ("Work email", "Password", "Country", "Search students", "Save changes",
-                  "Send form", "Reports"):
+                  "Send form", "Reports", "Nickname", "Find student", "Term", "Board"):
         assert label in names, (label, names)
     assert {"<field:select>", "<field:text>", "<field:textarea>", "<field:div>",
-            "<field:hidden>"} <= set(names)
+            "<field:hidden>", "<field:combobox>", "<field:spinbutton>", "<field:slider>",
+            "<field:option>"} <= set(names)
 
 
 def test_a_field_without_a_label_source_is_neutral_even_for_an_old_stored_graph() -> None:

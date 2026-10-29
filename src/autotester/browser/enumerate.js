@@ -76,19 +76,30 @@
     return "";
   }
 
-  // crawl-guidance G3: a data-bearing control's NAME can be its value or option text (nameOf),
-  // which must never leave the machine. This reports its label sources only: aria-label,
-  // aria-labelledby, an associated <label> (control text removed), a placeholder. null = not a
-  // data field. Additive: nameOf, selectors and every other key are unchanged.
+  // crawl-guidance G3: a data-bearing control's NAME can be its value, shown text or option text
+  // (nameOf), which must never leave the machine. This reports its label sources only:
+  // aria-label, aria-labelledby (never the control itself or what contains it), an associated
+  // <label> (control text removed), a placeholder. null = not a data field. Fields: native
+  // input/textarea/select, contenteditable, the ARIA value widgets (combobox, textbox, searchbox,
+  // spinbutton, listbox, option, slider) and a button that opens a listbox/tree/grid/dialog
+  // (MUI, Ant, react-select). Additive: nameOf, selectors and every other key are unchanged.
+  const FIELD_ROLES = ["combobox", "textbox", "searchbox", "spinbutton", "listbox", "option",
+    "slider"];
+  const FIELD_POPUPS = ["listbox", "tree", "grid", "true", "dialog"];
   function fieldLabelOf(el, tag, type) {
     const caption = ["submit", "button", "reset", "image"].includes(type);
+    const role = (el.getAttribute("role") || "").trim().toLowerCase().split(/\s+/)[0];
+    const popup = (el.getAttribute("aria-haspopup") || "").trim().toLowerCase();
     const field = (["input", "textarea", "select"].includes(tag) && !caption) ||
-      el.isContentEditable;
+      el.isContentEditable || FIELD_ROLES.includes(role) || FIELD_POPUPS.includes(popup);
     if (!field) return null;
     const aria = el.getAttribute("aria-label");
     if (aria && aria.trim()) return aria.trim().slice(0, 60);
-    const ref = document.getElementById(el.getAttribute("aria-labelledby") || "");
-    if (ref && ref.innerText && ref.innerText.trim()) return ref.innerText.trim().slice(0, 60);
+    const named = (el.getAttribute("aria-labelledby") || "").split(/\s+/)
+      .map((id) => document.getElementById(id))
+      .filter((n) => n && n !== el && !n.contains(el) && !el.contains(n))
+      .map((n) => (n.innerText || "").trim()).filter(Boolean).join(" ");
+    if (named) return named.slice(0, 60);
     const label = el.labels && el.labels[0];
     if (label) {
       const copy = label.cloneNode(true);
