@@ -149,12 +149,26 @@ provably leaves a loadable partial graph. A kill *during* a single line's append
 `read_jsonl` raises on a malformed row rather than skipping it, so a torn final line would make
 the file unloadable. Claim only what the ordering supports.
 
-### X12 — The crawl is DOM-driven and deterministic; a model never chooses an action
-`run_crawl` takes no provider at all. No stop condition, no action choice, and no safety decision
-depends on model output — a crawl completes with `provider=mock`. A model's only permitted role
-anywhere in this stage is *naming* an already-discovered screen for human readability. Vision-guided
-action choice was explicitly rejected by D-015. This is what keeps the crawl reproducible and its
-failures debuggable, and it is why the whole stage can be proven without a credential or an API key.
+### X12 — The crawl is DOM-driven and deterministic; a model may ORDER controls, never choose or perform one
+**Default (guidance off, the shipped default): `run_crawl` takes no provider at all.** No stop
+condition, no action choice, and no safety decision depends on model output — a crawl completes
+with `provider=mock`, byte-identical to the pre-D-118 crawl. **Amended 2026-10-29 (D-118):** when
+and only when per-project guidance is switched on (`qa/contracts/crawl-guidance.md`, G1-G12), an
+injected `providers.base.Provider` may be handed ONE screen's code-built, numbered candidate
+controls and return a RANKING of them. The model never adds a control, never performs one, never
+names a selector, URL, value or stop, and never overrides a refusal: the deny-list, destructive-last
+(D-040), `link_is_safe`, `allowed_domains`, the signed `RunApproval` check, every `CrawlBounds`
+bound, the X7 host re-check and the X10/X10-b typing gate run unchanged on every control the model
+ordered. Any model failure leaves the code's own order in force (G4). Screen identity (X3) stays
+structural and never reads a model answer. A model's other permitted role is unchanged: *naming* an
+already-discovered screen for human readability. **Still rejected, not revived:** vision-guided
+action choice (images) — D-015 rejected it and D-118 keeps it rejected; the model sees redacted
+text only (G3). This is what keeps the crawl reproducible and its failures debuggable, and why the
+whole stage, guidance included, can be proven without a credential or an API key (a fake `Provider`).
+**Falsifiable:** with guidance off, `run_crawl` is called with no provider and `nodes.jsonl` /
+`edges.jsonl` for the fixture site are byte-identical to the pre-amendment baseline; with a fake
+provider returning garbage, the crawl's node set, refused/denied set and stop reason equal the
+guidance-off run's (G1/G4).
 
 ### X13 — A crawl may propose screens, never approve them
 `stages/explore_merge.py::merge_screens` **never rewrites an existing `Screen`** — a human-named
@@ -631,3 +645,16 @@ only the pure-function tests).
   default `SafetyPolicy()` keeps `synthetic_typing=False` so every pre-amendment caller and
   test is unaffected. First live use: Pathlynks stage-2 form-exploration crawl (after the
   READ_ONLY map crawl), under its own RunApproval citing both gate answers.
+- 2026-10-29 · CRITICAL amendment · **X12 amended (rewritten in place) under D-118 (Approved-by
+  Umesh, chat 2026-10-29; D-117 item 1 gave the go-ahead, D-118 the design and the models).** What
+  changed: X12 no longer says "a model never chooses an action" absolutely. With per-project
+  guidance ON, an injected `Provider` may ORDER the code-built candidate controls of one screen; it
+  may not add, perform or bypass anything, and every safety/approval/bound clause runs on every
+  ordered control. The guidance-off default keeps X12's original text and verify exactly. What did
+  NOT change: D-015's rejection of vision-guided crawling (images) stands; X3 identity, X5-X10-b
+  safety and typing, X7 host re-check, X11 bounds, X13/X14 merge discipline, and the `D-018`
+  approval check are byte-unchanged. The new behaviour is judged by `qa/contracts/crawl-guidance.md`
+  (G1-G12); X12 here is only the carve-out. The no-fire entry "naming screens with a model ...
+  `explore_name_screen_v1` deliberately NOT built" is unchanged (guidance orders controls; it does
+  not name screens). Not yet built: Units 1-5 of D-118 follow; this amendment alone authorizes none
+  of them to PASS without their own checker verdict.
