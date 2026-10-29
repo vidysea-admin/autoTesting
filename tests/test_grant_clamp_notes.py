@@ -23,6 +23,7 @@ from autotester.schema.approval import (
     GrantBounds,
     derive_grant_bounds,
     grant_clamp_warning,
+    hint_grant_bounds,
 )
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, ApprovalKind, CaseClass, CaseKind
@@ -141,3 +142,48 @@ def test_the_standing_help_says_crawl_only() -> None:
     out = runner.invoke(cli_app, ["approve", "--help"])
     flat = " ".join(out.output.replace("│", " ").split())
     assert "crawl only; until revoked (autotester revoke)" in flat, flat
+
+
+# -- cycle 1: the refusal path never crashes; F2 whole seconds; F3 bool ----------------------
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+@pytest.mark.parametrize("bad", [(-1, 0, 0.0), (0, 0, float("inf")), (0, 0, float("nan")),
+                                 (0, -1, 0.0), (5, 5, -2.5), (1, 1, float("-inf"))])
+def test_require_approval_with_malformed_bounds_refuses_cleanly_for_every_kind(
+    kind: ApprovalKind, bad: tuple[int, int, float],
+) -> None:
+    with pytest.raises(ApprovalRequired) as exc:
+        require_approval([], project="demo", kind=kind, target=URL, actions=bad[0],
+                        probes=bad[1], wall_clock_s=bad[2])
+    assert "refusing to start" in str(exc.value)
+
+
+def test_hint_bounds_fall_back_to_the_raw_values_and_derive_otherwise() -> None:
+    assert hint_grant_bounds(ApprovalKind.CRAWL, -1, 0, float("inf")) == GrantBounds(
+        -1, 0, float("inf"))
+    assert hint_grant_bounds(LIVE, 100, 5, 100.0) == derive_grant_bounds(LIVE, 100, 5, 100.0)
+
+
+@pytest.mark.parametrize("flag", [["--wall-clock", "inf"], ["--wall-clock", "nan"],
+                                  ["--max-actions", "-1"], ["--wall-clock", "-5"]])
+def test_explore_with_malformed_bounds_exits_2_with_the_refusal_not_a_traceback(
+    store: ProjectStore, flag: list[str],
+) -> None:
+    out = runner.invoke(cli_app, ["explore", "demo", *flag])
+    assert out.exit_code == 2, out.output
+    assert "refusing to start" in out.output
+    assert not isinstance(out.exception, ValueError)
+
+
+def test_the_wall_clock_in_the_warning_is_whole_seconds_and_never_reads_equal() -> None:
+    text = grant_clamp_warning(LIVE, 1, 1, 86400.0004)
+    assert "planned 86401s > ceiling 86400s" in text
+    assert "e+" not in grant_clamp_warning(LIVE, 1, 1, 1234567.0)
+    assert "planned 1234567s" in grant_clamp_warning(LIVE, 1, 1, 1234567.0)
+    assert "planned inf" in grant_clamp_warning(LIVE, 1, 1, float("inf"))
+
+
+@pytest.mark.parametrize("bad", [(True, 0, 1.0), (0, False, 1.0)])
+def test_a_bool_is_not_a_bound(bad: tuple[bool, bool, float]) -> None:
+    with pytest.raises(ValueError, match="non-negative and finite"):
+        derive_grant_bounds(LIVE, *bad)
