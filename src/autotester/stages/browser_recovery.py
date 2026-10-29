@@ -41,14 +41,22 @@ class BrowserRecovery:
         self.session, self.max_relaunches, self.relaunches = session, max_relaunches, 0
         self.stop_reason: str | None = None
 
+    def spend(self) -> bool:
+        """Charge one relaunch to the tier's cap; False (nothing charged) once it is spent. Also
+        used by whoever else relaunches in the tier (the pool's login fallback), so every launch
+        is counted in one place."""
+        if self.relaunches >= self.max_relaunches:
+            return False
+        self.relaunches += 1
+        return True
+
     def recover(self) -> bool:
         """Relaunch after a closed-browser case. False (and `stop_reason` set) when the
         bound is spent or the relaunch itself fails; the caller stops the tier."""
-        if self.relaunches >= self.max_relaunches:
+        if not self.spend():
             self.stop_reason = (f"{CAUSE}: relaunch limit reached "
                                 f"({self.max_relaunches} per run); remaining cases not run")
             return False
-        self.relaunches += 1
         try:
             self.session.relaunch(RuntimeError(CAUSE))
         except Exception as exc:
