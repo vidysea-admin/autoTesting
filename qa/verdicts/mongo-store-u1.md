@@ -30,3 +30,42 @@ M1 PASS (one source `schema/store_config.py:29-76`, `pyproject.toml [tool.autote
 
 ## Next
 Maker takes fix cycle 1 for F1 and F2 only; re-submit with `Fix cycle: 1`. Everything else is verified and need not be re-litigated. No code was edited by the checker.
+
+---
+
+# Cycle checked: 1
+
+**Verdict:** PASS
+**Status:** PASS
+**Cycle checked:** 1
+**Reviewed SHA:** 45445e95 (branch `feat/mongo-store-u1`; cycle-1 diff `b3eba175..45445e95`, 12 files). Checker A (contract); the dual-check partner (D-100) judges independently. Scope: close F1 and F2 from cycle 0 and confirm no other U1 criterion regressed. Nothing else was re-litigated.
+
+## Independent checks (checker, worktree, `PYTHONPATH=<worktree>/src`, 2 test files per pytest call, one at a time)
+- `pytest tests/test_store_config.py tests/test_mongo_guard.py`: 72 passed. `tests/test_mongo_guard_surface.py tests/test_mongo_guard_scan.py`: 38 passed. `tests/test_mongo_guard_spec.py tests/test_db.py`: 7 passed, 1 skipped (the same pre-existing skip as cycle 0). Cycle 0 was 56 / 28 / 6+1 skipped, so the cycle added tests and lost none.
+- `scripts/mutation_check.py` on the committed specs, re-run by the checker: `mutations.json` (2 files) 14/14 KILLED, `mutations-b.json` (2 files) 9/9 KILLED, 23/23 in total, up from 19. The four new mutants (s, s2, t, u) are all killed, and each spec is within the two-file limit, so the cycle 0 split is no longer needed. The worktree was clean afterwards.
+- `ruff check src tests scripts`: All checks passed. `uv lock --check`: Resolved 335 packages. `autotester doctor`: 3 violations, all `decision-citation-dangling` for D-123 (`qa/manifests/mongo-store-u1.md:98,100`, `qa/verdicts/mongo-store-u1.md:7`). This is expected, because D-123 exists on master only.
+- File caps: `mongo_guard.py` 299 lines (cap 300), `store_config.py` 76, `core/paths.py` 299.
+
+## F1 (percent-encoded URI path clash): CLOSED
+Fix: `mongo_guard.py:209` is now `unquote_plus(parts.path.lstrip("/"))`, and the import is at `:17`.
+My own probe (scratch script, FakeMongoServer, no socket, compared with `pymongo.uri_parser.parse_uri(uri)["database"]`):
+- `mongodb://h/%61utotester` is refused (parse_uri database is `autotester`).
+- `mongodb://h/%41utotester?x=1` is refused (parse_uri itself raises ConfigurationError on the unknown option, the fence refuses).
+- `mongodb://h/auto%74ester` is refused, as is `mongodb://u:p@h/%61UTOTESTER?authSource=x`.
+- `mongodb://h/autotester` and `mongodb://h/AUTOTESTER` are still refused.
+- `mongodb://h/%2561utotester` constructs. parse_uri gives `%61utotester`, so one decode is correct and there is no double decode.
+- `mongodb://h/a+utotester` constructs. It decodes to `a utotester`, not a clash. The malformed forms parse_uri rejects outright are the driver's to refuse, not the fence's.
+Tests: parametrised `%61utotester` / `%41utotester?x=1` cases in `test_a_uri_path_naming_the_store_database_is_refused_before_any_client`, plus `test_the_path_is_decoded_exactly_as_the_driver_decodes_it` and `test_a_plus_in_the_path_decodes_to_a_space_like_the_driver_and_is_no_clash` (`tests/test_mongo_guard.py`). Mutant s (no decode) and s2 (decode without plus handling) are both KILLED.
+
+## F2 (injectable constructor): CLOSED (remedy a, with the AST scan from remedy b as the backstop)
+- `GuardedStore.__init__(self, uri: str) -> None` (`mongo_guard.py:227`). Probe: `inspect.signature` shows only `uri`. `GuardedStore("mongodb://h/", config_path=None)`, `client_factory=None` and `bucket_factory=None` each raise TypeError, and a second positional argument raises TypeError.
+- The three seams moved to the module-private `_SEAM` dict (`:43-44`, read at `:228,232,235`). Tests reach it only through `tests/fake_mongo.py::seams` / `open_store`, which restore it on exit.
+- `git grep` of `src` and `scripts` for `_SEAM`, `config_path=`, `client_factory=` and `bucket_factory=`: the only hits outside `mongo_guard.py` are unrelated (`delivery/email.py` has its own `client_factory`, `stages/acceptance_baseline.py:83` is a local variable, and `RunSeams` / `DEFAULT_SEAMS` are in `run_launcher.py`). No call site injects anything into the fence.
+- AST backstop `tests/test_mongo_guard_scan.py::test_no_src_or_scripts_call_injects_a_config_path_or_factory_into_the_fence` flags a `GuardedStore(...)` call with an injected keyword, `**kw`, a second positional argument or a starred argument, and any touch of `_SEAM` outside `mongo_guard.py`. `test_the_injection_scan_flags_each_way_in` covers 8 forms and `test_the_injection_scan_leaves_a_plain_construction_alone` the negative case. Mutants t (signature takes a config path again) and u (a `src/autotester/browser/db.py` caller injecting `config_path=`) are both KILLED.
+- Residual, not blocking: the scan matches Name and Attribute nodes, so a deliberate string-keyed reach such as `getattr(module, "_SEAM")` would not be flagged. That is a hand-written bypass of a leading-underscore name, the same class as monkeypatching, and no `src` or `scripts` code does it today. U4 and later units that construct the store should keep passing only `uri`.
+
+## No-regression review of the cycle-1 diff
+`mongo_guard.py` changed by 17 lines: the `Path` import removed, the `unquote_plus` import, `_SEAM`, the one decode line, and the constructor. No verb, filter, marker or identity logic was touched, so M3 to M7, M9 to M11 are unchanged; the cycle 0 verified criteria still hold (the whole cycle 0 mutant set re-killed, 19 of 19 carried inside 23 of 23, and the 72 / 38 / 7 test counts above). The test edits are mechanical (`GuardedStore(..., client_factory=...)` becomes `open_store(...)`). The spec test now also asserts at most 2 test files per spec and covers both spec files. M1, M2 and M5 hold: probes show the constructor takes no database name or config path, and the spy test is green. The deferrals and the contract defect ruled in cycle 0 (the `repo_root()` fallback, the stricter `delete_many` rule and the M8 / 503 / `store ping` deferrals) are unchanged and not re-opened.
+
+## Result
+U1 (M1-M7, M9-M12, M47) PASS at 45445e95. The manifest may flip to `checked-PASS`. Carry-forwards: amend the contract's `repo_root()` parenthetical in a separate criticality-gated commit (cycle 0 ruling 1); U9 / U10 re-confirm `code_root()` in the image; the unit table row should read "M1-M7, M9-M12 (M8 by U4/U5a/U11/U12)". No code was edited by the checker. The push on PASS (D-007) is not done from this worktree: it is a feature branch and the merge is the human's.
