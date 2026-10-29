@@ -1,6 +1,6 @@
 # Manifest - error-text-followups
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** findings F6-F9 of `qa/verdicts/run-error-text-evidence.md` (lines 35-38), the low, non-blocking items of the cycle-1 PASS.
 **Branch:** `fix/error-text-followups` (worktree `D:/autoTesting/.claude/worktrees/error-text-f`, off master a6e03fa4, which already contains `fix/run-error-text-evidence`). Not merged, not pushed.
