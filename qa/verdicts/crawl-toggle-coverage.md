@@ -60,3 +60,27 @@ Fix direction (checker does not edit): remove or condense one line in that test 
 ## Close-out
 
 Maker: fix A-1, set `Fix cycle: 2`, `Status: ready-for-check`. No need to re-run the full falsification; only `autotester doctor` plus the two named tests.
+
+---
+
+# Cycle 2 re-check (fresh checker, head `50196145`)
+
+**Cycle checked: 2**
+
+## Verdict: PASS
+
+Cycle 1 failed only on A-1 (`tests/test_explore_replay.py` 301 lines). It is fixed; nothing else changed.
+
+| Check | Evidence |
+|---|---|
+| Diff scope | `git diff 95318047..50196145 --stat`: only `qa/manifests/crawl-toggle-coverage.md` (+11/-1) and `tests/test_explore_replay.py` (+1/-2). No `src/` change. |
+| Test change is behaviour-identical | The only test hunk (`tests/test_explore_replay.py:170-173`, `_FakeRuntime.__init__`) replaces `self.edges = 0` / `self.issues = 0` with `self.edges = self.issues = 0`. Both are ints, so no aliasing; same values. |
+| File length | `wc -l tests/test_explore_replay.py` = 300 (cap is 300). |
+| Doctor | `uv run autotester doctor`, advisory `decision-citation-*` rows filtered: `stale-generated: docs/SNAPSHOT.md`, `stale-committed: docs/SNAPSHOT.md`, `2 violation(s)`. No `file-too-long` row. The two rows are the pre-existing SNAPSHOT staleness. |
+| Manifest claim | Manifest "Cycle 2" item 9 states exactly those two SNAPSHOT rows and `2 violation(s)`; matches actual output. It also corrects cycle 1's false doctor claim. |
+| Tests | `tests/test_explore_replay.py tests/test_explore_flows.py`: 32 passed. `tests/test_crawl_toggle_coverage.py tests/test_crawl_record_gaps.py`: 27 passed. (2 files per call, one pytest at a time, `-o addopts=`.) |
+| Worktree | clean before this verdict was appended; main checkout untouched. |
+
+Cycle 1 warnings A-W1 (replay presses spend `actions_used`) and A-W2 (`same_screen` vacuously True on an empty visible set) remain open as non-blocking; neither is touched by this cycle. Falsification from cycle 1 is unaffected, since `src/` is unchanged since `81f86001`.
+
+Maker: close out by flipping the manifest to `checked-PASS`.
