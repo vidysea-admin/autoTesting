@@ -10,7 +10,12 @@ from __future__ import annotations
 from autotester.browser.secrets import SecretStore
 from autotester.core.consent import ApprovalRequired
 from autotester.core.redact import placeholder_keys
-from autotester.schema.approval import GrantBounds, RunApproval, derive_grant_bounds
+from autotester.schema.approval import (
+    GrantBounds,
+    RunApproval,
+    derive_grant_bounds,
+    grant_clamp_warning,
+)
 from autotester.schema.case import Case
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import Action, ApprovalKind, CaseStatus
@@ -88,14 +93,19 @@ def planned_cases(store: ProjectStore) -> list[Case]:
     return [c for c in store.list_cases() if c.status is not CaseStatus.RETIRED]
 
 
+def _planned_request(cases: list[Case]) -> tuple[int, int, float]:
+    """The gate's own request for these cases: one action per step, the probe floor, the
+    per-step time allowance (what `require_live_case_approval` asks for)."""
+    return (sum(action_cost(c) for c in cases), max(probe_request(cases), 1),
+            wall_clock_request_s(cases))
+
+
 def derive_live_case_grant(cases: list[Case]) -> GrantBounds:
-    """D-112 item 2: the grant a human no longer types. The gate's own request for these cases
-    (one action per step, the per-step time allowance, the probe floor), through the ONE
-    derivation `schema.approval.derive_grant_bounds` (safety margin, hard ceilings). Never
-    below what `require_live_case_approval` asks for, so the grant it sizes covers the run."""
-    return derive_grant_bounds(
-        ApprovalKind.LIVE_CASE, sum(action_cost(c) for c in cases),
-        max(probe_request(cases), 1), wall_clock_request_s(cases))
+    """D-112 item 2: the grant a human no longer types. The gate's own request for these cases,
+    through the ONE derivation `schema.approval.derive_grant_bounds` (safety margin, hard
+    ceilings). Never below what `require_live_case_approval` asks for, so the grant it sizes
+    covers the run -- unless the plan itself is over a ceiling (`grant_clamp_warning` says so)."""
+    return derive_grant_bounds(ApprovalKind.LIVE_CASE, *_planned_request(cases))
 
 
 def resolve_grant_bounds(
@@ -120,4 +130,5 @@ def resolve_grant_bounds(
         return (*out, "no planned cases to size from; using the defaults: "
                 + ", ".join(shown[n] for n in asked))
     return (*out, f"derived from {len(cases)} planned case(s), with margin: "
-            + ", ".join(shown[n] for n in asked))
+            + ", ".join(shown[n] for n in asked)
+            + grant_clamp_warning(kind, *_planned_request(cases)))

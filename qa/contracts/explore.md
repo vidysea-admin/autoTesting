@@ -45,7 +45,10 @@ The explorer composes `BrowserSession` methods; it never reaches past them.
 A `ScreenNode` id is a pure function of `(templated URL path, structural signature of the visible
 non-row interactive elements)` — never URL alone, never a model's free-text description. Two list
 pages differing only in row data are ONE screen; two states at one URL offering different controls
-are TWO. The same page always yields the same id, whenever it is visited.
+are TWO. The same page always yields the same id, whenever it is visited. One recorded
+exception (2026-10-29): pressing a button/switch named collapse/expand/toggle/show/hide + sidebar /
+side nav / navigation menu at an unchanged `url_template` is recorded SAME_SCREEN, not a new node
+(`screen_identity.same_screen`); ids and `structural_signature` are unchanged.
 **Verify:** `/students/1/` and `/students/2/` collapse to a single `/students/{id}` node, and the
 same-URL filter toggle produces a second `/` node — both against a real browser.
 
@@ -151,7 +154,8 @@ the file unloadable. Claim only what the ordering supports.
 
 ### X12 — The crawl is DOM-driven and deterministic; a model never chooses an action
 `run_crawl` takes no provider at all. No stop condition, no action choice, and no safety decision
-depends on model output — a crawl completes with `provider=mock`. A model's only permitted role
+depends on model output — a crawl makes no model call and records `provider=None`
+(the pre-2026-10-29 default `"mock"` is read back as `None`). A model's only permitted role
 anywhere in this stage is *naming* an already-discovered screen for human readability. Vision-guided
 action choice was explicitly rejected by D-015. This is what keeps the crawl reproducible and its
 failures debuggable, and it is why the whole stage can be proven without a credential or an API key.
@@ -631,3 +635,9 @@ only the pure-function tests).
   default `SafetyPolicy()` keeps `synthetic_typing=False` so every pre-amendment caller and
   test is unaffected. First live use: Pathlynks stage-2 form-exploration crawl (after the
   READ_ONLY map crawl), under its own RunApproval citing both gate answers.
+
+- 2026-10-29 · routine · /checker (unit `crawl-record-gaps`, cycle 0) · **X3 and X12 clarified**
+  (no criterion removed): X12's "completes with `provider=mock`" restated as `provider=None` (the
+  maker's change to `Crawl.provider`, issue gap (d)); X3 gains the one named layout-toggle exception
+  the same unit shipped (gap (a)), recorded so the contract and `screen_identity.py` agree. X3's
+  verify case (same-URL filter toggle = second node) still passes: `tests/test_explore_traversal.py`.

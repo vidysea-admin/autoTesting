@@ -2984,3 +2984,31 @@ The backend reads the name once, validated by a Pydantic model with `extra="forb
 **Links:** D-002, D-018, D-120, D-121, mongo-store
 
 **Changes-authorized:** The new modules listed above. `pyproject.toml` `[tool.autotester.store]`. `core/paths.py` `code_root()`. The `browser/db.py` refusal of the store database. Later, under the docs unit, CLAUDE.md Credentials and ARCHITECTURE.md storage and security prose. No enforcement path.
+
+## D-123 | 2026-10-29 | type: decision | status: ACTIVE
+
+**Supersedes:** D-122 -- This replaces only item 4's at-rest encryption: the HKDF key derived from `AUTOTESTER_APPROVAL_KEY` and the authenticated encryption. That part is removed because Umesh declined it. The Mongo server is now IP-protected, and encryption would add a key-rotation failure mode, a new module and a new direct dependency for no protection he needs today. The new rule is better for him: there is no lost-login-on-key-change failure, and there are no new modules or dependencies. Items 1-3 of D-122 and the rest of item 4 stand.
+
+**What:** Credentials (project and role login values entered through the UI) and Chromium session state are stored in the `autotester` database **without application-level encryption**. Their protection is:
+- the server's IP allowlist;
+- the write fence (D-121, D-122 item 3);
+- `browser/db.py` refusing to read the store database;
+- and every rule that already applies to secret values:
+  - `{{SECRET:KEY}}` substitution only at `page.fill()`, scoped to `allowed_domains`;
+  - `assert_no_raw_secrets` before every model call;
+  - `Redactor.scrub` on logs;
+  - masked screenshots;
+  - values never shown to a model;
+  - values shown in the UI only to a credentials.view holder.
+
+No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
+
+**Why:** Umesh, 2026-10-29: the server is IP-protected, and "encypt krna hi kyu hai mat kro". The residual risk, recorded so it is never forgotten, is that anyone who can read the `autotester` database or its backups can read the login values in plain text. Umesh owns this call and may revisit it.
+
+**Result:** The mongo-store contract criteria for sealing and encryption (M31-M36 as written, M47) are amended by the checker to plain storage with the same access and redaction rules. U11 drops the crypto work.
+
+**Approved-by:** Umesh (chat 2026-10-29: "ignore it, it was a past thing., server is now ip protected"; "ignore it for now"; "encypt krna hi kyu hai mat kro")
+
+**Links:** D-122, D-120, mongo-store
+
+**Changes-authorized:** The `qa/contracts/mongo-store.md` credential criteria, by the checker. No enforcement path.

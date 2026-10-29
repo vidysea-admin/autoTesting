@@ -30,10 +30,18 @@ TEARDOWN_TIMEOUT_S = 20.0
 _DISPATCHER = "Connection.run_as_sync"  # Playwright's own loop task; others are requests
 
 
-def cancel_inflight(owner: Any) -> None:
-    """Cancel the request `owner` (a Playwright sync object) is blocked on; thread-safe."""
+def _loop_of(owner: Any) -> asyncio.AbstractEventLoop | None:
+    """The live Playwright event loop behind `owner`, or None when a cancel cannot reach it."""
     loop = getattr(owner, "_loop", None)
     if not isinstance(loop, asyncio.AbstractEventLoop) or loop.is_closed():
+        return None
+    return loop
+
+
+def cancel_inflight(owner: Any) -> None:
+    """Cancel the request `owner` (a Playwright sync object) is blocked on; thread-safe."""
+    loop = _loop_of(owner)
+    if loop is None:
         return
 
     def _cancel() -> None:
@@ -45,23 +53,50 @@ def cancel_inflight(owner: Any) -> None:
         loop.call_soon_threadsafe(_cancel)
 
 
+def _run_detached(step: Callable[[], object], timeout_s: float) -> bool:
+    """Run `step` on a daemon thread; True when it ended in time (its exception re-raised here),
+    False when it is left running."""
+    outcome: list[BaseException] = []
+
+    def _work() -> None:
+        try:
+            step()
+        except BaseException as exc:  # handed to the caller, never lost in the worker
+            outcome.append(exc)
+
+    worker = threading.Thread(target=_work, name="teardown-step", daemon=True)
+    worker.start()
+    worker.join(timeout_s)
+    if worker.is_alive():
+        return False
+    if outcome:
+        raise outcome[0]
+    return True
+
+
 def bounded_call(step: Callable[[], object], *, timeout_s: float,
-                 abort: Callable[[], None]) -> bool:
-    """Run `step()` here; if it is still running after `timeout_s`, call `abort()` from a timer
-    thread. True when it finished in time; False when it was abandoned (its cancellation, or any
-    later outcome, is swallowed). An ordinary exception inside the window propagates."""
+                 abort: Callable[[], None], detach: bool = False) -> bool:
+    """Run `step()` here; if it is still running after `timeout_s`, call `abort()` from a watcher
+    thread, and again every `timeout_s` until the step ends (a cancel can miss or be swallowed).
+    True when it finished in time; False when it was abandoned (its cancellation, or any later
+    outcome, is swallowed). An ordinary exception inside the window propagates.
+
+    `detach=True` is for a step nothing can cancel and that is not thread-bound: it runs on a
+    daemon thread and is left behind at `timeout_s`, so the caller (and the run) always resumes
+    (R2). Playwright objects are thread-bound and stay in-thread with the cancel (`abort`)."""
+    if detach:
+        return _run_detached(step, timeout_s)
     fired, done = threading.Event(), threading.Event()
 
-    def _fire() -> None:
-        if done.is_set():  # the step finished as the timer fired: never cancel its successor
-            return
-        fired.set()
-        with contextlib.suppress(Exception):
-            abort()
+    def _watch() -> None:
+        while not done.wait(timeout_s):
+            if done.is_set():  # the step finished as the timer fired: never cancel its successor
+                return
+            fired.set()
+            with contextlib.suppress(Exception):
+                abort()
 
-    timer = threading.Timer(timeout_s, _fire)
-    timer.daemon = True
-    timer.start()
+    threading.Thread(target=_watch, name="teardown-watch", daemon=True).start()
     try:
         step()
     except BaseException:
@@ -69,7 +104,6 @@ def bounded_call(step: Callable[[], object], *, timeout_s: float,
             raise
     finally:
         done.set()
-        timer.cancel()
     return not fired.is_set()
 
 
@@ -81,7 +115,8 @@ def _teardown_step(owner: Any, method: str, phase: str, trace: TraceWriter | Non
     started = time.monotonic()
     ok, note = False, None
     try:
-        ok = bounded_call(step, timeout_s=timeout_s, abort=lambda: cancel_inflight(owner))
+        ok = bounded_call(step, timeout_s=timeout_s, abort=lambda: cancel_inflight(owner),
+                          detach=_loop_of(owner) is None)
         note = None if ok else f"abandoned after {timeout_s:.0f}s"
     except Exception as exc:  # one failed step skips none (B9): still recorded, never raised
         note = f"{type(exc).__name__}"

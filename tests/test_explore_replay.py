@@ -164,13 +164,13 @@ class _FakeRuntime:
         self.policy = policy
         self.bounds = CrawlBounds()
         self.typed: dict[str, list[explore_replay.TypedAction]] = {}
+        self.revealed_by: dict[tuple[str, str], ElementRef] = {}  # read by perform()
         self.project = Project(slug="p", name="p", base_url="https://app.test/",
                                allowed_domains=["app.test"])
         self.store = _CountingStore()
         self.crawl = Crawl(project="p")
         self.nodes: dict[str, ScreenNode] = {}
-        self.edges = 0
-        self.issues = 0
+        self.edges = self.issues = 0
         self.tool_failures = 0
 
 

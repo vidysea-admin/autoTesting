@@ -238,7 +238,8 @@ def approve_cmd(
     scope: str = typer.Option(..., "--scope", help="what this run may touch, in your words"),
     granted_by: str = typer.Option(..., "--granted-by"),
     expires: str | None = typer.Option(None, "--expires", help="YYYY-MM-DD, through that day"),
-    standing: bool = typer.Option(False, "--standing", help="until revoked (autotester revoke)"),
+    standing: bool = typer.Option(
+        False, "--standing", help="crawl only; until revoked (autotester revoke)"),
     max_actions: int | None = typer.Option(None, "--max-actions", min=1, help="default 200"),
     max_probes: int | None = typer.Option(None, "--max-probes", min=1, help="default 200"),
     wall_clock: float | None = typer.Option(None, "--wall-clock", min=0.001, help="default 600s"),
@@ -279,8 +280,7 @@ def approve_cmd(
     typer.secho(
         f"{approval.id}: {run_kind.value} on {target} "
         f"{'STANDING, until revoked' if standing else f'until {expires_at}'} "
-        f"(actions<={max_actions}, probes<={max_probes})",
-        fg=typer.colors.GREEN,
+        f"(actions<={max_actions}, probes<={max_probes})", fg=typer.colors.GREEN,
     )
 
 

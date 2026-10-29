@@ -51,6 +51,9 @@ __all__ = [
 ]
 
 MASK = "[REDACTED]"
+# F9: a secret echoed in ANOTHER case is masked too, but only for values long enough that an
+# ordinary word cannot be one: CI_MIN_LEN with a non-letter in it, or CI_MIN_LETTERS letters only.
+CI_MIN_LEN, CI_MIN_LETTERS = 8, 8  # letters-only floor 12 -> 8 (Umesh 2026-10-29)
 PLACEHOLDER_RE = re.compile(r"\{\{SECRET:([A-Z0-9_]+)\}\}")
 
 # AT-780: heuristic masks for personal data that is NOT a declared secret. They are guesses,
@@ -95,6 +98,12 @@ _NOT_A_NAME_FIELD = re.compile(
     r"degree|level|portal)\b", re.I)
 
 
+def _ci_eligible(value: str) -> bool:
+    """True when `value` is long enough to be matched case-insensitively without masking words."""
+    need = CI_MIN_LETTERS if value.isalpha() else CI_MIN_LEN
+    return len(value) >= need
+
+
 class Redactor:
     """Replaces known secret values with `[REDACTED]` anywhere they appear.
 
@@ -103,7 +112,8 @@ class Redactor:
 
     There is deliberately no minimum length: these are known-exact declared
     values, not heuristic guesses. A three-character password is a bad
-    password, but leaking it is still a leak (checker finding AT-002).
+    password, but leaking it is still a leak (checker finding AT-002). Only the
+    additional other-case match is guarded by length (`_ci_eligible`).
     """
 
     def __init__(self, secrets: dict[str, str]) -> None:
@@ -121,13 +131,20 @@ class Redactor:
         # that search is exact, not heuristic. `_contains_folded_secret`
         # applies the right floor to each half itself (see its docstring).
         self._widened = [(v, fold_credential(v)) for v in self._values]
+        self._ci = [(re.compile(re.escape(v), re.I), self._mask_for(v))
+                    for v in self._values if _ci_eligible(v)]
+
+    def _mask_for(self, value: str) -> str:
+        key = self._keys_by_value.get(value, "")
+        return f"{MASK}:{key}" if key else MASK
 
     def scrub(self, text: str) -> str:
-        """Return `text` with every known secret value masked."""
+        """Return `text` with every known secret value masked (also in another case, F9)."""
         for value in self._values:
             if value in text:
-                key = self._keys_by_value.get(value, "")
-                text = text.replace(value, f"{MASK}:{key}" if key else MASK)
+                text = text.replace(value, self._mask_for(value))
+        for pattern, mask in self._ci:
+            text = pattern.sub(lambda _m, mask=mask: mask, text)
         # AT-939: percent (x2), HTML-entity and plus spellings, found in decoded views
         return mask_spans(text, escaped_spans(text, self._pairs), MASK)
 

@@ -31,6 +31,10 @@ if _REACH_MARKER not in _VISUAL_ORDER_JS_RAW:
         "-- visual_order_reach.js would never run")
 _VISUAL_ORDER_JS = _VISUAL_ORDER_JS_RAW.replace(_REACH_MARKER, _VISUAL_ORDER_REACH_JS)
 
+MAX_BUFFERED_API_RESPONSES = 2000
+"""Hard cap on `PageObserver.api_responses`: the oldest entry is dropped past it, so an
+observer nobody drains (a case run) cannot grow without bound."""
+
 DialogAction = Callable[[str], str]  # dialog_type -> "accept" | "dismiss"
 
 
@@ -60,6 +64,9 @@ class PageObserver:
         """T-170/NA1: EVERY response (method, url, status), not only the
         failing ones `.failed` already counts -- the evidence-producing
         second read of `attach`'s one response listener (NA6)."""
+        self.api_responses: list[tuple[str, str, int]] = []
+        """The XHR/fetch subset of `responses` (Playwright `resource_type`), so a crawl can
+        inventory a screen's API calls without counting its documents, images and scripts."""
         self._attached = False
 
     def attach(self, page: Any) -> None:
@@ -101,8 +108,12 @@ class PageObserver:
                 self.failed.append((response.url, str(response.status)))
             # T-170/NA1: every response, independent of status -- the second,
             # evidence-producing read of the same stream (NA6, no second listener).
-            method = getattr(getattr(response, "request", None), "method", "GET")
-            self.responses.append((method, response.url, response.status))
+            request = getattr(response, "request", None)
+            seen = (getattr(request, "method", "GET"), response.url, response.status)
+            self.responses.append(seen)
+            if getattr(request, "resource_type", "") in ("xhr", "fetch"):
+                self.api_responses.append(seen)
+                del self.api_responses[:-MAX_BUFFERED_API_RESPONSES]
         for hook in tuple(self._hooks):
             hook(response)
 
@@ -133,6 +144,11 @@ class PageObserver:
         responses = self.responses
         self.responses = []
         return responses
+
+    def drain_api_responses(self) -> list[tuple[str, str, int]]:
+        """Return and clear the XHR/fetch subset, independently of `drain_responses`."""
+        api, self.api_responses = self.api_responses, []
+        return api
 
 
 def response_observer(session: Any) -> PageObserver:

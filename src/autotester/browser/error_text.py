@@ -9,7 +9,8 @@ no readable reason.
 Guarantees: the project's Redactor scrubs every item BEFORE the length caps cut it (so a secret
 straddling a cap is masked whole, also when it holds consecutive whitespace) and again in
 `session._record`; the extractor never reads a form control's value and blanks out any typed value
-(>= 3 chars, whitespace- and case-insensitive, open shadow roots included) that a server echoed
+(>= 3 chars, whitespace-, case- and Unicode-form-insensitive, open shadow roots included;
+a br or block boundary counts as a space) that a server echoed
 back; contenteditable and iframe text is never read; the row never
 starts with `assert ` so the unmet counters in `stages/grade*.py` are unchanged; a failed read
 adds nothing and raises nothing (C7: this records a fact, it never assigns a verdict). It spends
