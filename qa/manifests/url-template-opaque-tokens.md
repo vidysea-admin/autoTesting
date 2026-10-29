@@ -11,7 +11,7 @@ like `ORD-2024-00081`) were kept verbatim by `core.urls.url_template`, so they l
 (descends from `5b09e417`), worktree `.claude/worktrees/urls-opaque`
 **Date:** 2026-10-29
 **Fix cycle:** 0
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Dual check:** no
 **Not run:** whole suite (machine low on memory); live-browser crawl; `scripts/migrate_url_patterns.py`
 (behind its own gate, calls `url_template` with defaults and so also sees the new templating).
