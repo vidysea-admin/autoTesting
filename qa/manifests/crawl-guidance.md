@@ -1,6 +1,6 @@
 # Manifest — crawl-guidance
 
-Status: ready-for-check
+Status: checked-PASS
 Fix cycle: 3
 Unit: crawl-guidance Units 1-4 (D-118): schema, guidance core, prompt/chain, seam. Unit 5 (G12 measurement) is NOT built.
 Contract: qa/contracts/crawl-guidance.md (G1-G12), base b1ffaf27
