@@ -8,7 +8,8 @@ with the same hint) and F2 (OverflowError above ~1.4e308 wall; negatives unclamp
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+import re
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,7 @@ from autotester.schema.approval import (
     MAX_GRANT_PROBES,
     MAX_GRANT_WALL_CLOCK_S,
     GrantBounds,
+    RunApproval,
     derive_grant_bounds,
     grant_clamp_warning,
     invalid_bounds_message,
@@ -255,3 +257,43 @@ def test_explore_with_a_negative_bound_names_it_and_prints_no_approve_command(
     out = runner.invoke(cli_app, ["explore", "demo", "--max-actions", "-1"])
     assert out.exit_code == 2, out.output
     assert "--max-actions is -1" in out.output and APPROVE_CMD not in out.output
+
+
+# -- F1 (cycle 1): a NARROWER signed approval must not reopen the crash / long-digit path ----
+
+NOW = datetime(2026, 10, 28, 12, 0, 0, tzinfo=UTC)
+
+
+def _narrow(kind: ApprovalKind) -> RunApproval:
+    return RunApproval(
+        project="demo", run_kind=kind, target=URL, scope="s", max_actions=150, max_probes=150,
+        wall_clock_s=600.0, granted_by="umesh", granted_at="2026-10-28T09:00:00+00:00",
+        expires_at="2026-12-01T00:00:00+00:00").sign()
+
+
+def _narrow_refusal(kind: ApprovalKind, actions: int, probes: int, wall: float) -> str:
+    with pytest.raises(ApprovalRequired) as exc:
+        require_approval([_narrow(kind)], project="demo", kind=kind, target=URL, actions=actions,
+                         probes=probes, wall_clock_s=wall, now=NOW)
+    return str(exc.value)
+
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+@pytest.mark.parametrize("big", [10**5000, 10**13, 1e13], ids=["10e5000", "10e13", "1e13"])
+@pytest.mark.parametrize("slot", [0, 1, 2])
+def test_a_narrower_approval_refusal_caps_every_printed_number(
+    kind: ApprovalKind, big: float, slot: int,
+) -> None:
+    text = _narrow_refusal(kind, *[big if i == slot else 0 for i in range(3)])
+    assert "narrower than this run" in text and "implausibly large" in text
+    assert "over 1000000000000" in text and APPROVE_CMD not in text
+    assert not re.search(r"\d{14,}", text), text
+
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+def test_a_narrower_approval_refusal_keeps_wellformed_numbers_as_they_were(
+    kind: ApprovalKind,
+) -> None:
+    text = _narrow_refusal(kind, 200, 300, 700.5)
+    assert "actions 200 > approved 150" in text and "probes 300 > approved 150" in text
+    assert "wall clock 700.5s > approved 600.0s" in text

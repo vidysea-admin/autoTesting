@@ -1,8 +1,7 @@
 """The consent gate (D-018): nothing outward-facing starts without a human's
 `RunApproval` on disk that is intact, unexpired, and at least as wide as the run.
 
-Gate 1 (`ApprovalKind.READ`) covers reading outside the project. Gate 2 covers
-every outward-facing run — the live crawl and, above all, the adversarial pass.
+Gate 1 (`READ`) covers reading outside the project; gate 2 every outward-facing run.
 
 The gate **fails closed and says exactly what is missing**: a refusal that only
 says "no" teaches the operator nothing, and the next thing they do is guess.
@@ -24,6 +23,7 @@ from autotester.schema.approval import (
     PROBES_PER_ACTION,
     STANDING_KINDS,
     RunApproval,
+    _shown,
     derive_grant_bounds,
     grant_clamp_warning,
     invalid_bounds_message,
@@ -171,11 +171,11 @@ def _shortfalls(
 ) -> list[str]:
     short = []
     if actions > approval.max_actions:
-        short.append(f"actions {actions} > approved {approval.max_actions}")
+        short.append(f"actions {_shown(actions)} > approved {approval.max_actions}")
     if probes > approval.max_probes:
-        short.append(f"probes {probes} > approved {approval.max_probes}")
+        short.append(f"probes {_shown(probes)} > approved {approval.max_probes}")
     if wall_clock_s > approval.wall_clock_s:
-        short.append(f"wall clock {wall_clock_s}s > approved {approval.wall_clock_s}s")
+        short.append(f"wall clock {_shown(wall_clock_s)}s > approved {approval.wall_clock_s}s")
     return short
 
 
