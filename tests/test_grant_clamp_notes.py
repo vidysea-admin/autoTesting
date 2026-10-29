@@ -8,7 +8,8 @@ with the same hint) and F2 (OverflowError above ~1.4e308 wall; negatives unclamp
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+import re
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -21,9 +22,10 @@ from autotester.schema.approval import (
     MAX_GRANT_PROBES,
     MAX_GRANT_WALL_CLOCK_S,
     GrantBounds,
+    RunApproval,
     derive_grant_bounds,
     grant_clamp_warning,
-    hint_grant_bounds,
+    invalid_bounds_message,
 )
 from autotester.schema.case import Case
 from autotester.schema.enums import Action, ApprovalKind, CaseClass, CaseKind
@@ -158,12 +160,6 @@ def test_require_approval_with_malformed_bounds_refuses_cleanly_for_every_kind(
     assert "refusing to start" in str(exc.value)
 
 
-def test_hint_bounds_fall_back_to_the_raw_values_and_derive_otherwise() -> None:
-    assert hint_grant_bounds(ApprovalKind.CRAWL, -1, 0, float("inf")) == GrantBounds(
-        -1, 0, float("inf"))
-    assert hint_grant_bounds(LIVE, 100, 5, 100.0) == derive_grant_bounds(LIVE, 100, 5, 100.0)
-
-
 @pytest.mark.parametrize("flag", [["--wall-clock", "inf"], ["--wall-clock", "nan"],
                                   ["--max-actions", "-1"], ["--wall-clock", "-5"]])
 def test_explore_with_malformed_bounds_exits_2_with_the_refusal_not_a_traceback(
@@ -187,3 +183,117 @@ def test_the_wall_clock_in_the_warning_is_whole_seconds_and_never_reads_equal() 
 def test_a_bool_is_not_a_bound(bad: tuple[bool, bool, float]) -> None:
     with pytest.raises(ValueError, match="non-negative and finite"):
         derive_grant_bounds(LIVE, *bad)
+
+
+# -- fix/hint-malformed-bounds: a malformed bound is named, never echoed into a command ------
+
+APPROVE_CMD = "uv run autotester approve"
+
+
+def _refusal(kind: ApprovalKind, actions: int, probes: int, wall: float) -> str:
+    with pytest.raises(ApprovalRequired) as exc:
+        require_approval([], project="demo", kind=kind, target=URL, actions=actions,
+                         probes=probes, wall_clock_s=wall)
+    return str(exc.value)
+
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+@pytest.mark.parametrize(("bad", "flag", "why"), [
+    ((-1, 0, 0.0), "--max-actions", "negative"),
+    ((0, -3, 0.0), "--max-probes", "negative"),
+    ((0, 0, -2.5), "--wall-clock", "negative"),
+    ((0, 0, float("inf")), "--wall-clock", "infinite"),
+    ((0, 0, float("nan")), "--wall-clock", "not a number"),
+    ((True, 0, 0.0), "--max-actions", "not a number"),
+])
+def test_a_malformed_bound_is_named_with_its_reason_and_no_approve_command(
+    kind: ApprovalKind, bad: tuple[int, int, float], flag: str, why: str,
+) -> None:
+    text = _refusal(kind, *bad)
+    assert "refusing to start" in text
+    assert f"{flag} is " in text and why in text
+    assert APPROVE_CMD not in text and "Grant one with" not in text
+    assert "--standing" not in text
+
+
+def test_every_malformed_bound_is_named_when_several_are_bad() -> None:
+    text = _refusal(ApprovalKind.CRAWL, -1, 5, float("nan"))
+    assert "--max-actions is -1" in text and "--wall-clock is nan" in text
+    assert "--max-probes" not in text
+
+
+def test_a_wellformed_request_still_gets_its_approve_command() -> None:
+    text = _refusal(ApprovalKind.CRAWL, 7, 140, 163.0)
+    assert APPROVE_CMD in text and "--max-actions 7" in text and "--standing" in text
+    assert "invalid" not in text
+
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+@pytest.mark.parametrize("huge", [(10**5000, 0, 0.0), (0, 10**5000, 0.0), (0, 0, 1e308),
+                                  (0, 0, 10**400)])
+def test_an_absurdly_large_bound_is_named_and_capped_not_printed_in_full(
+    kind: ApprovalKind, huge: tuple[int, int, float],
+) -> None:
+    text = _refusal(kind, *huge)
+    assert len(text) < 700 and "implausibly large" in text
+    assert "over 1000000000000" in text and APPROVE_CMD not in text
+
+
+def test_the_clamp_warning_caps_a_huge_number_instead_of_printing_every_digit() -> None:
+    for text in (grant_clamp_warning(LIVE, 10**5000, 1, 1.0),
+                 grant_clamp_warning(LIVE, 1, 1, 1e308)):
+        assert len(text) < 400 and "over 1000000000000" in text
+
+
+def test_invalid_bounds_message_is_empty_for_good_bounds_and_names_the_flag_otherwise() -> None:
+    assert invalid_bounds_message(0, 0, 0.0) == ""
+    assert invalid_bounds_message(2000, 40000, 86400.0) == ""
+    assert "--max-probes is -1" in invalid_bounds_message(1, -1, 1.0)
+
+
+def test_explore_with_a_negative_bound_names_it_and_prints_no_approve_command(
+    store: ProjectStore,
+) -> None:
+    out = runner.invoke(cli_app, ["explore", "demo", "--max-actions", "-1"])
+    assert out.exit_code == 2, out.output
+    assert "--max-actions is -1" in out.output and APPROVE_CMD not in out.output
+
+
+# -- F1 (cycle 1): a NARROWER signed approval must not reopen the crash / long-digit path ----
+
+NOW = datetime(2026, 10, 28, 12, 0, 0, tzinfo=UTC)
+
+
+def _narrow(kind: ApprovalKind) -> RunApproval:
+    return RunApproval(
+        project="demo", run_kind=kind, target=URL, scope="s", max_actions=150, max_probes=150,
+        wall_clock_s=600.0, granted_by="umesh", granted_at="2026-10-28T09:00:00+00:00",
+        expires_at="2026-12-01T00:00:00+00:00").sign()
+
+
+def _narrow_refusal(kind: ApprovalKind, actions: int, probes: int, wall: float) -> str:
+    with pytest.raises(ApprovalRequired) as exc:
+        require_approval([_narrow(kind)], project="demo", kind=kind, target=URL, actions=actions,
+                         probes=probes, wall_clock_s=wall, now=NOW)
+    return str(exc.value)
+
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+@pytest.mark.parametrize("big", [10**5000, 10**13, 1e13], ids=["10e5000", "10e13", "1e13"])
+@pytest.mark.parametrize("slot", [0, 1, 2])
+def test_a_narrower_approval_refusal_caps_every_printed_number(
+    kind: ApprovalKind, big: float, slot: int,
+) -> None:
+    text = _narrow_refusal(kind, *[big if i == slot else 0 for i in range(3)])
+    assert "narrower than this run" in text and "implausibly large" in text
+    assert "over 1000000000000" in text and APPROVE_CMD not in text
+    assert not re.search(r"\d{14,}", text), text
+
+
+@pytest.mark.parametrize("kind", list(ApprovalKind))
+def test_a_narrower_approval_refusal_keeps_wellformed_numbers_as_they_were(
+    kind: ApprovalKind,
+) -> None:
+    text = _narrow_refusal(kind, 200, 300, 700.5)
+    assert "actions 200 > approved 150" in text and "probes 300 > approved 150" in text
+    assert "wall clock 700.5s > approved 600.0s" in text

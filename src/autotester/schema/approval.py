@@ -74,26 +74,24 @@ class GrantBounds(NamedTuple):
 
 
 def _margined(value: float, ceiling: float) -> float:
-    """`value` x the safety margin, in whole units, saturating at `ceiling` (never overflowing)."""
+    """`value` x the safety margin in whole units, saturating at `ceiling`."""
     return ceiling if value >= ceiling / GRANT_SAFETY_MARGIN else float(math.ceil(
         value * GRANT_SAFETY_MARGIN))
 
 
 def _is_valid_bounds(*values: float) -> bool:
-    """True when every bound is a real number, >= 0 and finite (a bool is not a bound)."""
+    """Every bound is a real number, >= 0 and finite (a bool is not a bound)."""
     return all(not isinstance(v, bool) and 0 <= v < math.inf for v in values)
 
 
 def derive_grant_bounds(
     kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
 ) -> GrantBounds:
-    """The ONE derivation of the bounds a grant carries (D-112 item 2); the refusal hint,
-    `approve` with the flags omitted and the UI pre-fill all call it. A LIVE_CASE run's planned
-    actions and time get `GRANT_SAFETY_MARGIN`, in whole units, within the grant ceilings;
-    probes are `max(floor, actions x PROBES_PER_ACTION)` (the D-068 brake) up to
-    `MAX_GRANT_PROBES`. 0 means not asked; any other kind passes through unchanged. A negative,
-    NaN or infinite input raises `ValueError`; an input so large its margin would overflow
-    saturates at the ceiling."""
+    """The ONE derivation of a grant's bounds (D-112 item 2); the refusal hint, `approve` with the
+    flags omitted and the UI pre-fill all call it. LIVE_CASE: planned actions and time get
+    `GRANT_SAFETY_MARGIN` in whole units within the ceilings; probes are `max(floor, actions x
+    PROBES_PER_ACTION)` (D-068) up to `MAX_GRANT_PROBES`; 0 means not asked. Other kinds pass
+    through. Negative / NaN / infinite input raises `ValueError`; an overflow saturates."""
     if not _is_valid_bounds(actions, probes, wall_clock_s):
         raise ValueError(f"grant bounds must be non-negative and finite, got actions={actions}, "
                          f"probes={probes}, wall_clock_s={wall_clock_s}")
@@ -105,37 +103,52 @@ def derive_grant_bounds(
     return GrantBounds(wide, wide_probes, wall)
 
 
-def hint_grant_bounds(
-    kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
-) -> GrantBounds:
-    """`derive_grant_bounds` for a REFUSAL message: the refusal path must never crash, so
-    malformed bounds (negative / NaN / infinite, e.g. `explore --wall-clock inf`) are echoed
-    unchanged and the gate refuses them as it always did. `approve` stays strict."""
-    if not _is_valid_bounds(actions, probes, wall_clock_s):
-        return GrantBounds(actions, probes, wall_clock_s)
-    return derive_grant_bounds(kind, actions, probes, wall_clock_s)
+_PRINT_CAP = 10**12  # no bound is shown in full above this (`str(10**5000)` raises)
 
 
-def _whole_seconds(seconds: float) -> str:
-    """Seconds rounded UP to a whole number (no scientific notation, so 86400.0004 never reads
-    as '86400s > 86400s'); a non-finite value is shown as-is."""
-    return str(math.ceil(seconds)) if math.isfinite(seconds) else str(seconds)
+def _shown(value: float, whole: bool = False) -> str:
+    """A bound for a message: capped at `_PRINT_CAP`; `whole` rounds a float UP (86400.0004 never
+    reads '86400'); non-finite values show as they are."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return str(value)
+    value = math.ceil(value) if whole and isinstance(value, float) else value
+    return str(value) if abs(value) <= _PRINT_CAP else (
+        "over " if value > 0 else "under -") + str(_PRINT_CAP)
+
+
+def invalid_bounds_message(actions: int, probes: int, wall_clock_s: float) -> str:
+    """'' when every bound can go into a suggested `approve` command; else a note naming each
+    bad flag, its value and why. The refusal prints it INSTEAD of a command `approve` rejects."""
+    bad = []
+    for flag, value in (("--max-actions", actions), ("--max-probes", probes),
+                        ("--wall-clock", wall_clock_s)):
+        if isinstance(value, bool):
+            why = "a yes/no value is not a number"
+        elif isinstance(value, float) and not math.isfinite(value):
+            why = "not a number" if value != value else "infinite; it must be finite"
+        elif value < 0:
+            why = "negative; it must be 0 or more"
+        else:
+            why = "implausibly large" if value > _PRINT_CAP else ""
+        if why:
+            bad.append(f"{flag} is {_shown(value)}: {why}")
+    return (f"\nthis run's bounds are invalid, so no approve command is suggested "
+            f"({'; '.join(bad)}).") if bad else ""
 
 
 def grant_clamp_warning(
     kind: ApprovalKind, actions: int, probes: int, wall_clock_s: float,
 ) -> str:
-    """F1: '' unless a LIVE_CASE plan itself exceeds a grant ceiling, in which case the derived
-    (clamped) grant cannot cover the run and a plain note names each bound, planned vs ceiling.
-    Starts with a newline so it appends to a message."""
+    """F1: '' unless a LIVE_CASE plan itself exceeds a grant ceiling (the clamped grant cannot
+    cover the run); then a newline-led note names each bound, planned vs ceiling."""
     if kind is not ApprovalKind.LIVE_CASE:
         return ""
     over = [f"{name}: planned {planned}{unit} > ceiling {ceiling}{unit}"
             for name, planned, ceiling, unit, is_over in (
-                ("actions", actions, MAX_GRANT_ACTIONS, "", actions > MAX_GRANT_ACTIONS),
-                ("probes", probes, MAX_GRANT_PROBES, "", probes > MAX_GRANT_PROBES),
-                ("wall clock", _whole_seconds(wall_clock_s),
-                 _whole_seconds(MAX_GRANT_WALL_CLOCK_S), "s",
+                ("actions", _shown(actions), MAX_GRANT_ACTIONS, "", actions > MAX_GRANT_ACTIONS),
+                ("probes", _shown(probes), MAX_GRANT_PROBES, "", probes > MAX_GRANT_PROBES),
+                ("wall clock", _shown(wall_clock_s, whole=True),
+                 _shown(MAX_GRANT_WALL_CLOCK_S, whole=True), "s",
                  wall_clock_s > MAX_GRANT_WALL_CLOCK_S))
             if is_over]
     if not over:
