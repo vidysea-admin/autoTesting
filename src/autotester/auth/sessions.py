@@ -10,7 +10,7 @@ import os
 import secrets
 from datetime import UTC, datetime, timedelta
 
-from autotester.auth import db
+from autotester.auth.store import auth_store
 from autotester.schema.auth import Principal
 
 SESSION_HOURS_ENV = "AUTOTESTER_SESSION_HOURS"
@@ -36,49 +36,35 @@ def create_session(user_id: int) -> str:
     """A fresh id at every login (no fixation). Returns the cookie value."""
     token = secrets.token_urlsafe(32)
     now = datetime.now(UTC)
-    with db.transaction() as conn:
-        conn.execute("DELETE FROM sessions WHERE expires_at < ?", (now.isoformat(),))
-        conn.execute(
-            "INSERT INTO sessions (token_hash, user_id, created_at, expires_at) "
-            "VALUES (?, ?, ?, ?)",
-            (_digest(token), user_id, now.isoformat(),
-             (now + timedelta(hours=session_hours())).isoformat()),
-        )
+    with auth_store().transaction() as tx:
+        tx.purge_sessions_before(now.isoformat())
+        tx.insert_session(_digest(token), user_id, now.isoformat(),
+                          (now + timedelta(hours=session_hours())).isoformat())
     return token
 
 
 def _drop_expired(digest: str, now: str) -> None:
-    with db.transaction() as conn:
-        conn.execute("DELETE FROM sessions WHERE token_hash = ? AND expires_at <= ?",
-                     (digest, now))
+    with auth_store().transaction() as tx:
+        tx.delete_session_if_expired(digest, now)
 
 
 def resolve_session(token: str | None) -> Principal | None:
     """The live principal for a cookie value, or None: unknown, expired, truncated,
     tampered, or the account is disabled. Never creates the store."""
-    if not token or len(token) > MAX_TOKEN_LENGTH or not db.store_exists():
+    store = auth_store()
+    if not token or len(token) > MAX_TOKEN_LENGTH or not store.exists():
         return None
     now = datetime.now(UTC).isoformat()
-    with db.reading() as conn:
-        row = conn.execute(
-            "SELECT u.id, u.email, u.display_name FROM sessions s JOIN users u "
-            "ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ? "
-            "AND u.disabled = 0", (_digest(token), now),
-        ).fetchone()
-        if row is None:
-            stale = conn.execute("SELECT 1 FROM sessions WHERE token_hash = ?",
-                                 (_digest(token),)).fetchone()
-            if stale is not None:  # a refused expired id: drop it (unknown ids cause no write)
-                _drop_expired(_digest(token), now)
-            return None
-        perms = frozenset(r["permission"] for r in conn.execute(
-            "SELECT DISTINCT p.permission FROM memberships m JOIN group_permissions p "
-            "ON p.group_id = m.group_id WHERE m.user_id = ?", (row["id"],)))
-    return Principal(user_id=row["id"], email=row["email"],
-                     display_name=row["display_name"], permissions=perms)
+    digest = _digest(token)
+    with store.reading() as tx:
+        principal = tx.live_principal(digest, now)
+        if principal is None and tx.has_session(digest):
+            _drop_expired(digest, now)  # a refused expired id: drop it (unknown ids cause no write)
+    return principal
 
 
 def end_session(token: str | None) -> None:
-    if token and len(token) <= MAX_TOKEN_LENGTH and db.store_exists():
-        with db.transaction() as conn:
-            conn.execute("DELETE FROM sessions WHERE token_hash = ?", (_digest(token),))
+    store = auth_store()
+    if token and len(token) <= MAX_TOKEN_LENGTH and store.exists():
+        with store.transaction() as tx:
+            tx.delete_session(_digest(token))
