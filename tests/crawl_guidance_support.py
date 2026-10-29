@@ -13,15 +13,16 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from crawl_fake import make_project, make_session
+from crawl_fake import BASE, make_project, make_session
 
 from autotester.providers.attempts import reserve_attempt
 from autotester.providers.base import Provider, ProviderError
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.crawl_guidance import GuidanceOptIn, NextActionRanking
+from autotester.schema.portal_persona import PersonaProfile, PortalPersona
 from autotester.schema.project import Project
 from autotester.schema.screen_graph import ElementRef, ScreenNode
-from autotester.stages.explore_guidance import Guidance
+from autotester.stages.explore_guidance import Guidance, graft
 from autotester.store.project_store import ProjectStore
 
 BASELINE_DIR = Path(__file__).parent / "fixtures" / "crawl_guidance"
@@ -136,12 +137,32 @@ def guided_project(enabled: bool = True) -> Project:
     return base.model_copy(update={"crawl_guidance": GuidanceOptIn(enabled=enabled)})
 
 
+def seed_persona(store: ProjectStore) -> PortalPersona:
+    """A persona with a real header, as a persona build leaves it (guidance never creates one)."""
+    persona = store.load_portal_persona()
+    if persona is None:
+        persona = PortalPersona(project="demo", profile=PersonaProfile(name="Demo", base_url=BASE))
+        store.save_portal_persona(persona)
+    return persona
+
+
+def commit(rt: Any, *nodes: ScreenNode) -> PortalPersona:
+    """What the persona build does with a crawl's nodes at crawl end (D-119): graft, then save."""
+    persona = graft(seed_persona(rt.store), list(nodes))
+    rt.store.save_portal_persona(persona)
+    return persona
+
+
 def make_rt(tmp_path: Path, *, bounds: CrawlBounds | None = None, clock: FakeClock | None = None,
-            project: Project | None = None) -> SimpleNamespace:
-    """Just enough runtime for `Guidance.order`: bounds, clock, secrets, store, project, nodes."""
+            project: Project | None = None, persona: bool = False) -> SimpleNamespace:
+    """Just enough runtime for `Guidance.order`: bounds, clock, secrets, store, project, nodes.
+    `persona=True` seeds a persona with a header; the default is a first crawl with none."""
     project = project or guided_project()
     session, _page = make_session(tmp_path, project)
-    return SimpleNamespace(project=project, session=session, store=ProjectStore("demo", tmp_path),
+    store = ProjectStore("demo", tmp_path)
+    if persona:
+        seed_persona(store)
+    return SimpleNamespace(project=project, session=session, store=store,
                            clock=clock or FakeClock(), started=0.0, nodes={},
                            bounds=bounds or CrawlBounds(**BOUNDS_ON))
 

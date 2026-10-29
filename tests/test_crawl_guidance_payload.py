@@ -123,6 +123,17 @@ def test_payload_is_text_only_and_leaves_no_query_row_name_or_secret() -> None:
     assert "<row item>" in text and "[REDACTED]" in text and "/reports" in text
 
 
+def test_a_secret_straddling_either_cap_is_scrubbed_before_the_cut() -> None:
+    scrub = lambda text: (text or "").replace(SECRET, "[REDACTED]")  # noqa: E731
+    cands = [ElementRef(role="button", name="n" * 54 + SECRET, selector="#a")]
+    node = _node()
+    node.title = "t" * 74 + SECRET
+    text = json.dumps(payload.build_payload(node, cands, [], scrub))
+    assert SECRET[:4] not in text and SECRET[-4:] not in text
+    assert len(payload.build_payload(node, cands, [], scrub)["controls"][0]["name"]) <= (
+        payload.NAME_CHARS)
+
+
 def test_payload_never_carries_values_cookies_or_images() -> None:
     keys = set()
 

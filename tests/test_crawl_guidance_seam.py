@@ -26,12 +26,15 @@ from crawl_guidance_support import (
     make_rt,
     reverse,
     screen,
+    seed_persona,
 )
 
 from autotester.schema.crawl import CrawlBounds, SafetyPolicy
 from autotester.schema.enums import CrawlStatus, EdgeOutcome
 from autotester.schema.screen_graph import ElementRef
 from autotester.stages import explore, explore_traversal
+from autotester.stages.portal_persona import build_portal_persona
+from autotester.store.project_store import ProjectStore
 
 SRC = Path(explore.__file__).resolve().parent
 ON = CrawlBounds(**BOUNDS_ON)
@@ -192,19 +195,53 @@ def test_a_crawl_every_screen_of_which_fell_back_reads_mock_and_rule_only(tmp_pa
 
 def test_a_second_crawl_replays_the_graph_with_zero_calls_and_the_same_clicks(
         tmp_path: Path, one_screen: None) -> None:
+    """D-119 (a)-(c): crawl 1 has no persona and writes none; the persona build then holds the
+    annotations in its graph and an intact header; crawl 2 reuses them with zero model calls."""
     bounds = CrawlBounds(max_actions=10, **BOUNDS_ON)
     first = FakeProvider(reverse)
-    _c, store, page1 = crawl_it(tmp_path, project=guided_project(), bounds=bounds,
+    c1, store, page1 = crawl_it(tmp_path, project=guided_project(), bounds=bounds,
                                 guide=guide(first))
+    assert not store.paths.portal_persona.exists(), "(c) no persona file during the crawl"
+    assert any(n.guidance for n in store.list_nodes(c1.id)), "kept on the crawl's own node"
+    store.save_project(guided_project())
+    built = build_portal_persona(store, crawl_id=c1.id)
+    assert (built.profile.name, built.profile.base_url) == ("Demo", crawl_fake.BASE)
+    assert built.history and built.history[0].summary.startswith("initial persona")
+    assert any(n.guidance for n in built.graph.nodes), "(a) annotations are in the persona graph"
     second = FakeProvider(reverse)
     crawl, _s, page2 = crawl_it(tmp_path, project=guided_project(), bounds=bounds, store=store,
                                 guide=guide(second))
-    assert first.calls == 1 and second.calls == 0
+    assert first.calls == 1 and second.calls == 0, "(b) reuse costs no model call"
     assert page1.clicks == page2.clicks == ["#b3", "#b2", "#b1"]
     assert crawl.guidance is not None and crawl.guidance.kg_hits == 1
     assert not list(tmp_path.rglob("crawl_guidance*"))
-    persona = store.load_portal_persona()
-    assert persona is not None and any(n.guidance for n in persona.graph.nodes)
+
+
+def test_guidance_never_creates_a_persona_so_the_first_persona_build_is_whole(
+        tmp_path: Path) -> None:
+    """F1: a guided crawl on a project with no persona leaves none behind; the later build then
+    writes the header (name, base_url) and the `initial persona` revision as it always did."""
+    model = FakeProvider(reverse)
+    crawl, store, _page = crawl_it(tmp_path, project=guided_project(), bounds=ON,
+                                   guide=guide(model))
+    assert model.calls >= 1, "guidance really ran"
+    assert not store.paths.portal_persona.exists()
+    store.save_project(guided_project())
+    persona = build_portal_persona(store, crawl_id=crawl.id)
+    assert (persona.profile.name, persona.profile.base_url) == ("Demo", crawl_fake.BASE)
+    assert persona.history and persona.history[0].summary.startswith("initial persona")
+
+
+def test_a_persona_build_after_a_guided_crawl_keeps_the_header_and_adds_the_annotations(
+        tmp_path: Path) -> None:
+    store = ProjectStore("demo", tmp_path)
+    seed_persona(store)
+    crawl, store, _page = crawl_it(tmp_path, project=guided_project(), bounds=ON, store=store,
+                                   guide=guide(FakeProvider(reverse)))
+    store.save_project(guided_project())
+    persona = build_portal_persona(store, crawl_id=crawl.id)
+    assert persona.profile.name == "Demo" and persona.profile.base_url == crawl_fake.BASE
+    assert any(n.guidance for n in persona.graph.nodes), "annotations survive the add-only merge"
 
 
 # -- G9/G11: one module owns the call; no file grows past the cap ------------------------------

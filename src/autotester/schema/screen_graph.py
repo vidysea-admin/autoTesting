@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.core.ids import content_id
 from autotester.schema.base import Artifact
+from autotester.schema.crawl_guidance import GuidanceAnnotation
 from autotester.schema.enums import Action, EdgeOutcome, NodeStatus
 
 
@@ -81,6 +82,9 @@ class ScreenNode(Artifact):
     console_errors: list[str] = Field(default_factory=list)
     failed_requests: list[str] = Field(default_factory=list)
     discovered_by: str | None = Field(default=None, description="the ScreenEdge.id that found it")
+    guidance: list[GuidanceAnnotation] | None = Field(
+        default=None, description="crawl-guidance (D-119): this screen's rankings, grafted onto "
+        "PortalPersona.graph by the persona build")
 
     def model_post_init(self, _context: object) -> None:
         if not self.id:

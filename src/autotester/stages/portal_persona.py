@@ -1,12 +1,11 @@
 """PORTAL PERSONA: promote per-crawl knowledge into the durable, cross-run
 product model (T-164, contract portal-persona.md).
 
-`build_portal_persona` reads a crawl's screen graph and the reviewed FlowSpec,
-MERGES them into the existing `projects/<slug>/portal_persona.json` (never
-dropping or blanking a known screen/flow — PP2), records a dated
-`PersonaRevision` when and only when something changed (PP3), and regenerates
-`knowledge.md` as a view of the JSON (PP4). The persona is the single store;
-`knowledge.md` is never a second source of truth (PP1).
+`build_portal_persona` reads a crawl's screen graph and the reviewed FlowSpec, MERGES them into the
+existing `projects/<slug>/portal_persona.json` (never dropping or blanking a known screen/flow —
+PP2), records a dated `PersonaRevision` when and only when something changed (PP3), and regenerates
+`knowledge.md` as a view of the JSON (PP4). The persona is the single store; `knowledge.md` is never
+a second source of truth (PP1). It alone grafts guidance (D-119).
 
 Credentials never enter it: auth is carried by SHAPE only (a `SecretRef` key,
 never a value), every free-text field is scrubbed through the project
@@ -34,7 +33,7 @@ from autotester.schema.portal_persona import (
     PortalPersona,
     TaughtFlow,
 )
-from autotester.stages import persona_changes
+from autotester.stages import explore_guidance, persona_changes
 
 if TYPE_CHECKING:  # a stage names the store only in a signature (execute.py's convention)
     from autotester.schema.crawl import CrawlIssue
@@ -288,6 +287,7 @@ def build_portal_persona(
     incoming = _build_incoming(store, project, crawl_id)
     existing = store.load_portal_persona()
     persona, summary = _merge(existing, incoming)
+    persona = explore_guidance.graft(persona, store.list_nodes(crawl_id) if crawl_id else [])
     diff = persona_changes.classify(
         existing, store.list_nodes(crawl_id) if crawl_id else [],
         frontier_exhausted=_frontier_exhausted(store, crawl_id))

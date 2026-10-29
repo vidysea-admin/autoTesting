@@ -51,7 +51,7 @@ def candidate_hash(cands: list[ElementRef]) -> str:
 
 
 def _control(i: int, el: ElementRef, scrub: Callable[[str | None], str | None]) -> dict[str, Any]:
-    name = ROW_PLACEHOLDER if el.in_row else (scrub(el.name.strip()[:NAME_CHARS]) or "")
+    name = ROW_PLACEHOLDER if el.in_row else (scrub(el.name.strip()) or "")  # scrub, THEN cut
     path = "" if el.in_row else scrub(href_path(el.href)) or ""
     return {"i": i, "role": el.role, "name": name[:NAME_CHARS], "tag": el.tag, "type": el.type,
             "is_form_submit": el.is_form_submit, "in_row": el.in_row,
@@ -63,7 +63,7 @@ def build_payload(node: ScreenNode, cands: list[ElementRef], known: list[str],
     """The redacted payload for `cands[:MAX_CANDIDATES]` (the caller passes the head)."""
     return {
         "screen": {"url_template": scrub(_template(node.url_template)),
-                   "title": scrub(node.title.strip()[:TITLE_CHARS]) or "", "depth": node.depth},
+                   "title": (scrub(node.title.strip()) or "")[:TITLE_CHARS], "depth": node.depth},
         "known_screens": [scrub(_template(k)) or "" for k in known[:KNOWN_CAP]],
         "controls": [_control(i, el, scrub) for i, el in enumerate(cands)],
     }

@@ -94,6 +94,19 @@ def test_a_planted_secret_is_scrubbed_before_the_prompt_and_never_stored(tmp_pat
             assert SECRET not in path.read_text(encoding="utf-8", errors="ignore"), path
 
 
+def test_a_secret_straddling_the_name_or_title_cap_never_leaks_a_prefix(tmp_path: Path) -> None:
+    """F2: scrub the FULL text, then truncate -- a cut must never leave part of a secret."""
+    rt, cands = _rt_with_secret(tmp_path), controls(3)
+    cands[0].name = "n" * 54 + SECRET  # the 60-char name cap lands inside the secret
+    node = screen()
+    node.title = "t" * 74 + SECRET  # the 80-char title cap lands inside the secret
+    model = FakeProvider(reverse)
+    guide(model).order(rt, node, cands)
+    assert model.calls == 1
+    for piece in (SECRET[:4], SECRET[-4:]):
+        assert piece not in model.prompts[0], piece
+
+
 def test_a_guard_refusal_falls_back_and_is_not_retried(tmp_path: Path) -> None:
     model, cands = FakeProvider(guard_refuses=True), controls(4)
     g = guide(model)

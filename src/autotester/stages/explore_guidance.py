@@ -83,6 +83,32 @@ def crawl_fields(rt: ExploreRuntime) -> dict[str, Any]:
     return rt.guidance.crawl_fields() if rt.guidance is not None else {}
 
 
+def fold(kept: list[GuidanceAnnotation] | None, *notes: GuidanceAnnotation
+         ) -> list[GuidanceAnnotation]:
+    """`kept` plus `notes`, one per (candidate set, prompt version, model), newest 5 (G7)."""
+    out = list(kept or [])
+    for note in notes:
+        sig = (note.candidate_hash, note.prompt_version, note.model)
+        out = [a for a in out if (a.candidate_hash, a.prompt_version, a.model) != sig] + [note]
+    return out[-KEEP_PER_NODE:]
+
+
+def graft(persona: PortalPersona, nodes: list[ScreenNode]) -> PortalPersona:
+    """D-119: fold the rankings on a crawl's nodes into `persona.graph`. Called by the persona
+    build only -- the one writer of the persona file; guidance itself never writes it."""
+    ranked = [n for n in nodes if n.guidance]
+    if not ranked:
+        return persona
+    graph = persona.graph.model_copy(deep=True)
+    for node in ranked:
+        known = persona.screen(node.id)
+        label = known.name if known else (node.name or node.title or node.url_template)
+        graph.add_node(GraphNode.make("screen", node.id, label))
+        stored = graph.node(f"screen:{node.id}")
+        stored.guidance = fold(stored.guidance, *(node.guidance or []))
+    return persona.model_copy(update={"graph": graph})
+
+
 class Guidance:
     """One crawl's guidance state. Build a fresh one per `run_crawl`."""
 
@@ -143,7 +169,7 @@ class Guidance:
         tag = _tag(self.provider)
         self._note_served(tag)
         reason = scrub(_reason_text(raw)) or ""
-        self._remember(rt, node, GuidanceAnnotation(
+        self._remember(node, GuidanceAnnotation(
             candidate_hash=key, prompt_version=version, model=tag, ranking=order,
             reason=reason[:REASON_CHARS]))
         return order
@@ -199,7 +225,7 @@ class Guidance:
     def _persona(self, rt: ExploreRuntime) -> PortalPersona | None:
         if self._kg is False:
             try:
-                self._kg = rt.store.load_portal_persona() or PortalPersona(project=rt.project.slug)
+                self._kg = rt.store.load_portal_persona()  # read-only (D-119)
             except Exception as exc:  # an unreadable graph costs reuse, never the crawl
                 self._fell_back(f"knowledge graph unreadable ({type(exc).__name__})")
                 self._kg = None
@@ -217,23 +243,9 @@ class Guidance:
                 return note.ranking
         return None
 
-    def _remember(self, rt: ExploreRuntime, node: ScreenNode, note: GuidanceAnnotation) -> None:
-        persona = self._persona(rt)
-        if persona is None:
-            return
-        stored = persona.graph.node(f"screen:{node.id}")
-        if stored is None:
-            label = rt.session.secrets.scrub_optional(pl.href_path(node.url_template) or "/")
-            stored = GraphNode.make("screen", node.id, label or node.id)
-            persona.graph.add_node(stored)
-        same = (note.candidate_hash, note.prompt_version, note.model)
-        kept = [a for a in stored.guidance or []
-                if (a.candidate_hash, a.prompt_version, a.model) != same]
-        stored.guidance = [*kept, note][-KEEP_PER_NODE:]
-        try:
-            rt.store.save_portal_persona(persona)
-        except Exception as exc:
-            self._fell_back(f"knowledge graph not saved ({type(exc).__name__})")
+    def _remember(self, node: ScreenNode, note: GuidanceAnnotation) -> None:
+        """D-119: the ranking lives on the crawl's own node; the persona build grafts it later."""
+        node.guidance = fold(node.guidance, note)
 
     # -- record ----------------------------------------------------------------------------
     def _note_served(self, tag: str) -> None:

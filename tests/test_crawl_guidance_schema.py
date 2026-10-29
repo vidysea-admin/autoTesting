@@ -24,6 +24,7 @@ from autotester.schema.crawl_guidance import (
 )
 from autotester.schema.portal_persona import GraphNode, KnowledgeGraph, PortalPersona
 from autotester.schema.project import Project
+from autotester.schema.screen_graph import ScreenNode
 from autotester.store.filestore import read_json, write_json
 
 
@@ -67,6 +68,16 @@ def test_old_project_and_persona_json_load_without_the_new_fields(tmp_path: Path
     path = tmp_path / "persona.json"
     write_json(path, persona)
     assert '"guidance"' not in path.read_text(encoding="utf-8")
+
+
+def test_a_screen_node_carries_annotations_only_when_set() -> None:
+    """D-119: the crawl's own node holds the ranking; unset it serialises exactly as before."""
+    node = support.screen("node_1")
+    assert node.guidance is None and "guidance" not in node.model_dump(exclude_none=True)
+    note = GuidanceAnnotation(candidate_hash="h", prompt_version="1:x", model="m", ranking=[1, 0])
+    node.guidance = [note]
+    loaded = ScreenNode.model_validate_json(node.model_dump_json(exclude_none=True))
+    assert loaded.guidance == [note]
 
 
 def test_extra_forbid_holds_on_every_new_model() -> None:

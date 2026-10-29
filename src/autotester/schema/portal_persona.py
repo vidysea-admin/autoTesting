@@ -1,11 +1,11 @@
 """The durable Portal Persona — what AutoTester knows about one product, kept
 across runs instead of scoped to a single crawl (T-164, contract portal-persona.md).
-One `PortalPersona` model, persisted at `projects/<slug>/portal_persona.json`
-via the filestore; `knowledge.md` is a regenerated VIEW of it, never a second
-source of truth. Auth is described by field/domain SHAPE only — a `SecretRef`
-key, never a value (PP5). `history` is a dated, append-only trail of what each
-update changed (PP3). The knowledge graph (T-166, EC1) is this same persona's typed nodes
-and edges (`graph`), JSON on the filestore; crawl-guidance (G7) annotates its screen nodes.
+
+One `PortalPersona` model, persisted at `projects/<slug>/portal_persona.json` via the filestore;
+`knowledge.md` is a regenerated VIEW of it, never a second source of truth. Auth is described by
+field/domain SHAPE only — a `SecretRef` key, never a value (PP5). `history` is a dated, append-only
+trail of what each update changed (PP3). The knowledge graph (T-166, EC1) is this same persona's
+typed nodes and edges (`graph`) — JSON on the filestore, no graph database, no second schema.
 """
 
 from __future__ import annotations
