@@ -164,6 +164,7 @@ class _FakeRuntime:
         self.policy = policy
         self.bounds = CrawlBounds()
         self.typed: dict[str, list[explore_replay.TypedAction]] = {}
+        self.revealed_by: dict[tuple[str, str], ElementRef] = {}  # read by perform()
         self.project = Project(slug="p", name="p", base_url="https://app.test/",
                                allowed_domains=["app.test"])
         self.store = _CountingStore()

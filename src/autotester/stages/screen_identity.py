@@ -54,10 +54,22 @@ def is_layout_toggle(el: ElementRef) -> bool:
     return el.role in ("button", "switch") and bool(_LAYOUT_TOGGLE.match(_normalise_name(el.name)))
 
 
-def same_screen(node: ScreenNode, new: ScreenNode, pressed: ElementRef) -> bool:
-    """Whether landing on `new` after pressing `pressed` on `node` is still `node`."""
-    return new.id == node.id or (
-        is_layout_toggle(pressed) and new.url_template == node.url_template)
+def same_screen(node: ScreenNode, new: ScreenNode, pressed: ElementRef,
+                *, revealed: bool = False) -> bool:
+    """Whether landing on `new` after pressing `pressed` on `node` is still `node`.
+
+    Same signature, or the same URL where only page chrome moved: the pressed control is a layout
+    toggle, or a `revealed` control (one a toggle made visible) whose press shows nothing the node
+    does not already hold -- e.g. a sub-menu expander that leaves the nav open. A press that
+    shows a control the node never had (a dialog) is a new state and stays a new screen."""
+    if new.id == node.id:
+        return True
+    if new.url_template != node.url_template:
+        return False
+    if is_layout_toggle(pressed):
+        return True
+    known = {(e.role, e.selector) for e in node.elements}
+    return revealed and all((e.role, e.selector) in known for e in new.elements if e.visible)
 
 
 def structural_signature(elements: list[ElementRef]) -> str:

@@ -164,16 +164,6 @@ def note_revealed(rt: ExploreRuntime, node: ScreenNode, toggle: ElementRef,
     rt.store.update_node(persisted.scrubbed(rt, grown))
 
 
-def press_revealer(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> None:
-    """Before trying a control a layout toggle revealed, press that toggle again: returning to
-    the screen reloaded it and hid the control. The toggle was itself policy-cleared when first
-    pressed, so this adds no action the safety guard has not already seen."""
-    toggle = rt.revealed_by.get((node.id, el.selector))
-    if toggle is not None:
-        rt.session.click(toggle.selector)
-        rt.session.settle(timeout_ms=rt.bounds.settle_ms)
-
-
 def why_lost(rt: ExploreRuntime) -> str:
     """The cause `return_to` recorded, or an explicit admission that none was.
 
