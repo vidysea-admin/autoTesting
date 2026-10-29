@@ -250,9 +250,9 @@ def test_an_entry_case_is_saved_before_a_slow_close_and_the_close_costs_no_budge
             teardown.close_session(context, None, trace=self.trace, budget=self.budget)
             events.append("close_end")
 
-    case = SimpleNamespace(id="c1")
-    result = RawResult(case_id="c1", outcome=Outcome.COMPLETED)
-    verdict = Verdict(run_id="r1", case_id="c1", result=Result.PASS, grader_provider="mock")
+    case = _case(1)  # a real Case: the entry pool reads its class and credentials
+    result = RawResult(case_id=case.id, outcome=Outcome.COMPLETED)
+    verdict = Verdict(run_id="r1", case_id=case.id, result=Result.PASS, grader_provider="mock")
 
     class Store:
         def save_result(self, run_id, res) -> None:

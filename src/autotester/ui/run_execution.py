@@ -14,6 +14,7 @@ import contextlib
 from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 
+from autotester.browser.entry_reset import reset_to_logged_out
 from autotester.browser.profiles import wipe_entry_profile as _wipe_entry_profile
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
@@ -34,6 +35,7 @@ from autotester.stages.run_case_pipeline import (
     run_and_grade_case_resilient,
 )
 from autotester.store.project_store import ProjectStore
+from autotester.ui.entry_browser import EntryBrowserPool
 
 
 def _trace_of(judge: Provider):
@@ -92,30 +94,52 @@ def _run_and_grade_resilient(
 
 
 
+def _entry_pool(
+    project: Project, secrets: SecretStore, run_dir: Path, slug: str, judge: Provider,
+    budget: RunBudget,
+) -> EntryBrowserPool:
+    """The run's entry browser pool (D-115): a launch is a wiped-profile browser (AT-733 / RU5,
+    fail closed), a reuse is a logged-out reset; both are traced, non-case time."""
+    entry_paths = ProjectPaths(f"{slug}-entry-test")
+
+    def open_session(case: Case) -> BrowserSession:
+        wipe = traced_phase(_trace_of(judge), case.id, "entry_profile_wipe")
+        with wipe, _housekeeping(budget):
+            _wipe_entry_profile(entry_paths.profile_dir)
+        session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
+        session.state.evidence_prefix = case.id
+        session.budget = budget
+        budget.check_start()
+        _start_session(session, judge, budget, case.id)
+        return session
+
+    def reset(session: BrowserSession, case: Case) -> None:
+        with traced_phase(_trace_of(judge), case.id, "entry_reset"), _housekeeping(budget):
+            reset_to_logged_out(session)
+
+    return EntryBrowserPool(project, open_session=open_session, reset=reset)
+
+
 def _run_entry_case(
     case: Case, project: Project, secrets: SecretStore, run_dir: Path, slug: str,
     judge: Provider, run_id: str, store: ProjectStore,
-    *, budget: RunBudget,
+    *, budget: RunBudget, pool: EntryBrowserPool | None = None,
 ) -> tuple[RawResult, Verdict]:
-    """A dedicated, wiped-before-every-run profile so an entry-screen case is
-    always exercised from a genuinely logged-out state -- order- and
-    cross-run-independent.
+    """An entry-screen case starts from a genuinely logged-out state -- order- and cross-run-
+    independent: a wiped-profile launch, or (D-115) a logged-out reset of the run's one entry
+    browser (`pool`, shared by `_run_entry_cases`). With no `pool` the case owns a private one
+    and closes it, exactly the pre-D-115 launch-run-close.
 
-    AT-577 cycle 2: shares `run_dir` with the shared session; unprefixed,
-    both number screenshots from 01 and collide. `evidence_prefix = case.id`
-    (AT-572's mechanism) nests this case's files under `run_dir/<case.id>/`."""
-    entry_paths = ProjectPaths(f"{slug}-entry-test")
+    AT-577 cycle 2: shares `run_dir` with the shared session; unprefixed, both number screenshots
+    from 01 and collide. The pool sets `evidence_prefix = case.id` (AT-572's mechanism), nesting
+    this case's files under `run_dir/<case.id>/`."""
+    own = pool is None
+    pool = pool or _entry_pool(project, secrets, run_dir, slug, judge, budget)
     session: BrowserSession | None = None
+    outcome: tuple[RawResult, Verdict] | None = None
     try:
         try:
-            wipe = traced_phase(_trace_of(judge), case.id, "entry_profile_wipe")
-            with wipe, _housekeeping(budget):
-                _wipe_entry_profile(entry_paths.profile_dir)  # AT-733 / RU5: fail closed
-            session = BrowserSession(project, secrets, run_dir, entry_paths, record_video=True)
-            session.state.evidence_prefix = case.id
-            session.budget = budget
-            budget.check_start()
-            _start_session(session, judge, budget, case.id)
+            session = pool.acquire(case)
             outcome = _run_and_grade_resilient(case, session, judge, run_id, store)
         except Exception as exc:
             result = RawResult(case_id=case.id, outcome=Outcome.ERRORED,
@@ -125,8 +149,9 @@ def _run_entry_case(
         return outcome
     finally:
         if session is not None:
-            with contextlib.suppress(Exception):
-                session.close()
+            pool.release(case, session, outcome[0] if outcome else None)
+        if own:
+            pool.close()
 
 
 def _run_cases_serially(
@@ -136,11 +161,9 @@ def _run_cases_serially(
     *, budget: RunBudget,
 ) -> None:
     """Run isolated entry cases first, then reuse one login session (AT-576)."""
-    for case, is_entry in zip(cases, entry_flags, strict=True):
-        if not is_entry:
-            continue
-        _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id, store,
-                        budget=budget)  # saves its own result before closing its browser
+    entry_cases = [c for c, is_entry in zip(cases, entry_flags, strict=True) if is_entry]
+    _run_entry_cases(entry_cases, project, secrets, run_dir, slug, judge, run_id, store,
+                     budget=budget)  # closed before the shared session starts (AT-576)
 
     normal_cases = [c for c, is_entry in zip(cases, entry_flags, strict=True) if not is_entry]
     if not normal_cases:
@@ -178,14 +201,18 @@ def _run_entry_cases(
     slug: str, judge: Provider, run_id: str, store: ProjectStore,
     *, budget: RunBudget,
 ) -> None:
-    """The serial entry-case leg of a parallel run: each entry case keeps its
-    dedicated wiped profile (AT-044) and they always run one at a time, before
-    the fan-out. Extracted from `_run_cases_in_parallel` so that function stays
-    inside the 50-line design cap (core-invariants C2); the ordering guarantee
-    it carries is asserted by `tests/test_ui_runs_serial_entry_order.py`."""
-    for case in entry_cases:
-        _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id, store,
-                        budget=budget)  # saves its own result before closing its browser
+    """The serial entry-case leg of both run shapes: one entry browser for the whole leg (D-115),
+    each case reset to logged out first, an identity change / logged-out / adversarial case on its
+    own launch, one bounded close at the end. Entry cases run one at a time, before the fan-out.
+    Extracted so `_run_cases_in_parallel` stays inside the 50-line design cap (core-invariants C2);
+    the ordering guarantee is asserted by `tests/test_ui_runs_serial_entry_order.py`."""
+    pool = _entry_pool(project, secrets, run_dir, slug, judge, budget)
+    try:
+        for case in entry_cases:
+            _run_entry_case(case, project, secrets, run_dir, slug, judge, run_id, store,
+                            budget=budget, pool=pool)  # saves its own result before any close
+    finally:
+        pool.close()
 
 
 def _run_cases_in_parallel(
