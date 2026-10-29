@@ -8,7 +8,7 @@
 **Branch:** `fix/crawl-record-gaps` from master `a6e03fa4` (worktree `.claude/worktrees/crawl-gaps`)
 **Date:** 2026-10-29
 **Fix cycle:** 0
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Dual check:** no
 **Not run:** no real crawl was started; the whole suite was not run (machine low on memory).
 
