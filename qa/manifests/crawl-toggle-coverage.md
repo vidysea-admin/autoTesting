@@ -6,8 +6,8 @@ A-W1/W2, B-W1/W2/W4 (`qa/verdicts/crawl-record-gaps.md`, `.b.md`).
 `qa/contracts/core-invariants.md` C1, C3.
 **Branch:** `fix/crawl-record-gaps` (worktree `.claude/worktrees/crawl-gaps`)
 **Date:** 2026-10-29
-**Fix cycle:** 0
-**Status:** ready-for-check
+**Fix cycle:** 2
+**Status:** checked-PASS
 **Dual check:** no
 **Not changed (as instructed):** `core/urls.py` templating. No real crawl; whole suite not run.
 
@@ -44,11 +44,54 @@ A-W1/W2, B-W1/W2/W4 (`qa/verdicts/crawl-record-gaps.md`, `.b.md`).
    was condensed to its two facts to make room; `explore_return.py` 201). No new src module. No schema
    change (`docs/MAP.md` regenerated, no diff).
 
+## Cycle 1 (checker B cycle 0 FAIL: `qa/verdicts/crawl-toggle-coverage.b.md`, f4acf9b8)
+
+5. **B-1 (blocking) a revealed control that does not navigate no longer mints a duplicate screen.**
+   `same_screen(..., revealed=)` (`stages/screen_identity.py`) is true on the same `url_template`
+   when the pressed control is a layout toggle, or a control a toggle revealed whose press shows
+   nothing the node does not already hold (every visible element of the result is among the node's
+   known role+selector pairs, revealed ones included). `try_action` passes
+   `revealed=(node.id, el.selector) in rt.revealed_by` and the node's latest elements
+   (`explore_node.py`). A press that shows a control the node never had (a dialog) stays a new screen.
+   Test: `test_a_revealed_control_that_does_not_navigate_is_the_same_screen` (crawl COMPLETED, one `/`
+   node, all nodes explored, edge SAME_SCREEN with `to_node == from_node`).
+6. **B-1 replay half: replay presses the recorded revealer first.** `press_revealer(rt, node_id,
+   selector)` moved to `stages/explore_replay.py` (the re-perform module; `explore_return` imports it,
+   so it could not live there without a cycle) and `perform` calls it before the click. Test:
+   `test_replay_presses_the_revealer_before_a_revealed_control` (a dialog opened from the revealed nav
+   is a second `/` node reachable only by toggle + control; crawl COMPLETED, both nodes explored,
+   toggle pressed >= 3 times).
+7. **Warning: re-presses are budgeted.** `press_revealer` increments `actions_used`; `_click_loop`
+   charges a revealed control 2 against the per-node cap (control + its re-press).
+   **Warning: keyed by node id + selector** (it was already a tuple key; now covered by
+   `test_the_revealer_press_is_keyed_by_node_and_counts_as_an_action`).
+   **Warning: a toggle whose state persists across reload** ends the node `aborted_error` with a
+   named NAVIGATION issue ("lost this screen mid-exploration ... back and the node URL both landed on a
+   different screen"), never silently and never exploring through a closed nav. Test:
+   `test_a_toggle_whose_state_persists_across_reload_fails_loudly_not_silently`.
+   Falsified: with `same_screen`'s revealed clause forced False the non-navigating test fails; with
+   the replay press removed the replay test fails.
+8. `tests/test_explore_replay.py::_FakeRuntime` gained `revealed_by = {}` (the attribute `perform` now
+   reads; every real `ExploreRuntime` has it). `explore_node.py` 297 lines, `explore_replay.py` 228,
+   `explore_return.py` 191.
+
+## Cycle 2 (checker A cycle 1 FAIL: `qa/verdicts/crawl-toggle-coverage.md`, 95318047)
+
+9. **A-1: `tests/test_explore_replay.py` is back to 300 lines.** The cycle 1 `revealed_by` line in
+   `_FakeRuntime` had pushed it to 301 (doctor file-too-long). `self.edges = 0` / `self.issues = 0`
+   became `self.edges = self.issues = 0`; behaviour is identical. Cycle 1's "doctor shows only
+   SNAPSHOT stale" claim was wrong at that head and is corrected by the output below.
+   `uv run autotester doctor` now, after filtering the advisory `decision-citation-*` rows:
+   `stale-generated: docs/SNAPSHOT.md`, `stale-committed: docs/SNAPSHOT.md`, `2 violation(s)`. No
+   file-length row. Those two are the generated snapshot, which this branch does not regenerate.
+
 ## Files changed
 
 `src/autotester/browser/observe.py`, `stages/execute.py`, `stages/explore_node.py`,
 `stages/explore_return.py`, `stages/explore_runtime.py`, `stages/explore_summary.py`,
-`stages/network_capture.py`, `tests/test_crawl_toggle_coverage.py` (new, 4 tests), this manifest.
+`stages/network_capture.py`, `tests/test_crawl_toggle_coverage.py` (new, 8 tests); cycle 1 also
+`stages/explore_replay.py`, `stages/explore_return.py`, `stages/screen_identity.py`,
+`tests/test_explore_replay.py` (fake runtime attribute), this manifest.
 
 ## Tests run (`uv run pytest <2 files> -o addopts=`, one at a time)
 
@@ -60,11 +103,19 @@ A-W1/W2, B-W1/W2/W4 (`qa/verdicts/crawl-record-gaps.md`, `.b.md`).
 - `tests/test_explore_node_recovery.py tests/test_explore_return_determinism.py` -> `6 passed`.
 - `tests/test_observe.py tests/test_network_assertions.py` -> `22 passed`.
 - `tests/test_explore_typing.py tests/test_explore_secret_scrubbing.py` -> `13 passed`.
+- Cycle 1: `tests/test_crawl_toggle_coverage.py tests/test_crawl_record_gaps.py` -> `27 passed`;
+  `tests/test_explore_replay.py tests/test_explore_flows.py` -> `32 passed` (the replay file failed 4
+  until the fake runtime got `revealed_by`); `tests/test_screen_identity.py tests/test_explore_typing.py`
+  -> `19 passed`; `tests/test_explore.py tests/test_explore_error_causes.py` -> `27 passed`;
+  `tests/test_explore_node_recovery.py tests/test_explore_return_determinism.py` -> `6 passed`;
+  `tests/test_explore_traversal.py tests/test_explore_modal.py` -> `15 passed`.
 - `uv run ruff check src tests` -> `All checks passed!`
 - `uv run autotester doctor`: only `docs/SNAPSHOT.md` stale (generated, pre-existing, untouched).
 
 ## For the checker to weigh
 
+- A revealed control whose press reveals NEW controls at the same URL (a nested expander) is a
+  new state and a new node, reachable by the replay via toggle + control.
 - Revealed controls are found from the observation taken right after the toggle press; a control
   that appears only after a further interaction is not chased.
 - If a site keeps the opened state across a reload, `return_to` can fail to match the node's

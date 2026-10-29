@@ -19,12 +19,8 @@ from autotester.schema.enums import Action, EdgeOutcome, IssueKind, NodeStatus
 from autotester.schema.screen_graph import ElementRef, ScreenEdge, ScreenNode
 from autotester.stages import crawl_coverage, explore, explore_safety, explore_traversal
 from autotester.stages import explore_summary as persisted
-from autotester.stages.explore_return import (
-    note_revealed,
-    press_revealer,
-    return_to,
-    why_lost,
-)
+from autotester.stages.explore_replay import press_revealer
+from autotester.stages.explore_return import note_revealed, return_to, why_lost
 from autotester.stages.explore_safety import (
     OFF_DOMAIN_LINK_REFUSED,
     classify_request,
@@ -157,7 +153,7 @@ def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEd
     action = Action.NAVIGATE if (el.role == "link" and el.href) else Action.CLICK
     rt.take_responses(node.id)  # traffic since the last action is this screen's own load
     try:
-        press_revealer(rt, node, el)  # a control a layout toggle revealed needs it pressed again
+        press_revealer(rt, node.id, el.selector)  # a revealed control needs its toggle again
         action = _perform(rt, el)
     except NavigationRefused as exc:
         return record_edge(rt, node, el, action, EdgeOutcome.OFF_DOMAIN_REFUSED, str(exc))
@@ -172,7 +168,8 @@ def try_action(rt: ExploreRuntime, node: ScreenNode, el: ElementRef) -> ScreenEd
         add_issue(rt, node.id, IssueKind.NAVIGATION, str(exc))
         return record_edge(rt, node, el, action, EdgeOutcome.OFF_DOMAIN_REFUSED, str(exc))
     new = node_from(observe(rt.session), rt.crawl.id, rt.project.slug, node.depth + 1)
-    same = same_screen(node, new, el)  # a same-URL layout toggle is not a screen
+    revealed = (node.id, el.selector) in rt.revealed_by
+    same = same_screen(rt.nodes.get(node.id, node), new, el, revealed=revealed)
     rt.take_responses(node.id if same else new.id)
     if same:
         if is_layout_toggle(el):
@@ -253,7 +250,7 @@ def _click_loop(rt: ExploreRuntime, node: ScreenNode, typed: int) -> bool:
             break
         if not crawl_coverage.is_candidate(el) or _candidate_denial(rt, node, el):
             continue
-        tried += 1
+        tried += 1 + ((node.id, el.selector) in rt.revealed_by)  # its toggle re-press costs one
         if explore_traversal.defer_destructive(rt, node, el):  # PS2: crawl-global, drained last
             continue
         rt.frontier.actions_used += 1
