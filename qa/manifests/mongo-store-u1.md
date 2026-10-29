@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u1
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 2
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U1. **Criticality:** CRITICAL, dual check (D-100).
 **Branch:** `feat/mongo-store-u1` from `qa/mongo-store-gate` (`1c072711`). Not merged, not pushed.
