@@ -2860,3 +2860,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-112, run-teardown-stall, run-01M617NCNB8RBBME2RSH9ZQ87P, .work/pathlynks-explore/stall-diagnosis.md
 
 **Changes-authorized:** `src/autotester/ui/run_execution.py`, the browser session/teardown modules under `src/autotester/browser/`, the run launcher, and their tests; `projects/pathlynks/cases.jsonl` retirements via the shipped retire path. No ARCHITECTURE.md prose and no enforcement path.
+
+## D-116 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** **Amends D-115 item (1): keep the login, log out only when a case needs it.** Within a run, entry cases that need a logged-out page (wrong password, empty submit, any logged-out precondition) run first on the one entry browser, with a full reset (cookies, local and session storage on every stored origin, extra tabs) before each one that follows another case; the happy-path login case runs last among them, and its logged-in session is lent to the run's following logged-in cases with no reset, relaunch or re-login. Logged-out and adversarial entry cases share the one browser after a reset instead of getting their own launch; a different account still gets its own launch, an errored case or failed reset still discards the browser, and adversarial non-entry cases never use the lent session. The profile wipe happens at each launch, not before every entry case.
+
+**Why:** After the cycle-0 design reset to logged out before every case, Umesh said on 2026-10-29: "hnn login huaa use kro, baar baar logout kyu hi krna ahi fast kro kaam". D-115 itself said "one logged-in context". Measured effect on the Pathlynks set: 1 browser launch and 1 real login instead of one per case. Accepted risk: a lent session is shared by every following case of that run, so it must never reach a case of a different account (checker-A W1, to be enforced in code).
+
+**Result:** entry-browser-reuse cycle 1 (checker A PASS cycle 1). The checker amends qa/contracts/ui-run.md RU5 (profile wipe per launch, reset before each logged-out case) to match.
+
+**Approved-by:** Umesh (chat 2026-10-29: "hnn login huaa use kro, baar baar logout kyu hi krna ahi fast kro kaam")
+
+**Links:** D-115, D-112, entry-browser-reuse, qa/verdicts/entry-browser-reuse.md
+
+**Changes-authorized:** the same files as D-115 item (1); the ui-run contract's RU5 wording (checker only). No ARCHITECTURE.md prose and no enforcement path.
