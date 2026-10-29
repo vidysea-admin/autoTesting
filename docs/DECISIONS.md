@@ -2874,3 +2874,17 @@ Amends D-073 and review-gate R5 only on this point: the requirement that a human
 **Links:** D-115, D-112, entry-browser-reuse, qa/verdicts/entry-browser-reuse.md
 
 **Changes-authorized:** the same files as D-115 item (1); the ui-run contract's RU5 wording (checker only). No ARCHITECTURE.md prose and no enforcement path.
+
+## D-117 | 2026-10-29 | type: decision | status: ACTIVE
+
+**What:** Three answers from Umesh on 2026-10-29. (1) **Go ahead with a model-guided crawl.** On each screen, a model reached through `providers.base.Provider` chooses the next action. The graph, screen identity, budget, signed approval, deny-list, allowed_domains and `{{SECRET:KEY}}` substitution stay in code, and the model sees only the redacted screen. Use an Ollama model, either "glm 5.3 flash" or "deepseek 4.1 flash latest 1017 snapshot". The exact tags and the design go in a later entry, once availability and RAM fit are measured. (2) **Keep case_b1cb019ebb56** as the empty-submit case. The stricter case_7a978722a38c stays retired (D-115 item 2). (3) **Lower the letters-only minimum** for the Redactor's case-insensitive secret match from 12 to 8 characters. The minimum of 8 for secrets that contain a non-letter is unchanged.
+
+**Why:** (1) Today's crawl uses no model. It mints screens for layout toggles, skips unnamed controls and stopped at 40 screens, where `/portal-explorer` reads each screen and understands it. The model only picks the next action, so the guarantees that make the crawl repeatable and safe stay in code. (2) b1cb has the better record: 33 PASS in 46 runs, against 2 in 11 for 7a97. (3) A letters-only secret of 8 to 11 characters, echoed in a different case, was leaking. Masking a matching label instead fails safe.
+
+**Result:** (1) The design read is in progress: `.work/llm-crawl-design.md`. Code waits for the follow-up entry. (2) Committed as 606b8507. (3) It is folded into unit error-text-hardening.
+
+**Approved-by:** Umesh (chat 2026-10-29: "hnn surur krro and use ollama models like either glm 5.3 flash or deepseek 4.1 flash latest 1017 snapshot for it"; "b1cb rakho (abhi wala)"; "8 kar do")
+
+**Links:** D-115, D-018, error-text-followups, crawl-record-gaps
+
+**Changes-authorized:** src/autotester/core/redact.py CI_MIN_LETTERS and its tests. The crawl design is a design read only; no ARCHITECTURE.md prose changes and no enforcement path.
