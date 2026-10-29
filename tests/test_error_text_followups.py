@@ -8,6 +8,10 @@ F8  non-ASCII echoes are blanked across Unicode case/normalisation forms (NFC vs
     sharp s, Kelvin sign, full-width forms), not only simple case folding.
 F9  a `.env` secret echoed in another case is masked on the Python side (see also
     `test_redact_case_insensitive.py`).
+H1  a typed value that itself holds U+E000 (private use) is still blanked.
+H2  pretty-printed newlines (and their indentation) between blocks are not a real space.
+H3  a hostile page (50k `<br>`/`<p>`, a 1M+ char message) cannot stall the read: the scan is
+    capped and an excerpt over the cap is masked whole, never leaked.
 
 The real-page tests reuse the Chromium fixture of `test_assertion_error_text.py`. A typed value
 must never appear in the excerpt, so every case asserts the value (or its tell-tale part) is gone.
@@ -15,6 +19,7 @@ must never appear in the excerpt, so every case asserts the value (or its tell-t
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 import pytest
@@ -89,6 +94,82 @@ def test_f6b_real_whitespace_next_to_a_separator_is_not_removed(real_page) -> No
 <div role=alert>Seen <p>Alice </p><p>99</p> here</div>""")
 
     assert joined == "Seen Alice 99 here"  # a genuine space: not the typed value
+
+
+def test_h1_typed_value_holding_a_private_use_char_is_still_blanked(
+        real_page) -> None:  # noqa: F811
+    joined = scrape(real_page, """<input value="Alice\ue00099">
+<div role=alert>No user Alice\ue00099 found</div>""")
+
+    assert joined == "No user [input] found"
+
+
+@pytest.mark.parametrize("echo", [
+    "<p>Alice</p>\n<p>99</p>",
+    "<div>\n    Alice\n  </div>\n  <div>\n    99\n  </div>",
+    "<ul>\n<li>Alice</li>\n<li>99</li>\n</ul>",
+    "Alice\n<br>\n99",
+])
+def test_h2_pretty_printed_newlines_between_blocks_are_not_a_real_space(
+        real_page, echo) -> None:  # noqa: F811
+    joined = scrape(real_page, f"""<input value="Alice99">
+<div role=alert>No user {echo} found</div>""")
+
+    assert joined == "No user [input] found"
+
+
+def test_h2_a_space_without_a_newline_next_to_a_block_is_still_real(real_page) -> None:  # noqa: F811
+    joined = scrape(real_page, """<input value="Alice99">
+<div role=alert>Seen <p>Alice </p>\n<p>99</p> here</div>""")
+
+    assert joined == "Seen Alice 99 here"
+
+
+# -- H3: a hostile page cannot stall the read -----------------------------------------------
+
+BOUND_S = 20  # generous: the capped scan takes well under a second; the old loop took > 50 s
+
+
+def _timed_scrape(page, html: str) -> tuple[str, float]:
+    started = time.monotonic()
+    joined = scrape(page, html)
+    return joined, time.monotonic() - started
+
+
+@pytest.mark.parametrize("unit", ["x<br>", "<p>x</p>"])
+def test_h3_fifty_thousand_separators_are_capped_and_masked_not_leaked(
+        real_page, unit) -> None:  # noqa: F811
+    joined, took = _timed_scrape(real_page, f"""<input value="Alice99">
+<div role=alert>Hi Alice99 {unit * 50_000} Alice<br>99</div><div role=alert>Other alert</div>""")
+
+    assert took < BOUND_S
+    assert "Alice" not in joined and "99" not in joined
+    assert "masked" in joined  # the over-cap excerpt is replaced whole
+
+
+def test_h3_below_the_cap_a_long_message_is_still_scanned_and_blanked(
+        real_page) -> None:  # noqa: F811
+    joined, took = _timed_scrape(real_page, f"""<input value="Alice99">
+<div role=alert>Alice<br>99 end{"<br>a" * 3_000}</div>""")
+
+    assert took < BOUND_S  # the output is cut to 200 chars, so the typed part comes first
+    assert joined.startswith("[input] end a a a") and "masked" not in joined
+
+
+def test_h3_many_alerts_share_one_run_budget(real_page) -> None:  # noqa: F811
+    alerts = "".join(f"<div role=alert>Alice99 {'x<br>' * 3_000}</div>" for _ in range(30))
+    joined, took = _timed_scrape(real_page, f'<input value="Alice99">{alerts}')
+
+    assert took < BOUND_S
+    assert "Alice" not in joined and "99" not in joined
+
+
+def test_h3_an_oversized_message_is_masked_whole(real_page) -> None:  # noqa: F811
+    joined, took = _timed_scrape(real_page, f"""<input value="Zq7secret">
+<div role=alert>{"filler " * 200_000} Zq7secret</div>""")
+
+    assert took < BOUND_S
+    assert "Zq7" not in joined and "filler" not in joined and "masked" in joined
 
 
 # -- F7: long typed values -------------------------------------------------------------

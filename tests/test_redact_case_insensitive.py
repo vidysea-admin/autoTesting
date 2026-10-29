@@ -2,9 +2,9 @@
 `run-error-text-evidence` F9: a secret `pass word 9` printed as `PASS WORD 9` stayed visible).
 
 The case-insensitive pass is guarded so it never masks ordinary words: it applies only to a
-value of at least `CI_MIN_LEN` characters that holds a non-letter, or `CI_MIN_LETTERS` letters
-when it is letters only. Exact-case masking is unchanged and still floorless. Synthetic fake
-secrets only.
+value of at least `CI_MIN_LEN` characters that holds a non-letter, or `CI_MIN_LETTERS` (8, Umesh
+2026-10-29; it was 12) letters when it is letters only. Exact-case masking is unchanged and
+still floorless. Synthetic fake secrets only.
 """
 
 from __future__ import annotations
@@ -40,11 +40,18 @@ def test_short_secret_stays_exact_case_only_so_ordinary_words_survive() -> None:
     assert Redactor({"K": "admin12"}).scrub("ADMIN12 admin12") == f"ADMIN12 {MASK}:K"
 
 
-def test_letters_only_secret_needs_a_long_value_before_case_is_ignored() -> None:
-    assert Redactor({"K": "password"}).scrub("Password PASSWORD") == "Password PASSWORD"
-    out = Redactor({"K": "correcthorse"}).scrub("say CorrectHorse now")
+def test_letters_only_secret_of_eight_or_more_is_masked_in_another_case() -> None:
+    for secret, echo in [("sunshine", "bad SUNSHINE here"), ("mypassword", "got MyPassword now"),
+                         ("password", "Password PASSWORD"), ("correcthorse", "say CorrectHorse")]:
+        out = Redactor({"K": secret}).scrub(echo)
 
-    assert "orrect" not in out and MASK in out
+        assert secret[:5] not in out.lower() and MASK in out
+
+
+def test_letters_only_secret_under_eight_keeps_exact_case_only() -> None:
+    red = Redactor({"K": "welcome"})  # 7 letters: an ordinary word, so a case variant survives
+
+    assert red.scrub("Welcome WELCOME welcome") == f"Welcome WELCOME {MASK}:K"
 
 
 def test_exact_case_masking_is_unchanged_and_floorless() -> None:
