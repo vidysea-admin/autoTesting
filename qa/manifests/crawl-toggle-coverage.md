@@ -6,7 +6,7 @@ A-W1/W2, B-W1/W2/W4 (`qa/verdicts/crawl-record-gaps.md`, `.b.md`).
 `qa/contracts/core-invariants.md` C1, C3.
 **Branch:** `fix/crawl-record-gaps` (worktree `.claude/worktrees/crawl-gaps`)
 **Date:** 2026-10-29
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Status:** ready-for-check
 **Dual check:** no
 **Not changed (as instructed):** `core/urls.py` templating. No real crawl; whole suite not run.
@@ -74,6 +74,16 @@ A-W1/W2, B-W1/W2/W4 (`qa/verdicts/crawl-record-gaps.md`, `.b.md`).
 8. `tests/test_explore_replay.py::_FakeRuntime` gained `revealed_by = {}` (the attribute `perform` now
    reads; every real `ExploreRuntime` has it). `explore_node.py` 297 lines, `explore_replay.py` 228,
    `explore_return.py` 191.
+
+## Cycle 2 (checker A cycle 1 FAIL: `qa/verdicts/crawl-toggle-coverage.md`, 95318047)
+
+9. **A-1: `tests/test_explore_replay.py` is back to 300 lines.** The cycle 1 `revealed_by` line in
+   `_FakeRuntime` had pushed it to 301 (doctor file-too-long). `self.edges = 0` / `self.issues = 0`
+   became `self.edges = self.issues = 0`; behaviour is identical. Cycle 1's "doctor shows only
+   SNAPSHOT stale" claim was wrong at that head and is corrected by the output below.
+   `uv run autotester doctor` now, after filtering the advisory `decision-citation-*` rows:
+   `stale-generated: docs/SNAPSHOT.md`, `stale-committed: docs/SNAPSHOT.md`, `2 violation(s)`. No
+   file-length row. Those two are the generated snapshot, which this branch does not regenerate.
 
 ## Files changed
 

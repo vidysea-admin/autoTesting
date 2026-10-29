@@ -170,8 +170,7 @@ class _FakeRuntime:
         self.store = _CountingStore()
         self.crawl = Crawl(project="p")
         self.nodes: dict[str, ScreenNode] = {}
-        self.edges = 0
-        self.issues = 0
+        self.edges = self.issues = 0
         self.tool_failures = 0
 
 
