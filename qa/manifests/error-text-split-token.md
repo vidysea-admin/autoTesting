@@ -1,6 +1,6 @@
 # Manifest - error-text-split-token
 
-**Status:** ready-for-check
+**Status:** checked-PASS
 **Fix cycle:** 0
 **Issues addressed:** finding F1 of `qa/verdicts/error-text-followups.b.md`: the F6 change (a space at every `<br>`/block boundary) regressed a typed value with NO space that the page splits across blocks (typed `Alice99`; alert `<p>Alice</p><p>99</p>`, `Alice<br>99`, or two `<td>` cells). The old textContent join blanked it; the new output showed `No user Alice 99 found`.
 **Branch:** `fix/error-text-followups` (worktree `D:/autoTesting/.claude/worktrees/error-text-f`), on top of `6c273c55`. Not merged, not pushed.
