@@ -229,6 +229,30 @@ MPI1 and the canary sweep in MP9 are the guard, and T-209 and T-213 get a dual c
 by writing scenarios from its findings; the contamination rule (MP30, MPI2) labels and excludes any such scenario.
 (3) Seven parallel oracle units share one RAM budget and one registry contract; a registry change is a T-211 change.
 
+## Mongo-store build units (U1-U12, G1) — AutoTester state in one Mongo database (D-120, D-121, D-122, 2026-10-29)
+
+Contract: `qa/contracts/mongo-store.md` (M1-M48; criteria are the authority, this table only orders the work). Design read:
+`.work/mongo-store-design.md`. Unit ids are registered in `.goal/goal.json` at build time. **Dual** = two independent fresh checkers.
+
+| unit | what | tier | depends on | gate |
+|---|---|---|---|---|
+| U1 | `schema/store_config.py`, `store/mongo_guard.py`, fake client, fence tests (M1-M12) | CRITICAL, dual | — | none |
+| U2 | `store/filestore.py` Protocol + `FileBackend` (M13-M15, M17) | M | — | none |
+| U3a-c | bypass sweep onto the store seam, doctor rule (M16) | M | U2 | none |
+| U4 | `store/mongo_backend.py`, `store/mongo_routes.py` (M15, M17-M22) | CRITICAL, dual | U1, U2 | none |
+| U5a-b | `store/blobs.py` GridFS, write-through, `materialize` (M23-M25) | L | U1, U2 (U5b: U3, U5a) | none |
+| U6a-c | `auth/store.py`, `store_sqlite.py`, `store_mongo.py`, video tables (M29, M30) | CRITICAL, dual (U6a, U6b) | U0 (U6b: U1, U4, U6a) | none |
+| U7 | claims, CAS, run-queue `rev` (M19, M20) | CRITICAL, dual | U3c, U4 | none |
+| U9 | area routing, startup ping, 503, readiness (M26, M27) | L | U4 | none |
+| **U11** | **credential store**: sealed `secrets`, HKDF from `AUTOTESTER_APPROVAL_KEY` (M31-M37, M46) | **CRITICAL, dual** | U1, U3b, U4, U9 | a new module beyond D-122's list needs a D-entry |
+| **U12** | **browser session store**: sealed `storage_state` per role account (M38-M40) | **CRITICAL, dual** | U11 | none |
+| U8 | `cli_store.py` migrate/verify (M41-M46) | CRITICAL, dual | U4, U5a, U6b, U7, U11 | none |
+| U10 | DEPLOY.md, entrypoint, ARCHITECTURE/CLAUDE.md prose, C5/C6 amendment (M28, M48) | L | U9, U11, U12 | none |
+| G1 | first `migrate --apply` and each area flip | — | U8, U9, U10 | **HUMAN_GATE** (Umesh) |
+
+Waves: W1 U1, U2, U6a · W2 U3a-c, U4, U5a, U6b · W3 U5b, U6c, U7, U9 · W4 U11 then U12 · W5 U8, U10 · W6 G1. Cloud Run stays
+`--max-instances 1` until U7 is switched on.
+
 ## Persona walk rule
 
 Required when a unit adds or changes a screen, a navigation path or a user-facing flow, or touches
