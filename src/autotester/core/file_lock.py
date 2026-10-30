@@ -1,7 +1,8 @@
 """One job: a cross-process advisory file lock (`msvcrt.locking` on Windows, `flock` elsewhere).
 
 Shared by the env editor and the scheduler's append-only record files, so two OS processes
-serialise their read-modify-write on the same sidecar inode.
+serialise their read-modify-write on the same sidecar inode. `atomic_write` is its companion:
+the temp-file + `os.replace` write the state store's `FileBackend` uses.
 """
 
 from __future__ import annotations
@@ -9,9 +10,24 @@ from __future__ import annotations
 import contextlib
 import math
 import os
+import tempfile
 import time
 from collections.abc import Iterator
 from pathlib import Path
+
+
+def atomic_write(path: Path, text: str | bytes) -> None:
+    """Replace `path` with `text` atomically: a reader sees the old file or the new one."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=".tmp-", suffix=path.suffix)
+    try:
+        mode, options = ("wb", {}) if isinstance(text, bytes) else ("w", {"encoding": "utf-8"})
+        with os.fdopen(fd, mode, **options) as handle:
+            handle.write(text)
+        os.replace(tmp_name, path)
+    except BaseException:
+        Path(tmp_name).unlink(missing_ok=True)
+        raise
 
 
 @contextlib.contextmanager
