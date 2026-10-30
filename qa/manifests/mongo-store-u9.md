@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u9
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, qa/verdicts/mongo-store-u9.md)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U9. **Criticality:** normal (U9 row has no dual mark; it touches the fail-closed path M26, so the checker may choose to dual it).
 **Authority:** D-120, D-122, D-123. No `src/` module was added (D-122 list untouched); every edit is in place.
@@ -25,7 +25,7 @@ Cycle 1 verify (same rules, two files per call, `env -u ANTHROPIC_BASE_URL`):
 
 ```
 pytest tests/test_store_startup_u9.py tests/test_store_outage_u9.py       -> 26 passed
-pytest tests/test_store_startup_u9.py tests/test_state_selection.py       -> 52 passed (incl. M13 cold-start no-pymongo)
+pytest tests/test_store_startup_u9.py tests/test_state_selection.py       -> 38 passed (12 + 26; corrected at close-out per checker) (incl. M13 cold-start no-pymongo)
 pytest tests/test_ui_healthz.py tests/test_ui_error_pages.py              -> 18 passed
 pytest tests/test_ui_error_page_headers.py tests/test_mongo_guard_scan.py -> 35 passed
 pytest tests/test_state_sweep_u3b.py tests/test_state_wrappers.py         -> 90 passed
