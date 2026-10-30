@@ -46,7 +46,7 @@
 | `browser/locator_derive.py` | Derive the most meaningful locator for an element that is on screen right now. |
 | `browser/locators.py` | Semantic locators: the target grammar and the session's one place that resolves it. |
 | `browser/observe.py` | Passive observation: enumerate a page's controls, capture console/network |
-| `browser/profiles.py` | Establish a logged-out entry profile before any browser opens. |
+| `browser/profiles.py` | A browser's persistent state: the wiped entry profile (RU5) and a role account's saved login. |
 | `browser/role_probe.py` | Page-level reads and viewport sweeps for the multi-role port (MP11, MP25, MP26). |
 | `browser/secrets.py` | The credential boundary. Secret values live here and nowhere else. |
 | `browser/session.py` | One owned visible browser: scoped secrets, masked evidence and bounded actions (B5-B9). |

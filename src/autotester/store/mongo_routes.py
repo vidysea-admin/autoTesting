@@ -187,13 +187,15 @@ def under(directory: str) -> list[tuple[str, str]]:
 
 
 def repo_redactor(extra: dict[str, str] | None = None) -> Redactor:
-    """A `Redactor` over every non-empty repo `.env` value, every stored credential (U11, M8), the
-    live Mongo URI and `extra`."""
+    """A `Redactor` over every non-empty repo `.env` value, every stored credential (U11, M8), every
+    stored browser session value (U12, M40), the live Mongo URI and `extra`."""
     path = repo_root() / ".env"
     values = {k: v for k, v in read_dotenv(path).items() if k and v} if path.is_file() else {}
     uri = mongo_uri()
-    return Redactor({**redaction_values(values), **({MONGO_URI_ENV: uri} if uri else {}),
-                     **(extra or {})})
+    from autotester.browser.profiles import stored_session_values  # lazy: it imports core.env
+
+    return Redactor({**redaction_values(values), **stored_session_values(),
+                     **({MONGO_URI_ENV: uri} if uri else {}), **(extra or {})})
 
 
 def text_sha(text: str) -> str:
