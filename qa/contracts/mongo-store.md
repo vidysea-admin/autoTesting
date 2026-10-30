@@ -1,6 +1,6 @@
 # Contract — mongo-store: AutoTester's own state in one MongoDB database, with credentials and browser sessions stored plain behind the IP allowlist and write fence (D-120, D-121, D-122, D-123)
 
-**Covers:** the units U1-U12 of the mongo-store build (table below). Criteria `M1`-`M48`. **Owner:** /checker. **Status:** ACTIVE (2026-10-29).
+**Covers:** the units U1-U12 of the mongo-store build (table below). Criteria `M1`-`M55` (M49-M55 added 2026-10-31). **Owner:** /checker. **Status:** ACTIVE (2026-10-29).
 Creation is human-approved: Umesh, D-120 (state moves to one Mongo database `autotester`), D-121 (name in a committed config file), D-122
 (supersedes the D-002 storage clause; allowlist-of-one fence; credentials and Chromium sessions move into the store) and D-123 (2026-10-29: stored without application-level encryption).
 **Criticality:** HIGH overall. Criteria marked **CRITICAL** are judged by a **dual check** (two independent fresh checkers, D-100); the
@@ -112,8 +112,8 @@ The Mongo user can write to databases other than `autotester` (design F2). The c
   round-trip case, or a backend that fails any case. *LOCAL.* serves: O12 · judges: U2, U4
 - **M16 — No raw filesystem on state paths.** A doctor rule fails on `open(...,"w")`, `write_text`, `write_bytes`, `os.replace`, `shutil.*`,
   `unlink`, `glob`, `iterdir`, `.exists()`, `.stat()` applied to a path built by `ProjectPaths`, `team_path` or `repo_root()/".work"` outside
-  `store/`, `browser/` scratch and an explicit allow-listed scratch set. The bypass sites of design 3.3 are moved first (U3a-U3c).
-  **Falsifier:** reintroduce `Path.write_text` on a `ProjectPaths` path in `stages/`; `autotester doctor` stays green. *LOCAL.* serves: O12 · judges: U3a, U3b, U3c
+  `store/`, `browser/` scratch and an explicit allow-listed scratch set. The bypass sites of design 3.3 are moved first (U3a-U3c); the remainder is U3d (M49, M50) and the rows that need path-level primitives wait on M53 (M16 stays OPEN until both are gone).
+  **Falsifier:** reintroduce `Path.write_text` on a `ProjectPaths` path in `stages/`; `autotester doctor` stays green. *LOCAL.* serves: O12 · judges: U3a, U3b, U3c, U3d
 - **M17 — Keys are safe.** A key containing `..`, an absolute path or a drive letter raises `UnsafeName` before any I/O on every backend.
   **Falsifier:** `put("../x")`, `put("C:/x")`, `put("/x")` reach a backend. *LOCAL.* serves: O7 · judges: U2, U4
 - **M18 — Encoding.** Bodies are JSON-mode (datetimes as the same ISO strings the files hold). A body with a `.` or `$`-leading key is stored as
@@ -252,6 +252,87 @@ export/restore of a Playwright `storage_state` (cookies plus origin `localStorag
   **Falsifier:** a restored cookie value in a trace line or exception text survives `Redactor.scrub`; a failure bundle built from a run on a
   restored session contains the value. *LOCAL.* serves: O7, O3 · CRITICAL · judges: U12
 
+## State-bypass remainder, flip preconditions, path-level primitives (amendment 2026-10-31)
+
+Source: checker verdicts `qa/verdicts/mongo-store-u3a.md`, `mongo-store-u3c.md`, `mongo-store-u5a.md` and the inbox entries of 2026-10-30/31 folded here.
+Additions only; no criterion above is changed in meaning. Baseline counts are those on master `b17cf876` in `pyproject.toml`
+`[tool.autotester.doctor.state-bypass]` (112 `baseline` rows: U3d 62, U7 20, U3b 14, UNOWNED 10, U11 6; 4 `permanent`). Paths below are under `src/autotester/`.
+
+- **M49 — M16 remainder closed by U3d, every row owned.** U3d removes the `U3d`-tagged baseline rows (`stages/`, `sources/`) plus the two
+  `providers/config_migration.py::_payload:exists` rows by routing each site through the public path API that U4 adds (`exists_path`,
+  `list_children`, `mtime_path`, `append_path`, `delete_path`) and the list-of-model read sites through the store. Two exceptions: (i) the
+  media-byte rows go to U5b (M51); (ii) a row that needs a primitive the path API does not have (the O_EXCL lock `intake_commit.intake_lock`
+  `os.open`/`os.utime`/`unlink`, `os.replace`, `mkdir`/`rmdir`/`rmtree` pairs; about 17 of the 62, the checker re-derives the count)
+  is re-tagged `M53-gated` with a one-line reason and stays in the baseline; it is not hidden and not moved to `permanent`. About 45 rows are
+  movable now. Also: `stages/real_acceptance.py` (about `:166`) is reverted to a raw `write_text` because `scripts/run_real_acceptance.py:112`
+  passes the repo root, so the files are checked-in evidence under `qa/evidence/t169-real/`, not run state (via `filestore` `area_of` they
+  would route to `projects` and a Mongo run could swallow them); it gets a LEFT row in `tests/test_sweep_u3a.py` and a `permanent` row in the
+  rule. Owners of the 10 `UNOWNED` rows (checker assignment, U3c verdict finding 3): `ui/app.py::_guard_intake` and
+  `ui/routes_settings.py::_present_keys` `.env` presence checks -> U11 (M35); `core/image_privacy.py::_sanitize_one` stat -> U5b (M24);
+  `core/paths.py` `ProjectPaths.ensure` and `work_dir` mkdir -> U9; `providers/config_migration.py::_payload` x2 -> U3d;
+  `providers/vision_probe.py` stat and the two upload-staging `rmtree` rows -> `permanent` (not state). Behaviour with the store unset is
+  unchanged. M16 is **not** closed by U3d alone: it closes only when the U3d, U5b-media and U7 rows are all gone. **Falsifier:** (a) after U3d PASS
+  the baseline holds a `U3d` or `UNOWNED` row owned by U3d, a state path moved to `permanent`, or an `M53-gated` row with no reason;
+  (b) with `runs`/`projects`/`crawls` routed to the fake Mongo backend, an intake/sweep workload creates, changes or deletes a file under the
+  data root state paths (tree hash before equals after); (c) `stages/real_acceptance.py` writes through `filestore` or its LEFT/`permanent`
+  rows are absent; (d) the baseline grows by a row with no owner tag. *LOCAL.* serves: O12 · judges: U3d
+- **M50 — Rule recall (doctor).** `check_state_bypass` also flags: a state root built from `work_dir()` (`work_dir()/..`, `work_dir(...)`,
+  used today by `sources/drive_intake.py`, `sources/drive_jobs.py`, `sources/intake_commit.py`, `stages/bench_inputs.py`,
+  `providers/gemini.py`); a verb reached through `getattr(path, "write_text")` or a bound-method alias (`w = p.write_text; w(...)`);
+  `is_file()`, `is_dir()`, `read_text()`, `read_bytes()` as existence/read verbs; and the verbs the LEFT pin cannot see (`Path.replace`,
+  `.touch()`, `os.remove`, `Path.unlink`, `shutil.rmtree`) in the modules covered only by the pin (`stages/real_acceptance.py`,
+  `stages/portal_persona.py`, `stages/acceptance_baseline.py`). The fix is in the rule's current home (an existing module); a new home needs a
+  D-entry (M53). A site newly surfaced by the wider rule is added to the baseline only with an owner tag and listed in the manifest.
+  **Falsifier:** plant each form above in a scratch module under `src/`; `autotester doctor` stays green; or the checker's adversarial set from
+  the U3c verdict (30 cases, 26 flagged) is re-run and any case is still missed; or the mutation harness (`mutation_repo`) shows a mutant
+  that drops one of the new forms leaves the rule tests green. *LOCAL.* serves: O12 · judges: U3d
+- **M51 — Source-media writers have an owner: U5b.** The writers of ingested source media had no owner in the first unit table (U5b listed
+  only screenshot/video/crawl shot/frames): `sources/intake_commit.py` (`_copy_in`, `_place`, media at about `:128`),
+  `sources/drive_register.py::_write_bytes` (about `:196`), `sources/email_register.py::_write_attachment_to_disk` (about `:218`). Owner **U5b**,
+  because the payload is bytes, which is the `BlobStore` job (`put` with `sha256`/`kind`, M23; readers through `materialize`, M24), not the
+  path-API job U3d does; routing media through a path write would only copy it to a container disk. The media-byte baseline rows
+  (`write_bytes` and the media `os.replace`) are re-tagged `U5b` (tag change only); every other operation in those modules (lock, mkdir,
+  exists, rmtree, sweep) stays U3d. The three modules are edited by U3d first, then U5b (same file, one owner at a time). After U5b: committing a
+  video, registering a drive file and storing an email attachment on a blob-backed area leaves the bytes in GridFS and the `Source` record
+  reference readable through `materialize`; nothing is left under the data root. Source media is original, not derived, so it is outside the M25
+  "derived chunks" exclusion. Whether very large source video should stay file-only for cost is Umesh's call (a D-entry); until then it moves,
+  and a decision to keep it file-only amends this row. **Falsifier:** after an intake commit, a drive register and an email attachment on the
+  fake blob backend a media file exists under the data root; a stored `Source` reference does not `materialize`; the three media rows are still in
+  the baseline after U5b PASS; or any unit-table row set leaves these three writers without an owner. *LOCAL.* serves: O3, O12 · judges: U5b
+- **M52 — READ-SIDE flip preconditions (no area flips with a raw read left).** `AUTOTESTER_STORE=mongo` is already selectable on master
+  (`store/filestore.py:146-153`), so these are live blockers. No area is flipped to `mongo` at G1 until, **for that area**, every read site below is
+  routed through the store and its U3d/U7 baseline rows are gone. READ-SIDE list (keyed by function; line numbers drift, the checker re-derives them):
+  `core/trace.py` `:143`, `:158`; `stages/orchestrate_checkpoint.py` `:173` (the M20 stale-instance identity check, `_digest`), `:206`
+  (`_load`); `stages/schedule_store.py` `:119` (`read_records`, `path.is_file()`), `:124`, `:171-197` (`_restore_stage` manifest read and the purge
+  reads), and the heartbeat read (about `:253`) if still raw; `delivery/inbox.py` `:114`; plus every `U3d` and `U7` row of the modules in that area.
+  The U9/U10 manifest carries a per-area readiness table (area, remaining baseline rows, remaining READ-SIDE sites); G1 flips only an area whose
+  row is empty. **Falsifier:** with the area routed to the fake Mongo backend a write-then-read workload (a) creates or reads a file under the data
+  root state paths, (b) lets the `orchestrate_checkpoint` stale-instance refusal pass with a stale identity (M20), (c) reads a heartbeat or
+  claim as absent after it was written, or (d) a G1 area-flip approval exists while the readiness row for that area lists a remaining site.
+  *LOCAL.* serves: O4, O12 · CRITICAL · judges: U3d, U7, U9
+- **M53 — U7 path-level primitives: placement is a human gate; nothing is invented.** U7's 20 rows (`delivery/inbox.py::_create_once` x4,
+  `stages/schedule_store.py` claim x2, `stages/orchestrate_checkpoint.py` `_digest`/`_load` x2, `_purge_locked` x6, `_recover_stages` x1,
+  `_restore_stage` x5) and the `M53-gated` rows of M49 need path-level `create_exclusive`, `put_if`, raw text read, rename and delete-tree.
+  The public path API has none, and `store/filestore.py` is at its 300-line cap. Hosting them needs a new module or a split of `filestore.py`; the
+  U3c maker proposed `ledger/state_bypass.py` (rule home) and `store/mongo_bucket.py`. **Neither is in D-122's list, so each needs a new
+  authorizing D-entry from Umesh first** (see the "Module note" under the credential store; Lab Protocol); this contract names no file and the
+  maker creates none. Until the D-entry is appended, U7 is a HUMAN_GATE and is not dispatched. When the primitives exist they satisfy M17 (unsafe
+  keys), M19 (one winner among 16 concurrent callers) and M20 (stale `expect_sha` writes nothing) at **path level on all three backends**, and are
+  the only way the `M53-gated`/U7 rows are removed. **Falsifier:** a path-level primitive or a new module under `src/` appears with no D-entry cited
+  in the manifest; the 300-line cap or the doctor line rule is raised or exempted to fit it; a U7 or `M53-gated` row is moved to `permanent`
+  instead of removed; or U7 is claimed PASS while any of the 20 rows remains. *LOCAL.* serves: O12 · CRITICAL · judges: U7
+- **M54 — Blob body scan is a deny-list (U5a W1; M8 defence in depth).** The `Redactor` body scan in `store/blobs.py` runs on every blob body
+  except the known-binary types (`image/*`, `video/*`, `audio/*`, `application/octet-stream`, `application/pdf`, `application/zip`), and
+  also whenever the bytes decode as UTF-8, whatever the declared type. A body holding a secret value is refused with the named error and nothing is
+  written (M8). **Falsifier:** plant a known credential value in bodies typed `application/ndjson`, `application/jsonl`, `application/sql`,
+  `application/toml`, `application/x-sh`, `text/csv`, `multipart/form-data`, `message/rfc822`, `application/rtf`, empty content-type and bare
+  `text`; any is stored. A failure here is a Block against M8 at its next dual check. *LOCAL.* serves: O7 · judges: U5b
+- **M55 — Windows-hostile blob and cache names (U5a I1/I2; M25).** `FileBlobStore` and `.work/blob-cache/` reject with the named `UnsafeName`
+  (M17 class), before any I/O, a key segment that is an NTFS 8.3 short name (`PROFIL~1`), carries an alternate-stream or index suffix
+  (`::$INDEX_ALLOCATION`, `name:stream`), contains a colon, or is a reserved device name (`nul`, `con`, `aux`, `prn`, `com1`, `lpt1`); no raw
+  `OSError` escapes and nothing is written outside the cache directory. **Falsifier:** `put`/`materialize` of `PROFIL~1/x`, `a::$INDEX_ALLOCATION`,
+  `foo:bar` or `nul` raises a bare `OSError` or touches a path outside `.work/blob-cache/`. *LOCAL.* serves: O7 · judges: U5b
+
 ## Migration
 
 Tool: `autotester store migrate [--area A] [--project SLUG] [--apply] [--include-sessions]` and `autotester store verify` (`cli_store.py`).
@@ -308,21 +389,22 @@ beyond the D-122 list is a STOP, not a decision for the maker.
 | U3a | E bypass sweep, stages and sources | M16 | U2 | |
 | U3b | E bypass sweep, listings and stat (`core/env.py`, `credential_guard`, `schedule_wiring`, `project_view`) | M16 | U2 | |
 | U3c | E bypass sweep, trace, checkpoint (`put_if`), audit, delivery inbox, schedule store; doctor rule | M16 | U2 | |
+| U3d | E bypass sweep remainder in `stages/`, `sources/`, `providers/config_migration`: the 62 `U3d` baseline rows (minus media-byte rows, M51) and the 2 `config_migration` rows, through U4's `exists_path`/`list_children`/`mtime_path`/`append_path`/`delete_path`; rows needing a primitive the path API lacks are re-tagged `M53-gated`; rule recall (`work_dir()` root, alias, `is_file`/`is_dir`/`read_text`, LEFT-pin verbs); `real_acceptance.py` back to raw write with LEFT + `permanent` rows | M16, M49, M50 | U3c, U4 | |
 | U4 | N `store/mongo_backend.py`, `store/mongo_routes.py` | M2, M5-M8, M11, M15, M17-M19, M21, M22 | U1, U2 | **dual** |
 | U5a | N `store/blobs.py` (`BlobStore`, GridFS, `materialize`) | M2, M5, M8, M23, M25 | U1, U2 | |
-| U5b | E write-through at screenshot/video/crawl shot/frames, `sync_run_blobs`, read sites via `materialize` | M24, M25 | U3a-c, U5a | |
+| U5b | E write-through at screenshot/video/crawl shot/frames, `sync_run_blobs`, read sites via `materialize`; **source-media byte writers** (M51: `sources/intake_commit.py`, `drive_register.py`, `email_register.py`); `core/image_privacy.py` stat; blob body scan deny-list (M54); blob/cache key names (M55) | M24, M25, M51, M54, M55 | U3a-d, U5a | |
 | U6a | N `auth/store.py`, `auth/store_sqlite.py` (SQL moved verbatim) | M29, M30 | U0 | **dual** (security backbone) |
 | U6b | N `auth/store_mongo.py` (users, groups, sessions, grants; first-admin, last-admin) | M29, M30 | U1, U4, U6a | **dual** |
 | U6c | E Mongo video shares/links/requests/comments, `schedule_owner`, `intake_gate_auth`, audit rows | M30 | U6b | |
-| U7 | E coordination on Mongo: `create_exclusive`, `put_if`, purge as `delete_many`, run-queue `rev` | M19, M20 | U3c, U4 | **dual** |
+| U7 | E coordination on Mongo: `create_exclusive`, `put_if`, purge as `delete_many`, run-queue `rev`; owns the READ-SIDE list (M52). **HUMAN_GATE until Umesh's D-entry authorises the module that hosts the path-level primitives (M53); not dispatched before** | M19, M20, M52, M53 | U3c, U4, D-entry (M53) | **dual** |
 | U9 | E area routing, startup ping, `StoreUnavailable` to 503, readiness field, `core/env.py::mongo_uri` | M9, M11, M13, M26, M27 | U4 | |
 | **U11** | **Credential store**: `secrets` (plain, D-123; no crypto module, no key derivation, no new dependency), resolve order, redactor union, UI routes (`ui/routes_role_accounts.py`, env editor), lifecycle; existing module homes only unless a D-entry adds one | M8, M31-M37, M46, M47 | U1, U3b, U4, U9 | **dual (CRITICAL)** |
 | **U12** | **Session store**: `storage_state` export/restore per role account, `browser_sessions` (plain, D-123), scoping, RU5-safe restore | M38-M40 | U11 | **dual (CRITICAL)** |
 | U8 | N `cli_store.py` migrate and verify, auth importer, approvals verbatim, credential importer | M9, M25, M36, M41-M46 | U4, U5a, U6b, U7, U11 | **dual** |
 | U10 | E `docker/DEPLOY.md`, `docker/entrypoint.sh`; `docs/ARCHITECTURE.md`, `CLAUDE.md` Credentials prose, `core-invariants.md` C5/C6 (checker amendment) | M28, M48 | U9, U11, U12 | |
-| G1 | **HUMAN_GATE**: Umesh runs or approves the exact first `migrate --apply` and each area flip | SERVER-GATED | U8, U9, U10 | gate |
+| G1 | **HUMAN_GATE**: Umesh runs or approves the exact first `migrate --apply` and each area flip; an area flips only with an empty readiness row (M52) | SERVER-GATED | U8, U9, U10, U3d, U7 | gate |
 
-Waves: W0 = U0. W1 = U1, U2, U6a in parallel (disjoint files). W2 = U3a, U3b, U3c, U4, U5a, U6b in parallel. W3 = U5b, U6c, U7, U9. W4 = U11,
+Waves: W0 = U0. W1 = U1, U2, U6a in parallel (disjoint files). W2 = U3a, U3b, U3c, U4, U5a, U6b in parallel. W3 = U3d (after U4), U5b (the three source modules only after U3d), U6c, U7 (held on the M53 D-entry), U9. W4 = U11,
 then U12. W5 = U8, U10. W6 = G1. G1 flip order (each reversible by flipping back until data diverges): settings/prefs/audit, projects, runs +
 crawls + KG, approvals (verify intact), auth, credentials and browser sessions (after U11/U12 PASS), blobs, queue/claims (then lift
 `--max-instances 1`).
@@ -332,6 +414,7 @@ while the rest of the run is in Mongo (M16). U11 follows U3b because credential 
 
 ## Not criteria (recorded so nobody adds them silently)
 
+- Whether very large source video (M51) should stay file-only for cost is Umesh's call; M51 assumes it moves until a D-entry says otherwise.
 - A server-side Mongo role limited to `readWrite` on `autotester` (Q10): recommended follow-up, Umesh's call. Until then the code fence is the only fence.
 - Rotation of `AUTOTESTER_APPROVAL_KEY`: it no longer touches credentials or sessions (D-123 removed the derived key); it still governs approval signing (D-018). No re-seal tool exists or is wanted.
 - Residual risk accepted by Umesh (D-123, 2026-10-29): anyone who can read the `autotester` database or its backups can read login values and session cookies in plain text. Protection is the server IP allowlist, the write fence (M1-M12), the M10 refusal and the redaction rules. Umesh may revisit; reviving encryption needs a new D-entry.
@@ -348,3 +431,10 @@ while the rest of the run is in Mongo (M16). U11 follows U3b because credential 
   M8, M31 (now "Plain at rest, in one place"), M32 (now "No key dependency; fails closed on an unreachable store"),
   M33, M34, M35, M37, M38, M46, M47, the U11 and U12 unit rows and the "Not criteria" rotation line. Kept unchanged: M36, M39, M40, M41-M45, M48, the dual
   check on every CRITICAL row, every access, scoping, redaction and RU5-safe-restore rule. Residual risk recorded under "Not criteria".
+- 2026-10-31 · amended by /checker (chk-mongo-amend-u3d), additions only, folding the inbox entries of 2026-10-30/31 on mongo-store U3a, U5a and
+  U3c. Added M49-M55 and unit U3d; edited in place only by appending to: the header criteria range, M16 (pointer to U3d/M53, `judges: ... U3d`),
+  the U5b row (scope, criteria, deps), the U7 row (HUMAN_GATE on the M53 D-entry, criteria M52/M53), the G1 row (deps U3d, U7; readiness rule), wave W3
+  and "Not criteria". (1) U3d row and M49/M50 (62 baseline rows, rule recall, `real_acceptance` revert, UNOWNED owners). (2) Source-media writers owned
+  by U5b (M51). (3) READ-SIDE flip blockers as a G1 precondition (M52, with `stages/schedule_store.py:119` and `:171-197` added). (4) U7 path-level
+  primitives need a human D-entry for placement (M53); no file named or created. Also from U5a: blob body scan deny-list (M54) and Windows blob names
+  (M55). No criterion above was weakened or removed.
