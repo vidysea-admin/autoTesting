@@ -1,0 +1,25 @@
+{
+ "tests": [
+  "tests/test_mongo_guard_chain.py"
+ ],
+ "mutations": [
+  {
+   "name": "e1: find returns the lazy cursor untranslated",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "return [*_translate(lambda: list(_REGISTRY[self].find(dict(filter or {}), **kwargs)))]",
+   "new": "return _translate(lambda: _REGISTRY[self].find(dict(filter or {}), **kwargs))",
+   "kills": [
+    "test_a_lazy_cursor_that_dies_mid_iteration_is_translated_and_clean"
+   ]
+  },
+  {
+   "name": "e2: the invalid-URI error is raised inside the except",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "except Exception:\n        pass\n    raise StoreConfigError(\"the store connection string is not a valid mongodb:// URI\")",
+   "new": "except Exception as exc:\n        raise StoreConfigError(\"the store connection string is not a valid mongodb:// URI\") from exc",
+   "kills": [
+    "test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain[notmongo://u:CANARY-p4ssw0rd-9f3a@h/]"
+   ]
+  }
+ ]
+}

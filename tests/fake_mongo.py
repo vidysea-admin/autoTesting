@@ -8,7 +8,10 @@ records each database name asked of it. No socket is ever opened.
 
 from __future__ import annotations
 
+import functools
 import io
+import re
+import threading
 import traceback
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -34,8 +37,18 @@ def _ok(value: Any, cond: Any, present: bool) -> bool:
         "$exists": lambda arg: present == bool(arg), "$gt": lambda arg: value > arg,
         "$gte": lambda arg: value >= arg, "$lt": lambda arg: value < arg,
         "$lte": lambda arg: value <= arg,
+        "$regex": lambda arg: isinstance(value, str) and re.search(arg, value) is not None,
     }
     return all(tests[op](arg) for op, arg in cond.items())
+
+
+def _atomic(method: Callable[..., Any]) -> Callable[..., Any]:
+    """One server-wide lock around a write, like the real server's per-document atomicity."""
+    @functools.wraps(method)
+    def wrapper(self: FakeCollection, *args: Any, **kwargs: Any) -> Any:
+        with self._db.server.lock:
+            return method(self, *args, **kwargs)
+    return wrapper
 
 
 class FakeCollection:
@@ -58,21 +71,34 @@ class FakeCollection:
                     for d in self.docs if d is not skip):
                 raise DuplicateKeyError("E11000 duplicate key index")
 
-    def find(self, flt: dict[str, Any], *, projection: Any = None, sort: Any = None,
-             limit: int = 0) -> list[dict[str, Any]]:
+    def _rows(self, flt: dict[str, Any], sort: Any = None, limit: int = 0) -> list[dict[str, Any]]:
         self._down()
         rows = [dict(d) for d in self.docs if _match(d, flt)]
         for key, direction in reversed(sort or []):
             rows.sort(key=lambda d, k=key: d.get(k), reverse=direction < 0)
         return rows[:limit] if limit else rows
 
+    def find(self, flt: dict[str, Any], *, projection: Any = None, sort: Any = None,
+             limit: int = 0) -> Iterator[dict[str, Any]] | list[dict[str, Any]]:
+        """A list; with `server.cursor_error` set a LAZY cursor that dies mid-iteration."""
+        rows = self._rows(flt, sort, limit)
+        message = self._db.server.cursor_error
+        if message is None:
+            return rows
+
+        def cursor() -> Iterator[dict[str, Any]]:
+            yield from rows[:1]
+            raise AutoReconnect(message)
+        return cursor()
+
     def find_one(self, flt: dict[str, Any]) -> dict[str, Any] | None:
-        rows = self.find(flt, limit=1)
+        rows = self._rows(flt, limit=1)
         return rows[0] if rows else None
 
     def count_documents(self, flt: dict[str, Any]) -> int:
-        return len(self.find(flt))
+        return len(self._rows(flt))
 
+    @_atomic
     def insert_one(self, doc: dict[str, Any]) -> Any:
         self._down()
         doc = dict(doc)
@@ -81,6 +107,7 @@ class FakeCollection:
         self.docs.append(doc)
         return SimpleNamespace(inserted_id=doc["_id"])
 
+    @_atomic
     def replace_one(self, flt: dict[str, Any], doc: dict[str, Any], *, upsert: bool = False) -> Any:
         self._down()
         hit = next((d for d in self.docs if _match(d, flt)), None)
@@ -97,6 +124,7 @@ class FakeCollection:
         hit.update(new)
         return SimpleNamespace(matched_count=1, upserted_id=None)
 
+    @_atomic
     def update_one(self, flt: dict[str, Any], update: dict[str, Any], *,
                    upsert: bool = False) -> Any:
         self._down()
@@ -114,6 +142,7 @@ class FakeCollection:
         return SimpleNamespace(matched_count=0 if inserted else 1,
                                upserted_id=hit.get("_id") if inserted else None)
 
+    @_atomic
     def delete_one(self, flt: dict[str, Any]) -> Any:
         self._down()
         hit = next((d for d in self.docs if _match(d, flt)), None)
@@ -121,6 +150,7 @@ class FakeCollection:
             self.docs.remove(hit)
         return SimpleNamespace(deleted_count=int(hit is not None))
 
+    @_atomic
     def delete_many(self, flt: dict[str, Any]) -> Any:
         self._down()
         gone = [d for d in self.docs if _match(d, flt)]
@@ -160,6 +190,8 @@ class FakeMongoServer:
         self.databases: dict[str, FakeDatabase] = {}
         self.log: list[tuple[str, str]] = []
         self.down, self.down_message = False, down_message
+        self.lock = threading.RLock()
+        self.cursor_error: str | None = None  # set: `find` returns a cursor that fails mid-way
 
     def check_up(self) -> None:
         if self.down:
@@ -202,21 +234,23 @@ class FakeBucket:
 
     def __init__(self, database: FakeDatabase, name: str) -> None:
         self._files = database[f"{name}.files"]
+        self._issued = 0  # ids are never reused, even after a delete (as GridFS ObjectIds)
 
     def upload_from_stream(self, filename: str, data: bytes, *, metadata: dict[str, Any]) -> Any:
-        row = {"_id": f"f{len(self._files.docs)}", "filename": filename, "data": bytes(data),
+        self._issued += 1
+        row = {"_id": f"f{self._issued}", "filename": filename, "data": bytes(data),
                "metadata": metadata}
         self._files.insert_one(row)
         return row["_id"]
 
     def open_download_stream_by_name(self, filename: str, revision: int = -1) -> io.BytesIO:
-        rows = self._files.find({"filename": filename})
+        rows = self._files._rows({"filename": filename})
         if not rows:
             raise NoFile(filename)
         return io.BytesIO(rows[revision]["data"])
 
     def find(self, flt: dict[str, Any]) -> list[FakeGridOut]:
-        return [FakeGridOut(r) for r in self._files.find(flt)]
+        return [FakeGridOut(r) for r in self._files._rows(flt)]
 
     def delete(self, file_id: Any) -> None:
         self._files.delete_one({"_id": file_id})

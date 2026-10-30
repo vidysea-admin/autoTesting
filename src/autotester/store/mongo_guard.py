@@ -65,7 +65,7 @@ def _translate(call: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
     try:
         return call(*args, **kwargs)
     except DuplicateKeyError:
-        verdict = StoreDuplicateKey("duplicate key")
+        verdict: Exception = StoreDuplicateKey("duplicate key")
     except NoFile:
         verdict = StoreNotFound("no such blob")
     except PyMongoError as exc:
@@ -122,7 +122,7 @@ class InsertOnlyCollection:
              sort: Any = None, limit: int = 0) -> list[dict[str, Any]]:
         _check_query([filter or {}, projection or {}])
         kwargs = {k: v for k, v in dict(projection=projection, sort=sort, limit=limit).items() if v}
-        return list(_translate(_REGISTRY[self].find, dict(filter or {}), **kwargs))
+        return [*_translate(lambda: list(_REGISTRY[self].find(dict(filter or {}), **kwargs)))]
 
     def find_one(self, filter: Mapping[str, Any] | None = None) -> dict[str, Any] | None:
         _check_query(filter or {})

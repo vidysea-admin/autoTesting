@@ -1,0 +1,71 @@
+{
+ "tests": [
+  "tests/test_state_wrappers.py",
+  "tests/test_state_selection.py"
+ ],
+ "mutations": [
+  {
+   "name": "d1: exists_path ignores directories",
+   "file": "src/autotester/store/filestore.py",
+   "old": "return any(b.exists(key) or b.is_dir(key) for b in backends)",
+   "new": "return any(b.exists(key) for b in backends)",
+   "kills": [
+    "test_exists_list_children_and_mtime_follow_the_backend[file]"
+   ]
+  },
+  {
+   "name": "d2: a directory is listed from one backend only",
+   "file": "src/autotester/store/filestore.py",
+   "old": "names = {chosen[a] for a in {area_of(key), *(a for _, a in under(key))}}",
+   "new": "names = {chosen[area_of(key)]}",
+   "kills": [
+    "test_a_directory_listing_fans_out_across_the_backends_of_its_areas"
+   ]
+  },
+  {
+   "name": "d3: a path outside the data root is routed as state",
+   "file": "src/autotester/store/filestore.py",
+   "old": "if _rel(path) != key:  # outside the data root: always a plain file",
+   "new": "if False:",
+   "kills": [
+    "test_the_path_functions_on_the_real_file_routing"
+   ]
+  },
+  {
+   "name": "d4: mtime_path is always None",
+   "file": "src/autotester/store/filestore.py",
+   "old": "return path.stat().st_mtime if path.exists() else None",
+   "new": "return None",
+   "kills": [
+    "test_exists_list_children_and_mtime_follow_the_backend[file]"
+   ]
+  },
+  {
+   "name": "d5: an unrouted area may be flipped to mongo",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "if area in UNROUTED and backend not in (\"\", \"file\"):",
+   "new": "if False:",
+   "kills": [
+    "test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[auth]"
+   ]
+  },
+  {
+   "name": "d6: approvals stay in the projects area",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "(\"projects/*/approvals.jsonl\", \"approvals\", \"approvals\"),",
+   "new": "(\"projects/*/approvals.jsonl\", \"approvals\", \"projects\"),",
+   "kills": [
+    "test_the_approvals_and_queue_families_have_an_area_so_they_can_be_flipped"
+   ]
+  },
+  {
+   "name": "d7: mongo without a URI starts silently",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "if not uri:",
+   "new": "if False:",
+   "kills": [
+    "test_mongo_without_a_uri_stops_startup_and_names_the_variable"
+   ]
+  }
+ ]
+}

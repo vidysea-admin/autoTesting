@@ -1,0 +1,86 @@
+{
+ "tests": [
+  "tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte",
+  "tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line",
+  "tests/test_state_backend_contract.py::test_append_text_loses_no_append_among_16_callers",
+  "tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend",
+  "tests/test_state_wrappers.py::test_append_path_and_delete_path_refuse_a_path_that_leaves_the_root",
+  "tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document",
+  "tests/test_mongo_guard_chain.py::test_a_fake_bucket_never_reuses_a_file_id_after_a_delete",
+  "tests/test_mongo_backend_fence.py::test_a_document_append_that_loses_the_compare_and_set_retries_and_keeps_both"
+ ],
+ "mutations": [
+  {
+   "name": "f1: FileBackend.append_text truncates instead of appending",
+   "file": "src/autotester/store/filestore.py",
+   "old": "        with path.open(\"a\", encoding=\"utf-8\") as handle:\n            handle.write(text)",
+   "new": "        with path.open(\"w\", encoding=\"utf-8\") as handle:\n            handle.write(text)",
+   "kills": [
+    "test_append_text_creates_then_extends_and_keeps_every_byte[file]"
+   ]
+  },
+  {
+   "name": "f2: MongoBackend.append_text on a row set keeps only the first line",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "            for line in filter(str.strip, text.splitlines()):",
+   "new": "            for line in list(filter(str.strip, text.splitlines()))[:1]:",
+   "kills": [
+    "test_append_text_to_a_row_set_adds_one_row_per_line[mongo]"
+   ]
+  },
+  {
+   "name": "f3: MongoBackend.append_text on a document replaces instead of extending",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "            if self.put_if(key, (old or \"\") + text, None if old is None else routes.text_sha(old)):",
+   "new": "            if self.put_if(key, text, None if old is None else routes.text_sha(old)):",
+   "kills": [
+    "test_append_text_creates_then_extends_and_keeps_every_byte[mongo]"
+   ]
+  },
+  {
+   "name": "f4: MongoBackend.append_text gives up after one lost compare-and-set",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "        for _ in range(16 * APPEND_RETRIES):",
+   "new": "        for _ in range(1):",
+   "kills": [
+    "test_a_document_append_that_loses_the_compare_and_set_retries_and_keeps_both"
+   ]
+  },
+  {
+   "name": "f5: delete_path ignores missing_ok=False",
+   "file": "src/autotester/store/filestore.py",
+   "old": "    if not backend.delete(key) and not missing_ok:",
+   "new": "    if False:",
+   "kills": [
+    "test_append_path_and_delete_path_follow_the_backend[file]"
+   ]
+  },
+  {
+   "name": "f6: append_path stringifies bytes instead of decoding them",
+   "file": "src/autotester/store/filestore.py",
+   "old": "text if isinstance(text, str) else text.decode(\"utf-8\"))",
+   "new": "str(text))",
+   "kills": [
+    "test_append_path_and_delete_path_follow_the_backend[memory]"
+   ]
+  },
+  {
+   "name": "f7: append_text on an insert-only document overwrites it",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "        route = self._route(key, rows=False)\n        coll = self._mutable(route)\n        self._guard(key, text)\n        if expect_sha is None:",
+   "new": "        route = self._route(key, rows=False)\n        coll = self._store.collection(route.collection)\n        self._guard(key, text)\n        if expect_sha is None:",
+   "kills": [
+    "test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document"
+   ]
+  },
+  {
+   "name": "f8: the fake bucket numbers files by document count again",
+   "file": "tests/fake_mongo.py",
+   "old": "\"_id\": f\"f{self._issued}\"",
+   "new": "\"_id\": f\"f{len(self._files.docs)}\"",
+   "kills": [
+    "test_a_fake_bucket_never_reuses_a_file_id_after_a_delete"
+   ]
+  }
+ ]
+}
