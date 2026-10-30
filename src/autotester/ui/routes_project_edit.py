@@ -33,6 +33,7 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.project import Project, SecretRef
 from autotester.ui import theme
 from autotester.ui.credential_guard import refuse_foreign_key
+from autotester.ui.env_editor import drop_credentials
 from autotester.ui.helpers import (
     _load_project_or_404,
     _refuse_unsafe_submission,
@@ -250,12 +251,14 @@ def declare_secret(
 
 @router.post("/projects/{slug}/secrets/{key}/delete")
 def undeclare_secret(slug: str, key: str) -> RedirectResponse:
-    """Stop declaring a key. Any value already in `.env` is left alone — this
-    module never touches values — but the key becomes unusable, which is the
-    point: an undeclared key is refused at typing time."""
+    """Stop declaring a key. A value already in `.env` is left alone — this
+    module never touches that file — but the key becomes unusable, which is the
+    point: an undeclared key is refused at typing time. A value held in the
+    credential store is deleted with its declaration (M37)."""
     store, project = _load_project_or_404(slug)
     if project.secret(key) is None:
         raise HTTPException(404, f"no declared credential '{key}'")
     kept = [r for r in project.secrets if r.key != key]
     store.save_project(project.model_copy(update={"secrets": kept}))
+    drop_credentials(slug, [key])  # M37: with the credential store on, the value goes too
     return RedirectResponse(f"/projects/{slug}/edit", status_code=303)

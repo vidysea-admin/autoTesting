@@ -17,7 +17,7 @@ from fnmatch import fnmatchcase
 from functools import cache
 from typing import NamedTuple, Protocol
 
-from autotester.core.env import read_dotenv
+from autotester.core.env import MONGO_URI_ENV, mongo_uri, read_dotenv, redaction_values
 from autotester.core.paths import repo_root
 from autotester.core.redact import Redactor
 from autotester.core.safe_names import UnsafeName
@@ -25,7 +25,7 @@ from autotester.core.safe_names import UnsafeName
 AREAS = ("settings", "projects", "runs", "crawls", "approvals", "auth", "credentials", "blobs",
          "queue")
 BACKENDS = ("file", "mongo")
-UNROUTED = {"auth": "the auth store (U6)", "credentials": "the credential store (U11)"}
+UNROUTED = {"auth": "the auth store (U6)"}
 """Areas whose data never travels through a state key: flipping one would route nothing."""
 RUN_AUX_FILES = frozenset({
     "run.json", "ux_report.json", "state.json", "checkpoint.json", "scope.json", "release.json",
@@ -187,10 +187,13 @@ def under(directory: str) -> list[tuple[str, str]]:
 
 
 def repo_redactor(extra: dict[str, str] | None = None) -> Redactor:
-    """A `Redactor` over every non-empty repo `.env` value plus `extra` (the Mongo URI)."""
+    """A `Redactor` over every non-empty repo `.env` value, every stored credential (U11, M8), the
+    live Mongo URI and `extra`."""
     path = repo_root() / ".env"
     values = {k: v for k, v in read_dotenv(path).items() if k and v} if path.is_file() else {}
-    return Redactor({**values, **(extra or {})})
+    uri = mongo_uri()
+    return Redactor({**redaction_values(values), **({MONGO_URI_ENV: uri} if uri else {}),
+                     **(extra or {})})
 
 
 def text_sha(text: str) -> str:

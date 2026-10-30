@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 from autotester.browser.secrets import parse_env
+from autotester.core.env import redaction_values
 from autotester.core.ids import file_sha256
 from autotester.core.redact import Redactor, mask_pii_obj
 from autotester.providers.base import Provider
@@ -142,7 +143,8 @@ def _sanitize_pdf_reading(store: ProjectStore, extraction: Extraction) -> Extrac
     if extraction.reading is None:
         return extraction
     env = store.paths.env_file
-    redactor = Redactor(parse_env(env.read_text(encoding="utf-8")) if env.exists() else {})
+    redactor = Redactor(redaction_values(
+        parse_env(env.read_text(encoding="utf-8")) if env.exists() else {}))
     payload = redactor.scrub_obj(extraction.reading.model_dump(mode="json"))
     reading = extraction.reading.model_validate(mask_pii_obj(payload))
     redactor.assert_clean(reading.model_dump_json())
