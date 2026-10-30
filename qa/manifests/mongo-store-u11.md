@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u11
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: qa/verdicts/mongo-store-u11.md + .b.md)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U11 (credential store). **Criticality:** CRITICAL, dual check (U11 row).
 **Authority:** D-123 (plain documents in `secrets`: no encryption, no key derivation, no `cryptography`, no crypto module, no new dependency; supersedes D-122 item 4), D-121, D-122 (module list). No `src/` module was added.
