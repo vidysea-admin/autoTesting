@@ -118,7 +118,12 @@ host-independent and still bind T-203 locally).
   Chromium window moving at an Xvfb size >= the viewport. `serves:` D-072#7, O7. *LOCAL* (route + permission tests), *SERVER-GATED*
   (curl/websocket probe, recording).
 - **HO13 — DEFERRED TO UBUNTU (D-090). HTTPS and the cookie.** Once a domain exists: `http://` redirects to `https://`, certificate valid, HSTS and the standard
-  security headers present, TLS 1.2+ only; `AUTOTESTER_ALLOWED_ORIGINS=https://<host>` set and `*` refused. Until then (Umesh: "the
+  security headers present, TLS 1.2+ only; `AUTOTESTER_ALLOWED_ORIGINS=https://<host>` set to the real https origin (a literal list, no `*`).
+  `*` is not forbidden by this row: per D-110 (as corrected by D-124) `AUTOTESTER_ALLOWED_ORIGINS=*` is the opt-in interim setting for a
+  deploy with no fixed name or domain yet, and it carries the accepted risk D-110 recorded (any site can drive a logged-in browser's
+  state-changing requests, i.e. CSRF, and the server answers to any Host header, i.e. host spoofing; `auth.md` AU18-AU20). Once the domain
+  exists, the deploy sets the real https origin and drops `*`; a check that finds `*` after that point reports it as a lapse of the
+  interim, not as a startup refusal. Until then (Umesh: "the
   domain comes later"), the guide describes the one allowed interim: private-network or tunnelled access with
   `AUTOTESTER_COOKIE_SECURE=0` set explicitly, never exposed to the public internet; startup logs which mode it is in. *LOCAL* (config
   tests) + *SERVER-GATED* (testssl / curl -I). `serves:` D-072#7, auth.md AU3.
@@ -284,3 +289,4 @@ host-independent and still bind T-203 locally).
   be Ubuntu with host and DNS later; Umesh asked to host on this Windows machine meanwhile. HO1-HO9, HO12, HO14 stay Docker/BUILD-HOST
   rows that bind only when Docker is available.
 - 2026-10-13 · owner-authorized (D-093, Umesh chat; /checker) · **HO39, HO40** marked DEFERRED TO PRODUCTION (Docker on Ubuntu provides boot start and restart; no Windows Scheduled Task here); T-203 may close locally on the other rows. **HO26-HO29** (email) marked DEFERRED TO PRODUCTION, as D-092 item 1. Row text kept for when they bind. HO25 (website report scoping) unchanged. · why: Umesh, 2026-10-13: production runs in Docker, build the remaining ones quickly.
+- 2026-10-30 · owner-authorized (D-110, D-124; /checker) · **HO13:** `*` in `AUTOTESTER_ALLOWED_ORIGINS` is no longer "refused"; it is the D-110 opt-in interim setting for a deploy with no fixed name (accepted CSRF/host-spoofing risk, `auth.md` AU18-AU20), and once a domain exists HO13 still requires the real https origin. · why: D-110 shipped the `*` allow-all (Umesh, chat 2026-10-26) and D-124 named `ALLOWED_ORIGINS=*` as the working deploy value; the old text contradicted both. No other row changed.
