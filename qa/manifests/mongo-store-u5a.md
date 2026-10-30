@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u5a
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, qa/verdicts/mongo-store-u5a.md, bd095431)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U5a. **Criticality:** normal (the U5a row has no dual mark). Judged: M2, M5, M8, M23, M25 (the `BlobStore` half; the migrate-dry-run half of M25 is U8's, the call-site half of M24/M25 is U5b's).
 **Authority:** D-120, D-121, D-122 (item 1 lists `store/blobs.py` as an approved new module), D-123 (no encryption; irrelevant here, blobs carry no secret door)
