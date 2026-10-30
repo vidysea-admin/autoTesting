@@ -1,0 +1,19 @@
+== tests/test_schedule_purge_crash.py tests/test_schedule_gaps.py
+26 passed, 2 warnings in 65.19s (0:01:05)
+== tests/test_schedule_failures.py tests/test_schedule_wiring.py
+35 passed, 2 warnings in 4.29s
+== tests/test_schedule_catchup.py tests/test_schedule_overlap.py
+28 passed, 2 warnings in 3.45s
+== tests/test_schedule_advisories.py tests/test_schedule_inbox.py
+7 passed, 2 warnings in 18.23s
+== tests/test_schedule_routes.py tests/test_orchestrate.py
+tests/test_orchestrate.py::test_a_raising_stage_leaves_a_failed_checkpoint_then_resume_re_enters
+45 passed, 8 warnings in 62.76s (0:01:02)
+== tests/test_cli_orchestrate.py tests/test_cli_orchestrate_resume.py
+8 passed, 2 warnings in 7.98s
+== tests/test_orchestrate_downstream.py tests/test_generic_acceptance.py
+17 passed, 2 warnings in 35.88s
+== tests/test_doctor_oracle_exempt.py tests/test_schedule_tick.py
+FAILED tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively
+1 failed, 34 passed, 10 warnings in 17.36s
+ALLDONE
