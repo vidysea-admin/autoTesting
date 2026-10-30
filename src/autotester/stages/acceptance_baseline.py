@@ -11,7 +11,7 @@ from autotester.core.safe_names import safe_slug
 from autotester.schema.acceptance_baseline import BaselinePlan, BaselineReceipt
 from autotester.schema.base import Provenance
 from autotester.schema.project import Project, Source
-from autotester.store.filestore import write_json
+from autotester.store.filestore import write_bytes, write_json
 from autotester.store.project_store import ProjectStore
 
 
@@ -124,8 +124,7 @@ def _write_pair(destination: Path, projects: list[Project], plan: BaselinePlan,
         for index, (row, blob) in enumerate(zip(plan.teaching_inputs, blobs, strict=True)):
             path = store.paths.sources_dir / f"input-{index}{Path(row.path).suffix}"
             relative = path.relative_to(store.paths.dir)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(blob)
+            write_bytes(path, blob)
             source = Source(project=project.slug, kind=row.kind, path=relative.as_posix(),
                             sha256=row.sha256, provenance=Provenance(
                                 produced_by="acceptance-baseline", inputs=[row.sha256],

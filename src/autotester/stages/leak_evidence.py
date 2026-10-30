@@ -19,7 +19,6 @@ import hmac
 import logging
 import os
 import re
-import shutil
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -29,7 +28,7 @@ from autotester.core.env import load_repo_env
 from autotester.core.image_privacy import sanitized_images
 from autotester.schema.leak_evidence import MAX_HASHED_IDS, LeakEvidence, segment_is_id_like
 from autotester.schema.multi_role_finding import FINDING_ID_PATTERN, MultiRoleFinding
-from autotester.store.filestore import write_json
+from autotester.store.filestore import write_bytes, write_json
 
 LEAK_KEY_ENV = "AUTOTESTER_LEAK_EVIDENCE_KEY"
 FINDINGS_DIR = "multi_role_findings"
@@ -97,8 +96,7 @@ def store_masked_screenshot(png: bytes, dest: Path) -> tuple[Path | None, str | 
         with sanitized_images([raw]) as batch:
             if batch.incomplete or not batch.paths:
                 return None, (batch.reasons[0] if batch.reasons else "sanitation_failed")
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(batch.paths[0], dest)
+            write_bytes(dest, Path(batch.paths[0]).read_bytes())
     return dest, None
 
 
@@ -133,7 +131,6 @@ def collect_leak_evidence(*, project_slug: str, run_dir: Path, finding_id: str,
 def write_finding(run_dir: Path, finding: MultiRoleFinding) -> Path:
     """Write the finding under the run directory and log one value-free line."""
     path = run_dir / FINDINGS_DIR / f"{finding.finding_id}.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
     write_json(path, finding)
     _log.info("multi-role finding %s class=%s count=%d", finding.finding_id,
               finding.finding_class.value, finding.count)

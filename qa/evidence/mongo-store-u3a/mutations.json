@@ -1,0 +1,112 @@
+{
+ "tests": ["tests/test_sweep_u3a.py"],
+ "mutations": [
+  {
+   "name": "a1: save_job writes the file directly again",
+   "file": "src/autotester/sources/drive_jobs.py",
+   "old": "            write_text(path, text)\n",
+   "new": "            path.parent.mkdir(parents=True, exist_ok=True)\n            path.write_text(text, encoding=\"utf-8\")\n",
+   "kills": ["test_a_drive_job_is_saved_and_loaded_through_the_backend"]
+  },
+  {
+   "name": "a2: load_job reads the disk again",
+   "file": "src/autotester/sources/drive_jobs.py",
+   "old": "        return read_json(path, DriveJob)\n",
+   "new": "        return DriveJob.model_validate_json(path.read_text(encoding=\"utf-8\"))\n",
+   "kills": ["test_a_drive_job_is_saved_and_loaded_through_the_backend"]
+  },
+  {
+   "name": "a3: a corrupt job is no longer treated as absent",
+   "file": "src/autotester/sources/drive_jobs.py",
+   "old": "    except (OSError, ValueError):  # ValidationError is a ValueError",
+   "new": "    except OSError:",
+   "kills": ["test_a_corrupt_drive_job_reads_as_absent"]
+  },
+  {
+   "name": "a4: the busy-replace retry is gone",
+   "file": "src/autotester/sources/drive_jobs.py",
+   "old": "        except PermissionError:",
+   "new": "        except ZeroDivisionError:",
+   "kills": ["test_save_job_retries_a_busy_replace",
+             "test_save_job_gives_up_after_the_last_try"]
+  },
+  {
+   "name": "a5: the last failed try is swallowed",
+   "file": "src/autotester/sources/drive_jobs.py",
+   "old": "            if attempt == REPLACE_TRIES - 1:",
+   "new": "            if False:",
+   "kills": ["test_save_job_gives_up_after_the_last_try"]
+  },
+  {
+   "name": "a6: the payment report is written to disk directly again",
+   "file": "src/autotester/stages/oracle_payment.py",
+   "old": "        write_text(folder / REPORT_FILE, body)",
+   "new": "        (folder / REPORT_FILE).write_text(body, encoding=\"utf-8\")",
+   "kills": ["test_the_payment_report_is_written_through_the_backend"]
+  },
+  {
+   "name": "a7: the payment report is written into a folder that does not exist",
+   "file": "src/autotester/stages/oracle_payment.py",
+   "old": "    if not folder.is_dir():",
+   "new": "    if False:",
+   "kills": ["test_the_payment_report_is_not_written_into_a_missing_folder"]
+  },
+  {
+   "name": "a8: the payment declaration is read from disk again",
+   "file": "src/autotester/stages/oracle_payment.py",
+   "old": "        declaration = read_json(Path(run_dir) / PAYMENT_FILE, PaymentDeclaration)\n",
+   "new": "        declaration = PaymentDeclaration.model_validate_json(\n            (Path(run_dir) / PAYMENT_FILE).read_text(encoding=\"utf-8\"))\n",
+   "kills": ["test_a_payment_declaration_and_a_credential_policy_load_through_the_backend"]
+  },
+  {
+   "name": "a9: the credential policy is read from disk again",
+   "file": "src/autotester/stages/oracle_credential_policy.py",
+   "old": "        policy = read_json(Path(run_dir) / POLICY_FILE, CredentialPolicy)\n",
+   "new": "        policy = CredentialPolicy.model_validate_json(\n            (Path(run_dir) / POLICY_FILE).read_text(encoding=\"utf-8\"))\n",
+   "kills": ["test_a_payment_declaration_and_a_credential_policy_load_through_the_backend"]
+  },
+  {
+   "name": "a10: an invalid declaration reads as not declared",
+   "file": "src/autotester/stages/oracle_payment.py",
+   "old": "        raise PaymentNotDeclaredError(\"payment declaration is invalid\") from None\n    if declaration",
+   "new": "        declaration = None\n    if declaration",
+   "kills": ["test_a_payment_declaration_and_a_credential_policy_load_through_the_backend"]
+  },
+  {
+   "name": "a11: the masked leak screenshot is copied to disk directly again",
+   "file": "src/autotester/stages/leak_evidence.py",
+   "old": "            write_bytes(dest, Path(batch.paths[0]).read_bytes())\n",
+   "new": "            dest.parent.mkdir(parents=True, exist_ok=True)\n            dest.write_bytes(Path(batch.paths[0]).read_bytes())\n",
+   "kills": ["test_a_masked_leak_screenshot_is_stored_through_the_backend",
+             "test_every_raw_write_left_in_stages_and_sources_is_listed"]
+  },
+  {
+   "name": "a12: knowledge.md is written to disk directly again",
+   "file": "src/autotester/stages/portal_persona.py",
+   "old": "    write_text(store.paths.knowledge, knowledge)\n",
+   "new": "    store.paths.knowledge.write_text(knowledge, encoding=\"utf-8\")\n",
+   "kills": ["test_every_raw_write_left_in_stages_and_sources_is_listed"]
+  },
+  {
+   "name": "a13: the real-acceptance evidence is written to disk directly again",
+   "file": "src/autotester/stages/real_acceptance.py",
+   "old": "        write_text(out / name, text)",
+   "new": "        (out / name).write_text(text, encoding=\"utf-8\")",
+   "kills": ["test_every_raw_write_left_in_stages_and_sources_is_listed"]
+  },
+  {
+   "name": "a14: the baseline source input is written to disk directly again",
+   "file": "src/autotester/stages/acceptance_baseline.py",
+   "old": "            write_bytes(path, blob)\n",
+   "new": "            path.write_bytes(blob)\n",
+   "kills": ["test_every_raw_write_left_in_stages_and_sources_is_listed"]
+  },
+  {
+   "name": "a15: a new raw write appears in a stage, unlisted",
+   "file": "src/autotester/stages/review.py",
+   "old": "from __future__ import annotations\n",
+   "new": "from __future__ import annotations\n\n\n\ndef _unlisted(path):\n    path.write_text('y')\n\n",
+   "kills": ["test_every_raw_write_left_in_stages_and_sources_is_listed"]
+  }
+ ]
+}

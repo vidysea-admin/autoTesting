@@ -154,7 +154,9 @@ ALLOWED_OUTSIDE = frozenset(SCHEDULER_SIDE) | {
     "autotester.browser.secrets", "autotester.ui", "autotester.ui.env_editor",
     # HO24 owner guard: the account store and the pure loopback switch, nothing browser-side
     "autotester.stages.schedule_owner", "autotester.auth", "autotester.auth.access",
-    "autotester.auth.db", "autotester.auth.defaults", "autotester.auth.loopback"}
+    "autotester.auth.db", "autotester.auth.defaults", "autotester.auth.loopback",
+    # U6a (mongo-store M29): the AuthStore seam auth.access now reaches; its own imports stay walked
+    "autotester.auth.store", "autotester.auth.store_sqlite"}
 PLAIN_PACKAGES = ("core", "schema", "store")
 BANNED_NAMES = {"BrowserSession", "run_and_grade_case", "run_and_grade_case_resilient",
                 "_execute_with_trace"}
