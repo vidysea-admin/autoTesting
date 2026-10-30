@@ -2,80 +2,37 @@
 
 Every typed wrapper (`ProjectStore`, the feature ledger) is built on the `Path` functions here,
 so "how does file X get persisted" has one answer. Underneath, each call goes to a `StateBackend`
-addressed by a safe POSIX key (mongo-store M13-M17). Only `FileBackend` is wired in this build,
-chosen by `AUTOTESTER_STORE` (default `file`), so no database driver is imported. File writes are
-atomic (temp file + `os.replace`): a crash mid-write never leaves a half-written artifact.
+addressed by a safe POSIX key (mongo-store M13-M17). `AUTOTESTER_STORE` picks `file` (the default,
+so no database driver is imported) or `mongo` (`store/mongo_backend.py`, loaded on first use).
+File writes are atomic (temp file + `os.replace`): a crash never leaves a half-written artifact.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
-import tempfile
 from pathlib import Path
-from typing import Protocol, TypeVar
+from typing import TypeVar
 
 from pydantic import BaseModel
 
+from autotester.core.file_lock import atomic_write as _atomic_write
 from autotester.core.file_lock import file_lock
 from autotester.core.paths import repo_root
 from autotester.core.safe_names import safe_key
+from autotester.store.mongo_routes import (
+    StateBackend,
+    StoreSelectionError,
+    area_of,
+    require_scope,
+    row_matches,
+    store_selection,
+    text_sha,
+    under,
+    within,
+)
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
-BACKENDS = ("file", "mongo")
-AREAS = ("settings", "projects", "runs", "crawls", "approvals", "auth", "credentials", "blobs",
-         "queue")
-
-
-class StoreSelectionError(ValueError):
-    """`AUTOTESTER_STORE` / `AUTOTESTER_STORE_AREAS` names something unknown or not wired."""
-
-
-def text_sha(text: str) -> str:
-    """The digest `put_if` compares: SHA-256 of the text as `get` returns it, UTF-8."""
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-
-class StateBackend(Protocol):
-    """Keys: relative POSIX paths. Rows: ordered JSON lines. Each method runs `safe_key` first."""
-
-    def get(self, key: str) -> str | None: ...
-    def put(self, key: str, data: str | bytes) -> None: ...
-    def put_if(self, key: str, text: str, expect_sha: str | None) -> bool: ...
-    def create_exclusive(self, key: str, text: str) -> bool: ...
-    def delete(self, key: str) -> bool: ...
-    def exists(self, key: str) -> bool: ...
-    def keys(self, prefix: str, suffix: str = "") -> list[str]: ...
-    def delete_prefix(self, prefix: str) -> int: ...
-    def rows(self, key: str) -> list[str]: ...
-    def append_row(self, key: str, text: str) -> None: ...
-    def upsert_row(self, key: str, field: str, value: str, text: str) -> None: ...
-    def delete_row(self, key: str, field: str, value: str) -> bool: ...
-    def replace_rows(self, key: str, rows: list[str]) -> None: ...
-    def ping(self) -> None: ...
-
-
-def row_matches(line: str, field: str, value: str) -> bool:
-    """True when the JSON row's `field` (as text) equals `value`; a missing field reads `None`."""
-    try:
-        row = json.loads(line)
-    except ValueError:
-        return False
-    return isinstance(row, dict) and str(row.get(field)) == value
-
-
-def _atomic_write(path: Path, text: str | bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=".tmp-", suffix=path.suffix)
-    try:
-        mode, options = ("wb", {}) if isinstance(text, bytes) else ("w", {"encoding": "utf-8"})
-        with os.fdopen(fd, mode, **options) as handle:
-            handle.write(text)
-        os.replace(tmp_name, path)
-    except BaseException:
-        Path(tmp_name).unlink(missing_ok=True)
-        raise
 
 
 class FileBackend:
@@ -138,16 +95,36 @@ class FileBackend:
         return sorted(k for k in found if k.startswith(prefix) and k.endswith(suffix))
 
     def delete_prefix(self, prefix: str) -> int:
-        return sum(self.delete(key) for key in self.keys(prefix))
+        """Delete `prefix` itself and what sits below it on a `/` boundary; never everything."""
+        return sum(self.delete(k) for k in self.keys(require_scope(prefix)) if within(k, prefix))
+
+    def _dir(self, key: str) -> Path:
+        return self._path(key) if key else self._root
+
+    def children(self, key: str, suffix: str = "") -> list[str]:
+        base = self._dir(key)
+        return sorted(p.name for p in base.iterdir() if p.name.endswith(suffix)
+                      and not p.name.startswith(".tmp-") and not p.name.endswith(".lock")
+                      ) if base.is_dir() else []
+
+    def is_dir(self, key: str) -> bool:
+        return self._dir(key).is_dir()
+
+    def mtime(self, key: str) -> float | None:
+        path = self._path(key)
+        return path.stat().st_mtime if path.exists() else None
 
     def rows(self, key: str) -> list[str]:
         return [line for line in (self.get(key) or "").splitlines() if line.strip()]
 
     def append_row(self, key: str, text: str) -> None:
+        self.append_text(key, text + "\n")
+
+    def append_text(self, key: str, text: str) -> None:
         path = self._path(key)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as handle:
-            handle.write(text + "\n")
+            handle.write(text)
 
     def replace_rows(self, key: str, rows: list[str]) -> None:
         _atomic_write(self._path(key), "".join(f"{row}\n" for row in rows))
@@ -168,33 +145,14 @@ class FileBackend:
     def ping(self) -> None: ...  # files are always reachable
 
 
-def store_selection() -> dict[str, str]:
-    """Area -> backend from `AUTOTESTER_STORE` (default file) + `AUTOTESTER_STORE_AREAS=a=b,..`."""
-    chosen = dict.fromkeys(AREAS, os.environ.get("AUTOTESTER_STORE", "").strip() or "file")
-    for item in filter(None, (i.strip() for i in os.environ.get("AUTOTESTER_STORE_AREAS", "")
-                              .split(","))):
-        area, _, backend = (piece.strip() for piece in item.partition("="))
-        if area not in AREAS:
-            raise StoreSelectionError(f"AUTOTESTER_STORE_AREAS: unknown area {area!r} in {item!r}")
-        chosen[area] = backend
-    for name in chosen.values():
-        if name not in BACKENDS:
-            raise StoreSelectionError(f"unknown store backend {name!r}; use one of {BACKENDS}")
-    return chosen
-
-
-def area_of(key: str) -> str:
-    """Coarse area of a key; the per-collection table is the Mongo backend's (U4)."""
-    parts = [*key.split("/"), "", ""]
-    if parts[0] == "projects":
-        return {"runs": "runs", "crawl": "crawls"}.get(parts[2], "projects")
-    return "settings" if parts[0] == ".work" else "projects"
-
-
 def _backend(name: str) -> StateBackend:
     if name == "file":
         return FileBackend(repo_root())
-    raise StoreSelectionError(f"backend {name!r} is recognised but not wired in this build")
+    if name == "mongo":
+        from autotester.store.mongo_backend import default_backend  # the only driver import
+
+        return default_backend()
+    raise StoreSelectionError(f"unknown store backend {name!r}")
 
 
 def validate_store_env() -> dict[str, str]:
@@ -209,13 +167,20 @@ def backend_for(key: str) -> StateBackend:
     return _backend(store_selection()[area_of(safe_key(key))])
 
 
+def _rel(path: Path) -> str | None:
+    """The key of `path` under the data root (`""` for the root itself), else `None`."""
+    try:
+        key = Path(path).relative_to(repo_root()).as_posix()
+    except ValueError:
+        return None
+    return "" if key == "." else key
+
+
 def _route(path: Path) -> tuple[StateBackend, str]:
     """`(backend, key)`. A path outside the data root (temp, scratch) is always a plain file."""
-    path = Path(path)
-    try:
-        key = path.relative_to(repo_root()).as_posix()
-    except ValueError:
-        return FileBackend(path.parent), path.name
+    key = _rel(path)
+    if key is None:
+        return FileBackend(Path(path).parent), Path(path).name
     return backend_for(key), key
 
 
@@ -247,10 +212,7 @@ def write_json(path: Path, model: BaseModel) -> None:
 
 
 def read_json(path: Path, model_cls: type[ModelT]) -> ModelT | None:
-    """`None` when the file is absent — a project with no flowspec yet is not an error.
-
-    A file that exists but fails to validate raises, naming the path.
-    """
+    """`None` when absent (a project with no flowspec yet); a file that fails to validate raises."""
     backend, key = _route(path)
     text = backend.get(key)
     if text is None:
@@ -267,16 +229,27 @@ def read_jsonl(path: Path, model_cls: type[ModelT]) -> list[ModelT]:
     return _parse_rows(backend.rows(key), path, model_cls)
 
 
+def append_path(path: Path, text: str | bytes) -> None:
+    """Append to a log-style state file, creating it (atomic on Memory/Mongo, plain `a` on File)."""
+    backend, key = _route(path)
+    backend.append_text(key, text if isinstance(text, str) else text.decode("utf-8"))
+
+
+def delete_path(path: Path, *, missing_ok: bool = True) -> None:
+    """`Path.unlink()` for a state file: `FileNotFoundError` when absent unless `missing_ok`."""
+    backend, key = _route(path)
+    if not backend.delete(key) and not missing_ok:
+        raise FileNotFoundError(path)
+
+
 def append_jsonl(path: Path, model: BaseModel) -> None:
-    """One more row. Never rewrites what is already there — cheap and crash-safe
-    (a torn write can only ever damage the last line, never an earlier one)."""
+    """One more row. Never rewrites what is there: a torn write only damages the last line."""
     backend, key = _route(path)
     backend.append_row(key, model.model_dump_json(exclude_none=True))
 
 
 def delete_jsonl_row(path: Path, model_cls: type[ModelT], row_id: str, *, key: str = "id") -> bool:
-    """Drop the row whose stored field `key` equals `row_id`; True when one was removed.
-    For a small collection a human curates, never for append-only history."""
+    """Drop the row whose stored field `key` equals `row_id`; True when one was removed."""
     if key not in model_cls.model_fields:
         raise ValueError(f"{key!r} is not a stored field of {model_cls.__name__}")
     backend, state_key = _route(path)
@@ -285,9 +258,8 @@ def delete_jsonl_row(path: Path, model_cls: type[ModelT], row_id: str, *, key: s
 
 
 def upsert_jsonl(path: Path, model: ModelT, model_cls: type[ModelT], *, key: str = "id") -> None:
-    """Replace the row whose `key` matches this model's (in place), else append. For status
-    transitions on a small collection; prefer `append_jsonl` for history. A `key` that is a
-    property, not a stored field, is matched on the parsed rows and the collection rewritten."""
+    """Replace the row whose `key` matches this model's (in place), else append. A `key` that is
+    a property, not a stored field, is matched on the parsed rows and the collection rewritten."""
     backend, state_key = _route(path)
     items = _parse_rows(backend.rows(state_key), path, model_cls)
     text = model.model_dump_json(exclude_none=True)
@@ -298,3 +270,31 @@ def upsert_jsonl(path: Path, model: ModelT, model_cls: type[ModelT], *, key: str
     lines = [text if getattr(i, key) == target else i.model_dump_json(exclude_none=True)
              for i in items]
     backend.replace_rows(state_key, lines if text in lines else [*lines, text])
+
+
+def _holders(path: Path) -> tuple[list[StateBackend], str]:
+    """Every backend that may hold something at or below `path`, and its key (`_route`'s)."""
+    backend, key = _route(path)
+    if _rel(path) != key:  # outside the data root: always a plain file
+        return [backend], key
+    chosen = store_selection()
+    names = {chosen[a] for a in {area_of(key), *(a for _, a in under(key))}}
+    return [_backend(name) for name in sorted(names)], key
+
+
+def exists_path(path: Path) -> bool:
+    """`Path.exists()` for state: a file, or a directory that holds state (any backend)."""
+    backends, key = _holders(path)
+    return any(b.exists(key) or b.is_dir(key) for b in backends)
+
+
+def list_children(path: Path, *, suffix: str = "") -> list[str]:
+    """Names directly under the state directory `path`, sorted; `[]` when there is none."""
+    backends, key = _holders(path)
+    return sorted({name for b in backends for name in b.children(key, suffix)})
+
+
+def mtime_path(path: Path) -> float | None:
+    """When the state file `path` was last written (seconds since the epoch), else `None`."""
+    backend, key = _route(path)
+    return backend.mtime(key)

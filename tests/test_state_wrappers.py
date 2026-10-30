@@ -1,4 +1,4 @@
-"""mongo-store M15 (model round-trip), M14, M17: the `Path` functions over every backend.
+"""mongo-store M15 (model round-trip), M14, M16, M17: the `Path` functions over every backend.
 
 The public `filestore` functions are routed to the backend under test (`filestore._route` is the
 one seam), so `dump -> store -> load == original` is proved per schema family on every backend in
@@ -14,10 +14,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from fake_mongo import FakeMongoServer, seams
 from pydantic import BaseModel
 from state_backends import BACKEND_FACTORIES
 
 import autotester.store.filestore as filestore
+import autotester.store.mongo_routes as routes
 from autotester.core.safe_names import UnsafeName
 from autotester.schema.case import Case, CaseProposal
 from autotester.schema.enums import Action, CaseClass, CaseKind, SourceKind
@@ -26,6 +28,7 @@ from autotester.schema.issue import Issue
 from autotester.schema.project import Project, Source
 from autotester.stages.expand import propose_cases
 from autotester.stages.review import approve
+from autotester.store.mongo_backend import reset_default_backend
 
 
 def _step() -> Step:
@@ -159,3 +162,127 @@ def test_a_path_that_climbs_out_of_the_root_is_refused_before_any_write(
         filestore.write_text(root.resolve() / "projects" / ".." / ".." / "escape.txt", "x")
     assert not (tmp_path / "escape.txt").exists()
     assert sorted(p.name for p in root.rglob("*")) == []
+
+
+# -- the real route table, and the Path-based directory functions ---------------------------
+
+REAL_PATHS: dict[str, tuple[str, str]] = {  # family -> (key, collection the key must route to)
+    "project": ("projects/pathlynks/project.json", "projects"),
+    "source": ("projects/pathlynks/sources.jsonl", "sources"),
+    "case": ("projects/pathlynks/cases.jsonl", "cases"),
+    "flowspec": ("projects/pathlynks/flowspec.json", "project_docs"),
+    "case_proposal": ("projects/pathlynks/case_proposals.jsonl", "case_proposals"),
+    "issue": ("projects/pathlynks/issues.jsonl", "issues"),
+}
+
+
+@pytest.mark.parametrize("family", sorted(REAL_PATHS))
+def test_a_model_round_trips_equal_at_its_real_route(routed: Any, family: str) -> None:
+    key, collection = REAL_PATHS[family]
+    assert routes.route(key).collection == collection
+    original = FAMILIES[family]()
+    if key.endswith(".jsonl"):
+        filestore.append_jsonl(Path(key), original)
+        assert filestore.read_jsonl(Path(key), type(original)) == [original]
+    else:
+        filestore.write_json(Path(key), original)
+        assert filestore.read_json(Path(key), type(original)) == original
+
+
+def test_exists_list_children_and_mtime_follow_the_backend(routed: Any) -> None:
+    filestore.write_text(Path("projects/p/a.json"), "1")
+    filestore.write_text(Path("projects/p/sub/b.txt"), "2")
+    assert filestore.exists_path(Path("projects/p/a.json")) is True
+    assert filestore.exists_path(Path("projects/p")) is True  # a directory that holds state
+    assert filestore.exists_path(Path("projects/p/sub/b.txt")) is True
+    assert filestore.exists_path(Path("projects/q")) is False
+    assert filestore.exists_path(Path("projects/p/none.json")) is False
+    assert filestore.list_children(Path("projects/p")) == ["a.json", "sub"]
+    assert filestore.list_children(Path("projects/p"), suffix=".json") == ["a.json"]
+    assert filestore.list_children(Path("projects/none")) == []
+    stamp = filestore.mtime_path(Path("projects/p/a.json"))
+    assert isinstance(stamp, float) and stamp > 1_000_000_000
+    assert filestore.mtime_path(Path("projects/p/none.json")) is None
+
+
+def test_the_path_functions_on_the_real_file_routing(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root, elsewhere = tmp_path / "root", tmp_path / "elsewhere"
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(root))
+    monkeypatch.delenv("AUTOTESTER_STORE", raising=False)
+    monkeypatch.delenv("AUTOTESTER_STORE_AREAS", raising=False)
+    root.mkdir()
+    base = root.resolve() / "projects" / "p"
+    filestore.write_text(base / "a.json", "in")
+    filestore.write_text(elsewhere / "y.txt", "out")
+    assert filestore.exists_path(base / "a.json") and filestore.exists_path(base)
+    assert not filestore.exists_path(base / "none.json")
+    assert filestore.list_children(base) == ["a.json"]
+    assert filestore.mtime_path(base / "a.json") == (base / "a.json").stat().st_mtime
+    assert filestore.mtime_path(base / "none.json") is None
+    # A path outside the data root is a plain file whatever the selection says.
+    assert filestore.exists_path(elsewhere / "y.txt") and filestore.exists_path(elsewhere)
+    assert filestore.list_children(elsewhere) == ["y.txt"]
+    assert filestore.mtime_path(elsewhere / "y.txt") == (elsewhere / "y.txt").stat().st_mtime
+    with pytest.raises(UnsafeName):
+        filestore.exists_path(root.resolve() / "projects" / ".." / ".." / "x")
+
+
+def test_a_directory_listing_fans_out_across_the_backends_of_its_areas(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A project dir with `project.json` on disk and its `runs/` in Mongo lists both, and a
+    directory that exists only in Mongo still exists (the areas are flipped one at a time)."""
+    root = tmp_path / "root"
+    root.mkdir()
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(root))
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "runs=mongo")
+    monkeypatch.setenv("AUTOTESTER_MONGO_URI", "mongodb://h/")
+    monkeypatch.delenv("AUTOTESTER_STORE", raising=False)
+    reset_default_backend()
+    base = root.resolve() / "projects" / "p"
+    try:
+        with seams(client_factory=lambda _uri: FakeMongoServer().client()):
+            filestore.write_text(base / "project.json", "{}")
+            filestore.write_text(base / "runs" / "r1" / "run.json", "{}")
+            assert not (base / "runs").exists()  # nothing of the run is on disk
+            assert filestore.list_children(base) == ["project.json", "runs"]
+            assert filestore.list_children(base / "runs") == ["r1"]
+            assert filestore.exists_path(base / "runs")
+            assert filestore.exists_path(base / "runs" / "r1")
+            assert filestore.exists_path(base / "runs" / "r1" / "run.json")
+            assert filestore.mtime_path(base / "runs" / "r1" / "run.json") is not None
+            assert not filestore.exists_path(base / "runs" / "r2")
+    finally:
+        reset_default_backend()
+
+
+def test_append_path_and_delete_path_follow_the_backend(routed: Any) -> None:
+    log = Path("projects/p/trace/t.log")
+    filestore.append_path(log, "a\n")
+    filestore.append_path(log, b"b\n")  # bytes are text on a state path
+    assert routed.get("projects/p/trace/t.log") == "a\nb\n"
+    assert filestore.exists_path(log) and filestore.list_children(log.parent) == ["t.log"]
+    filestore.delete_path(log)
+    assert not filestore.exists_path(log) and routed.get("projects/p/trace/t.log") is None
+    filestore.delete_path(log)  # missing_ok defaults to True
+    with pytest.raises(FileNotFoundError):
+        filestore.delete_path(log, missing_ok=False)
+
+
+def test_append_path_and_delete_path_refuse_a_path_that_leaves_the_root(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path / "root"))
+    monkeypatch.delenv("AUTOTESTER_STORE", raising=False)
+    monkeypatch.delenv("AUTOTESTER_STORE_AREAS", raising=False)
+    (tmp_path / "root").mkdir()
+    out = tmp_path / "elsewhere" / "x.log"  # outside the data root: a plain file
+    filestore.append_path(out, "1\n")
+    filestore.append_path(out, "2\n")
+    assert out.read_text(encoding="utf-8") == "1\n2\n"
+    filestore.delete_path(out)
+    assert not out.exists()
+    climb = (tmp_path / "root").resolve() / "projects" / ".." / ".." / "x"
+    with pytest.raises(UnsafeName):
+        filestore.append_path(climb, "x")
+    with pytest.raises(UnsafeName):
+        filestore.delete_path(climb)

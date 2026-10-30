@@ -1,0 +1,182 @@
+{
+ "tests": [
+  "tests/test_mongo_backend_fence.py",
+  "tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing",
+  "tests/test_state_backend_contract.py::test_create_exclusive_never_overwrites",
+  "tests/test_state_backend_contract.py::test_rows_are_ordered_and_a_missing_key_has_none",
+  "tests/test_state_backend_contract.py::test_upsert_keeps_position_and_adding_twice_is_idempotent",
+  "tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary",
+  "tests/test_state_backend_contract.py::test_mtime_is_none_when_absent_and_moves_forward_on_every_write",
+  "tests/test_state_backend_contract.py::test_children_are_the_sorted_immediate_names_with_an_optional_suffix",
+  "tests/test_state_backend_contract.py::test_is_dir_is_true_for_a_directory_that_holds_state_only",
+  "tests/test_mongo_backend_layout.py::test_a_body_comes_back_byte_for_byte",
+  "tests/test_mongo_backend_layout.py::test_a_body_over_12_mb_is_refused_and_nothing_is_stored",
+  "tests/test_mongo_backend_layout.py::test_upsert_keeps_the_seq_of_the_row_it_replaces",
+  "tests/test_mongo_backend_layout.py::test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing",
+  "tests/test_mongo_backend_layout.py::test_each_key_family_lands_in_the_collection_the_table_names"
+ ],
+ "mutations": [
+  {
+   "name": "a1: put_if ignores the expected digest",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "return coll.replace_one({\"_id\": key, \"h\": expect_sha}, _doc(route, key, text))",
+   "new": "return coll.replace_one({\"_id\": key}, _doc(route, key, text))",
+   "kills": [
+    "test_put_if_a_stale_sha_loses_and_writes_nothing[mongo]"
+   ]
+  },
+  {
+   "name": "a2: create_exclusive overwrites",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "return self._claim(self._store.collection(route.collection), _doc(route, key, text))",
+   "new": "return not self._store.collection(route.collection).replace_one({\"_id\": key}, _doc(route, key, text), upsert=True) or True",
+   "kills": [
+    "test_create_exclusive_never_overwrites[mongo]"
+   ]
+  },
+  {
+   "name": "a3: every appended row gets seq 1",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "(last[0][\"seq\"] if last else 0) + 1",
+   "new": "1",
+   "kills": [
+    "test_rows_are_ordered_and_a_missing_key_has_none[mongo]"
+   ]
+  },
+  {
+   "name": "a4: upsert drops the seq of the row it replaces",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "coll.replace_one({\"_id\": hit[\"_id\"]}, {**hit, \"text\": text, \"updated_at\": time.time()})",
+   "new": "coll.replace_one({\"_id\": hit[\"_id\"]}, {\"k\": key, \"p\": hit[\"p\"], \"text\": text, \"updated_at\": time.time()})",
+   "kills": [
+    "test_upsert_keeps_the_seq_of_the_row_it_replaces"
+   ]
+  },
+  {
+   "name": "a5: delete_prefix without the segment boundary",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "victims = [k for k in self.keys(routes.require_scope(prefix)) if routes.within(k, prefix)]",
+   "new": "victims = [k for k in self.keys(routes.require_scope(prefix))]",
+   "kills": [
+    "test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]"
+   ]
+  },
+  {
+   "name": "a6: delete_prefix deletes before checking insert-only",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "if routes.route(victim).collection in INSERT_ONLY:",
+   "new": "if False:",
+   "kills": [
+    "test_delete_prefix_over_an_insert_only_family_deletes_nothing"
+   ]
+  },
+  {
+   "name": "a7: the secret gate scans nothing",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "self._redactor.assert_clean(f\"{key}\\n{text}\")",
+   "new": "self._redactor.assert_clean(\"\")",
+   "kills": [
+    "test_a_known_secret_is_refused_everywhere_and_never_quoted"
+   ]
+  },
+  {
+   "name": "a8: the secret gate skips the key",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "self._redactor.assert_clean(f\"{key}\\n{text}\")",
+   "new": "self._redactor.assert_clean(text)",
+   "kills": [
+    "test_a_known_secret_is_refused_everywhere_and_never_quoted"
+   ]
+  },
+  {
+   "name": "a9: the 12 MB cap is lifted",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "if size > MAX_DOC_BYTES:",
+   "new": "if size > MAX_DOC_BYTES * 100:",
+   "kills": [
+    "test_a_body_over_12_mb_is_refused_and_nothing_is_stored"
+   ]
+  },
+  {
+   "name": "a10: insert-only rows are editable (no StoreImmutable)",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "if not isinstance(coll, GuardedCollection):",
+   "new": "if False:",
+   "kills": [
+    "test_an_insert_only_row_set_takes_appends_and_refuses_every_edit[projects/p/approvals.jsonl]"
+   ]
+  },
+  {
+   "name": "a11: an insert-only document may be overwritten with other text",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "(coll.find_one({\"_id\": key}) or {}).get(\"text\") != doc[\"text\"]):  # same text: no-op",
+   "new": "False):  # same text: no-op",
+   "kills": [
+    "test_an_insert_only_document_is_written_once_and_never_changed[projects/p/bug_events/e1.json]"
+   ]
+  },
+  {
+   "name": "a12: the identity marker reads as a state document",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "HAS_TEXT = {\"text\": {\"$exists\": True}}",
+   "new": "HAS_TEXT: dict[str, Any] = {}",
+   "kills": [
+    "test_the_identity_marker_is_not_a_state_document_and_is_never_rewritten"
+   ]
+  },
+  {
+   "name": "a13: mtime is a constant",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "base = {\"k\": key, \"p\": route.project, \"text\": text, \"updated_at\": time.time()}",
+   "new": "base = {\"k\": key, \"p\": route.project, \"text\": text, \"updated_at\": 1.0}",
+   "kills": [
+    "test_mtime_is_none_when_absent_and_moves_forward_on_every_write[mongo]"
+   ]
+  },
+  {
+   "name": "a14: the (k, seq) index is not unique",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "([(\"k\", 1), (\"seq\", 1)], True, \"k_seq\"),",
+   "new": "([(\"k\", 1), (\"seq\", 1)], False, \"k_seq\"),",
+   "kills": [
+    "test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing"
+   ]
+  },
+  {
+   "name": "a15: only five collections are indexed",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "for name in sorted(routes.ROUTED_COLLECTIONS):",
+   "new": "for name in sorted(routes.ROUTED_COLLECTIONS)[:5]:",
+   "kills": [
+    "test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing"
+   ]
+  },
+  {
+   "name": "a16: media.json routes to source_docs",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "(\"projects/*/sources/*/media.json\", \"source_media\", \"projects\"),",
+   "new": "(\"projects/*/sources/*/media.json\", \"source_docs\", \"projects\"),",
+   "kills": [
+    "test_each_key_family_lands_in_the_collection_the_table_names[projects/p/sources/s1/media.json-source_media-projects-False]"
+   ]
+  },
+  {
+   "name": "a17: within() matches on a string prefix, not a segment",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "return key == base or key.startswith(base + \"/\")",
+   "new": "return key == base or key.startswith(base)",
+   "kills": [
+    "test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]"
+   ]
+  },
+  {
+   "name": "a18: require_scope accepts the empty prefix",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "if not prefix.strip(\"/\"):",
+   "new": "if False:",
+   "kills": [
+    "test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]"
+   ]
+  }
+ ]
+}

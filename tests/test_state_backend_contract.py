@@ -1,16 +1,18 @@
-"""mongo-store M15, M17, M19 (File and InMemory legs): ONE contract, every backend.
+"""mongo-store M15, M17, M19 (File, InMemory and Mongo legs): ONE contract, every backend.
 
 Each test takes the `backend` fixture, which runs it once per entry of `BACKEND_FACTORIES`
-(`tests/state_backends.py`). The Mongo backend (U4) joins by adding one entry there; nothing in
-this file changes. The semantics asserted are the ones the stores rely on: ordered rows, upsert
-that keeps position, `delete_row` returning a bool, `keys(prefix)` ordering, one winner for an
-exclusive create, a compare-and-set loser that writes nothing, and keys that cannot escape.
+(`tests/state_backends.py`): `file`, `memory` and `mongo` (over the hand-written fake). The
+semantics asserted are the ones the stores rely on: ordered rows, upsert that keeps position,
+`delete_row` returning a bool, `keys(prefix)` ordering, one winner for an exclusive create, a
+compare-and-set loser that writes nothing, and keys that cannot escape.
 """
 
 from __future__ import annotations
 
 import json
+import sys
 import threading
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -19,7 +21,7 @@ import pytest
 from state_backends import BACKEND_FACTORIES
 
 from autotester.core.safe_names import UnsafeName
-from autotester.store.filestore import StateBackend, text_sha
+from autotester.store.mongo_routes import StateBackend, text_sha
 
 
 @pytest.fixture(params=sorted(BACKEND_FACTORIES))
@@ -108,6 +110,64 @@ def test_delete_prefix_counts_and_leaves_the_rest(backend: StateBackend) -> None
     assert backend.keys("") == ["q/3.json"] and backend.delete_prefix("p/") == 0
 
 
+def test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary(
+        backend: StateBackend) -> None:
+    """U2 checker-B W2: `delete_prefix("")` is never 'delete everything'; `p/a` is not `p/ab`."""
+    for key in ("p/a/1.json", "p/a.json", "p/ab/2.json", "q/3.json"):
+        backend.put(key, "x")
+    for empty in ("", "/"):
+        with pytest.raises(UnsafeName):
+            backend.delete_prefix(empty)
+    assert backend.keys("") == ["p/a.json", "p/a/1.json", "p/ab/2.json", "q/3.json"]
+    assert backend.delete_prefix("p/a") == 1  # p/a/1.json only: neither p/a.json nor p/ab/...
+    assert backend.keys("") == ["p/a.json", "p/ab/2.json", "q/3.json"]
+
+
+def test_a_row_set_in_the_catch_all_collection_deletes_like_any_other(
+        backend: StateBackend) -> None:  # cycle 1: a `.jsonl` key no family claims still deletes
+    for key, ident in (("foo.jsonl", "1"), ("dir/foo.jsonl", "2"), ("dir/foo.jsonl", "3")):
+        backend.append_row(key, row(id=ident))
+    backend.put("dir/keep.json", "x")
+    assert backend.delete("foo.jsonl") is True and backend.delete("foo.jsonl") is False
+    assert backend.rows("foo.jsonl") == [] and not backend.exists("foo.jsonl")
+    assert backend.delete_prefix("dir/") == 2 and backend.keys("") == []
+
+
+def test_children_are_the_sorted_immediate_names_with_an_optional_suffix(
+        backend: StateBackend) -> None:
+    for key in ("d/b.json", "d/a.jsonl", "d/sub/x.json", "d/sub/y/z.json", "e/q.json"):
+        backend.put(key, "x")
+    assert backend.children("d") == ["a.jsonl", "b.json", "sub"]
+    assert backend.children("d", ".json") == ["b.json"]
+    assert backend.children("d/sub") == ["x.json", "y"]
+    assert backend.children("d/b.json") == [] and backend.children("nope") == []
+    assert backend.children("") == ["d", "e"]
+
+
+def test_is_dir_is_true_for_a_directory_that_holds_state_only(backend: StateBackend) -> None:
+    backend.put("d/sub/x.json", "x")
+    assert backend.is_dir("d") and backend.is_dir("d/sub") and backend.is_dir("")
+    assert not backend.is_dir("d/sub/x.json") and not backend.is_dir("nope")
+
+
+def test_mtime_is_none_when_absent_and_moves_forward_on_every_write(
+        backend: StateBackend) -> None:
+    assert backend.mtime("m/doc.json") is None and backend.mtime("m/rows.jsonl") is None
+    backend.put("m/doc.json", "1")
+    first = backend.mtime("m/doc.json")
+    assert isinstance(first, float) and first > 1_000_000_000
+    time.sleep(0.03)
+    backend.put("m/doc.json", "2")
+    assert (backend.mtime("m/doc.json") or 0) > first
+    backend.append_row("m/rows.jsonl", row(id="a"))
+    stamp = backend.mtime("m/rows.jsonl")
+    time.sleep(0.03)
+    backend.append_row("m/rows.jsonl", row(id="b"))
+    assert stamp is not None and (backend.mtime("m/rows.jsonl") or 0) > stamp
+    backend.delete("m/doc.json")
+    assert backend.mtime("m/doc.json") is None
+
+
 def _race(workers: int, task: Callable[[int], Any]) -> list[Any]:
     gate, results = threading.Barrier(workers), [None] * workers
 
@@ -159,8 +219,40 @@ def test_put_if_has_one_winner_among_16_callers_holding_the_same_sha(
     assert won.count(True) == 1 and backend.get("q/cas.json") == f"worker-{won.index(True)}"
 
 
+def test_append_text_creates_then_extends_and_keeps_every_byte(backend: StateBackend) -> None:
+    backend.append_text("logs/trace.log", "one\n")
+    backend.append_text("logs/trace.log", "two\n")
+    assert backend.get("logs/trace.log") == "one\ntwo\n"
+    backend.put("logs/other.json", "head,")
+    backend.append_text("logs/other.json", "tail")
+    assert backend.get("logs/other.json") == "head,tail"  # a plain document: bytes, no newline
+
+
+def test_append_text_to_a_row_set_adds_one_row_per_line(backend: StateBackend) -> None:
+    backend.append_row("logs/a.jsonl", row(id="1"))
+    backend.append_text("logs/a.jsonl", row(id="2") + "\n" + row(id="3") + "\n")
+    assert backend.rows("logs/a.jsonl") == [row(id="1"), row(id="2"), row(id="3")]
+
+
+def test_append_text_to_a_row_set_with_blank_lines_adds_only_the_real_rows(
+        backend: StateBackend) -> None:
+    backend.append_text("logs/b.jsonl", row(id="1") + "\n\n   \n" + row(id="2") + "\n")
+    assert backend.rows("logs/b.jsonl") == [row(id="1"), row(id="2")]
+
+
+def test_append_text_loses_no_append_among_16_callers(backend: StateBackend) -> None:
+    if type(backend).__name__ == "FileBackend" and sys.platform == "win32":
+        pytest.skip("Windows `open('a')` can interleave; atomic append is the Memory/Mongo promise")
+    _race(16, lambda i: backend.append_text("logs/race.log", f"line-{i}\n"))
+    assert sorted((backend.get("logs/race.log") or "").splitlines()) == sorted(
+        f"line-{i}" for i in range(16))
+
+
+WHOLE_SEGMENT_ONLY = ["a/CON", "a/nul.txt", "a/COM1.json", "a/lpt9", "a/x.", "a/x ", "a/aux .x",
+                      "a/CONIN$", "a/COM0", "a/lpt0.txt", "a/CLOCK$", "a/com¹", "a/COM²"]
+ALIASED = [*WHOLE_SEGMENT_ONLY, "a/b:c", "a/y\x7f", "a/q?", "a/s*", "a/<x>", 'a/"q"', "a/p|q"]
 UNSAFE = ["../x", "a/../b", "/x", "C:/x", "c:x", "a/C:/y", "a\\b", "a//b", "a/./b", "", "x\x00y",
-          "a/", "..", "."]
+          "a/", "..", ".", *ALIASED]
 
 
 def _calls(backend: StateBackend, key: str) -> list[Callable[[], Any]]:
@@ -169,7 +261,8 @@ def _calls(backend: StateBackend, key: str) -> list[Callable[[], Any]]:
             lambda: backend.delete(key), lambda: backend.exists(key), lambda: backend.rows(key),
             lambda: backend.append_row(key, "{}"), lambda: backend.replace_rows(key, ["{}"]),
             lambda: backend.upsert_row(key, "id", "1", "{}"),
-            lambda: backend.delete_row(key, "id", "1")]
+            lambda: backend.delete_row(key, "id", "1"), lambda: backend.mtime(key),
+            lambda: backend.append_text(key, "x\n")]
 
 
 @pytest.mark.parametrize("key", UNSAFE)
@@ -184,13 +277,23 @@ def test_an_unsafe_key_is_refused_by_every_method_before_any_io(
     assert backend.keys("") == ["keep/me.json"]
 
 
-@pytest.mark.parametrize("prefix", [p for p in UNSAFE if p not in {"", "a/"}])
+@pytest.mark.parametrize("prefix", [p for p in UNSAFE
+                                    if p not in {"", "a/", *WHOLE_SEGMENT_ONLY}])
 def test_an_unsafe_prefix_is_refused_by_the_listing_methods(
         backend: StateBackend, prefix: str) -> None:
     with pytest.raises(UnsafeName):
         backend.keys(prefix)
     with pytest.raises(UnsafeName):
         backend.delete_prefix(prefix)
+
+
+@pytest.mark.parametrize("key", [k for k in UNSAFE if k != ""])
+def test_an_unsafe_directory_key_is_refused_by_children_and_is_dir(
+        backend: StateBackend, key: str) -> None:
+    with pytest.raises(UnsafeName):
+        backend.children(key)
+    with pytest.raises(UnsafeName):
+        backend.is_dir(key)
 
 
 def test_ping_succeeds_on_a_reachable_backend(backend: StateBackend) -> None:

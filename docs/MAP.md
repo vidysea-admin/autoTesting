@@ -422,7 +422,9 @@
 | `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
+| `store/mongo_backend.py` | `MongoBackend`: the `StateBackend` over the one configured Mongo database (mongo-store U4). |
 | `store/mongo_guard.py` | The only door to the AutoTester Mongo database (contract mongo-store M1-M12; D-120..D-122). |
+| `store/mongo_routes.py` | Which collection and which store area a state key belongs to (mongo-store M15, M21, M22; D-122). |
 | `store/notification_prefs.py` | Persist only a numeric account's report-email preference, defaulting safely to off. |
 | `store/project_store.py` | Typed convenience over `filestore` for one project's directory (C1/C3). |
 | `store/request_store.py` | Video-request persistence — split from `project_store.py` at the 300-line |
