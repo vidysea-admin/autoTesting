@@ -1,8 +1,8 @@
-# Contract — mongo-store: AutoTester's own state in one MongoDB database, with encrypted credentials and browser sessions (D-120, D-121, D-122)
+# Contract — mongo-store: AutoTester's own state in one MongoDB database, with credentials and browser sessions stored plain behind the IP allowlist and write fence (D-120, D-121, D-122, D-123)
 
 **Covers:** the units U1-U12 of the mongo-store build (table below). Criteria `M1`-`M48`. **Owner:** /checker. **Status:** ACTIVE (2026-10-29).
 Creation is human-approved: Umesh, D-120 (state moves to one Mongo database `autotester`), D-121 (name in a committed config file), D-122
-(supersedes the D-002 storage clause; allowlist-of-one fence; credentials and Chromium sessions move into the store, encrypted).
+(supersedes the D-002 storage clause; allowlist-of-one fence; credentials and Chromium sessions move into the store) and D-123 (2026-10-29: stored without application-level encryption).
 **Criticality:** HIGH overall. Criteria marked **CRITICAL** are judged by a **dual check** (two independent fresh checkers, D-100); the
 units that own them are marked dual in the unit table.
 **Source:** the design read `.work/mongo-store-design.md` (analyst, 2026-10-29, sections 1-12), **amended by D-120, D-121 and D-122, which win
@@ -19,8 +19,8 @@ D1-D4, `browser-and-secrets.md` B5-B9, `manual-login.md` ML3, `ui-run.md` RU5, `
 | Design read said | Ruling | Effect here |
 |---|---|---|
 | `product_databases` list in config; refuse a name in it; `connect_read_only` registry (design 4.0, 4.2 item 3, M4, M10) | D-122 item 3: **allowlist of one**, no list to maintain; every other database is foreign | M4 refuses three cases only (forbidden name, URI-path clash, unmarked non-empty database). No `product_databases` key exists; an extra key is refused by `extra="forbid"`. The runtime registry is dropped; M10 keeps only the read-side refusal of the store database. |
-| Credentials, `.env` values and `profiles/` stay on disk (design 2.7, Q2) | D-122 item 4: project and role login values and Chromium `storage_state` sessions move into the store, **encrypted at rest** | New CRITICAL groups M31-M37 (credentials) and M38-M40 (sessions). Design M8 ("no secret value in a document") is narrowed: only a sealed envelope written through the secret door may carry a secret. |
-| D-002 vs D-120 open (Q1); new-file list awaiting OK (Q9); config home (Q13) | Resolved by D-122: D-002 storage clause superseded; eight modules approved; `pyproject.toml` `[tool.autotester.store]` | No open decision in the guard group. Any module **not** in D-122's list (see M31 note) needs a new authorizing D-entry first. |
+| Credentials, `.env` values and `profiles/` stay on disk (design 2.7, Q2) | D-122 item 4: project and role login values and Chromium `storage_state` sessions move into the store; **D-123 (2026-10-29) removes the at-rest encryption**: they are stored plain, protected by the IP allowlist, the write fence, M10 and redaction | New CRITICAL groups M31-M37 (credentials) and M38-M40 (sessions), amended to plain storage. Design M8 ("no secret value in a document") is narrowed: only a document written through the secret door into `secrets` / `browser_sessions` may carry a secret value. |
+| D-002 vs D-120 open (Q1); new-file list awaiting OK (Q9); config home (Q13) | Resolved by D-122: D-002 storage clause superseded; eight modules approved; `pyproject.toml` `[tool.autotester.store]` | No open decision in the guard group. Any module **not** in D-122's list needs a new authorizing D-entry first; D-123 adds no module and removes the crypto module and the `cryptography` dependency. |
 | Q3, Q5, Q6, Q8, Q11, Q12, scaling (design 12) | Defaults adopted by the checker seat on 2026-10-29 (no conflict with D-120..D-122) | M25 (CEO-bench list file-only; teaching-video chunks derived and not stored; `crawl_summaries/` still committed), M22 (KG split above 4 MB), M47 (hand-written fake, no `mongomock`; human-run live smoke on a `t_` collection, never CI), M28 (`--max-instances 1` until CAS lands). |
 | Q4 (replica set?), Q7 (TTL), Q10 (dedicated role) | Not answered; not blocking | The backend works **without** multi-document transactions (CAS plus unique indexes, M20, M29). Blob cache cap defaults to 512 MB LRU (M25). No TTL on `audit_log`/`run_traces` in this build. A server-side `readWrite`-only Mongo role is a recommended follow-up, **not** a criterion; the code fence (M1-M12) is the only fence until then and must be tested as such. |
 
@@ -74,12 +74,11 @@ The Mongo user can write to databases other than `autotester` (design F2). The c
 - **M7 — Insert-only collections.** `approvals`, `approval_revocations`, `bug_events`, `delivery_records` expose no replace, update or delete
   verb (D-018/AT-110: an approval is never edited). **Falsifier:** calling any of those verbs on those collections does not raise.
   *LOCAL.* serves: O7, O10 · CRITICAL · judges: U1, U4
-- **M8 — No secret value in a stored document, except a sealed envelope.** Every `put`/`append_row`/`upsert_row`/blob metadata write passes
+- **M8 — No secret value in a stored document, except through the secret door.** Every `put`/`append_row`/`upsert_row`/blob metadata write passes
   `Redactor.assert_clean`, built from every repo `.env` value **and every value held in the credential store** (M34), including the Mongo
-  URI. A document or GridFS metadata containing one is refused with a named error and nothing is written. The **only** carrier of a secret is
-  the sealed envelope of M31/M38, written through the secret door into `secrets` / `browser_sessions`, and it holds ciphertext, never the
-  value. **Falsifier:** plant a known credential value in a case body, a trace row, an auth audit row and GridFS metadata; any write succeeds,
-  or a dump of the whole fake database (all collections, all GridFS chunks) contains the plaintext. *LOCAL.* serves: O7 · CRITICAL · judges: U4, U5a, U11, U12
+  URI. A document or GridFS metadata containing one is refused with a named error and nothing is written. The **only** carrier of a secret value is
+  the document written through the secret door (M31/M38) into `secrets` / `browser_sessions`, stored without encryption (D-123). **Falsifier:** plant a known credential value in a case body, a trace row, an auth audit row and GridFS metadata; any write succeeds,
+  or a dump of the whole fake database (all collections, all GridFS chunks) contains the value in any collection other than `secrets` and `browser_sessions`. *LOCAL.* serves: O7 · CRITICAL · judges: U4, U5a, U11, U12
 - **M9 — The URI is never logged or echoed.** Not in logs, exception text, `StoreUnavailable`, the UI 503 page, the dry-run report, or any
   `autotester store *` output (mirrors `db-assert.md` D2 and `tests/test_db.py:84`). **Falsifier:** a canary URI with a distinctive password
   appears in captured stdout, stderr, log records or response bodies across a failing ping, a failing write and a failing migrate.
@@ -179,43 +178,45 @@ The Mongo user can write to databases other than `autotester` (design F2). The c
   contains argon2 strings only in `auth_users`. **Falsifier:** grep of captured logs and responses for the `$argon2` prefix. *LOCAL.*
   serves: O7, O15 · CRITICAL · judges: U6a, U6b, U6c
 
-## Credential store (D-122 item 4) — CRITICAL; every row here is dual-checked
+## Credential store (D-122 item 4, stored plain per D-123) — CRITICAL; every row here is dual-checked
 
-Scope: the project and role login values entered through the UI for declared `SecretRef` keys. **Not** in scope: the Mongo URI,
+Scope: the project and role login values entered through the UI for declared `SecretRef` keys, stored **without application-level encryption**
+(D-123, which supersedes D-122 item 4's at-rest encryption only). **Not** in scope: the Mongo URI,
 `AUTOTESTER_APPROVAL_KEY`, and provider API keys, which stay deployment environment (M36). **Module note:** D-122 approves eight new modules and
-none is a credential or crypto module. The maker proposes an existing home first (`core/env.py` for resolve/write, `browser/secrets.py` for
-`SecretStore`); a new module such as `store/secret_box.py` needs a new authorizing D-entry from Umesh before it exists. The line cap (300) still binds.
+none is a credential module, and D-123 removes the crypto module and dependency. The maker proposes an existing home first (`core/env.py` for resolve/write, `browser/secrets.py` for
+`SecretStore`); a new module needs a new authorizing D-entry from Umesh before it exists. The line cap (300) still binds.
 
-- **M31 — Sealed at rest.** A credential value is stored only as an authenticated-encryption envelope (`cryptography` AEAD, AES-256-GCM or
-  ChaCha20-Poly1305) `{v, kid, nonce, ct}` in `secrets`, `_id` = the namespaced key, with `p` = project slug. The key is derived with
-  **HKDF-SHA256** from `AUTOTESTER_APPROVAL_KEY` with `info = b"autotester-store-secrets-v1"` (the purpose label, D-122) and a fixed documented
-  salt, 32 bytes; a fresh random 96-bit nonce per write; AAD binds `purpose|collection|_id|p` so a ciphertext moved to another document or
-  project fails to open; `kid` is a truncated HMAC of a constant under the derived key (identifies the key without leaking it). The derived key
-  lives only in process memory: never in the database, a log, a prompt, an exception, a trace or an artifact. **Falsifier:** (a) two writes of the
-  same value yield equal ciphertext (nonce reuse); (b) flipping one byte of `ct`, `nonce`, `_id` or `p` still opens; (c) changing the HKDF label
-  still opens; (d) the derived key or the master key appears in a dump of the fake database, in captured logs, or in `repr()` of the store.
-  *LOCAL.* serves: O7 · CRITICAL · judges: U11
-- **M32 — Fails closed on a missing or changed key.** With `AUTOTESTER_APPROVAL_KEY` unset or empty, every credential-store read and write raises
-  `SecretKeyMissing` (a named error): no plaintext is written anywhere (not to the database, not to `.env`, not to a temp file), and no
-  partial value is returned. With the key changed since the write (`kid` mismatch), a read raises `SecretKeyChanged` and says to re-enter the
-  value; it never returns garbage or an empty string. The rest of the document store keeps working. **Falsifier:** unset the key, save a
-  credential through the UI route; the save succeeds, or a file under the data root changed, or the failure is a bare `KeyError`. *LOCAL.*
-  serves: O7 · CRITICAL · judges: U11
+- **M31 — Plain at rest, in one place (D-123).** A credential value is stored without application-level encryption, as a document in `secrets`
+  (`_id` = the namespaced key, `p` = project slug, `value`, `updated_at`), and in no other collection, file or GridFS blob. Exactly one write
+  path (the "secret door", in an existing module home) can put a value there; every other write path is refused by `Redactor.assert_clean` (M8).
+  No encryption code exists: no key derivation, no envelope, no `store/secret_box.py`, no `cryptography` import (M47). The protection is the server IP
+  allowlist, the write fence (M1-M12, D-121, D-122 item 3), the M10 read-side refusal and the redaction rules (M33-M35, M40). **Falsifier:** (a) a value
+  is found in any collection other than `secrets` (and, for sessions, `browser_sessions`), in GridFS, in `.env` in mongo mode, or in a log, prompt, trace
+  or exception; (b) a second write path to `secrets` exists (grep for `collection("secrets")` outside the secret door); (c) a module under `src/` imports
+  `cryptography`, derives a key from `AUTOTESTER_APPROVAL_KEY`, or a `secret_box` module exists; (d) project B's saved key carries a `p` other than B's, or
+  reads back under project A's slug filter. *LOCAL.* serves: O7 · CRITICAL · judges: U11
+- **M32 — No key dependency; fails closed on an unreachable store (D-123).** Credential reads and writes do not depend on `AUTOTESTER_APPROVAL_KEY`
+  in any way: unsetting it, setting it empty or changing it leaves every stored value readable and writable (D-123: no lost-login-on-key-change
+  failure; the key still signs approvals, D-018). When the store is unreachable, a credential read or write raises the named `StoreUnavailable`
+  (M9 rules on the message): nothing falls back to writing the value to `.env`, a temp file, the repo or a log, and no partial value is returned.
+  The rest of the document store is unaffected by this criterion. **Falsifier:** change `AUTOTESTER_APPROVAL_KEY` after a save and the read fails or
+  returns another value; make the fake raise on write and a credential save through the UI route succeeds, or a file under the data root changed, or
+  the failure is a bare `KeyError`. *LOCAL.* serves: O7 · CRITICAL · judges: U11
 - **M33 — Substitution and scoping unchanged.** `{{SECRET:KEY}}` is substituted only at `page.fill()` time, scoped to the `SecretRef` domains
   inside `allowed_domains` (suffix match, `browser/secrets.py::_host_matches`); a project resolves only the keys it declares in `SecretRef[]`;
   `core.redact.assert_no_raw_secrets` is still the gate before any model call; screenshots still mask secret inputs before capture (B7); no
-  schema model gains a field holding a value (C5). Resolution order in mongo mode: sealed store first, then process environment; a key present
+  schema model gains a field holding a value (C5). Resolution order in mongo mode: credential store first, then process environment; a key present
   in both resolves to the store value. **Falsifier:** project B resolves a key declared only by project A; a value resolves for a host outside
   its domains; a prompt carrying a store-held value passes `assert_no_raw_secrets`; the existing `browser-and-secrets.md` B5-B9 tests are
   edited to pass. *LOCAL.* serves: O7 · CRITICAL · judges: U11
 - **M34 — Redaction covers store-held values.** The `Redactor` used by logs, traces, prompts, evidence and reports is built from the union of
-  `.env` values **and** the decrypted values of every credential in the store (loaded at run start, in memory only). Adding or changing a
+  `.env` values **and** the values of every credential in the store (loaded at run start, in memory only; never written back anywhere). Adding or changing a
   stored credential refreshes the redactor before the next scrub. **Falsifier:** write a credential through the store, put its value in a trace
   line, an exception message, a `Redactor.scrub` input and an assembled prompt; any output still contains the value. *LOCAL.*
   serves: O7 · CRITICAL · judges: U11
 - **M35 — UI and API surface.** A saved value is returned only to a user holding `credentials.view` (default Admin/CEO, `auth.md` AU21; the
   C5 exception, tightened on hosted); every other viewer, every list API and every error sees "set" / "not set" and key names. In mongo mode
-  the UI write goes to the sealed store and **not** to the repo `.env` (no second plaintext copy on the ephemeral disk); in file mode it
+  the UI write goes to the credential store and **not** to the repo `.env` (no second copy on the ephemeral disk); in file mode it
   writes `.env` exactly as today; the two never both receive the value. The route treats a newly submitted raw value as secret before any
   validator can echo it (the C5 guard rule). **Falsifier:** a viewer without `credentials.view` gets a value from any route; a mongo-mode save
   leaves the value in `.env`; a validation error echoes the submitted value. *LOCAL.* serves: O7 · CRITICAL · judges: U11
@@ -225,20 +226,21 @@ none is a credential or crypto module. The maker proposes an existing home first
   serves: O7 · CRITICAL · judges: U11, U8
 - **M37 — Lifecycle.** Deleting a role account, a `SecretRef` or a project deletes its `secrets` and `browser_sessions` documents (a
   `delete_many` whose filter carries `p`, M6); a deleted credential cannot resolve afterwards; the `.env` snapshot-restore on failure in
-  `ui/routes_role_accounts.py:196-211` has a store equivalent that restores the previous sealed envelope, not a plaintext copy. **Falsifier:**
+  `ui/routes_role_accounts.py:196-211` has a store equivalent that puts the previous `secrets` document back unchanged, not a copy written to `.env`, a temp file or a log. **Falsifier:**
   after deleting the account a read of its key still returns a value or the document remains. *LOCAL.* serves: O7, O17 · judges: U11
 
-## Browser session store (D-122 item 4) — CRITICAL; every row here is dual-checked
+## Browser session store (D-122 item 4, stored plain per D-123) — CRITICAL; every row here is dual-checked
 
 Fact that shapes this unit: on `4de46d52` no code calls `storage_state` (`grep -rn storage_state src tests` is empty); a login survives today only
 inside the persistent Chromium directory `profiles/<slug>/` (`browser/launch.py:188-191`, `manual-login.md` ML3). This unit **adds** an
 export/restore of a Playwright `storage_state` (cookies plus origin `localStorage`) per role account; the `profiles/` directory stays local scratch.
 
-- **M38 — Sealed `storage_state`, scoped on the way in and out.** A session is stored in `browser_sessions` (`_id` = `<slug>|<account_id>`, `p`,
-  `saved_at`, `expires_at` = the earliest unexpired auth-cookie expiry, hosts list) as the same sealed envelope as M31 with its own purpose
-  binding in the AAD. On **save and on restore** every cookie and every origin whose host does not satisfy `_host_matches` against the
+- **M38 — Plain `storage_state`, scoped on the way in and out.** A session is stored in `browser_sessions` (`_id` = `<slug>|<account_id>`, `p`,
+  `state` = the Playwright `storage_state` as is, `saved_at`, `expires_at` = the earliest unexpired auth-cookie expiry, hosts list), unencrypted (D-123), and only
+  there. On **save and on restore** every cookie and every origin whose host does not satisfy `_host_matches` against the
   project's `allowed_domains` is dropped. **Falsifier:** a `storage_state` containing a cookie for `evil.example` is saved with that cookie,
-  or restored into the context; or the stored document holds a cookie value in plaintext. *LOCAL.* serves: O7 · CRITICAL · judges: U12
+  or restored into the context; or a cookie or `localStorage` value appears in any collection other than `browser_sessions`, in GridFS, in `.env`,
+  or on disk outside the local `profiles/` scratch. *LOCAL.* serves: O7 · CRITICAL · judges: U12
 - **M39 — Restore semantics.** Restore applies only to the account it was saved for (never account A's state into account B's context), only
   while unexpired, and not after an explicit logout/delete. An entry-screen case still never runs on a profile that was not removed (`ui-run.md`
   RU5): a restored session must not defeat `wipe_entry_profile` (`stages/orchestrate_execute.py:115`); an entry run starts without restored
@@ -271,20 +273,21 @@ Tool: `autotester store migrate [--area A] [--project SLUG] [--apply] [--include
   integer ids, seeded meta and allocator docs (`max(id)+1`) always. `browser_sessions` are **never** migrated: a Chromium profile directory is
   not convertible offline, so role logins are re-established by the human (stated in the dry-run report). **Falsifier:** a default run copies
   a session row; the allocator is seeded at or below an existing id. *LOCAL.* serves: O15 · judges: U8
-- **M46 — Credential migration.** `store migrate` reads declared `SecretRef` values from the repo-root `.env`, seals them (M31) and writes them to
-  `secrets`; it never prints, logs or reports a value (key names and counts only, M36 classes excluded); it never edits `.env`; without the
-  master key it refuses (M32) rather than skipping silently. The first real `--apply` is G1, a human gate. **Falsifier:** report/stdout/stderr
-  contains any `.env` value; `.env` hash changes; the run proceeds with the key unset. *LOCAL.* serves: O7 · CRITICAL · judges: U8, U11
+- **M46 — Credential migration.** `store migrate` reads declared `SecretRef` values from the repo-root `.env` and writes them to the `secrets`
+  collection through the secret door (M31); it never prints, logs or reports a value (key names and counts only, M36 classes excluded); it never
+  edits `.env`; it does not depend on `AUTOTESTER_APPROVAL_KEY` (M32) and refuses only on an unresolvable URI (M41). The first real `--apply` is G1,
+  a human gate. **Falsifier:** report/stdout/stderr contains any `.env` value; `.env` hash changes; a migrated value lands in any collection other
+  than `secrets`; the run needs or reads the approval key. *LOCAL.* serves: O7 · CRITICAL · judges: U8, U11
 
 ## Tests, dependencies, docs
 
-- **M47 — Test doubles and the live smoke.** The fake is a hand-written `FakeMongoClient` (plus minimal GridFS) covering exactly the verbs of M6;
-  `mongomock` is not added (`grep -c mongomock pyproject.toml uv.lock` stays 0). The only new dependency is `cryptography`, declared as a direct
-  dependency (it is already locked transitively, `uv.lock:871`; the undeclared-direct-import doctor check forbids relying on that), and the lock
-  stays consistent (`uv lock --check`). A human-run live smoke is allowed only against a collection named `t_<...>` (`^t_[a-z0-9_]{1,30}$`) in the
+- **M47 — Test doubles and the live smoke; no crypto dependency (D-123).** The fake is a hand-written `FakeMongoClient` (plus minimal GridFS) covering exactly the verbs of M6;
+  `mongomock` is not added (`grep -c mongomock pyproject.toml uv.lock` stays 0). **No new dependency is added**: `cryptography` is not declared in
+  `pyproject.toml` (`grep -c cryptography pyproject.toml` stays 0; it remains only a transitive lock entry), no module under `src/` imports it, and the
+  lock stays consistent (`uv lock --check`). A human-run live smoke is allowed only against a collection named `t_<...>` (`^t_[a-z0-9_]{1,30}$`) in the
   configured database, only when `AUTOTESTER_LIVE_MONGO_TEST=1`, and never when `CI` is set; it is the single exception to the closed
   `COLLECTIONS` set and does not touch the fence (collection-level only). **Falsifier:** `collection("t_x")` works with the flag unset or `CI`
-  set; `collection("anything_else")` works under the flag; the suite imports `mongomock`. *LOCAL.* serves: O7 · judges: U1, U11
+  set; `collection("anything_else")` works under the flag; the suite imports `mongomock`; `pyproject.toml` or any `src/` file names `cryptography`. *LOCAL.* serves: O7 · judges: U1, U11
 - **M48 — Docs follow the contract, and C5/C6 are amended.** After the CRITICAL units pass: `docs/ARCHITECTURE.md` Storage and Security prose and
   `CLAUDE.md` "Credentials (hard boundary)" change only under D-120/D-122; `core-invariants.md` **C5** (value lives only in the repo-root `.env`)
   and **C6** (files are the store; no database is the primary store) gain an amendment naming the Mongo backend, with the file backend still
@@ -313,8 +316,8 @@ beyond the D-122 list is a STOP, not a decision for the maker.
 | U6c | E Mongo video shares/links/requests/comments, `schedule_owner`, `intake_gate_auth`, audit rows | M30 | U6b | |
 | U7 | E coordination on Mongo: `create_exclusive`, `put_if`, purge as `delete_many`, run-queue `rev` | M19, M20 | U3c, U4 | **dual** |
 | U9 | E area routing, startup ping, `StoreUnavailable` to 503, readiness field, `core/env.py::mongo_uri` | M9, M11, M13, M26, M27 | U4 | |
-| **U11** | **Credential store**: sealed `secrets`, HKDF key, resolve order, redactor union, UI routes (`ui/routes_role_accounts.py`, env editor), lifecycle; existing module homes only unless a D-entry adds one | M8, M31-M37, M46, M47 | U1, U3b, U4, U9 | **dual (CRITICAL)** |
-| **U12** | **Session store**: `storage_state` export/restore per role account, sealed `browser_sessions`, scoping, RU5-safe restore | M38-M40 | U11 | **dual (CRITICAL)** |
+| **U11** | **Credential store**: `secrets` (plain, D-123; no crypto module, no key derivation, no new dependency), resolve order, redactor union, UI routes (`ui/routes_role_accounts.py`, env editor), lifecycle; existing module homes only unless a D-entry adds one | M8, M31-M37, M46, M47 | U1, U3b, U4, U9 | **dual (CRITICAL)** |
+| **U12** | **Session store**: `storage_state` export/restore per role account, `browser_sessions` (plain, D-123), scoping, RU5-safe restore | M38-M40 | U11 | **dual (CRITICAL)** |
 | U8 | N `cli_store.py` migrate and verify, auth importer, approvals verbatim, credential importer | M9, M25, M36, M41-M46 | U4, U5a, U6b, U7, U11 | **dual** |
 | U10 | E `docker/DEPLOY.md`, `docker/entrypoint.sh`; `docs/ARCHITECTURE.md`, `CLAUDE.md` Credentials prose, `core-invariants.md` C5/C6 (checker amendment) | M28, M48 | U9, U11, U12 | |
 | G1 | **HUMAN_GATE**: Umesh runs or approves the exact first `migrate --apply` and each area flip | SERVER-GATED | U8, U9, U10 | gate |
@@ -330,7 +333,8 @@ while the rest of the run is in Mongo (M16). U11 follows U3b because credential 
 ## Not criteria (recorded so nobody adds them silently)
 
 - A server-side Mongo role limited to `readWrite` on `autotester` (Q10): recommended follow-up, Umesh's call. Until then the code fence is the only fence.
-- Rotation of `AUTOTESTER_APPROVAL_KEY`: a change makes sealed values unreadable and M32 says so; a re-seal tool is not part of this build.
+- Rotation of `AUTOTESTER_APPROVAL_KEY`: it no longer touches credentials or sessions (D-123 removed the derived key); it still governs approval signing (D-018). No re-seal tool exists or is wanted.
+- Residual risk accepted by Umesh (D-123, 2026-10-29): anyone who can read the `autotester` database or its backups can read login values and session cookies in plain text. Protection is the server IP allowlist, the write fence (M1-M12), the M10 refusal and the redaction rules. Umesh may revisit; reviving encryption needs a new D-entry.
 - TTL on `audit_log` / `run_traces`; multi-instance Cloud Run (needs U7 on first).
 - Dropping the `autotester` database is not exposed at runtime and needs a human gate (D-120).
 
@@ -339,3 +343,8 @@ while the rest of the run is in Mongo (M16). U11 follows U3b because credential 
 - 2026-10-29 · authored by /checker (Unit 0 of mongo-store) from `.work/mongo-store-design.md` as amended by D-120, D-121, D-122. Renumbered the
   design's M1-M33 into M1-M48; added M11 (marker, from design M33), M12 (mutants), M31-M40 (credential and session stores, D-122 item 4), M46,
   M47, M48; dropped the `product_databases` list and the `connect_read_only` registry (D-122 item 3).
+- 2026-10-30 · amended by /checker (chk-mongo-d123-amend) to D-123, which supersedes D-122 item 4's at-rest encryption only: credentials and
+  Chromium `storage_state` are stored in `autotester` **without application-level encryption**. Changed: title, header, "Amendments applied" rows 2 and 3 and the M31 module note
+  M8, M31 (now "Plain at rest, in one place"), M32 (now "No key dependency; fails closed on an unreachable store"),
+  M33, M34, M35, M37, M38, M46, M47, the U11 and U12 unit rows and the "Not criteria" rotation line. Kept unchanged: M36, M39, M40, M41-M45, M48, the dual
+  check on every CRITICAL row, every access, scoping, redaction and RU5-safe-restore rule. Residual risk recorded under "Not criteria".
