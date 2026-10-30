@@ -1,0 +1,135 @@
+{
+ "tests": [
+  "tests/test_state_bypass_rule.py",
+  "tests/test_state_sweep_u3c.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: write_text dropped from the flagged methods",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "_METHODS = frozenset({\"write_text\", ",
+   "new": "_METHODS = frozenset({",
+   "kills": [
+    "test_every_listed_call_on_a_project_path_in_stages_is_flagged[write_text]"
+   ]
+  },
+  {
+   "name": "m2: browser no longer exempt",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "_EXEMPT_DIRS = frozenset({\"store\", \"browser\"})",
+   "new": "_EXEMPT_DIRS = frozenset({\"store\"})",
+   "kills": [
+    "test_store_and_browser_are_exempt[browser]"
+   ]
+  },
+  {
+   "name": "m3: a read mode counts as a write",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "return any(set(t) & set(\"wax+\") for t in texts if len(t) <= 4)",
+   "new": "return True",
+   "kills": [
+    "test_a_read_is_not_flagged_a_write_mode_is"
+   ]
+  },
+  {
+   "name": "m4: a stale baseline row is not reported",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "for e in sorted((baseline | permanent) - seen)]",
+   "new": "for e in []]",
+   "kills": [
+    "test_a_baseline_row_allows_exactly_that_site_and_a_stale_row_is_reported"
+   ]
+  },
+  {
+   "name": "m5: the baseline allows nothing",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "if entry not in baseline | permanent:",
+   "new": "if entry not in permanent:",
+   "kills": [
+    "test_a_baseline_row_allows_exactly_that_site_and_a_stale_row_is_reported",
+    "test_this_repo_is_clean"
+   ]
+  },
+  {
+   "name": "m6: the permanent list allows nothing",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "if entry not in baseline | permanent:",
+   "new": "if entry not in baseline:",
+   "kills": [
+    "test_a_permanent_row_allows_a_host_check"
+   ]
+  },
+  {
+   "name": "m7: .work is no longer a state part",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "_STATE_PARTS = frozenset({\".work\", ",
+   "new": "_STATE_PARTS = frozenset({",
+   "kills": [
+    "test_repo_root_is_state_only_under_work_or_projects[repo_root() / '.work' / 'a.json'-True]"
+   ]
+  },
+  {
+   "name": "m8: repo_root alone counts as state",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "return bool(parts & _STATE_PARTS) and bool(names & (roots | _ROOT_NAMES))",
+   "new": "return bool(names & (roots | _ROOT_NAMES))",
+   "kills": [
+    "test_repo_root_is_state_only_under_work_or_projects[repo_root() / 'docs' / 'a.md'-False]"
+   ]
+  },
+  {
+   "name": "m9: core/trace.py no longer a state-persisting module",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "\"core/trace.py\", \"stages/orchestrate_checkpoint.py\"",
+   "new": "\"stages/orchestrate_checkpoint.py\"",
+   "kills": [
+    "test_state_persisting_modules_flag_any_path_a_caller_hands_them[core/trace.py]"
+   ]
+  },
+  {
+   "name": "m10: taint does not propagate",
+   "file": "src/autotester/ledger/committed_fresh.py",
+   "old": "for _ in range(4):",
+   "new": "for _ in range(0):",
+   "kills": [
+    "test_taint_follows_a_derived_name"
+   ]
+  },
+  {
+   "name": "m11: doctor does not run the rule",
+   "file": "src/autotester/doctor.py",
+   "old": "check_env_dollar, check_state_bypass):",
+   "new": "check_env_dollar):",
+   "kills": [
+    "test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red"
+   ]
+  },
+  {
+   "name": "s1: checkpoint flush writes the disk directly",
+   "file": "src/autotester/stages/orchestrate_checkpoint.py",
+   "old": "            write_text(self.path, text)",
+   "new": "            self.path.write_text(text, encoding='utf-8')",
+   "kills": [
+    "test_the_checkpoint_flush_writes_through_the_store"
+   ]
+  },
+  {
+   "name": "s2: heartbeat writes the disk directly",
+   "file": "src/autotester/stages/schedule_store.py",
+   "old": "    write_text(path, json.dumps({\"last_tick\": now.isoformat()}))",
+   "new": "    path.parent.mkdir(parents=True, exist_ok=True)\n    path.write_text(json.dumps({\"last_tick\": now.isoformat()}), encoding=\"utf-8\")",
+   "kills": [
+    "test_the_heartbeat_writes_through_the_store"
+   ]
+  },
+  {
+   "name": "s3: heartbeat body key renamed",
+   "file": "src/autotester/stages/schedule_store.py",
+   "old": "{\"last_tick\": now.isoformat()}))\n",
+   "new": "{\"tick\": now.isoformat()}))\n",
+   "kills": [
+    "test_with_the_file_backend_the_heartbeat_is_the_same_file_as_before"
+   ]
+  }
+ ]
+}

@@ -10,7 +10,7 @@ serialise). The caller passes every path; this module knows no data root.
 - **Purge**: `purge_project` removes a deleted project's markers and its own records file,
   together or not at all, also across an interrupt or a kill (a manifest lets the next purge adopt
   a stranded stage).
-- **Heartbeat**: written to a temp file then `os.replace`d, so a reader sees old or new, never half.
+- **Heartbeat**: written with the store's atomic `write_text`: a reader sees old or new, never half.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ from pydantic import ValidationError
 
 from autotester.core.file_lock import file_lock
 from autotester.schema.schedule import SlotClaim, SlotOutcome, SlotRecord
+from autotester.store.filestore import write_text
 
 _CLAIM_SUFFIX = ".claim"
 
@@ -242,10 +243,8 @@ def _purge_locked(claim_dir: Path, records_path: Path, project: str) -> None:
 
 
 def write_heartbeat(path: Path, now: datetime) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    tmp.write_text(json.dumps({"last_tick": now.isoformat()}), encoding="utf-8")
-    os.replace(tmp, path)
+    """Atomic through the store: a reader sees the old or the new tick, never half."""
+    write_text(path, json.dumps({"last_tick": now.isoformat()}))
 
 
 def read_heartbeat(path: Path) -> datetime | None:

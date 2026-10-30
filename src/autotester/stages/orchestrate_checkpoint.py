@@ -21,7 +21,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Interrupt
 
 from autotester.core.redact import Redactor
-from autotester.store.filestore import _atomic_write
+from autotester.store.filestore import write_text
 
 _FORMAT = "autotester.checkpoint.v1"
 _MUTATORS = ("put", "put_writes", "delete_thread")
@@ -246,7 +246,7 @@ class FileCheckpointer(InMemorySaver):
                 self.serde.loads_typed(row)
 
     def flush(self) -> None:
-        """Use the existing unique-temp atomic writer, under the mutation lock."""
+        """Persist through the store's atomic whole-document write, under the mutation lock."""
         with self._lock:
             self._check_disk()
             tables = self._tables()
@@ -254,7 +254,7 @@ class FileCheckpointer(InMemorySaver):
             payload = {"format": _FORMAT, "thread_id": self.thread_id, "tables": _enc(tables)}
             text = json.dumps(payload, allow_nan=False)
             self.serde.redactor.assert_clean(text)
-            _atomic_write(self.path, text)
+            write_text(self.path, text)
             self._disk_hash = self._digest()
 
 
