@@ -10,6 +10,7 @@ reader a real local path: the file itself, or a verified copy in `.work/blob-cac
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import mimetypes
@@ -40,7 +41,22 @@ NOT_BLOB_SEGMENTS = frozenset({".work", "profiles", "chunks", "crawl_summaries",
 NOT_BLOB_KINDS = frozenset({"export"})
 UNMASKED_REFUSED = frozenset({"screenshot"})  # the FB3 mirror (Evidence.masked)
 KIND = re.compile(r"[a-z][a-z_]{0,31}")
-TEXT_TYPES = ("text/", "application/json", "application/xml", "application/x-ndjson")
+TEXT_MEDIA = frozenset({
+    "application/json", "application/xml", "application/javascript", "application/x-javascript",
+    "application/ecmascript", "application/yaml", "application/x-yaml", "application/x-ndjson",
+    "application/x-www-form-urlencoded", "application/graphql"})
+TEXT_SUFFIXES = ("+json", "+xml", "+yaml")
+
+
+def _is_text(content_type: str) -> bool:
+    """A media type is case-insensitive and may carry parameters: scan every textual body."""
+    media = content_type.split(";")[0].strip().casefold()
+    return media.startswith("text/") or media in TEXT_MEDIA or media.endswith(TEXT_SUFFIXES)
+
+
+def _folded(part: str) -> str:
+    """Windows aliases a name by case and by trailing dots or spaces: compare the alias."""
+    return part.casefold().rstrip(". ")
 
 
 class BlobNotFound(KeyError):
@@ -91,8 +107,8 @@ def _sha(data: bytes) -> str:
 def _vet(key: str, data: object, kind: str, masked: bool, content_type: str,
          redactor: Redactor) -> None:
     """Refuse before any write. Nothing here echoes the key, the body or a secret."""
-    parts = safe_key(key).split("/")
-    name = parts[-1].casefold()
+    parts = [_folded(p) for p in safe_key(key).split("/")]
+    name = parts[-1]
     if (NOT_BLOB_SEGMENTS.intersection(parts) or name == ".env" or name.startswith(".env.")
             or name.endswith(".xlsx") or kind in NOT_BLOB_KINDS):
         raise BlobRefused("this path or kind is not stored as a blob (M25)")
@@ -101,7 +117,7 @@ def _vet(key: str, data: object, kind: str, masked: bool, content_type: str,
     if kind in UNMASKED_REFUSED and not masked:
         raise BlobRefused(f"a {kind} must be stored masked")
     text = [key, kind, content_type]
-    if content_type.startswith(TEXT_TYPES):
+    if _is_text(content_type):
         text.append(bytes(data).decode("utf-8", errors="replace"))
     try:
         for part in text:
@@ -200,8 +216,10 @@ class MongoBlobStore:
         return _info(key, revs[-1]["metadata"]) if revs else None
 
     def _prune(self, revs: list[dict[str, Any]]) -> None:
+        from autotester.store import mongo_guard  # lazy: the file mode never loads the driver
         for rev in revs:
-            self._bucket.delete(rev["id"])
+            with contextlib.suppress(mongo_guard.StoreNotFound):  # a racer removed it: pruned
+                self._bucket.delete(rev["id"])
 
     def put(self, key: str, data: bytes, *, kind: str, masked: bool,
             content_type: str = "application/octet-stream") -> BlobInfo:

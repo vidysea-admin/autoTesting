@@ -4,6 +4,16 @@
  ],
  "mutations": [
   {
+   "name": "b6: a racer's missing revision raises out of prune",
+   "file": "src/autotester/store/blobs.py",
+   "old": "            with contextlib.suppress(mongo_guard.StoreNotFound):  # a racer removed it: pruned",
+   "new": "            if True:  # a racer removed it: pruned",
+   "kills": [
+    "test_two_racing_puts_never_leave_zero_revisions",
+    "test_a_delete_racing_a_delete_does_not_raise_for_a_revision_already_gone"
+   ]
+  },
+  {
    "name": "b1: prune before upload",
    "file": "src/autotester/store/blobs.py",
    "old": "        self._bucket.upload(key, bytes(data), metadata={**meta, \"put_seq\": time.time_ns()})\n        self._prune(revs)  # only what was seen BEFORE the upload: a racing put survives",

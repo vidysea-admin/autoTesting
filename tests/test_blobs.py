@@ -139,7 +139,9 @@ def test_an_unsafe_key_is_refused_before_any_write(rig: Any, key: str) -> None:
 @pytest.mark.parametrize("key", [
     ".work/ceo-bench/answers.json", ".work/blob-cache/x.png", "profiles/pathlynks/Default/x",
     "p/sources/s1/chunks/c0.json", "p/crawl_summaries/c1.json", ".env", "sub/.env",
-    "p/.env.local", "p/ai/ai-report.xlsx", "p/ai/REPORT.XLSX", ".blobmeta/x.json"])
+    "p/.env.local", "p/ai/ai-report.xlsx", "p/ai/REPORT.XLSX", ".blobmeta/x.json",
+    ".WORK/a", "a/.Work/b", "Profiles/x", "CHUNKS/x", "Crawl_Summaries/x", "a/.BLOBMETA/x",
+    "x.xlsx.", "x.xlsx ", ".env ", "a/.work./b", "a/profiles /b"])
 def test_data_that_never_moves_is_refused_and_nothing_is_written(rig: Any, key: str) -> None:
     """M25: ceo-bench, scratch, Chromium profiles, teaching chunks, summaries, .env, exports."""
     store, snapshot, _ = rig
@@ -179,6 +181,11 @@ PLANTS: list[tuple[str, Callable[[], dict[str, Any]]]] = [
                            "content_type": "text/html", "kind": "dom"}),
     ("json body", lambda: {"key": "p/n.json", "data": f'{{"t":"{SECRET}"}}'.encode(),
                            "content_type": "application/json", "kind": "network"}),
+    *[(f"body as {ct}", lambda ct=ct: {"key": "p/b.dat", "data": f"v={SECRET}".encode(),
+                                      "content_type": ct, "kind": "network"})
+      for ct in ("TEXT/PLAIN", "Application/JSON", "application/problem+json", "image/svg+xml",
+                 "application/javascript", "application/yaml", "application/json; charset=UTF-8",
+                 "application/x-www-form-urlencoded", "application/vnd.api+xml", " text/html")],
 ]
 
 

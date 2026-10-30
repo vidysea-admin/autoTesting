@@ -1,13 +1,41 @@
 # Manifest - mongo-store-u5a
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U5a. **Criticality:** normal (the U5a row has no dual mark). Judged: M2, M5, M8, M23, M25 (the `BlobStore` half; the migrate-dry-run half of M25 is U8's, the call-site half of M24/M25 is U5b's).
 **Authority:** D-120, D-121, D-122 (item 1 lists `store/blobs.py` as an approved new module), D-123 (no encryption; irrelevant here, blobs carry no secret door)
 Round cap: normal unit, D-014 cap of 2 fix cycles applies.
 **Branch:** `feat/mongo-store-u5a`, cut from master `0a2cbe45` (U1, U2, U6a merged). Not merged, not pushed.
 **Base SHA:** `0a2cbe457630f0edcefbac96e59122864b8f6b27`
 **Code SHA:** `de49a203ec90c94bd7d5b56701074009d93a3e16` (the only code commit; this manifest is a second commit on top of it)
+
+## Cycle 1 changes (answers checker A FAIL cycle 0, `qa/verdicts/mongo-store-u5a.md`, 5cca3e06)
+
+Line numbers in the cycle 0 sections below are for the cycle 0 file; `blobs.py` is now 284 lines (cap 300). Tests were written first and run red (42 failed, 2 of them the race tests) before the code changed.
+
+| Finding | Fix | Test (red first, now green) | Mutants |
+|---|---|---|---|
+| 1 BLOCKING M25 case-sensitive segments, plus 4 (trailing dot/space) | `_folded` `blobs.py:57-59` (`casefold()` then `rstrip(". ")`) applied to **every** path part in `_vet :110`; the `NOT_BLOB_SEGMENTS`, `.env*` and `.xlsx` checks now run on the folded parts (`:111-114`) | `test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written` gained `.WORK/a`, `a/.Work/b`, `Profiles/x`, `CHUNKS/x`, `Crawl_Summaries/x`, `a/.BLOBMETA/x`, `x.xlsx.`, `x.xlsx `, `.env `, `a/.work./b`, `a/profiles /b`, each on `[file]` and `[mongo]` | a7 "no casefold" (7 cases), a7 "no trailing strip" (5 cases) |
+| 2 WARNING M8 body gate | `_is_text :51-54`: media type parsed case-insensitively, parameters dropped; scanned = `text/*`, `TEXT_MEDIA :44-47` (json, xml, javascript, ecmascript, yaml, ndjson, x-www-form-urlencoded, graphql), any `+json`/`+xml`/`+yaml` suffix (incl. `image/svg+xml`); used at `:120` | `test_a_declared_secret_is_refused_everywhere_it_can_ride` gained 10 body types: `TEXT/PLAIN`, `Application/JSON`, `application/problem+json`, `image/svg+xml`, `application/javascript`, `application/yaml`, `application/json; charset=UTF-8`, `application/x-www-form-urlencoded`, `application/vnd.api+xml`, ` text/html` (leading space) | a4 (rewritten), a4b case, a4c suffix, a4d parameters, a4e javascript/yaml/form |
+| 3 WARNING race: NoFile on a prune | `_prune :218-222` treats `StoreNotFound` on a revision delete as already pruned (`contextlib.suppress`; `mongo_guard` imported lazily) | `tests/blob_support.py::UniqueBucket.delete` now raises `NoFile` on a missing id, like pymongo (test side only; `fake_mongo.py` and `mongo_guard.py` untouched). `test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions` (was failing red) and new `test_a_delete_racing_a_delete_does_not_raise_for_a_revision_already_gone`; `test_a_missing_revision_is_still_an_error_for_the_bucket_itself` pins that the guard still reports a missing id. | b6 |
+
+A mutation defect found again this cycle: `a4d` (parameters not stripped) first survived, because `text/plain; charset=...` stays textual through the `text/` prefix (an equivalent mutant). The plant is now `application/json; charset=UTF-8`, which only the parameter strip rescues. First-run logs are kept.
+
+Fresh outputs (same rules: worktree, `-o addopts=`, 2 files per call, `env -u ANTHROPIC_BASE_URL`):
+
+```
+pytest tests/test_blobs.py tests/test_blobs_mongo.py                 -> 148 passed
+pytest tests/test_blobs_cache.py tests/test_mongo_guard_scan.py      ->  39 passed
+pytest tests/test_mongo_guard.py tests/test_mongo_guard_surface.py   ->  40 passed
+ruff check src tests scripts                                         -> All checks passed!
+autotester doctor (> .work/doctor-u5a-c1.txt, exit 0)                -> doctor: clean
+mutations-a.json (28)  first run 27/28 (a4d survived), re-run 28/28 killed  (mutation-run-cycle1.txt, mutation-run-cycle1-a2.txt)
+mutations-b.json (6)   6/6 killed                                    (mutation-run-cycle1.txt)
+mutations-c.json (7)   7/7 killed                                    (mutation-run-cycle1.txt)
+```
+Total 41 mutants, all killed. `qa/evidence/mongo-store-u5a/mutations-a/b.json` were regenerated (a7 and a4 rewritten, a4b-e and b6 added).
+
+Not changed, per the checker's INFO items: finding 5 (odd basenames `nul`, `foo:bar` raise raw OS errors inside the cache dir before anything escapes it) is not addressed here; no path escapes `.work/blob-cache/`.
 
 ## What changed
 

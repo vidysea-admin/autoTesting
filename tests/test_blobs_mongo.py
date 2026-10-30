@@ -107,6 +107,27 @@ def test_two_racing_puts_never_leave_zero_revisions(tmp_path: Path,
     assert rev_data(first) == [b"z"]
 
 
+def test_a_delete_racing_a_delete_does_not_raise_for_a_revision_already_gone(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Real GridFS `delete` raises NoFile on a missing id; the loser of the race must not."""
+    first = MongoRig(tmp_path, redactor=clean)
+    second = MongoRig(tmp_path, redactor=clean, server=first.server)
+    put(first)
+    stale = first.blobs._revisions(KEY)
+    assert second.blobs.delete(KEY) is True
+    monkeypatch.setattr(type(first.blobs), "_revisions", lambda self, key: stale)
+    assert first.blobs.delete(KEY) is True
+    monkeypatch.undo()
+    assert first.count(KEY) == 0
+
+
+def test_a_missing_revision_is_still_an_error_for_the_bucket_itself(tmp_path: Path) -> None:
+    from autotester.store.mongo_guard import StoreNotFound
+    rig = MongoRig(tmp_path, redactor=clean)
+    with pytest.raises(StoreNotFound):
+        rig.blobs._bucket.delete("no-such-id")  # the fake now matches pymongo: NoFile -> NotFound
+
+
 def test_delete_removes_every_revision_of_the_key_and_only_that_key(tmp_path: Path) -> None:
     rig = MongoRig(tmp_path, redactor=clean)
     put(rig)

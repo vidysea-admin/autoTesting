@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from fake_mongo import FakeBucket, FakeMongoClient, FakeMongoServer, seams
+from gridfs.errors import NoFile
 
 import autotester.store.mongo_guard as guard
 from autotester.core.redact import Redactor
@@ -22,6 +23,13 @@ _IDS = itertools.count()
 
 
 class UniqueBucket(FakeBucket):
+    """Unique ids, and `delete` of a missing id raises `NoFile` as pymongo's GridFSBucket does."""
+
+    def delete(self, file_id: Any) -> None:
+        if not self._files.find({"_id": file_id}):
+            raise NoFile(file_id)
+        super().delete(file_id)
+
     def upload_from_stream(self, filename: str, data: bytes, *, metadata: dict[str, Any]) -> Any:
         row = {"_id": f"f{next(_IDS)}", "filename": filename, "data": bytes(data),
                "metadata": metadata}

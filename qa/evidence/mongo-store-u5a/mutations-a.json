@@ -36,7 +36,7 @@
   {
    "name": "a4: text body not scanned",
    "file": "src/autotester/store/blobs.py",
-   "old": "    if content_type.startswith(TEXT_TYPES):",
+   "old": "    if _is_text(content_type):",
    "new": "    if False:",
    "kills": [
     "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-text body]",
@@ -121,13 +121,71 @@
    ]
   },
   {
-   "name": "a7: xlsx check is case sensitive",
+   "name": "a7: path parts compared without casefold",
    "file": "src/autotester/store/blobs.py",
-   "old": "name = parts[-1].casefold()",
-   "new": "name = parts[-1]",
+   "old": "return part.casefold().rstrip(\". \")",
+   "new": "return part.rstrip(\". \")",
    "kills": [
-    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/REPORT.XLSX]",
-    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/ai/REPORT.XLSX]"
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-.WORK/a]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-a/.Work/b]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-Profiles/x]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-CHUNKS/x]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-Crawl_Summaries/x]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-a/.BLOBMETA/x]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/REPORT.XLSX]"
+   ]
+  },
+  {
+   "name": "a7: path parts keep trailing dots and spaces",
+   "file": "src/autotester/store/blobs.py",
+   "old": "return part.casefold().rstrip(\". \")",
+   "new": "return part.casefold()",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-x.xlsx.]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-x.xlsx ]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-.env ]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-a/.work./b]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-a/profiles /b]"
+   ]
+  },
+  {
+   "name": "a4b: media type compared case-sensitively",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    media = content_type.split(\";\")[0].strip().casefold()",
+   "new": "    media = content_type.split(\";\")[0].strip()",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-body as TEXT/PLAIN]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-body as Application/JSON]"
+   ]
+  },
+  {
+   "name": "a4c: +json/+xml suffix not textual",
+   "file": "src/autotester/store/blobs.py",
+   "old": "or media.endswith(TEXT_SUFFIXES)",
+   "new": "",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-body as application/problem+json]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-body as image/svg+xml]"
+   ]
+  },
+  {
+   "name": "a4d: media parameters not stripped",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    media = content_type.split(\";\")[0].strip().casefold()",
+   "new": "    media = content_type.strip().casefold()",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-body as application/json; charset=UTF-8]"
+   ]
+  },
+  {
+   "name": "a4e: javascript/yaml/form bodies not scanned",
+   "file": "src/autotester/store/blobs.py",
+   "old": "\"application/json\", \"application/xml\", \"application/javascript\", \"application/x-javascript\",\n    \"application/ecmascript\", \"application/yaml\", \"application/x-yaml\", \"application/x-ndjson\",\n    \"application/x-www-form-urlencoded\", \"application/graphql\"",
+   "new": "\"application/json\", \"application/xml\"",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-body as application/javascript]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-body as application/yaml]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-body as application/x-www-form-urlencoded]"
    ]
   },
   {
