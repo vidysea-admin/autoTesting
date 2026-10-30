@@ -1,79 +1,58 @@
-# Verdict - mongo-store-u9 (checker A)
+# Verdict - mongo-store-u9
 
-**Cycle checked:** 0
-**Verdict:** FAIL (one blocking finding on M26; everything else PASS)
-**Checker:** chk-mongo-u9-a, fresh context, read-only toward `src/` and `tests/`. Did not read any other checker's verdict.
-**Reviewed:** `git diff 23eb4af2..HEAD` on `feat/mongo-store-u9` (code commit `ee4889dc`, manifest `591b4cbf`), contract `qa/contracts/mongo-store.md` M9, M11, M13, M26, M27 (and M28, which U10 owns).
+**Verdict:** PASS
+**Cycle checked:** 1
+**Checker:** checker-A (fresh context; did not read any other checker's verdict; the cycle 0 FAIL is `2f8d6708` in git)
+**Code SHA checked:** `1c9e65727e27f0dbbe3abad9b78fab1a866f428c` (manifest commit `8d61b57e`), branch `feat/mongo-store-u9`
+**Contract:** `qa/contracts/mongo-store.md`, U9 row: M9, M11, M13, M26, M27. M26 is CRITICAL; finding 6 states what is and is not proven by this unit.
 
-## Blocking finding
-
-**F1 (M26, CRITICAL) - a browser request during an outage is a plain 500, not the themed 503, in every Mongo configuration.**
-`_StoreDownGate.__call__` builds the HTML reply with `_error_page(503, STORE_DOWN)` (`src/autotester/ui/error_pages.py:157-158`). `_error_page` calls `theme.page(...)` (`error_pages.py:108`), whose sidebar calls `_project_slugs()` (`ui/theme.py:135` -> `ui/helpers.py:161` -> `store/filestore.py:292` `list_children` -> `_holders` `:276-281` -> `mongo_backend.py:170` `children` -> `keys`). That is a read of the store that is down, so it raises `StoreUnavailable` again, **inside the `except StoreDown:` handler**, and nothing catches it. The result is `ServerErrorMiddleware`'s plain `Internal Server Error`.
-
-Reproduced with a scratch test in the checker scratchpad (fake server, `TestClient(app, raise_server_exceptions=False)`; a route does one write, then the server goes down, then a second write raises `StoreUnavailable`):
-
-```
-RESULT 'runs=mongo' text/html        500 'Internal Server Error'
-RESULT 'runs=mongo' application/json 503 '{"detail":"State store unavailable, nothing was changed"}'
-(same two lines for AUTOTESTER_STORE_AREAS=projects=mongo and AUTOTESTER_STORE=mongo)
-```
-
-With `raise_server_exceptions=True` the second `StoreUnavailable` surfaces at `error_pages.py:158 -> theme.py:135 -> filestore.py:292 -> mongo_backend.py:170`. It is still fail-closed (nothing allowed, no URI or canary in either body or in the exception repr), but the M26 falsifier "the UI renders a themed 503 ('State store unavailable, nothing was changed')" fails for every real browser (`Accept: text/html`) when any area is on Mongo.
-
-The manifest's tests miss it because the 503 tests run in file mode: `test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[html]` patches `ui.app._project_slugs`, not `ui.helpers._project_slugs` that the theme actually calls, and never selects a Mongo area while rendering. The 17 mutants do not cover it.
-
-Expected fix (maker's call, not prescribed): the outage page must not touch the store (render without the sidebar, or catch a second `StoreDown` and fall back to a bare fixed-body `HTMLResponse`), plus a test with `AUTOTESTER_STORE=mongo`, `Accept: text/html`, the fake down, asserting 503 and the fixed body, plus a mutant for it.
-
-## Non-blocking findings
-
-**W1 (judge flag: readiness hidden from anonymous).** `/healthz` returns the `store` block only to `settings.manage` callers (`ui/routes_live.py:132-146`); anonymous still gets exactly `{"ok": true}` (AU16; `test_healthz_stays_200_and_anonymous_learns_nothing_new` passes). This honours AU16 but the container health probe cannot see store readiness. Acceptable for U9; a decision for Umesh if an anonymous readiness bit is wanted (it would amend AU16).
-
-**W2 (healthz cost).** `store_readiness()` (`routes_live.py:111-124`) calls `validate_store_env()`, which opens the backend (marker check, index creation on first open) and pings on every detail GET, up to the 5 s selection timeout when down. Sync route, `settings.manage` only; noted.
-
-**W3 (ping_backends trusts the source message).** `ping_backends` re-raises `type(exc)(f"{exc}; areas on ...")` (`store/mongo_routes.py:249-260`). With a stub `StoreDown(f"cannot reach {URI}")` the URI is relayed verbatim. Today the only source is the guard, whose messages carry the exception class only (`mongo_guard.py:72,235`), and a down fake whose driver message holds the URI produced no canary in the traceback, so M9 holds; but it rests on every `StoreDown` raiser staying URI-free.
-
-**W4 (collision, judge flag).** `PATHLYNKS_MONGO_URI` is also the product read-only DB-assertion `SecretRef` (`browser/db.py:6`, `tests/test_db.py:99`). It is the name Umesh gave (D-120, `docs/DECISIONS.md:2926,2935`; M28/M36) and D-120 states the store sits on the same server; no `projects/` file declares it. M10 (`browser/db.py:35`) still refuses the store database on the read side. No code defect; a naming risk only if the two ever point at different servers. Not a failure.
-
-**W5 (contract-owned file edits, judge flag).** `mongo_guard.py` (U1) and `mongo_routes.py` (U4) were touched only to add the driver-free `StoreDown` base (`mongo_routes.py:123-125`, `mongo_guard.py:24,52`); public surface and guard tests unchanged (`test_mongo_guard*.py`, `test_mongo_backend_fence.py` pass). `mongo_guard.py` is exactly 300 lines, paid by deleting the blank line after the module docstring's first line (cosmetic, doctor clean). `filestore.py` is 298 lines. Justified.
-
-**W6 (wording).** `STORE_DOWN` says "nothing was changed"; a request that wrote before the outage cannot honour that. It is the contract's fixed wording (M26), so this is not a finding against U9. I could not demonstrate a persisted partial write with the fake (my scratch run showed only `server_state` docs), so I make no claim either way.
-
-## Criteria
+## Result per criterion
 
 | Crit | Result | Evidence |
 |---|---|---|
-| M9 URI never echoed | PASS | `core/env.py:218-231` only returns the value; no log, print or raise carries it. Adversarial: canary URI in the process env AND the repo `.env` -> env wins, nothing logged (DEBUG buffer has no canary); down server whose driver message holds the URI -> `StoreUnavailable`, canary absent from the full traceback and the JSON 503 body; `AUTOTESTER_MONGO_URI` appears nowhere under `src/`, `scripts/`, `docker/` (grep empty). |
-| M13 backend is configuration | PASS | `mongo_routes.py`, `error_pages.py`, `routes_live.py` import no driver; fresh interpreter `import autotester.cli, autotester.ui.app` -> `pymongo` loaded: False, `gridfs` loaded: False; `test_a_file_mode_workload_never_imports_a_database_driver` and `test_an_unknown_store_value_stops_startup` pass. |
-| M27 startup check | PASS | `filestore.py:159-161` -> `mongo_routes.py:249-260`; one `command:ping` on the configured database per backend; the refusal names area and exception class only; `_lifespan` aborts (`test_the_server_refuses_to_start_when_the_store_is_down`). |
-| M11 marker | PASS (unchanged) | U9 adds no marker code; startup constructs through `GuardedStore._verify_identity`; `test_mongo_guard.py` marker tests pass. |
-| M26 fail closed | **FAIL** | F1. JSON path, auth-gate path, `/healthz` 200 and the anonymous shape are fine. HTML is a 500 when a Mongo area is selected. |
-| M28 | out of scope | U10 owns `docker/DEPLOY.md` and `entrypoint.sh`; `PATHLYNKS_MONGO_URI` is the name M28 lists, consistent. |
+| M26 fail closed (HTML 503, F1) | MET for the U9 scope | finding 1 |
+| M9 URI never echoed (incl. W3) | MET | findings 2, 3 |
+| M27 startup check | MET | finding 4 |
+| M13 backend is configuration | MET | finding 4 |
+| M11 marker | MET (unchanged; U9 starts through it) | finding 4 |
 
-## Commands run
+## Findings
 
-Worktree `D:/autoTesting/.claude/worktrees/mongo-u9`, `PYTHONPATH=<worktree>/src`, `-o addopts=`, two files per call, `env -u ANTHROPIC_BASE_URL`.
+1. **F1 closed (M26).** `src/autotester/ui/error_pages.py:137-150` `_store_down_html()` builds the page from `theme.card` + `PAGE_STYLE` with no sidebar and no project read; any exception returns `_STATIC_503` (`:134`); the gate (`:175`) sends it as `HTMLResponse(..., 503)`.
+   My own scratch reproduction (not the maker's tests; scratchpad `test_scratch_u9.py`, run with the repo conftest as a plugin): fake server opened while up, then taken down. Selections `AUTOTESTER_STORE_AREAS=runs=mongo,projects=mongo`, `AUTOTESTER_STORE=mongo`, `AUTOTESTER_STORE_AREAS=projects=mongo`; Accept `text/html`, a browser Accept string, and `application/json`; project `demo` seeded while up. Nine requests per combination: `GET /`, `/projects/demo`, `/projects/demo/cases`, `/admin/users`, `/admin/groups`, `/settings/providers`, and `POST /projects/demo/run`, `/admin/groups`, `/settings/providers`.
+   Result: 9/9 combinations pass. Every request is 503 except `POST /settings/providers`, which is 422 (form validation fires before any store read; the body is still canary-free). Every 503 carries the fixed text; HTML ones are `text/html`, contain `class='card'` and `<style`, and no `<aside` in the markup; JSON ones are exactly `{"detail": "State store unavailable, nothing was changed"}`. The canary password, `mongodb` and `db.example` appear in no body, stdout, stderr or log record.
+   Per-request tree hash of the data root: the only changes are `.auth/auth.sqlite3` on every request (the test harness `tests/auth_login_fixture.py:44` runs `INSERT OR REPLACE INTO sessions` with `now` before each request; auth is still SQLite until U6b) and, only when the `audit` area is a file area (never with `AUTOTESTER_STORE=mongo`), `.work/audit.jsonl` on POSTs. No file belonging to a mongo area is created or changed.
+   Fallback probes (each answered 503, body equal to `_STATIC_503` exactly, no leak): `theme.card` raising `RuntimeError("boom <uri>")`; `theme.card` raising `StoreUnavailable("x <uri>")`; `theme.card` raising `KeyError`; `PAGE_STYLE` replaced by an object whose `__format__` and `__str__` raise with the URI.
+2. **W3 closed (M9).** `src/autotester/store/mongo_routes.py:249-261` raises `type(exc)(f"state store unreachable ({type(exc).__name__}); areas on {name}: {areas}") from None`. Own probes: a canary-bearing `StoreDown("cannot reach <uri>")` and a `StoreDown` subclass: text, repr and full traceback contain no canary, no `mongodb`, no `cannot reach`; `__cause__` is `None` and `__suppress_context__` is true; only areas on the failing backend are listed (`runs, projects`, not `settings`). A non-`StoreDown` exception (`ValueError` quoting the URI) is not caught by `ping_backends` and propagates with its own message: unchanged behaviour (the guard only raises `StoreUnavailable`, a `StoreDown`, from `ping`), so the path is not reachable through the real backend. Real startup against a down fake with `runs,projects=mongo`: `StoreUnavailable: state store unreachable (StoreUnavailable); areas on mongo: projects, runs`; canary absent from text, stdout, stderr and log.
+3. **Behaviour change judged: acceptable.** The refusal now names `StoreUnavailable` instead of the driver class (`AutoReconnect`). M27 requires naming the area and the exception class, never the URI (M9); both hold (area names plus the class of the raised exception), and M9 outranks diagnostic detail because the driver message is exactly where a URI can hide. Cost: an operator no longer sees the driver class. Non-blocking.
+4. **No regression of cycle-0 criteria.** M13: fresh `-I` interpreter importing `autotester.cli` and `autotester.ui.app` and calling `validate_store_env()` in file mode: `pymongo in sys.modules` False, `gridfs in sys.modules` False, all nine areas `file`. M27: against an up fake with `runs,projects=mongo` the server log holds exactly one `('autotester', 'command:ping')` (one ping per backend, on the configured database only). M11: `tests/test_mongo_guard.py` marker tests pass unchanged and U9 adds no marker code. M9: guard chain and URI tests pass unchanged.
+5. **Diff is fix files only.** `git diff --stat 117fecf7..HEAD` (the merge `117fecf7` is the only other content in `2f8d6708..HEAD`): `src/autotester/ui/error_pages.py` (+18/-1), `src/autotester/store/mongo_routes.py` (+5/-3), `tests/test_store_outage_u9.py` (new, 193 lines), `tests/test_store_startup_u9.py` (-105, tests moved), `qa/evidence/mongo-store-u9/{mutations.json,mutation-run-cycle1.txt}`, `qa/manifests/mongo-store-u9.md`. Test-name diff old vs new: no test removed; three added (`..._falls_back_to_a_fixed_body`, `..._never_relays_the_source_message`, `..._renders_without_reading_the_down_store`). The only assertion changed in moved tests is `"AutoReconnect"` -> `"StoreUnavailable"` (finding 3). Sizes: `error_pages.py` 182, `mongo_routes.py` 288, `test_store_startup_u9.py` 180, `test_store_outage_u9.py` 193; all under 300.
+6. **What this PASS does not prove (carry into the G1 readiness table, M52).**
+   (a) M26's clauses "a run in progress ends `interrupted`" and auth denial at the auth *store* level are not reachable in U9: auth is still SQLite (U6b) and run-queue state is U7/U3c. The gate-level denial (a `StoreDown` inside the auth gate becomes a 503, never an allowed request) is proven here. The unit that owns each clause must re-judge it before any area flip.
+   (b) `/healthz` returns the `store` readiness block only to `settings.manage` callers; an anonymous probe sees `{"ok": true}` (AU16). M26's "a readiness field reports the store" is met for administrators only; making it anonymous is a contract decision, not a defect here.
+   (c) `/healthz` pings Mongo per detail request (5 s selection timeout when down); admin-only, accepted.
+   (d) `PATHLYNKS_MONGO_URI` is also the product DB-assertion variable (`browser/db.py:6`): a naming question for Umesh, not code.
+   All four are carried unchanged from the manifest's judgement list.
+7. **Manifest evidence misstatement (non-blocking).** `qa/manifests/mongo-store-u9.md` records `test_store_startup_u9.py + test_state_selection.py -> 52 passed`; I measure 38 passed (12 + 26). 52 equals outage 26 + selection 26, so it looks mis-transcribed. The tests pass; no verdict depends on the figure. The maker should correct the line at close-out.
+
+## Commands run (worktree `D:/autoTesting/.claude/worktrees/mongo-u9`, `PYTHONPATH=<worktree>/src`, `-o addopts=`, two files per call, `env -u ANTHROPIC_BASE_URL`)
 
 ```
-tests/test_store_startup_u9.py tests/test_state_selection.py        -> 48 passed
-tests/test_state_sweep_u3b.py tests/test_state_wrappers.py          -> 90 passed
-tests/test_ui_healthz.py tests/test_mongo_guard_scan.py             -> 38 passed
-tests/test_ui_error_pages.py tests/test_ui_error_page_headers.py    -> 15 passed
-tests/test_mongo_guard.py tests/test_mongo_guard_surface.py         -> 40 passed
-tests/test_mongo_guard_chain.py tests/test_mongo_guard_spec.py      -> 14 passed
-tests/test_mongo_guard_uri.py tests/test_mongo_backend_fence.py     -> 88 passed
-tests/test_mongo_backend_layout.py tests/test_blobs_mongo.py        -> 81 passed
-tests/test_ui_auth_surface.py tests/test_ui_auth_policy_table.py    -> 25 passed
-tests/test_hosting_config.py tests/test_env_loading.py              -> 17 passed
-tests/test_env_dollar_warning.py tests/test_state_backend_contract.py -> 339 passed, 1 skipped
-tests/test_state_signatures.py tests/test_ui_auth_accounts.py       -> 27 passed
-uv run ruff check src tests scripts                                  -> All checks passed!
-uv run autotester doctor > .work/doctor-chkA.txt                     -> exit 0, "doctor: clean" (D-087 advisories only)
-uv run python scripts/mutation_check.py qa/evidence/mongo-store-u9/mutations.json --repo .  -> 17/17 mutations killed
-scratch adversarial test (fake server, canary URI)                   -> F1, W3, M9 results above
+pytest tests/test_store_startup_u9.py tests/test_store_outage_u9.py        -> 26 passed
+pytest tests/test_store_startup_u9.py tests/test_state_selection.py        -> 38 passed
+pytest tests/test_ui_healthz.py tests/test_ui_error_pages.py               -> 18 passed
+pytest tests/test_ui_error_page_headers.py tests/test_mongo_guard_scan.py  -> 35 passed
+pytest tests/test_state_sweep_u3b.py tests/test_state_wrappers.py          -> 90 passed
+pytest tests/test_state_sweep_u3c.py tests/test_state_bypass_rule.py       -> 67 passed
+pytest tests/test_mongo_guard_chain.py tests/test_ui_auth_surface.py       -> 34 passed
+pytest tests/test_state_selection.py tests/test_ui_healthz.py              -> 32 passed
+pytest tests/test_mongo_guard.py tests/test_mongo_guard_uri.py             -> 87 passed
+pytest <scratchpad>/test_scratch_u9.py -p conftest (own reproduction)      -> 14 passed
+pytest <scratchpad>/test_probe2.py -p conftest (startup refusal, ping log) -> 1 passed
+uv run ruff check src tests scripts                                        -> All checks passed!
+uv run autotester doctor > .work/doctor-chk-u9.txt                         -> exit 0, "doctor: clean" (D-087 non-blocking advisories only)
+uv run python scripts/mutation_check.py qa/evidence/mongo-store-u9/mutations.json --repo .  -> 21/21 mutations killed (exit 0)
+python -I: import autotester.cli, ui.app; validate_store_env()             -> pymongo False, gridfs False
 ```
 
-The manifest's test claims reproduce. The passing suite does not exercise the HTML outage page with a Mongo area selected, which is why F1 survives 17/17 mutants.
-
-## For the maker (cycle 1)
-
-Fix F1 in place (`ui/error_pages.py`: the 503 page must render without a store read), add the Mongo-selected HTML test and a mutant for it. W3 is optional hardening (scrub or replace the relayed message in `ping_backends`).
+No live server, no network, no `.env` value read or printed. No `src/` or `tests/` file edited. The full suite was not run (low-memory rule); not needed for this unit's scope.
