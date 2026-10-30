@@ -128,13 +128,14 @@ def test_au20_startup_agrees_with_the_request_time_guard(
 
 
 @pytest.mark.parametrize(("hosts", "origins", "starts"), [
-    ("*", "", False), (",", "", False), ("", "*", False), (" , * ", " ,", False),
+    ("*", "", True), (",", "", False), ("", "*", True), (" , * ", " ,", True),
     ("*,at.example", "", True), ("", "https://at.example", True),
 ])
-def test_au20_at_least_one_means_a_parsed_entry_not_a_non_empty_string(
+def test_au20_at_least_one_means_a_parsed_entry_or_an_allow_all_star(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, hosts: str, origins: str,
         starts: bool) -> None:
-    """`*` is never a wildcard (the list parser drops it) so it cannot satisfy "set"."""
+    """A parsed entry, or a `*` allow-all (D-110), satisfies "set"; an empty or comma-only
+    list still does not. Before D-110 `*` was dropped and could not satisfy it."""
     gate_on(tmp_path, monkeypatch)
     _hosted(monkeypatch, [], hosts, origins)
     if starts:
@@ -195,6 +196,11 @@ PUBLIC = [
      "http://localhost:8000", True, ("http", "localhost:8000")),
     ("loopback-no-public-origin-unchanged", ["--host", "127.0.0.1"], "at.example", "", "", True,
      None),
+    # D-110: a `*` allow-all means there is no own origin to pin, so a wildcard bind starts
+    # with no AUTOTESTER_PUBLIC_ORIGIN. ALLOWED_ORIGINS=* also serves the login POST (any
+    # Origin); ALLOWED_HOSTS=* serves reads but not the cross-site POST, so its reach is None.
+    ("wild-star-origins-no-public", WILD4, "", "*", "", True, ("https", "anything.example")),
+    ("wild-star-hosts-no-public", WILD4, "*", "", "", True, None),
 ]
 
 
@@ -230,13 +236,15 @@ def test_au20_a_wildcard_bind_names_why_a_loopback_public_origin_is_refused(
 
 
 @pytest.mark.parametrize("wildcard", ["0.0.0.0", "::", "*", ""])
-def test_au20_a_wildcard_bind_still_needs_a_parsed_allow_list_entry(
+def test_au20_a_star_allow_all_lets_any_bind_start(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, wildcard: str) -> None:
+    """D-110 (amends D-066/AU20): `*` is an allow-all, so a server on any bind -- wildcard
+    included -- starts with `AUTOTESTER_ALLOWED_HOSTS=*` and needs no PUBLIC_ORIGIN. Before
+    D-110 `*` was dropped and this raised 'needs'."""
     gate_on(tmp_path, monkeypatch)
     _hosted(monkeypatch, ["--host", wildcard], "*", "")
-    monkeypatch.setenv("AUTOTESTER_PUBLIC_ORIGIN", QA)
-    with pytest.raises(AuthConfigError, match="needs"):
-        check_startup()
+    monkeypatch.delenv("AUTOTESTER_PUBLIC_ORIGIN", raising=False)
+    check_startup()  # does not raise
 
 
 def test_au20_the_last_host_option_is_the_bind(monkeypatch: pytest.MonkeyPatch) -> None:

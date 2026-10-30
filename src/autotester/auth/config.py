@@ -59,14 +59,20 @@ def check_startup() -> None:
 
 
 def _check_hosted() -> None:
-    """AU20: a parsed allow-list entry exists (a `*` or `,` is not one: the list parser drops
-    it), and a server bound to one address is reachable under that address (own origin).
+    """AU20: a parsed allow-list entry or a D-110 `*` allow-all exists (a bare `,` is not one),
+    and a server bound to one address is reachable under that address (own origin).
     The request-time guard is asked, so startup and the guard cannot disagree."""
-    from autotester.ui.helpers import _listed  # lazy: `ui` imports `auth` at load
-    if not (_listed("AUTOTESTER_ALLOWED_HOSTS") or _listed("AUTOTESTER_ALLOWED_ORIGINS")):
+    from autotester.ui.helpers import _allow_all, _listed  # lazy: `ui` imports `auth` at load
+    allow_all = (_allow_all("AUTOTESTER_ALLOWED_HOSTS")
+                 or _allow_all("AUTOTESTER_ALLOWED_ORIGINS"))
+    if not (allow_all or _listed("AUTOTESTER_ALLOWED_HOSTS")
+            or _listed("AUTOTESTER_ALLOWED_ORIGINS")):
         raise AuthConfigError(
             f"{HOSTED_ENV}=1 needs AUTOTESTER_ALLOWED_HOSTS or AUTOTESTER_ALLOWED_ORIGINS "
             "naming the server")
+    if allow_all:
+        return  # D-110: `*` accepts any host/origin, so there is no own origin to pin and
+                # AUTOTESTER_PUBLIC_ORIGIN (read only here) is not required
     if bind_host().strip().lower() in _WILDCARD:
         _check_public_origin(required=True)  # owner gate answer option A (D-082)
         return
