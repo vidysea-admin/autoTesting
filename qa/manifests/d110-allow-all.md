@@ -1,6 +1,6 @@
 # Manifest - d110-allow-all (D-110 opt-in `*` allow-all for the Host and Origin guards)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual: qa/verdicts/d110-allow-all.md PASS 3231fdb4 + qa/verdicts/d110-allow-all.b.md PASS 9f363826, cycle 0)
 **Fix cycle:** 0
 **Contract:** qa/contracts/auth.md (AU18, AU19, AU20; to be amended by the checker per D-110)
 **Goal task:** none (T-204 linked by D-110)
