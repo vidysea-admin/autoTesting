@@ -47,6 +47,7 @@ from autotester.schema.multi_role_finding import MultiRoleFinding
 from autotester.schema.oracle_context import OracleContext, RoleSessionPort
 from autotester.schema.platform import IMPLICIT_PLATFORM_ID
 from autotester.schema.role_step import RoleStep
+from autotester.store.filestore import read_json
 
 _FALLBACK_STEP = "goto /"
 _TOKENS = re.compile(r"(\d+) credential-shaped token")
@@ -66,13 +67,14 @@ class CredentialProbeError(RuntimeError):
 def load_policy(run_dir: str) -> CredentialPolicy:
     """The declaration in `run_dir`, or `PolicyNotDeclaredError` (without the file's content)."""
     try:
-        text = (Path(run_dir) / POLICY_FILE).read_text(encoding="utf-8")
+        policy = read_json(Path(run_dir) / POLICY_FILE, CredentialPolicy)
     except OSError:
-        raise PolicyNotDeclaredError("no credential policy declared") from None
-    try:
-        return CredentialPolicy.model_validate_json(text)
+        policy = None
     except ValueError:
         raise PolicyNotDeclaredError("credential policy declaration is invalid") from None
+    if policy is None:
+        raise PolicyNotDeclaredError("no credential policy declared")
+    return policy
 
 
 def probe_value(rules: PasswordRules, rule: PasswordRule) -> str:

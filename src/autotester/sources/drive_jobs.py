@@ -8,17 +8,15 @@ never name a file outside that folder.
 
 from __future__ import annotations
 
-import os
 import re
 import time
 from datetime import datetime
 from pathlib import Path
 
-from pydantic import ValidationError
-
 from autotester.core.paths import work_dir
 from autotester.schema.base import utc_now
 from autotester.schema.intake import DriveJob
+from autotester.store.filestore import read_json, write_text
 
 JOB_ID = re.compile(r"[0-9A-Z]{26}")
 SLUG = re.compile(r"[a-z0-9][a-z0-9-]*")
@@ -39,13 +37,10 @@ def save_job(root: Path | None, job: DriveJob) -> None:
     if path is None:
         raise ValueError("not a valid job id")
     job = job.model_copy(update={"updated_at": utc_now()})
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_suffix(".tmp")
-    temp.write_text(job.model_dump_json(exclude={"report": {"exit_code", "counts"}}),
-                    encoding="utf-8")
+    text = job.model_dump_json(exclude={"report": {"exit_code", "counts"}})
     for attempt in range(REPLACE_TRIES):  # Windows: the polling page may hold the file briefly
         try:
-            os.replace(temp, path)
+            write_text(path, text)
             return
         except PermissionError:
             if attempt == REPLACE_TRIES - 1:
@@ -55,11 +50,11 @@ def save_job(root: Path | None, job: DriveJob) -> None:
 
 def load_job(root: Path | None, project: str, job_id: str) -> DriveJob | None:
     path = job_path(root, project, job_id)
-    if path is None or not path.is_file():
+    if path is None:
         return None
     try:
-        return DriveJob.model_validate_json(path.read_text(encoding="utf-8"))
-    except (OSError, ValidationError):
+        return read_json(path, DriveJob)
+    except (OSError, ValueError):  # ValidationError is a ValueError
         return None
 
 

@@ -11,6 +11,7 @@ from prepare_acceptance_baselines import main
 
 from autotester.schema.acceptance_baseline import BaselineInput, BaselinePlan, BaselineReceipt
 from autotester.schema.project import Project, ProviderConfig, SecretRef
+from autotester.stages import acceptance_baseline as baseline_stage
 from autotester.stages.acceptance_baseline import prepare_baselines
 from autotester.store.project_store import ProjectStore
 
@@ -204,7 +205,7 @@ def test_real_resolved_alias_cannot_escape_inputs(baseline):
 def test_partial_write_is_visible_and_refuses_reuse(baseline, monkeypatch):
     root, inputs, output, plan, store = baseline
     before = {p: p.read_bytes() for p in store.paths.dir.rglob("*") if p.is_file()}
-    write_bytes = Path.write_bytes
+    write_bytes = baseline_stage.write_bytes  # the filestore seam (mongo-store U3a)
 
     def fail_second_input(path, blob):
         if path.is_relative_to(output) and path.name == "input-1.md":
@@ -212,7 +213,7 @@ def test_partial_write_is_visible_and_refuses_reuse(baseline, monkeypatch):
         return write_bytes(path, blob)
 
     with monkeypatch.context() as patch:
-        patch.setattr(Path, "write_bytes", fail_second_input)
+        patch.setattr(baseline_stage, "write_bytes", fail_second_input)
         with pytest.raises(OSError, match="injected input write failure"):
             prepare_baselines(root, inputs, output, plan)
     assert output.is_dir() and (output / "baseline-plan.json").exists()

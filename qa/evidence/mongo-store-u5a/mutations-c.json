@@ -1,0 +1,70 @@
+{
+ "tests": [
+  "tests/test_blobs_cache.py"
+ ],
+ "mutations": [
+  {
+   "name": "c1: get skips the sha check",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        if _sha(data) != info.sha256:\n            raise BlobCorrupt(key)",
+   "new": "        if False:\n            raise BlobCorrupt(key)",
+   "kills": [
+    "test_a_blob_whose_bytes_do_not_match_its_recorded_sha_is_corrupt"
+   ]
+  },
+  {
+   "name": "c2: cache hit not re-hashed",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        if dest.is_file() and _sha(dest.read_bytes()) == info.sha256:",
+   "new": "        if dest.is_file():",
+   "kills": [
+    "test_a_cache_hit_does_not_download_again_and_a_tampered_copy_is_refetched"
+   ]
+  },
+  {
+   "name": "c3: hit does not refresh recency",
+   "file": "src/autotester/store/blobs.py",
+   "old": "            os.utime(dest)  # most recently used",
+   "new": "            pass",
+   "kills": [
+    "test_a_hit_refreshes_recency_so_the_touched_blob_survives"
+   ]
+  },
+  {
+   "name": "c4: cache never evicts",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        _evict(cache, self._cap, keep=dest)",
+   "new": "        pass",
+   "kills": [
+    "test_the_cache_evicts_the_least_recently_used_past_its_cap"
+   ]
+  },
+  {
+   "name": "c5: evicts most recent first",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    for _, size, path in sorted(files):",
+   "new": "    for _, size, path in sorted(files, reverse=True):",
+   "kills": [
+    "test_the_cache_evicts_the_least_recently_used_past_its_cap"
+   ]
+  },
+  {
+   "name": "c6: the served file may be evicted",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        if path != keep:",
+   "new": "        if True:",
+   "kills": [
+    "test_a_blob_bigger_than_the_cap_is_still_served"
+   ]
+  },
+  {
+   "name": "c7: cache file loses its extension",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    rel = f\"{info.sha256}/{key.rsplit('/', 1)[-1]}\"",
+   "new": "    rel = f\"{info.sha256}/blob\"",
+   "kills": [
+    "test_materialize_writes_a_verified_copy_that_keeps_the_extension"
+   ]
+  }
+ ]
+}

@@ -34,6 +34,7 @@ from autotester.schema.portal_persona import (
     TaughtFlow,
 )
 from autotester.stages import explore_guidance, persona_changes
+from autotester.store.filestore import write_text
 
 if TYPE_CHECKING:  # a stage names the store only in a signature (execute.py's convention)
     from autotester.schema.crawl import CrawlIssue
@@ -253,8 +254,7 @@ def _persist(store: ProjectStore, persona: PortalPersona,
     knowledge = render_knowledge(persona)
     _guard_clean(redactor, persona.model_dump_json(exclude_none=True), knowledge)
     store.save_portal_persona(persona)
-    store.paths.knowledge.parent.mkdir(parents=True, exist_ok=True)
-    store.paths.knowledge.write_text(knowledge, encoding="utf-8")
+    write_text(store.paths.knowledge, knowledge)
     return persona
 
 
