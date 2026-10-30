@@ -1,15 +1,45 @@
 # Manifest - mongo-store-u9
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U9. **Criticality:** normal (U9 row has no dual mark; it touches the fail-closed path M26, so the checker may choose to dual it).
 **Authority:** D-120, D-122, D-123. No `src/` module was added (D-122 list untouched); every edit is in place.
 **Branch:** `feat/mongo-store-u9` = master (U1, U2, U6a, U3a, U5a) + `feat/mongo-store-u4` at `41400c24` (U4 fix cycle 1, merged at `23eb4af2`) + U3b (checked-PASS). Not merged to master, not pushed.
 **Base SHA:** `23eb4af2`
-**Code SHA:** `ee4889dc0a19cd43aa794f84a910f45e225c9d49` (the only code commit; this manifest is a second commit on top of it)
+**Code SHA:** cycle 0 `ee4889dc0a19cd43aa794f84a910f45e225c9d49`; cycle 1 `1c9e65727e27f0dbbe3abad9b78fab1a866f428c` (master `001d10d6`-era merged first at `117fecf7`)
 **Criteria judged by U9:** M9, M11, M13, M26, M27 (the U9 unit-table row). M11 is U4's marker; U9 only starts the store through it (see below).
 
-## What changed
+## Cycle 1 changes (checker verdict `qa/verdicts/mongo-store-u9.md`, cycle 0 FAIL)
+
+Master (U4 final, U3b, U3c, contract amendment `001d10d6`) was merged first: `117fecf7`, clean, no conflicts.
+
+| Finding | Fix | Evidence |
+|---|---|---|
+| **F1 (blocking, M26)**: the HTML 503 went through `_error_page` -> `theme.page`, whose sidebar lists projects from the down store, so a browser got a plain 500 whenever a Mongo area was selected. | `ui/error_pages.py:137-150` `_store_down_html()` builds the themed page from `theme.card` + `PAGE_STYLE` in the sign-in page's store-free shell (`auth_view`), with **no sidebar and no nav**; any exception while building it returns `_STATIC_503` (fixed bare body, `:134`). The gate (`:175`) sends it as `HTMLResponse(..., 503)`. The JSON branch is unchanged. | `tests/test_store_outage_u9.py::test_the_themed_503_renders_without_reading_the_down_store[selection0,selection1]`: `AUTOTESTER_STORE_AREAS=projects=mongo` and `AUTOTESTER_STORE=mongo`, fake server opened while up then taken down, `Accept: text/html`, **nothing patched on the render path** (`/` goes through the real `ui.helpers._project_slugs`); asserts 503, `text/html`, fixed body, themed marker (`class='card'`, `<style`), no `<aside` in the markup, no canary and no `mongodb`. Failed (500) before the fix. `::test_a_failure_while_rendering_the_outage_page_falls_back_to_a_fixed_body` pins the static fallback. |
+| **W3**: `ping_backends` relayed `str(exc)`. | `store/mongo_routes.py:249-261` now raises `type(exc)(f"state store unreachable ({type(exc).__name__}); areas on {name}: {areas}") from None`: fixed text, the raiser's class name, the area names; never `str(exc)`. Consequence to know: the message now names `StoreUnavailable`, not the underlying driver class (`AutoReconnect`) that cycle 0 showed, because that class is only in the source message the rule forbids relaying. `test_an_unreachable_server_stops_startup_naming_the_area_and_class_only` was updated to expect `StoreUnavailable`. | `::test_the_startup_refusal_never_relays_the_source_message`: a stub whose `ping` raises `StoreDown(f"cannot reach {URI}")` -> the canary, `mongodb` and `cannot reach` appear nowhere in the message, repr or traceback; areas listed are only those on the failing backend; `__cause__` is `None` and context suppressed. |
+| `doctor` `file-too-long` after adding the tests (339 lines) | the 503, W3 and `/healthz` tests moved to `tests/test_store_outage_u9.py` (193 lines); `tests/test_store_startup_u9.py` is 180 lines. No test removed. | doctor clean |
+
+Mutation spec re-run: 17 cycle-0 mutants (u7 re-targeted to the new raise text) plus 4 new: u18 (the refusal relays the source message again), u19 (the re-raise chains the original exception: `from None` removed), u20 (the HTML page goes back through `theme.page`), u21 (no static fallback). **21/21 killed**, `qa/evidence/mongo-store-u9/mutation-run-cycle1.txt`. The cycle 0 log `mutation-run.txt` is kept as history.
+
+Cycle 1 verify (same rules, two files per call, `env -u ANTHROPIC_BASE_URL`):
+
+```
+pytest tests/test_store_startup_u9.py tests/test_store_outage_u9.py       -> 26 passed
+pytest tests/test_store_startup_u9.py tests/test_state_selection.py       -> 52 passed (incl. M13 cold-start no-pymongo)
+pytest tests/test_ui_healthz.py tests/test_ui_error_pages.py              -> 18 passed
+pytest tests/test_ui_error_page_headers.py tests/test_mongo_guard_scan.py -> 35 passed
+pytest tests/test_state_sweep_u3b.py tests/test_state_wrappers.py         -> 90 passed
+pytest tests/test_state_sweep_u3c.py tests/test_state_bypass_rule.py      -> 67 passed
+pytest tests/test_mongo_guard_chain.py tests/test_ui_auth_surface.py      -> 34 passed
+pytest tests/test_state_selection.py tests/test_ui_healthz.py             -> 32 passed
+ruff check src tests scripts                                               -> All checks passed!
+autotester doctor (redirected to .work/doctor-u9c1.txt, exit 0)            -> doctor: clean
+python scripts/mutation_check.py qa/evidence/mongo-store-u9/mutations.json --repo .  -> 21/21 mutations killed
+```
+
+W1, W2, W4, W5, W6 are unchanged and stay as judgement flags. In the cycle 0 sections below, "tests/test_store_startup_u9.py" for the 503, W3 and healthz tests now means `tests/test_store_outage_u9.py`.
+
+## What changed (cycle 0, still true except where cycle 1 says otherwise)
 
 | File | Kind | One job / change |
 |---|---|---|
