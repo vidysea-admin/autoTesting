@@ -215,6 +215,26 @@ def load_repo_env(root: Path | None = None) -> list[str]:
     return loaded
 
 
+MONGO_URI_ENV = "PATHLYNKS_MONGO_URI"
+"""The one name of the state-store connection string (D-120; mongo-store M28, M36)."""
+
+
+def mongo_uri(root: Path | None = None) -> str:
+    """The state-store URI, or `""`: a non-blank process variable, else the repo-root `.env`
+    value (the same `read_dotenv` reading as every other `.env` reader). The value is a secret:
+    it is returned to the one caller that opens the store and is never logged or echoed.
+
+    A test process with no `AUTOTESTER_ROOT` would read the real code tree's `.env`; it does not,
+    so a unit test can never pick up a developer's live URI (same reason `load_repo_env` skips)."""
+    live = os.environ.get(MONGO_URI_ENV, "").strip()
+    if live:
+        return live
+    if root is None and TEST_MARKER in os.environ and not os.environ.get("AUTOTESTER_ROOT"):
+        return ""
+    path = (root or repo_root()) / ENV_FILE
+    return (read_dotenv(path).get(MONGO_URI_ENV) or "").strip() if path.is_file() else ""
+
+
 PUBLIC_ENV_KEYS: frozenset[str] = frozenset({
     "PATHLYNKS_USER_LOGIN_URL",
 })

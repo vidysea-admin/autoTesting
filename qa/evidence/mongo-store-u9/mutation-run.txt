@@ -1,0 +1,53 @@
+KILLED  u1: the .env beats the process environment  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_the_process_environment_wins_over_the_dotenv
+    actually failed: tests/test_store_startup_u9.py::test_a_mixed_selection_pings_only_the_chosen_backends, tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only, tests/test_store_startup_u9.py::test_healthz_reports_a_reachable_mongo_area, tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend, tests/test_store_startup_u9.py::test_the_process_environment_wins_over_the_dotenv, tests/test_store_startup_u9.py::test_the_server_refuses_to_start_when_the_store_is_down
+KILLED  u2: a test process reads the real code-tree .env  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_test_process_never_reads_the_real_code_tree_dotenv
+    actually failed: tests/test_store_startup_u9.py::test_a_test_process_never_reads_the_real_code_tree_dotenv
+KILLED  u3: the .env value is not read at all  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_dotenv_uri_opens_the_store_and_is_never_echoed, tests/test_store_startup_u9.py::test_the_process_environment_wins_over_the_dotenv
+    actually failed: tests/test_store_startup_u9.py::test_a_dotenv_uri_opens_the_store_and_is_never_echoed, tests/test_store_startup_u9.py::test_a_value_is_read_literally_not_interpolated, tests/test_store_startup_u9.py::test_the_process_environment_wins_over_the_dotenv
+KILLED  u4: the refusal names the retired variable again  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_the_old_name_is_ignored_and_the_new_one_is_named_in_the_refusal, tests/test_store_startup_u9.py::test_the_provisional_name_is_gone_from_the_source
+    actually failed: tests/test_store_startup_u9.py::test_the_old_name_is_ignored_and_the_new_one_is_named_in_the_refusal, tests/test_store_startup_u9.py::test_the_provisional_name_is_gone_from_the_source
+KILLED  u5: the backend ignores core.env.mongo_uri  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_dotenv_uri_opens_the_store_and_is_never_echoed
+    actually failed: tests/test_store_startup_u9.py::test_a_dotenv_uri_opens_the_store_and_is_never_echoed, tests/test_store_startup_u9.py::test_a_mixed_selection_pings_only_the_chosen_backends, tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only, tests/test_store_startup_u9.py::test_healthz_reports_a_reachable_mongo_area, tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend, tests/test_store_startup_u9.py::test_the_server_refuses_to_start_when_the_store_is_down
+KILLED  u6: startup opens the backend but does not ping it  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend
+    actually failed: tests/test_store_startup_u9.py::test_a_mixed_selection_pings_only_the_chosen_backends, tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing, tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend
+KILLED  u7: the startup failure no longer names the areas  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only
+    actually failed: tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only
+KILLED  u8: startup pings every area, not once per backend  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend
+    actually failed: tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend
+KILLED  u9: validate_store_env stops pinging  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend, tests/test_store_startup_u9.py::test_the_server_refuses_to_start_when_the_store_is_down
+    actually failed: tests/test_store_startup_u9.py::test_a_dotenv_uri_opens_the_store_and_is_never_echoed, tests/test_store_startup_u9.py::test_a_mixed_selection_pings_only_the_chosen_backends, tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only, tests/test_store_startup_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing, tests/test_store_startup_u9.py::test_healthz_with_the_store_unconfigured_reports_it_without_failing, tests/test_store_startup_u9.py::test_startup_pings_the_server_once_per_backend, tests/test_store_startup_u9.py::test_the_old_name_is_ignored_and_the_new_one_is_named_in_the_refusal, tests/test_store_startup_u9.py::test_the_server_refuses_to_start_when_the_store_is_down
+KILLED  u10: the outage is not caught (a plain 500)  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]
+    actually failed: tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json], tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[text/html], tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too
+KILLED  u11: the outage answers 500 instead of 503  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]
+    actually failed: tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json], tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too
+KILLED  u12: the gate is not installed on the app  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json], tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too
+    actually failed: tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json], tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[text/html], tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too
+KILLED  u13: the gate sits inside the auth gate  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too
+    actually failed: tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too
+KILLED  u14: StoreUnavailable is no longer a StoreDown  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json], tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only
+    actually failed: tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping, tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json], tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[text/html], tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too, tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only
+KILLED  u15: healthz drops the store block  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_healthz_in_file_mode_reports_every_area_as_file_without_a_reach_probe, tests/test_store_startup_u9.py::test_healthz_reports_a_reachable_mongo_area
+    actually failed: tests/test_store_startup_u9.py::test_healthz_in_file_mode_reports_every_area_as_file_without_a_reach_probe, tests/test_store_startup_u9.py::test_healthz_reports_a_reachable_mongo_area, tests/test_store_startup_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing, tests/test_store_startup_u9.py::test_healthz_with_the_store_unconfigured_reports_it_without_failing
+KILLED  u16: readiness never pings  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing, tests/test_store_startup_u9.py::test_healthz_with_the_store_unconfigured_reports_it_without_failing
+    actually failed: tests/test_store_startup_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing, tests/test_store_startup_u9.py::test_healthz_with_the_store_unconfigured_reports_it_without_failing
+KILLED  u17: an anonymous caller gets the store block  (pytest exit 1)
+    claims to kill : tests/test_store_startup_u9.py::test_healthz_stays_200_and_anonymous_learns_nothing_new
+    actually failed: tests/test_store_startup_u9.py::test_healthz_stays_200_and_anonymous_learns_nothing_new
+
+17/17 mutations killed

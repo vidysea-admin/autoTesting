@@ -1,5 +1,4 @@
 """The only door to the AutoTester Mongo database (contract mongo-store M1-M12; D-120..D-122).
-
 The code is the only fence (the Mongo user can write other databases): the single write
 `MongoClient` site, `client[StoreConfig.database]` and nothing else. No API takes a database name,
 the URI never selects one (it is parsed as the driver parses it, only to REFUSE a clash, and is
@@ -22,6 +21,7 @@ from pymongo.errors import DuplicateKeyError, PyMongoError
 from pymongo.uri_parser import parse_uri
 
 from autotester.schema.store_config import StoreConfig, StoreConfigError, load_store_config
+from autotester.store.mongo_routes import StoreDown
 
 __all__ = ["COLLECTIONS", "INSERT_ONLY", "GuardedBucket", "GuardedCollection", "GuardedStore",
            "InsertOnlyCollection", "StoreConfigError", "StoreDuplicateKey", "StoreNotFound",
@@ -49,7 +49,7 @@ _SEAM: dict[str, Any] = {"config_path": None, "client_factory": None, "bucket_fa
 _REGISTRY: weakref.WeakKeyDictionary[Any, Any] = weakref.WeakKeyDictionary()
 
 
-class StoreUnavailable(RuntimeError):
+class StoreUnavailable(StoreDown):
     """The server did not answer. Carries only the exception CLASS name, never a URI (M9)."""
 
 

@@ -15,6 +15,8 @@ import autotester
 from autotester.auth.access import authorize
 from autotester.auth.context import current_principal
 from autotester.schema.auth import PermissionKey
+from autotester.store.filestore import validate_store_env
+from autotester.store.mongo_routes import store_selection
 from autotester.ui import theme
 
 router = APIRouter()
@@ -106,10 +108,27 @@ def _newest_source_mtime() -> datetime:
     return datetime.fromtimestamp(max(mtimes), tz=UTC)
 
 
+def store_readiness() -> dict[str, object]:
+    """Which backend holds each area, and whether the chosen backends answer a ping (M26).
+
+    Never raises and never carries an exception text, URI or database name: any failure (an
+    outage, an unset URI, a bad selection) is `reachable: false`, the same as startup's refusal."""
+    try:
+        areas = store_selection()
+    except ValueError:
+        return {"areas": {}, "reachable": False}
+    try:
+        validate_store_env()
+    except Exception:  # readiness is a boolean; the reason stays server-side
+        return {"areas": areas, "reachable": False}
+    return {"areas": areas, "reachable": True}
+
+
 @router.get("/healthz")
-def healthz() -> dict[str, str | bool]:
+def healthz() -> dict[str, object]:
     """AU16 (T-204): an unsigned-in caller (the container health check) gets only
-    `{"ok": true}`; the freshness detail below needs `settings.manage`.
+    `{"ok": true}`; the freshness detail below, and `store` (mongo-store M26: the backend per
+    area and whether it answers), need `settings.manage`. It stays 200 while the store is down.
 
     One HTTP call standing in for the `ps` + `find -newermt` archaeology
     AT-085's checker had to do by hand: when this process started, and
@@ -124,4 +143,5 @@ def healthz() -> dict[str, str | bool]:
         "started_at": _PROCESS_STARTED_AT.isoformat(),
         "newest_source_mtime": newest.isoformat(),
         "serving_stale_code": newest > _PROCESS_STARTED_AT,
+        "store": store_readiness(),
     }

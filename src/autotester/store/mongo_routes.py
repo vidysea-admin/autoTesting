@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from fnmatch import fnmatchcase
 from functools import cache
 from typing import NamedTuple, Protocol
@@ -118,6 +118,11 @@ class StateBackend(Protocol):
 
 class StoreSelectionError(ValueError):
     """`AUTOTESTER_STORE` / `AUTOTESTER_STORE_AREAS` names something unknown or not wired."""
+
+
+class StoreDown(RuntimeError):
+    """Driver-free base of `mongo_guard.StoreUnavailable`: the UI maps it to 503 (M26) without
+    importing a driver in file mode (M13)."""
 
 
 class StoreImmutable(RuntimeError):
@@ -239,6 +244,19 @@ def store_selection() -> dict[str, str]:
         if name not in BACKENDS:
             raise StoreSelectionError(f"unknown store backend {name!r}; use one of {BACKENDS}")
     return chosen
+
+
+def ping_backends(selection: dict[str, str],
+                  open_backend: Callable[[str], StateBackend]) -> dict[str, str]:
+    """Open and ping each backend the selection chose, once (M27). A failure keeps the guard's
+    fixed text (exception class only, never the URI) and adds the areas that sit on it."""
+    for name in sorted(set(selection.values())):
+        try:
+            open_backend(name).ping()
+        except StoreDown as exc:
+            areas = ", ".join(a for a, n in selection.items() if n == name)
+            raise type(exc)(f"{exc}; areas on {name}: {areas}") from None
+    return selection
 
 
 def split_graph(text: str) -> tuple[str, list[str], list[str]] | None:

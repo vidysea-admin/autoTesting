@@ -30,14 +30,17 @@ from http import HTTPStatus
 
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import http_exception_handler as _default_json_handler
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.utils import is_body_allowed_for_status_code
 from starlette.exceptions import HTTPException
+from starlette.middleware import Middleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import Redactor
 from autotester.schema.project import Project
+from autotester.store.mongo_routes import StoreDown
 from autotester.ui import theme
 
 _NO_PROJECT_SCOPE = Project(slug="error-pages", name="error-pages", base_url="")
@@ -121,3 +124,42 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> Respon
 
 def register_exception_handler(app: FastAPI) -> None:
     app.add_exception_handler(HTTPException, http_exception_handler)
+
+
+STORE_DOWN = "State store unavailable, nothing was changed"
+"""The whole body of a store outage (M26): no exception text, host, URI or database name."""
+
+
+class _StoreDownGate:
+    """Outermost ASGI middleware: a `StoreDown` from a route OR from the auth gate below becomes
+    one fixed 503, never a 500 with a traceback and never a request that falls through allowed.
+    Pure ASGI (no `BaseHTTPMiddleware`) so the exception arrives unwrapped; once a response has
+    started it is re-raised, since a second status line cannot be sent."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        started: list[bool] = []
+
+        async def _send(message: dict) -> None:
+            started.append(message["type"] == "http.response.start")
+            await send(message)
+
+        try:
+            await self.app(scope, receive, _send)
+        except StoreDown:
+            if any(started):
+                raise
+            html = "text/html" in Request(scope).headers.get("accept", "")
+            reply = _error_page(503, STORE_DOWN) if html else JSONResponse(
+                {"detail": STORE_DOWN}, status_code=503)
+            await reply(scope, receive, send)
+
+
+def store_down_middleware() -> list[Middleware]:
+    """For `FastAPI(middleware=...)`, FIRST: it must wrap the origin guard and the auth gate."""
+    return [Middleware(_StoreDownGate)]

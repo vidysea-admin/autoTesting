@@ -40,7 +40,7 @@ def mongo_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path
     root.mkdir()
     monkeypatch.setenv("AUTOTESTER_ROOT", str(root))
     monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "projects=mongo,runs=mongo")
-    monkeypatch.setenv("AUTOTESTER_MONGO_URI", "mongodb://h/")
+    monkeypatch.setenv("PATHLYNKS_MONGO_URI", "mongodb://h/")
     monkeypatch.delenv("AUTOTESTER_STORE", raising=False)
     reset_default_backend()
     try:
