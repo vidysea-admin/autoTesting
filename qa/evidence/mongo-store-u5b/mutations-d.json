@@ -1,0 +1,45 @@
+{
+ "tests": [
+  "tests/test_media_sources_blobs.py"
+ ],
+ "mutations": [
+  {
+   "name": "d1: source_path records the blob-cache copy",
+   "file": "src/autotester/store/run_store.py",
+   "old": "    return str(_LOGICAL.get(Path(path).resolve(), Path(path)).resolve())",
+   "new": "    return str(Path(path).resolve())",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe",
+    "test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe"
+   ]
+  },
+  {
+   "name": "d2: store_media never records the logical path",
+   "file": "src/autotester/store/run_store.py",
+   "old": "        _LOGICAL[served.resolve()] = target  # ... but a Source records the logical path\n",
+   "new": "",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe",
+    "test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe"
+   ]
+  },
+  {
+   "name": "d3: the document hash reads source.path directly",
+   "file": "src/autotester/stages/source_material.py",
+   "old": "actual = file_sha256(local_blob(Path(source.path)))",
+   "new": "actual = file_sha256(Path(source.path))",
+   "kills": [
+    "test_teaching_material_of_a_gridfs_only_video_and_document_is_available"
+   ]
+  },
+  {
+   "name": "d4: document extraction reads source.path directly",
+   "file": "src/autotester/stages/source_material.py",
+   "old": "extract_document_text(local_blob(Path(source.path)))",
+   "new": "extract_document_text(Path(source.path))",
+   "kills": [
+    "test_teaching_material_of_a_gridfs_only_video_and_document_is_available"
+   ]
+  }
+ ]
+}

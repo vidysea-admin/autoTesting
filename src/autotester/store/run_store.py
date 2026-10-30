@@ -39,8 +39,9 @@ from autotester.store.filestore import (
 from autotester.store.mongo_routes import RUN_AUX_FILES, StoreSelectionError, store_selection
 
 __all__ = ["RUN_AUX_FILES", "RunStoreMixin", "blob_store", "local_blob", "place_media",
-           "put_file", "store_media", "sync_run_blobs", "write_blob_file"]
+           "put_file", "source_path", "store_media", "sync_run_blobs", "write_blob_file"]
 _BLOBS: dict[str, BlobStore] = {}
+_LOGICAL: dict[Path, Path] = {}  # blob-cache copy -> the logical path `store_media` was given
 _TYPES = {".png": "image/png", ".webm": "video/webm"}
 _MEDIA = {EvidenceKind.SCREENSHOT: "screenshot", EvidenceKind.VIDEO: "video"}
 
@@ -204,9 +205,17 @@ def store_media(target: Path, data: bytes) -> Path:
         if (held := store.stat(key)) is not None and held.sha256 != sha:
             target = target.with_name(f"{sha[:8]}_{target.name}")
         put_file(target, data, kind="source", masked=False)
-        return local_blob(target)
+        served = local_blob(target)  # the adapters read this copy ...
+        _LOGICAL[served.resolve()] = target  # ... but a Source records the logical path
+        return served
     FileBackend(target.parent).put(target.name, data)
     return target
+
+
+def source_path(path: Path) -> str:
+    """The path a `Source` records for bytes an adapter read from `path` (M51): the logical path
+    when `path` is a blob-cache copy `store_media` made, else `path` itself, resolved."""
+    return str(_LOGICAL.get(Path(path).resolve(), Path(path)).resolve())
 
 
 def place_media(staged: Path, target: Path, digest: str) -> None:

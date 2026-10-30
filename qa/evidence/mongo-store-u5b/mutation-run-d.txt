@@ -1,0 +1,14 @@
+KILLED  d1: source_path records the blob-cache copy  (pytest exit 1)
+    claims to kill : tests/test_media_sources_blobs.py::test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe, tests/test_media_sources_blobs.py::test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe
+    actually failed: tests/test_media_sources_blobs.py::test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe, tests/test_media_sources_blobs.py::test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe
+KILLED  d2: store_media never records the logical path  (pytest exit 1)
+    claims to kill : tests/test_media_sources_blobs.py::test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe, tests/test_media_sources_blobs.py::test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe
+    actually failed: tests/test_media_sources_blobs.py::test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe, tests/test_media_sources_blobs.py::test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe
+KILLED  d3: the document hash reads source.path directly  (pytest exit 1)
+    claims to kill : tests/test_media_sources_blobs.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+    actually failed: tests/test_media_sources_blobs.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+KILLED  d4: document extraction reads source.path directly  (pytest exit 1)
+    claims to kill : tests/test_media_sources_blobs.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+    actually failed: tests/test_media_sources_blobs.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+
+4/4 mutations killed

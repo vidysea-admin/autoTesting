@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -21,14 +22,21 @@ from media_blob_support import png_bytes
 
 from autotester.core.paths import code_root
 from autotester.media import frames as frame_mod
+from autotester.media import narration
+from autotester.schema.base import Provenance
+from autotester.schema.enums import SourceKind
 from autotester.schema.intake import UploadOrigin
 from autotester.schema.project import Source
 from autotester.sources.drive import DriveFile
-from autotester.sources.drive_register import _write_bytes
+from autotester.sources.drive_register import _dispatch_by_suffix, _write_bytes
 from autotester.sources.email import Attachment
-from autotester.sources.email_register import _write_attachment_to_disk
+from autotester.sources.email_register import (
+    _register_email_attachment,
+    _write_attachment_to_disk,
+)
 from autotester.sources.intake_commit import commit_video
 from autotester.stages import media_prep
+from autotester.stages.source_material import resolve_teaching_material
 from autotester.store import run_store
 from autotester.store.project_store import ProjectStore
 from autotester.ui.routes_video import _safe_video_path
@@ -117,6 +125,86 @@ def test_drive_and_email_writers_in_file_mode_write_the_file_as_before(
     assert drive == store.paths.source_dir("src1") / "files" / "notes.txt"
     assert mail == store.paths.source_dir("m1") / "attachments" / "a_b.txt"
     assert (drive.read_bytes(), mail.read_bytes()) == (b"d", b"m")
+
+
+def _wipe_cache(rig: MongoRig) -> None:
+    shutil.rmtree(rig.cache, ignore_errors=True)
+
+
+def _assert_logical_and_readable(rig: MongoRig, source: Source, body: bytes) -> None:
+    """The recorded path is the LOGICAL path (not a cache copy) and survives a wiped cache (M51)."""
+    assert source.path is not None and not Path(source.path).is_relative_to(rig.cache.resolve())
+    assert "blob-cache" not in Path(source.path).parts and not Path(source.path).exists()
+    _wipe_cache(rig)
+    assert run_store.local_blob(Path(source.path)).read_bytes() == body
+
+
+def test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe(
+        blob_area: MongoRig, tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    prov = Provenance(produced_by="drive", inputs=["p"])
+    for name, mime in (("notes.txt", "text/plain"), ("pic.png", "image/png")):
+        body = b"drive body " + name.encode()
+        written = _write_bytes(store, "p", DriveFile("f1", name, mime), body)
+        reg = _dispatch_by_suffix(store, written, DriveFile("f1", name, mime), prov, None, [])
+        _assert_logical_and_readable(blob_area, reg.source, body)
+
+
+def test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe(
+        blob_area: MongoRig, tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    for name, mime in (("a b.txt", "text/plain"), ("pic.png", "image/png")):
+        body = b"mail body " + name.encode()
+        reg = _register_email_attachment(
+            store, SimpleNamespace(id="m1"), Attachment(name, body, mime), None, [])
+        _assert_logical_and_readable(blob_area, reg.source, body)
+
+
+def test_drive_and_email_sources_in_file_mode_record_the_same_path_as_today(
+        file_area: Path, tmp_path: Path) -> None:
+    store = ProjectStore("pathlynks", file_area)
+    drive_file = DriveFile("f1", "notes.txt", "text/plain")
+    written = _write_bytes(store, "p", drive_file, b"d")
+    drive = _dispatch_by_suffix(store, written, drive_file, Provenance(produced_by="drive"),
+                                None, [])
+    mail = _register_email_attachment(
+        store, SimpleNamespace(id="m1"), Attachment("x.txt", b"m", "text/plain"), None, [])
+    assert drive.source.path == str(written.resolve())
+    assert mail.source.path == str((store.paths.source_dir("m1") / "attachments"
+                                    / "x.txt").resolve())
+
+
+def test_teaching_material_of_a_gridfs_only_video_and_document_is_available(
+        blob_area: MongoRig, tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    video = _commit(store, tmp_path)
+    body = b"the lesson text"
+    target = store.paths.source_dir("d1") / "files" / "lesson.txt"
+    run_store.store_media(target, body)
+    doc = store.add_source(Source(project="pathlynks", kind=SourceKind.DOC, path=str(target),
+                                  sha256=hashlib.sha256(body).hexdigest()))
+    _wipe_cache(blob_area)
+    for src in (video, doc):
+        material = resolve_teaching_material(store, src, [src])
+        assert not material.unavailable and not any(
+            "unavailable" in p for p in material.problems), material.problems
+    assert [u.text for u in resolve_teaching_material(store, doc, [doc]).units] == [
+        "the lesson text"]
+
+
+def test_narration_of_a_gridfs_only_video_transcribes_the_verified_copy(
+        blob_area: MongoRig, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    store = _store(tmp_path)
+    source = _commit(store, tmp_path)
+    seen: list[bytes] = []
+
+    def fake(video: Path, source_id: str, provider: object, secrets: object):
+        seen.append(video.read_bytes())
+        return narration._missing_narration(source_id, "stub")
+
+    monkeypatch.setattr(narration, "_transcribe_video_audio", fake)
+    narration.ensure_narration(store, source)
+    assert seen == [VIDEO]
 
 
 def test_a_secret_value_in_an_ingested_text_is_refused_and_nothing_is_stored(

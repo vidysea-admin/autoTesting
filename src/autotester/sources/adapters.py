@@ -37,6 +37,7 @@ from autotester.sources.audio import AUDIO_SUFFIXES, transcribe_audio
 from autotester.sources.extract import DOC_SUFFIXES, Extraction, extract_document_text
 from autotester.store.filestore import write_json
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import source_path
 
 _EXTRACTION_ERROR_PREFIX = "extraction_error"
 
@@ -114,7 +115,7 @@ def register_document(
         Source(
             project=store.paths.slug,
             kind=SourceKind.DOC,
-            path=str(path.resolve()),
+            path=source_path(path),
             sha256=digest,
             text=extraction.text,
             label=label,
@@ -221,7 +222,7 @@ def _add_audio_source(
         Source(
             project=store.paths.slug,
             kind=SourceKind.AUDIO,
-            path=str(path.resolve()),
+            path=source_path(path),
             sha256=digest,
             label=label,
             recorded_on=recorded_on,

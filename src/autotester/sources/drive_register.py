@@ -44,7 +44,7 @@ from autotester.sources.drive import DriveClient, DriveFile
 from autotester.sources.extract import DOC_SUFFIXES
 from autotester.stages.ingest import RECORDING_SUFFIXES, register_source
 from autotester.store.project_store import ProjectStore
-from autotester.store.run_store import store_media
+from autotester.store.run_store import source_path, store_media
 
 _PROVENANCE_STAGE = "sources.drive"
 
@@ -168,7 +168,7 @@ def _register_unreadable_type(
     source = Source(
         project=store.paths.slug,
         kind=SourceKind.DOC,
-        path=str(path.resolve()),
+        path=source_path(path),
         sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
         url=drive_file.id,
         label=drive_file.name,

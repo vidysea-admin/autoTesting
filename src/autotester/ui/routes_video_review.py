@@ -36,6 +36,7 @@ from autotester.stages.video_review import (
     unreadable_reason,
 )
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 from autotester.ui.video_review_view import review_refusal_page
 
 router = APIRouter()
@@ -74,7 +75,7 @@ def run_video_review(slug: str, video_id: str, pointers: str = Form("")) -> Resp
         return HTMLResponse(review_refusal_page(back, "Pointers too long", [
             "The pointer text is over the size limit; nothing was sent to a model."]), 400)
     store = ProjectStore(slug)
-    video = access.media_path(slug, source) or Path(source.path)
+    video = access.media_path(slug, source) or local_blob(Path(source.path))
 
     def permission() -> None:
         if not authorize(who, PermissionKey.VIDEO_UPLOAD, res):
