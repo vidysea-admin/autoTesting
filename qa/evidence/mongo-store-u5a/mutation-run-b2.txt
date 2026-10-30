@@ -1,0 +1,17 @@
+KILLED  b1: prune before upload  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_a_changed_put_uploads_the_new_revision_before_it_deletes_the_old, tests/test_blobs_mongo.py::test_an_upload_that_fails_leaves_the_old_revision_readable
+    actually failed: tests/test_blobs_mongo.py::test_a_changed_put_uploads_the_new_revision_before_it_deletes_the_old, tests/test_blobs_mongo.py::test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest, tests/test_blobs_mongo.py::test_an_upload_that_fails_leaves_the_old_revision_readable
+KILLED  b2: prune what is there now, not what was seen  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions
+    actually failed: tests/test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions
+KILLED  b3: no self-heal on a no-op put  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest
+    actually failed: tests/test_blobs_mongo.py::test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest, tests/test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions
+KILLED  b4: delete only the newest revision  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_delete_removes_every_revision_of_the_key_and_only_that_key
+    actually failed: tests/test_blobs_mongo.py::test_delete_removes_every_revision_of_the_key_and_only_that_key
+KILLED  b5: newest by listing order  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_the_newest_revision_is_the_one_with_the_highest_put_seq_not_the_listing_order
+    actually failed: tests/test_blobs_mongo.py::test_the_newest_revision_is_the_one_with_the_highest_put_seq_not_the_listing_order
+
+5/5 mutations killed

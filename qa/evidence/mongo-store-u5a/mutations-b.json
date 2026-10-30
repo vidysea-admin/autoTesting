@@ -1,0 +1,53 @@
+{
+ "tests": [
+  "tests/test_blobs_mongo.py"
+ ],
+ "mutations": [
+  {
+   "name": "b1: prune before upload",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        self._bucket.upload(key, bytes(data), metadata={**meta, \"put_seq\": time.time_ns()})\n        self._prune(revs)  # only what was seen BEFORE the upload: a racing put survives",
+   "new": "        self._prune(revs)\n        self._bucket.upload(key, bytes(data), metadata={**meta, \"put_seq\": time.time_ns()})",
+   "kills": [
+    "test_a_changed_put_uploads_the_new_revision_before_it_deletes_the_old",
+    "test_an_upload_that_fails_leaves_the_old_revision_readable"
+   ]
+  },
+  {
+   "name": "b2: prune what is there now, not what was seen",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        self._prune(revs)  # only what was seen BEFORE the upload: a racing put survives",
+   "new": "        self._prune(self._bucket.revisions(key)[:-1])",
+   "kills": [
+    "test_two_racing_puts_never_leave_zero_revisions"
+   ]
+  },
+  {
+   "name": "b3: no self-heal on a no-op put",
+   "file": "src/autotester/store/blobs.py",
+   "old": "            self._prune(revs[:-1])  # self-heal leftovers of an interrupted put",
+   "new": "            pass",
+   "kills": [
+    "test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest"
+   ]
+  },
+  {
+   "name": "b4: delete only the newest revision",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        self._prune(revs)\n        return bool(revs)",
+   "new": "        self._prune(revs[-1:])\n        return bool(revs)",
+   "kills": [
+    "test_delete_removes_every_revision_of_the_key_and_only_that_key"
+   ]
+  },
+  {
+   "name": "b5: newest by listing order",
+   "file": "src/autotester/store/blobs.py",
+   "old": "key=lambda r: r[\"metadata\"].get(\"put_seq\", 0))",
+   "new": "key=lambda r: 0)",
+   "kills": [
+    "test_the_newest_revision_is_the_one_with_the_highest_put_seq_not_the_listing_order"
+   ]
+  }
+ ]
+}

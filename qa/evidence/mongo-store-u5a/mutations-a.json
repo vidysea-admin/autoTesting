@@ -1,0 +1,228 @@
+{
+ "tests": [
+  "tests/test_blobs.py"
+ ],
+ "mutations": [
+  {
+   "name": "a1: unmasked screenshot accepted",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    if kind in UNMASKED_REFUSED and not masked:",
+   "new": "    if False:",
+   "kills": [
+    "test_an_unmasked_screenshot_is_refused_and_nothing_is_written[file]",
+    "test_an_unmasked_screenshot_is_refused_and_nothing_is_written[mongo]"
+   ]
+  },
+  {
+   "name": "a2: key not scanned for secrets",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    text = [key, kind, content_type]",
+   "new": "    text = [kind, content_type]",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-key]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-key]"
+   ]
+  },
+  {
+   "name": "a3: content_type not scanned",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    text = [key, kind, content_type]",
+   "new": "    text = [key, kind]",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-content_type]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-content_type]"
+   ]
+  },
+  {
+   "name": "a4: text body not scanned",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    if content_type.startswith(TEXT_TYPES):",
+   "new": "    if False:",
+   "kills": [
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[file-text body]",
+    "test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-json body]"
+   ]
+  },
+  {
+   "name": "a5: .work not a non-blob segment",
+   "file": "src/autotester/store/blobs.py",
+   "old": "frozenset({\".work\", \"profiles\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "new": "frozenset({\"profiles\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-.work/ceo-bench/answers.json]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-.work/ceo-bench/answers.json]"
+   ]
+  },
+  {
+   "name": "a5: profiles not a non-blob segment",
+   "file": "src/autotester/store/blobs.py",
+   "old": "frozenset({\".work\", \"profiles\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "new": "frozenset({\".work\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-profiles/pathlynks/Default/x]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-profiles/pathlynks/Default/x]"
+   ]
+  },
+  {
+   "name": "a5: chunks not a non-blob segment",
+   "file": "src/autotester/store/blobs.py",
+   "old": "frozenset({\".work\", \"profiles\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "new": "frozenset({\".work\", \"profiles\", \"crawl_summaries\", META_DIR})",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/sources/s1/chunks/c0.json]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/sources/s1/chunks/c0.json]"
+   ]
+  },
+  {
+   "name": "a5: crawl_summaries not a non-blob segment",
+   "file": "src/autotester/store/blobs.py",
+   "old": "frozenset({\".work\", \"profiles\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "new": "frozenset({\".work\", \"profiles\", \"chunks\", META_DIR})",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/crawl_summaries/c1.json]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/crawl_summaries/c1.json]"
+   ]
+  },
+  {
+   "name": "a5: META_DIR not a non-blob segment",
+   "file": "src/autotester/store/blobs.py",
+   "old": "frozenset({\".work\", \"profiles\", \"chunks\", \"crawl_summaries\", META_DIR})",
+   "new": "frozenset({\".work\", \"profiles\", \"chunks\", \"crawl_summaries\"})",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-.blobmeta/x.json]"
+   ]
+  },
+  {
+   "name": "a6: .env exact name allowed",
+   "file": "src/autotester/store/blobs.py",
+   "old": "name == \".env\" or name.startswith(\".env.\")",
+   "new": "name.startswith(\".env.\")",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-.env]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-sub/.env]"
+   ]
+  },
+  {
+   "name": "a6: .env.* allowed",
+   "file": "src/autotester/store/blobs.py",
+   "old": "name == \".env\" or name.startswith(\".env.\")",
+   "new": "name == \".env\"",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/.env.local]"
+   ]
+  },
+  {
+   "name": "a7: xlsx export allowed",
+   "file": "src/autotester/store/blobs.py",
+   "old": "name.endswith(\".xlsx\")",
+   "new": "False",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/ai-report.xlsx]"
+   ]
+  },
+  {
+   "name": "a7: xlsx check is case sensitive",
+   "file": "src/autotester/store/blobs.py",
+   "old": "name = parts[-1].casefold()",
+   "new": "name = parts[-1]",
+   "kills": [
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/REPORT.XLSX]",
+    "test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/ai/REPORT.XLSX]"
+   ]
+  },
+  {
+   "name": "a8: export kind allowed",
+   "file": "src/autotester/store/blobs.py",
+   "old": "or kind in NOT_BLOB_KINDS",
+   "new": "or False",
+   "kills": [
+    "test_an_export_kind_is_refused[file]",
+    "test_an_export_kind_is_refused[mongo]"
+   ]
+  },
+  {
+   "name": "a9: file equal put rewrites",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    if current is not None and _same(meta, vars(current)) and self._sidecar(key) is not None:",
+   "new": "    if False:",
+   "kills": [
+    "test_an_equal_put_is_a_no_op[file]"
+   ]
+  },
+  {
+   "name": "a9: mongo equal put uploads again",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    if revs and _same(meta, revs[-1][\"metadata\"]):",
+   "new": "    if False:",
+   "kills": [
+    "test_an_equal_put_is_a_no_op[mongo]"
+   ]
+  },
+  {
+   "name": "a10: same bytes new metadata is a no-op",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    fields = (\"sha256\", \"kind\", \"masked\", \"content_type\")",
+   "new": "    fields = (\"sha256\",)",
+   "kills": [
+    "test_the_same_bytes_with_new_metadata_are_a_change_not_a_no_op[file]",
+    "test_the_same_bytes_with_new_metadata_are_a_change_not_a_no_op[mongo]"
+   ]
+  },
+  {
+   "name": "a11: file delete leaves the sidecar",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        self._files.delete(f\"{META_DIR}/{safe_key(key)}.json\")",
+   "new": "        pass",
+   "kills": [
+    "test_delete_removes_the_blob_and_reports_whether_it_existed[file]"
+   ]
+  },
+  {
+   "name": "a12: stale sidecar trusted",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        if meta is None or meta.get(\"sha256\") != _sha(data):",
+   "new": "        if meta is None:",
+   "kills": [
+    "test_a_file_store_ignores_a_sidecar_that_no_longer_matches_its_bytes"
+   ]
+  },
+  {
+   "name": "a13: default redactor ignores .env",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    values = read_dotenv(env) if env.is_file() else {}",
+   "new": "    values = {}",
+   "kills": [
+    "test_the_default_redactor_reads_the_repo_env"
+   ]
+  },
+  {
+   "name": "a14: non-bytes body not refused",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    if not isinstance(data, bytes | bytearray) or not KIND.fullmatch(kind):",
+   "new": "    if not KIND.fullmatch(kind):",
+   "kills": [
+    "test_a_non_bytes_body_is_refused[file]",
+    "test_a_non_bytes_body_is_refused[mongo]"
+   ]
+  },
+  {
+   "name": "a15: kind pattern not enforced",
+   "file": "src/autotester/store/blobs.py",
+   "old": "    if not isinstance(data, bytes | bytearray) or not KIND.fullmatch(kind):",
+   "new": "    if not isinstance(data, bytes | bytearray):",
+   "kills": [
+    "test_a_malformed_kind_is_refused[file-Screenshot]",
+    "test_a_malformed_kind_is_refused[mongo-screen shot]"
+   ]
+  },
+  {
+   "name": "a16: redactor not re-asked per put",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        _vet(key, data, kind, masked, content_type, self._redactor())\n        meta = _meta(bytes(data), kind, masked, content_type)\n        current",
+   "new": "        _vet(key, data, kind, masked, content_type, Redactor({}))\n        meta = _meta(bytes(data), kind, masked, content_type)\n        current",
+   "kills": [
+    "test_the_redactor_is_asked_at_every_put_so_a_later_secret_is_seen"
+   ]
+  }
+ ]
+}

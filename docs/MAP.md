@@ -418,6 +418,7 @@
 | `stages/video_review_render.py` | Render a stored review as Markdown or HTML with the identical item set (TV10, TV4, TV6). |
 | `stages/video_review_store.py` | Find the stored reviews of one recording (T-197 TV10): newest first, read-only. |
 | `store/approval_revocations.py` | Read and append the sibling `approval_revocations.jsonl` of a project. |
+| `store/blobs.py` | Binary evidence behind one interface: `BlobStore` over files or GridFS (mongo-store M23-M25). |
 | `store/bug_store.py` | BUG STORE: the set of bug events, one file each, under a caller-given directory (T-199a/b, TB6). |
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
