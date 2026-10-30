@@ -21,6 +21,7 @@ from fake_mongo import FakeCollection, FakeMongoServer, seams
 
 from autotester.auth import db
 from autotester.auth.store_mongo import reset_auth_store
+from autotester.store.mongo_backend import reset_default_backend
 
 BACKENDS = ("sqlite", "mongo")
 OLD = "2000-01-01T00:00:00+00:00"
@@ -43,6 +44,7 @@ class AuthEnv:
             self._mp.setenv("AUTOTESTER_AUTH_DIR", str(self.tmp_path / f"auth-{self._count}"))
         else:
             self.server = FakeMongoServer()
+            reset_default_backend()  # a new server needs a new client
             reset_auth_store()
             if slow:
                 self._mp.setattr(FakeCollection, "_down",
@@ -72,8 +74,9 @@ class AuthEnv:
     def nothing_written(self) -> bool:
         if self.name == "sqlite":
             return not db.auth_db_path().exists()
-        return not any(c.docs or c.indexes
-                       for d in self.server.databases.values() for c in d.collections.values())
+        return not any(c.docs or c.indexes  # auth's own collections: the shared client's state
+                       for d in self.server.databases.values()  # indexes (U9) are not auth writes
+                       for n, c in d.collections.items() if n.startswith("auth_"))
 
     def dump(self) -> str:
         """Every stored value of the active store, as text (for the no-leak scans)."""
@@ -91,11 +94,13 @@ def auth_env(name: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iter
     with ExitStack() as stack:
         if name == "mongo":
             monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "auth=mongo")
-            monkeypatch.setenv("AUTOTESTER_MONGO_URI", "mongodb://h/")
+            monkeypatch.setenv("PATHLYNKS_MONGO_URI", "mongodb://h/")
             stack.enter_context(seams(client_factory=lambda _uri: env.server.client()))
+        reset_default_backend()
         reset_auth_store()
         env.fresh()
         try:
             yield env
         finally:
             reset_auth_store()
+            reset_default_backend()

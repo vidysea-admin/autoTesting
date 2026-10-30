@@ -34,6 +34,7 @@
 | `auth/sessions.py` | Server-side sessions (AU3): a 256-bit random id in the cookie, only its SHA-256 in the |
 | `auth/store.py` | The auth store seam (M29/M30, mongo-store U6a): what accounts, groups, sessions and |
 | `auth/store_mongo.py` | The Mongo implementation of the auth store seam (`auth/store.py`; mongo-store U6b, M29/M30). |
+| `auth/store_mongo_tx.py` | The write-transaction primitives of the Mongo auth store (mongo-store U6b), over |
 | `auth/store_sqlite.py` | The SQLite implementation of the auth store seam (`auth/store.py`). |
 | `browser/assertions.py` | Deterministic assertion evaluation (D-032/AT-540) — split from |
 | `browser/click_recovery.py` | Click readiness: scroll into view, wait out overlays, expand a collapsed parent menu. |

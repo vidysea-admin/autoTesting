@@ -1,121 +1,39 @@
 """The Mongo implementation of the auth store seam (`auth/store.py`; mongo-store U6b, M29/M30).
 
 The `AuthTx` contract of `store_sqlite.py` over `store.mongo_guard.GuardedStore` only (no database
-name here, M2/M5). Mongo promises one document at a time, so a write transaction is built from
-that: a LEASE (`auth_meta/tx_lock`: insert under a unique `_id`, take over an expired one by
-compare-and-set) serialises writers, so first-admin, claim and the last-admin check (AU7, AU9,
-D-109) see one writer; an UNDO log rolls a refused change back whole; unique indexes are the
-second line; ids come from a counter and are never reused. Readers take no lease, so one may see
-a write just before its rollback; every rollback follows a refused change, which only lowers
-privilege. A membership is an entry in the account's `group_ids`; a session is stored by the
-sha256 of its token only.
+name here, M2/M5). Writers are serialised by the lease and a refused change is rolled back whole
+by the undo log (`store_mongo_tx.py`); unique indexes are the second line. Readers take no lease,
+so one may see a write just before its rollback; every rollback follows a refused change, which
+only lowers privilege. A membership is an entry in the account's `group_ids`; a session is stored
+by the sha256 of its token only.
 """
 
 from __future__ import annotations
 
-import functools
-import logging
-import os
-import secrets
 import threading
-import time
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime
 from typing import Any
 
 from autotester.auth import db
 from autotester.auth.defaults import ADMIN_SEED, DEFAULT_GROUPS
+from autotester.auth.store_mongo_tx import META, AuthStoreBusy, Doc, MongoTxBase, coll_of, lease
 from autotester.schema.auth import Group, PermissionKey, Principal, User
-from autotester.store.mongo_backend import URI_ENV
-from autotester.store.mongo_guard import GuardedCollection, GuardedStore, StoreDuplicateKey
-from autotester.store.mongo_routes import StoreSelectionError
+from autotester.store.mongo_backend import default_store
+from autotester.store.mongo_guard import GuardedStore, StoreDuplicateKey
 
 __all__ = ["AuthStoreBusy", "MongoAuthStore", "MongoAuthTx", "mongo_auth_store", "reset_auth_store"]
 
-LOG = logging.getLogger(__name__)
-Doc = dict[str, Any]
-USERS, GROUPS, SESSIONS, GRANTS, META = ("auth_users", "auth_groups", "auth_sessions",
-                                         "auth_grants", "auth_meta")
-LOCK_ID, SEEDED_ID, NAMESPACE = "tx_lock", "seeded", "auth"  # `p`: the guard's scoped delete_many
-LEASE_SECONDS, WAIT_SECONDS, POLL_SECONDS = 30.0, 15.0, 0.005
+USERS, GROUPS, SESSIONS, GRANTS = "auth_users", "auth_groups", "auth_sessions", "auth_grants"
+SEEDED_ID, NAMESPACE = "seeded", "auth"  # `p`: the guard's scoped delete_many
+_AUTH: dict[str, Any] = {}  # the one auth store, keyed to the process's one client
 INDEXES: tuple[tuple[str, str, bool], ...] = (
     (USERS, "email", True), (USERS, "generation", True), (GROUPS, "name", True),
     (SESSIONS, "user_id", False), (GRANTS, "slug", False), (GRANTS, "user_id", False))
 
 
-class AuthStoreBusy(RuntimeError):
-    """The write lease could not be had in time (or was lost). Carries no data."""
-
-
-def _coll(store: GuardedStore, name: str) -> GuardedCollection:
-    coll = store.collection(name)
-    if not isinstance(coll, GuardedCollection):
-        raise TypeError(f"{name} is insert-only")
-    return coll
-
-
-class MongoAuthTx:
-    def __init__(self, store: GuardedStore, writable: bool) -> None:
-        self._s, self._writable = store, writable
-        self._undo: list[Callable[[], object]] = []
-
-    def _docs(self, name: str, flt: Doc | None = None) -> list[Doc]:
-        return _coll(self._s, name).find(flt)
-
-    def _one(self, name: str, flt: Doc) -> Doc | None: return _coll(self._s, name).find_one(flt)
-    def _get(self, name: str, doc_id: Any) -> Doc | None: return self._one(name, {"_id": doc_id})
-
-    def _writer(self, name: str) -> GuardedCollection:
-        if not self._writable:
-            raise RuntimeError("the auth store was opened for reading")
-        return _coll(self._s, name)
-
-    def _insert(self, name: str, doc: Doc) -> None:  # every write records its own undo
-        coll = self._writer(name)
-        coll.insert_one(doc)
-        self._undo.append(lambda: coll.delete_one({"_id": doc["_id"]}))
-
-    def _patch(self, name: str, doc_id: Any, /, **fields: Any) -> bool:
-        coll, old = self._writer(name), self._get(name, doc_id)
-        if old is not None:
-            coll.update_one({"_id": doc_id}, {"$set": fields})
-            prior = {key: old.get(key) for key in fields}
-            self._undo.append(lambda: coll.update_one({"_id": doc_id}, {"$set": prior}))
-        return old is not None
-
-    def _drop(self, name: str, doc_id: Any) -> bool:
-        coll, old = self._writer(name), self._get(name, doc_id)
-        if old is not None:
-            coll.delete_one({"_id": doc_id})
-            self._undo.append(lambda: coll.insert_one(old))
-        return old is not None
-
-    def _drop_where(self, name: str, flt: Doc) -> None:
-        for doc in self._docs(name, flt):
-            self._drop(name, doc["_id"])
-
-    def rollback(self) -> None:
-        while self._undo:
-            try:
-                self._undo.pop()()
-            except Exception as exc:  # keep undoing; only the class name is logged
-                LOG.error("auth rollback step failed (%s)", type(exc).__name__)
-
-    def _allocate(self, collection: str) -> int:
-        """The next integer id of `collection`: a counter, never handed out twice and never
-        reused after a delete (a rolled-back id is burned, which is harmless)."""
-        meta, key = self._writer(META), f"alloc:{collection}"
-        current = meta.find_one({"_id": key})
-        if current is None:
-            first = max((d["_id"] for d in self._docs(collection)), default=0) + 1
-            meta.insert_one({"_id": key, "next": first + 1})
-            return first
-        taken = int(current["next"])
-        if not meta.update_one({"_id": key, "next": taken}, {"$set": {"next": taken + 1}}):
-            raise AuthStoreBusy("could not allocate an id; try again")
-        return taken
-
+class MongoAuthTx(MongoTxBase):
     def _names(self) -> dict[int, str]: return {g["_id"]: g["name"] for g in self._docs(GROUPS)}
 
     def _perms(self, group_ids: list[int]) -> set[str]:
@@ -129,7 +47,7 @@ class MongoAuthTx:
             created_at=datetime.fromisoformat(doc["created_at"]),
             groups=sorted(names[g] for g in doc["group_ids"] if g in names))
 
-    def count_users(self) -> int: return _coll(self._s, USERS).count_documents({})
+    def count_users(self) -> int: return coll_of(self._s, USERS).count_documents({})
     def get_user(self, user_id: int) -> User | None: return self._user(self._get(USERS, user_id))
     def find_user(self, email: str) -> User | None:
         return self._user(self._one(USERS, {"email": email}))
@@ -314,32 +232,13 @@ class MongoAuthTx:
         self._drop(GRANTS, self._grant(slug, user_id, relation)["_id"])
 
 
-def _acquire(meta: GuardedCollection, owner: str) -> None:
-    """Take the write lease: insert it, or take over an expired one by compare-and-set."""
-    deadline = time.monotonic() + WAIT_SECONDS
-    while True:
-        now = time.time()
-        try:
-            meta.insert_one({"_id": LOCK_ID, "owner": owner, "expires": now + LEASE_SECONDS})
-            return
-        except StoreDuplicateKey:
-            held = meta.find_one({"_id": LOCK_ID})
-            if held is not None and held["expires"] < now and meta.update_one(
-                    {"_id": LOCK_ID, "owner": held["owner"], "expires": held["expires"]},
-                    {"$set": {"owner": owner, "expires": now + LEASE_SECONDS}}):
-                return
-        if time.monotonic() > deadline:
-            raise AuthStoreBusy("the auth store is busy; try again")
-        time.sleep(POLL_SECONDS)
-
-
 class MongoAuthStore:
     def __init__(self, store: GuardedStore) -> None:
         self._s, self._prepared, self._once = store, False, threading.Lock()
 
     def exists(self) -> bool:
         """A read that finds no store must not create one (AU16): no write happens here."""
-        return _coll(self._s, META).find_one({"_id": SEEDED_ID}) is not None
+        return coll_of(self._s, META).find_one({"_id": SEEDED_ID}) is not None
 
     def _prepare(self) -> None:
         """Once per process: the indexes, and (AU11) the default groups once per store, under
@@ -348,9 +247,9 @@ class MongoAuthStore:
             if self._prepared:
                 return
             for name, field, unique in INDEXES:
-                _coll(self._s, name).create_index([(field, 1)], unique=unique, name=field)
-            meta = _coll(self._s, META)
-            with self._lease():
+                coll_of(self._s, name).create_index([(field, 1)], unique=unique, name=field)
+            meta = coll_of(self._s, META)
+            with lease(self._s):
                 if meta.find_one({"_id": SEEDED_ID}) is None:
                     tx = MongoAuthTx(self._s, True)
                     for seed, (name, permissions) in DEFAULT_GROUPS.items():
@@ -361,18 +260,6 @@ class MongoAuthStore:
             self._prepared = True
 
     @contextmanager
-    def _lease(self) -> Iterator[Callable[[], bool]]:
-        meta, owner = _coll(self._s, META), secrets.token_hex(8)
-        _acquire(meta, owner)
-        try:
-            yield lambda: meta.find_one({"_id": LOCK_ID, "owner": owner}) is not None
-        finally:
-            try:
-                meta.delete_one({"_id": LOCK_ID, "owner": owner})
-            except Exception as exc:  # unreachable store: the lease expires by itself
-                LOG.error("auth lease not released (%s)", type(exc).__name__)
-
-    @contextmanager
     def reading(self) -> Iterator[MongoAuthTx]:
         self._prepare()
         yield MongoAuthTx(self._s, False)
@@ -380,7 +267,7 @@ class MongoAuthStore:
     @contextmanager
     def transaction(self) -> Iterator[MongoAuthTx]:
         self._prepare()
-        with self._lease() as holds:
+        with lease(self._s) as holds:
             tx = MongoAuthTx(self._s, True)
             try:
                 yield tx
@@ -391,14 +278,16 @@ class MongoAuthStore:
                 raise
 
 
-@functools.cache
 def mongo_auth_store() -> MongoAuthStore:
-    """The process's auth store, opened on first use from the store URI (provisional name; U9
-    owns the wiring in `core/env.py`). The URI is never logged, echoed or kept in an error."""
-    if not (uri := os.environ.get(URI_ENV, "").strip()):
-        raise StoreSelectionError(f"{URI_ENV} is not set; the mongo store needs it")
-    return MongoAuthStore(GuardedStore(uri))
+    """The process's auth store, on the process's one client (`default_store`, U9): the URI comes
+    from `core.env.mongo_uri`, never from here, and is never logged or kept in an error. It follows
+    `reset_default_backend`, so a reset client never leaves a stale auth store behind."""
+    store = default_store()
+    if _AUTH.get("store") is not store:
+        _AUTH.update(store=store, auth=MongoAuthStore(store))
+    auth: MongoAuthStore = _AUTH["auth"]
+    return auth
 
 
 def reset_auth_store() -> None:
-    mongo_auth_store.cache_clear()
+    _AUTH.clear()

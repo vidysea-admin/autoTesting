@@ -23,8 +23,10 @@ from fake_mongo import CANARY, assert_no_canary
 from autotester.auth import accounts, groups, sessions
 from autotester.auth import store as store_mod
 from autotester.auth import store_mongo as sm
+from autotester.auth import store_mongo_tx as tx_mod
 from autotester.auth.store import auth_store
 from autotester.auth.store_sqlite import SqliteAuthStore
+from autotester.store.mongo_backend import reset_default_backend
 from autotester.store.mongo_guard import StoreDuplicateKey, StoreUnavailable
 from autotester.store.mongo_routes import StoreSelectionError
 
@@ -53,8 +55,9 @@ def test_mongo_store_implements_every_protocol_method(proto: type, impl: type) -
 
 
 def test_the_module_holds_no_sql_no_driver_and_names_no_database() -> None:
-    tree = ast.parse(Path(sm.__file__).read_text(encoding="utf-8"))
-    for node in ast.walk(tree):
+    nodes = [n for m in (sm, tx_mod)
+             for n in ast.walk(ast.parse(Path(m.__file__).read_text(encoding="utf-8")))]
+    for node in nodes:
         if isinstance(node, ast.Import | ast.ImportFrom):
             names = [a.name for a in node.names] + [getattr(node, "module", None) or ""]
             assert not any(n.split(".")[0] in {"sqlite3", "pymongo", "gridfs"} for n in names)
@@ -107,7 +110,7 @@ def test_nothing_secret_reaches_a_log(env: AuthEnv, caplog: pytest.LogCaptureFix
 # -- selection --------------------------------------------------------------------------
 def test_sqlite_is_the_default_and_mongo_only_by_selection(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS", "AUTOTESTER_MONGO_URI"):
+    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS", "PATHLYNKS_MONGO_URI"):
         monkeypatch.delenv(name, raising=False)
     assert isinstance(auth_store(), SqliteAuthStore)
     monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "settings=mongo")
@@ -117,12 +120,11 @@ def test_sqlite_is_the_default_and_mongo_only_by_selection(
     assert isinstance(auth_store(), SqliteAuthStore)  # an explicit area wins over the default
 
 
-def test_selecting_auth_on_mongo_needs_the_uri_and_names_it_without_a_value(
-        monkeypatch: pytest.MonkeyPatch) -> None:
+def test_auth_on_mongo_needs_the_uri_named_without_a_value(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "auth=mongo")
-    monkeypatch.delenv("AUTOTESTER_MONGO_URI", raising=False)
-    sm.reset_auth_store()
-    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
+    monkeypatch.delenv("PATHLYNKS_MONGO_URI", raising=False)
+    reset_default_backend()  # the auth store follows the process's one client
+    with pytest.raises(StoreSelectionError, match="PATHLYNKS_MONGO_URI is not set"):
         auth_store()
 
 
@@ -148,7 +150,7 @@ def test_a_file_mode_process_never_imports_the_driver(tmp_path: Path) -> None:
 
 # -- the lease and the undo log -------------------------------------------------------------
 def _lock_doc(env: AuthEnv) -> dict | None:
-    return next((d for d in env._coll("auth_meta").docs if d["_id"] == sm.LOCK_ID), None)
+    return next((d for d in env._coll("auth_meta").docs if d["_id"] == tx_mod.LOCK_ID), None)
 
 
 def test_the_lease_is_released_after_success_and_after_failure(env: AuthEnv) -> None:
@@ -187,7 +189,7 @@ def test_an_exception_rolls_every_write_back(env: AuthEnv) -> None:
 
 def test_an_expired_lease_is_taken_over_by_compare_and_set(env: AuthEnv) -> None:
     accounts.signup(ADMIN, PASSWORD)
-    env._coll("auth_meta").docs.append({"_id": sm.LOCK_ID, "owner": "dead", "expires": 1.0})
+    env._coll("auth_meta").docs.append({"_id": tx_mod.LOCK_ID, "owner": "dead", "expires": 1.0})
     accounts.signup(OTHER, PASSWORD)
     assert accounts.find_user(OTHER) is not None and _lock_doc(env) is None
 
@@ -195,8 +197,8 @@ def test_an_expired_lease_is_taken_over_by_compare_and_set(env: AuthEnv) -> None
 def test_a_live_lease_held_elsewhere_refuses_with_no_write(
         env: AuthEnv, monkeypatch: pytest.MonkeyPatch) -> None:
     accounts.signup(ADMIN, PASSWORD)
-    monkeypatch.setattr(sm, "WAIT_SECONDS", 0.1)
-    env._coll("auth_meta").docs.append({"_id": sm.LOCK_ID, "owner": "busy", "expires": 9e12})
+    monkeypatch.setattr(tx_mod, "WAIT_SECONDS", 0.1)
+    env._coll("auth_meta").docs.append({"_id": tx_mod.LOCK_ID, "owner": "busy", "expires": 9e12})
     with pytest.raises(sm.AuthStoreBusy, match="busy; try again"):
         accounts.signup(OTHER, PASSWORD)
     assert _lock_doc(env)["owner"] == "busy"  # never released by a stranger

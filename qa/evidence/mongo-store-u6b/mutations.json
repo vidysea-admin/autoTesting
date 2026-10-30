@@ -18,9 +18,9 @@
   },
   {
    "name": "m2: writers take no lease (first-admin / claim serialisation gone)",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "        _acquire(meta, owner)\n        try:\n            yield lambda: meta.find_one({\"_id\": LOCK_ID, \"owner\": owner}) is not None",
-   "new": "        try:\n            yield lambda: True",
+   "file": "src/autotester/auth/store_mongo_tx.py",
+   "old": "    _acquire(meta, owner)\n    try:\n        yield lambda: meta.find_one({\"_id\": LOCK_ID, \"owner\": owner}) is not None",
+   "new": "    try:\n        yield lambda: True",
    "kills": [
     "tests/test_auth_store_mongo.py::test_a_live_lease_held_elsewhere_refuses_with_no_write",
     "tests/test_auth_store_contract.py::test_concurrent_first_signups_yield_exactly_one_admin[mongo]",
@@ -49,7 +49,7 @@
   },
   {
    "name": "m5: every inserted document is logged (hash leak)",
-   "file": "src/autotester/auth/store_mongo.py",
+   "file": "src/autotester/auth/store_mongo_tx.py",
    "old": "        coll.insert_one(doc)\n        self._undo.append(lambda: coll.delete_one(",
    "new": "        LOG.debug(\"insert %r\", doc)\n        coll.insert_one(doc)\n        self._undo.append(lambda: coll.delete_one(",
    "kills": [
@@ -58,7 +58,7 @@
   },
   {
    "name": "m6: the id counter does not advance",
-   "file": "src/autotester/auth/store_mongo.py",
+   "file": "src/autotester/auth/store_mongo_tx.py",
    "old": "{\"$set\": {\"next\": taken + 1}}",
    "new": "{\"$set\": {\"next\": taken}}",
    "kills": [
@@ -69,8 +69,8 @@
   {
    "name": "m7: exists() prepares (writes) the store",
    "file": "src/autotester/auth/store_mongo.py",
-   "old": "no write happens here.\"\"\"\n        return _coll",
-   "new": "no write happens here.\"\"\"\n        self._prepare()\n        return _coll",
+   "old": "no write happens here.\"\"\"\n        return coll_of",
+   "new": "no write happens here.\"\"\"\n        self._prepare()\n        return coll_of",
    "kills": [
     "tests/test_auth_store_contract.py::test_reading_a_missing_store_creates_nothing[mongo]"
    ]
@@ -113,7 +113,7 @@
   },
   {
    "name": "m12: a reader may write",
-   "file": "src/autotester/auth/store_mongo.py",
+   "file": "src/autotester/auth/store_mongo_tx.py",
    "old": "        if not self._writable:\n            raise RuntimeError(\"the auth store was opened for reading\")\n",
    "new": "",
    "kills": [
@@ -131,7 +131,7 @@
   },
   {
    "name": "m14: an expired lease is never taken over",
-   "file": "src/autotester/auth/store_mongo.py",
+   "file": "src/autotester/auth/store_mongo_tx.py",
    "old": "held[\"expires\"] < now and meta.update_one(",
    "new": "False and meta.update_one(",
    "kills": [
