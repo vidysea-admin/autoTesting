@@ -1,10 +1,10 @@
 # Manifest - mongo-store-u5b
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (amended on master 001d10d6), unit U5b. **Criteria judged by U5b:** M24, M25, M51, M54, M55, plus the U5a checker W1 body-scan widening (= M54) and the `core/image_privacy.py:_sanitize_one:stat` baseline row (U3c verdict).
-**Branch:** `feat/mongo-store-u5b`. **Base SHA:** `001d10d6` (master at the contract amendment; master has since moved to `30db1b7a`, not merged here). Not merged to master, not pushed.
-**Code SHA:** `cee2f25bf128611563431be5e5de5e6d8dad5fc6` (the only code commit; this manifest is a second commit on top of it).
+**Branch:** `feat/mongo-store-u5b`. **Base SHA:** `001d10d6` (master at the contract amendment; master `30db1b7a` (U9) was merged into this branch for cycle 1, merge commit `e6442a6e`). Not merged to master, not pushed.
+**Code SHA:** `2a1f9fc392b0bf7217b28fc7f04710cbd1f5e6a8` (cycle-1 code commit; cycle-0 code was `cee2f25b`; this manifest is a separate commit on top).
 **Authority:** D-122/D-123 module list untouched: NO new `src/` module (the media helpers live in the existing `store/run_store.py`; see judgment call 1). `store/mongo_guard.py`, `store/mongo_backend.py`, `auth/`, `core/env.py`, `ui/error_pages.py`, `ui/routes_live.py` are not edited.
 
 ## What changed (src)
@@ -104,14 +104,70 @@ The full suite was NOT run (machine low on memory; brief). `uv run ruff check sr
 2. `local_blob` is local-first: while the file exists it returns that path (byte-identical in file mode); the cache copy is only for a missing file.
 3. Frames are put with kind `frame`, `masked=False`: they are stills of the human's own teaching recording, not Playwright captures of the product, and the M23 unmasked refusal is for kind `screenshot` only.
 4. `BlobStore.put` takes `bytes`, so a source video is read fully into memory for the put (`place_media`). A streaming put is a U5a interface change.
-5. In blob mode the drive and email adapters get the verified cache path back, so a `Source.path` derived from them (DOC/AUDIO) can point at `.work/blob-cache/<sha>/<name>` rather than the logical `sources/<id>/files/<name>`. `commit_video` stores the LOGICAL path; readers resolve it with `local_blob`.
+5. (Cycle 0 recorded a cache path here: checker F1. FIXED in cycle 1, see below.) In blob mode `store_media` still returns the verified cache copy, because the file-based adapters need a real `Path`, but every `Source(path=...)` now records the LOGICAL path through `source_path`.
 6. A blob orphan is possible if `add_source` fails after `place_media`; `commit_video`'s except path only unlinks the local file. Not closed here.
 7. `video_retention` pruning deletes the local file only; it does not delete blobs.
 8. A secret value inside an ingested text document is refused by the M8/M54 scan in blob mode (and the register call fails); in file mode nothing scans it (unchanged).
 9. With the blobs area on mongo, the leak/responsive PNG's local copy is written through a plain `FileBackend` (media never goes into the state database, whose `put` decodes UTF-8); with the area on file it still goes through `filestore.write_bytes`, so the U3a routed-backend test passes unchanged.
 10. A blob-backed drive or email register still creates an empty `files/` or `attachments/` directory (U3d owns the `mkdir`).
 11. `UNROUTED` now only lists `auth` and `credentials`; `tests/test_state_selection.py` passes unchanged.
-12. Not in scope, not changed: `stages/acceptance_baseline.py:127` writes baseline image blobs through `write_bytes`; `cli_video_review.py:248`, `media/narration.py:50` and `ui/routes_video_review.py:77` still read `source.path` directly (the CLI/review paths, not the run/ingest paths named by M24/M51).
+12. Not in scope, not changed: `stages/acceptance_baseline.py:127` writes baseline image blobs through `write_bytes`. (The cycle-0 claim that `cli_video_review.py`, `media/narration.py` and `ui/routes_video_review.py` were out of scope is withdrawn: cycle 1 routes all three.)
+
+## Fix cycle 1 (checker verdict FAIL cycle 0: F1, F2; W1-W4, O1 recorded)
+
+### F1 (M51, BLOCK) - `Source.path` must be the logical path
+
+Cause: in blob mode `store_media` returned `local_blob(target)`, a `.work/blob-cache/<sha>/<name>` path, and the adapters wrote that path into `Source.path`; once the cache was wiped the source was unreadable.
+Fix (in place, no new module): `store/run_store.py` keeps a process-local `_LOGICAL` map (cache copy -> logical target), `store_media` fills it right after the put, and the new `source_path(path)` returns the logical path for a cache copy and `path.resolve()` otherwise (file mode: unchanged, the same string as before). Every place that builds a `Source` from an adapter-read path now calls it:
+`sources/adapters.py` `register_document` and `register_audio`; `sources/email_register.py` `_register_unparseable_mbox` and `_register_unrecognised_attachment`; `sources/drive_register.py` `_register_unreadable_type`. `stages/ingest.py:123` (`register_source`, a user's local video path) is not a `store_media` product and is unchanged.
+Tests (`tests/test_media_sources_blobs.py`): `test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe` (a `.txt` through `register_document` and a `.png` through `_register_unreadable_type`), `test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe` (`.txt` through `register_document`, `.png` through `_register_unrecognised_attachment`): real `Source`s, the cache directory removed, `local_blob(Path(source.path))` returns the original bytes. `test_drive_and_email_sources_in_file_mode_record_the_same_path_as_today` pins file mode.
+
+### F2 (M24/M51, BLOCK) - every `source.path` byte reader
+
+Enumerated by grepping `source.path` across `src` and reading each hit. ROUTED = goes through `local_blob` (-> `materialize`).
+
+| Reader | Disposition |
+|---|---|
+| `stages/source_material.py` `extract_document_text(...)` (`_material_document`) | ROUTED (cycle 1) |
+| `stages/source_material.py` `file_sha256(...)` in `resolve_teaching_material` (the bytes-changed check; the checker's probe) | ROUTED (cycle 1) |
+| `stages/source_material.py` `_reading_bytes` and `stages/ingest.py` `load_sidecar`: the `<path>.transcript.json` sidecar | NOT routed, by design: the sidecar is a user-supplied file beside a LOCAL recording; no writer puts it in the blob store (only the video, drive and email bytes are stored: `place_media` / `store_media`), so `materialize` has nothing to return and `local_blob` would hand back the same path. A blob-backed source has no sidecar, as before |
+| `media/narration.py` `ensure_narration` | ROUTED (cycle 1): the video is `local_blob(logical)`; the sidecar is still looked up beside the logical path |
+| `cli_video_review.py` `_review` | ROUTED (cycle 1), line-neutral (the file is at 300: `_secret_values` two lines folded into one) |
+| `ui/routes_video_review.py` | ROUTED (cycle 1): the fallback to `Path(source.path)` goes through `local_blob` (`access.media_path` was already routed) |
+| `stages/media_prep.py` (two sites), `stages/ingest.py` (two sites), `stages/video_access.py` `media_path` | ROUTED (cycle 0) |
+| `cli_video.py`, `stages/issues.py`, `ui/app.py`, `ui/routes_sources.py`, `cli_video_review.py` (label lines) | NOT readers: they print or compare the path string; no bytes opened |
+| `stages/ingest.py` `register_source` | writes a `Source` for a local video path: not a read |
+
+Tests: `test_teaching_material_of_a_gridfs_only_video_and_document_is_available` (a video through `commit_video` and a DOC whose bytes are only in GridFS, cache wiped, then `resolve_teaching_material(store, src, [src])`: not `unavailable`, no "material unavailable" problem, the document unit text is read back; the checker's probe returned `['material unavailable (FileNotFoundError); re-register source']`), and `test_narration_of_a_gridfs_only_video_transcribes_the_verified_copy`.
+
+### Verification (cycle 1)
+
+| Command | Result |
+|---|---|
+| `uv run pytest tests/test_media_sources_blobs.py` | 15 passed |
+| `tests/test_media_blobs.py tests/test_blob_scan_names.py` | 112 passed |
+| `tests/test_source_adapters_drive.py tests/test_source_adapters_email.py` | 11 passed |
+| `tests/test_sweep_u3a.py tests/test_drive_intake.py` | 30 passed |
+| `tests/test_cli_video_review.py tests/test_cli_video_review_exits.py` | 62 passed |
+| `tests/test_ingest_narration.py tests/test_ingest.py` | 14 passed |
+| `tests/test_teaching_documents.py test_teaching_inputs.py test_teaching_media_dedupe.py test_pdf_teaching.py test_teaching_privacy.py` | 34 passed, 1 skipped |
+| `tests/test_video_review_route.py tests/test_video_review_gates.py` | 32 passed |
+| ruff / doctor | `ruff check src tests scripts`: All checks passed; `autotester doctor` (to `.work/doctor-u5b.txt`): exit 0, `doctor: clean` |
+| `tests/test_source_adapters.py tests/test_source_adapters_audio.py` | 19 passed |
+| `tests/test_zip_intake_register.py tests/test_ui_intake_drive.py` | 42 passed |
+| full suite | NOT completed: a full `uv run pytest` was started and reached 19% (all passing dots) before the 590 s tool ceiling; the neighbour groups above are the evidence |
+
+Mutation (`qa/evidence/mongo-store-u5b/mutations-d.json`, `mutation-run-d.txt`): 4/4 killed (d1 `source_path` records the cache copy; d2 `store_media` never records the logical path; d3 the sha256 reads `source.path` directly; d4 document extraction reads `source.path` directly). The first d2 (drop `.resolve()` in `source_path`) survived as an equivalent mutant and was replaced. Cycle-0 specs a/b/c are unchanged (24/24).
+
+### Warnings and observations carried (no code in this unit)
+
+- **W1 (M52 readiness, `blobs` area):** `stages/video_retention.py:81-90` `prune_old_videos` unlinks the local file only and does not delete the GridFS blob. Needed before G1 flips `blobs`, or retention is unbounded in GridFS.
+- **W2 (M52 readiness, `blobs` area):** `place_media` reads the whole video into memory (`BlobStore.put` takes bytes; the upload cap is 2 GiB). A streaming `put` or a lower blob-mode cap is needed before G1 flips `blobs`.
+- **W3:** a blob orphan if `add_source` fails after `place_media` (judgment call 6); not closed here.
+- **W4:** `store/run_store.py` now has two jobs (run-result mixin plus media helpers); a split needs a D-122/D-123 module-list decision, so it stays one file for now.
+- **O1:** the M54 deny-list passes non-UTF-8 bytes under `application/octet-stream`, and `put_file` defaults unknown suffixes to that type, so such bytes are stored unscanned (they cannot decode as text, so no secret in text form is in them).
+- Caveat of the F1 mechanism: `_LOGICAL` is process-local and keyed by the cache path (`<sha>/<name>`), so two logical targets with the same sha and name share one entry (last write wins). The mapping is consumed in the same call chain that registers the `Source`, and the id is sha-derived, so identical bytes dedupe anyway.
+
 
 ## Pre-existing failure (not caused by U5b)
 
