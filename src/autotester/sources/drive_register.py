@@ -45,6 +45,7 @@ from autotester.sources.extract import DOC_SUFFIXES
 from autotester.stages.ingest import RECORDING_SUFFIXES, register_source
 from autotester.store.filestore import exists_path
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob, store_media
 
 _PROVENANCE_STAGE = "sources.drive"
 
@@ -169,7 +170,7 @@ def _register_unreadable_type(
         project=store.paths.slug,
         kind=SourceKind.DOC,
         path=str(path.resolve()),
-        sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        sha256=hashlib.sha256(local_blob(path).read_bytes()).hexdigest(),
         url=drive_file.id,
         label=drive_file.name,
         notes=(
@@ -194,5 +195,4 @@ def _write_bytes(
     if exists_path(target) and target.read_bytes() != content:
         prefix = hashlib.sha256(content).hexdigest()[:8]
         target = target_dir / f"{prefix}_{safe_name}"
-    target.write_bytes(content)
-    return target
+    return store_media(target, content)  # M51: GridFS when the blobs area is on mongo

@@ -15,6 +15,7 @@ from autotester.schema.run import Run
 from autotester.stages.failure_bundle import build_failure_bundle, load_bundle
 from autotester.store.filestore import list_children, read_json, write_json
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 
 _LOG = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ def _assemble_case(store, run, case, result, verdict, redactor,
     with ExitStack() as stack:
         for shot in shots:
             try:
-                original = _inside(run_dir / shot.path, run_dir)
+                original = local_blob(_inside(run_dir / shot.path, run_dir))
             except ValueError:
                 reasons.append("artifact_outside_run")
                 continue

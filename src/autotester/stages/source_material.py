@@ -14,6 +14,7 @@ from autotester.sources.extract import extract_document_text
 from autotester.stages.analyze_video import load_transcript
 from autotester.store.filestore import exists_path, read_json
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 
 DECLARED_KINDS = {SourceKind.EVAL, SourceKind.CONDITION, SourceKind.USE_CASE}
 
@@ -24,7 +25,7 @@ def _material_document(store: ProjectStore, source: Source):
     text = source.text
     problems = []
     if reading is None and text is None and source.path:
-        extracted = extract_document_text(Path(source.path))
+        extracted = extract_document_text(local_blob(Path(source.path)))
         reading, text = extracted.reading, extracted.text
         problems = ["document extraction incomplete"] if extracted.error else []
     if reading is not None:
@@ -143,7 +144,7 @@ def resolve_teaching_material(
         if source.project != store.paths.slug:
             raise ValueError("wrong project")
         if source.path:
-            actual = file_sha256(Path(source.path))
+            actual = file_sha256(local_blob(Path(source.path)))  # M51: GridFS-backed bytes
             if source.sha256 and actual != source.sha256:
                 raise ValueError("registered source bytes changed")
         receipt_digest = _reading_bytes(store, source)

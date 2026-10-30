@@ -25,6 +25,7 @@ from autotester.schema.analysis import VideoAnalysis
 from autotester.schema.media import MediaChunk, MediaPrep
 from autotester.schema.project import Source
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob, put_file
 
 PREP_COMMAND = "autotester ingest prep"
 """The registered command, in one place (AT-163).
@@ -53,7 +54,7 @@ def prepare(store: ProjectStore, source: Source, *,
     change what a tester is recorded as having said."""
     if source.path is None:
         raise ValueError(f"source {source.id} has no path to prepare")
-    video = Path(source.path)
+    video = local_blob(Path(source.path))  # M51: a verified cache copy when the bytes are in GridFS
     if not video.is_file():
         raise FileNotFoundError(f"{source.id} points at {video}, which is not a readable file")
 
@@ -134,7 +135,7 @@ def extract_frames(store: ProjectStore, source: Source,
     rather than to broken links (A5)."""
     if source.path is None:
         raise ValueError(f"source {source.id} has no path")
-    video = Path(source.path)
+    video = local_blob(Path(source.path))  # M51: as in prepare
     if not video.is_file():
         # AT-173: without this, every extract failed quietly and the caller
         # reported "0 frames written" as a success -- indistinguishable from a
@@ -157,6 +158,8 @@ def extract_frames(store: ProjectStore, source: Source,
             continue
         if frame_mod.extract_frame(video, t_s, png):
             written.append(png)
+    for png in written:  # M24: a blob-backed area also holds the stills (the human's own recording)
+        put_file(png, kind="frame", masked=False)
     return written
 
 

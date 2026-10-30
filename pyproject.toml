@@ -83,7 +83,6 @@ database = "autotester"  # D-121/D-122: the ONLY database the store may write; r
 # `permanent` = never state.
 baseline = [
   "core/image_privacy.py:_sanitize_one:is_file | U5b (M24/M51): image bytes belong to the BlobStore",
-  "core/image_privacy.py:_sanitize_one:stat | U5b (M24/M51): image bytes belong to the BlobStore",
   "core/paths.py:ProjectPaths.ensure:mkdir | U9: directory creation moves with the hosting module (M49)",
   "core/paths.py:work_dir:mkdir | U9: directory creation moves with the hosting module (M49)",
   "core/trace.py:read_spans:read_text | U7 (M52 READ-SIDE): raw read the path API lacks (no raw text/bytes read, M53)",
@@ -113,14 +112,9 @@ baseline = [
   "sources/drive_intake.py:_sweep_stale:stat | M53-gated: scratch under .work/ must stay raw (a catch-all route would make it a state doc); needs delete_tree/stat/mkdir verbs",
   "sources/drive_register.py:_write_bytes:mkdir | M53-gated: mkdir has no public verb; goes with the U5b media write",
   "sources/drive_register.py:_write_bytes:read_bytes | U5b (M24/M51): media bytes are a BlobStore write, not a path write",
-  "sources/drive_register.py:_write_bytes:write_bytes | U5b (M24/M51): media bytes are a BlobStore write, not a path write",
   "sources/email_register.py:_write_attachment_to_disk:mkdir | M53-gated: mkdir has no public verb; goes with the U5b media write",
   "sources/email_register.py:_write_attachment_to_disk:read_bytes | U5b (M24/M51): media bytes are a BlobStore write, not a path write",
-  "sources/email_register.py:_write_attachment_to_disk:write_bytes | U5b (M24/M51): media bytes are a BlobStore write, not a path write",
-  "sources/intake_commit.py:_copy_in:os.replace | U5b (M24/M51): media bytes placed by os.replace",
   "sources/intake_commit.py:_lock_is_stale:stat | M53-gated: O_EXCL lock needs create_exclusive-by-path (M19/M53); the path API has none",
-  "sources/intake_commit.py:_place:mkdir | M53-gated: scratch under .work/ must stay raw (a catch-all route would make it a state doc); needs delete_tree/stat/mkdir verbs",
-  "sources/intake_commit.py:_place:os.replace | U5b (M24/M51): media bytes placed by os.replace",
   "sources/intake_commit.py:commit_video:rmdir | M53-gated: scratch under .work/ must stay raw (a catch-all route would make it a state doc); needs delete_tree/stat/mkdir verbs",
   "sources/intake_commit.py:intake_lock:mkdir | M53-gated: O_EXCL lock needs create_exclusive-by-path (M19/M53); the path API has none",
   "sources/intake_commit.py:intake_lock:os.open | M53-gated: O_EXCL lock needs create_exclusive-by-path (M19/M53); the path API has none",

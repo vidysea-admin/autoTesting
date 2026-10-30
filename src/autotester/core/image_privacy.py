@@ -179,9 +179,13 @@ def _mask(image, destination: Path, boxes: list[Box], applied: list[Box],
 def _sanitize_one(source: Path, destination: Path, limit: float | None = None) -> None:
     from PIL import Image
 
-    if not source.is_file() or source.stat().st_size > MAX_IMAGE_BYTES:
+    if not source.is_file():
         raise ImagePrivacyError("image_unavailable_or_oversized")
-    with Image.open(source) as original:
+    with source.open("rb") as handle:  # bounded read: no stat() of the path (M16)
+        raw = handle.read(MAX_IMAGE_BYTES + 1)
+    if len(raw) > MAX_IMAGE_BYTES:
+        raise ImagePrivacyError("image_unavailable_or_oversized")
+    with Image.open(io.BytesIO(raw)) as original:
         if original.width * original.height > MAX_IMAGE_PIXELS:
             raise ImagePrivacyError("image_pixel_limit")
         if getattr(original, "n_frames", 1) != 1:

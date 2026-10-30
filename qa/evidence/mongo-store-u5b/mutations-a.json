@@ -1,0 +1,31 @@
+{
+ "tests": ["tests/test_blob_scan_names.py"],
+ "mutations": [
+  {"name": "a1: undecodable body under a text-like type is not scanned",
+   "file": "src/autotester/store/blobs.py",
+   "old": "return data.decode(\"utf-8\", errors=\"replace\")",
+   "new": "return None",
+   "kills": ["test_an_undecodable_body_under_a_text_like_type_is_still_scanned[file-application/ndjson]"]},
+  {"name": "a2: a binary type skips the scan even when the bytes are utf-8",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        return data.decode(\"utf-8\")\n",
+   "new": "        return None if media.startswith(BINARY_PREFIXES) else data.decode(\"utf-8\")\n",
+   "kills": ["test_a_utf8_body_is_scanned_even_under_a_binary_type[file-image/png]"]},
+  {"name": "a3: scan is an allow-list again for undecodable bodies (text/* only)",
+   "file": "src/autotester/store/blobs.py",
+   "old": "        return data.decode(\"utf-8\", errors=\"replace\")",
+   "new": "        return data.decode(\"utf-8\", errors=\"replace\") if media.startswith(\"text/\") else None",
+   "kills": ["test_an_undecodable_body_under_a_text_like_type_is_still_scanned[file-application/ndjson]"]},
+  {"name": "a4: 8.3 short-name rule removed",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "or _device(segment)\n                            or bool(_SHORT.fullmatch(segment)))",
+   "new": "or _device(segment))",
+   "kills": ["test_an_8_3_short_name_is_unsafe[PROFIL~1]",
+             "test_every_blob_entry_point_refuses_a_hostile_name_before_any_io[file-PROFIL~1/x.png]"]},
+  {"name": "a5: 8.3 rule matches any name with a tilde",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "_SHORT = re.compile(r\"[^.~]{1,6}~[0-9]{1,6}(\\.[^.]{0,3})?\")",
+   "new": "_SHORT = re.compile(r\"[^.~]*~.*\")",
+   "kills": ["test_a_name_that_is_not_an_8_3_alias_is_still_safe[a~b]"]}
+ ]
+}

@@ -1,0 +1,8 @@
+KILLED  d3: the document hash reads source.path directly  (pytest exit 1)
+    claims to kill : tests/test_media_sources_logical.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+    actually failed: tests/test_media_sources_logical.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+KILLED  d4: document extraction reads source.path directly  (pytest exit 1)
+    claims to kill : tests/test_media_sources_logical.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+    actually failed: tests/test_media_sources_logical.py::test_teaching_material_of_a_gridfs_only_video_and_document_is_available
+
+2/2 mutations killed

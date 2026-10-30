@@ -26,6 +26,7 @@ from autotester.stages.run_artifacts import bundle_report_detail
 from autotester.stages.ux_advisory import add_ux_sheet, load_ux_state, ux_findings_html
 from autotester.store import ProjectStore
 from autotester.store.filestore import list_children
+from autotester.store.run_store import local_blob
 
 _BADGE_COLOR = {
     "PASS": "#16a34a", "FAIL": "#dc2626", "BLOCKED": "#b45309", "INCONCLUSIVE": "#6b7280",
@@ -171,12 +172,10 @@ def png_base64(path: Path, allowed_root: Path, trusted_root: Path) -> str | None
         safe_root /= part
         if safe_root.is_symlink():
             return None
-    resolved_safe_root = safe_root.resolve()
-    if resolved_safe_root != safe_root:
+    resolved_safe_root, candidate = safe_root.resolve(), path.resolve()
+    if resolved_safe_root != safe_root or not candidate.is_relative_to(resolved_safe_root):
         return None
-    candidate = path.resolve()
-    if not candidate.is_relative_to(resolved_safe_root):
-        return None
+    candidate = local_blob(candidate)  # M24: a verified cache copy when the local file is gone
     if not candidate.is_file():
         return None
     return base64.b64encode(candidate.read_bytes()).decode("ascii")

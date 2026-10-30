@@ -178,9 +178,6 @@ class ProjectStore(CrawlStoreMixin, RequestStoreMixin, RunStoreMixin):
     def load_run(self, run_id: str) -> Run | None:
         return read_json(self.paths.run_dir(run_id) / "run.json", Run)
 
-    def save_result(self, run_id: str, result: RawResult) -> None:
-        write_json(self.paths.run_dir(run_id) / f"{result.case_id}.json", result)
-
     def load_results(self, run_id: str) -> list[RawResult]:
         run_dir = self.paths.run_dir(run_id)
         if not run_dir.exists():

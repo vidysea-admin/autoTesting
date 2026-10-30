@@ -1,0 +1,25 @@
+{
+ "tests": [
+  "tests/test_media_sources_logical.py"
+ ],
+ "mutations": [
+  {
+   "name": "d3: the document hash reads source.path directly",
+   "file": "src/autotester/stages/source_material.py",
+   "old": "actual = file_sha256(local_blob(Path(source.path)))",
+   "new": "actual = file_sha256(Path(source.path))",
+   "kills": [
+    "test_teaching_material_of_a_gridfs_only_video_and_document_is_available"
+   ]
+  },
+  {
+   "name": "d4: document extraction reads source.path directly",
+   "file": "src/autotester/stages/source_material.py",
+   "old": "extract_document_text(local_blob(Path(source.path)))",
+   "new": "extract_document_text(Path(source.path))",
+   "kills": [
+    "test_teaching_material_of_a_gridfs_only_video_and_document_is_available"
+   ]
+  }
+ ]
+}

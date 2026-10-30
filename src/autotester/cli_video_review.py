@@ -45,6 +45,7 @@ from autotester.stages.video_review import (
 )
 from autotester.stages.video_review_render import render_markdown
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 
 EXIT_USAGE, EXIT_POINTERS, EXIT_REFUSED, EXIT_UNREADABLE, EXIT_INTERRUPTED = 1, 2, 3, 4, 130
 
@@ -245,7 +246,7 @@ def _review(project: str, source_id: str, pointers: str | None, redact: list[str
         raise CliFail("--max-cost must be a finite number of dollars, 0 or more")
     store = ProjectStore(project)
     source = _find_source(store, project, source_id)
-    video = Path(source.path or "")
+    video = local_blob(Path(source.path or ""))  # M51: a verified cache copy when in GridFS
     _require_readable(source, video, as_json)
     prov, text = _provider(provider, model), _read_pointers(pointers, as_json)
     windows = _windows(redact, video)
@@ -286,8 +287,7 @@ def _windows(specs: list[str], video: Path) -> list[RedactionWindow]:
 
 
 def _secret_values(store: ProjectStore) -> dict[str, str]:
-    proj = store.load_project()
-    return SecretStore.load(proj, store.paths.env_file, strict=False).scrub_values()
+    return SecretStore.load(store.load_project(), store.paths.env_file, strict=False).scrub_values()
 
 
 def _print_plan(plan: ReviewPlan, as_json: bool) -> None:

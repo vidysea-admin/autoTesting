@@ -16,6 +16,7 @@ from autotester.schema.media import Transcript
 from autotester.schema.project import Source
 from autotester.sources.audio import MAX_AUDIO_BYTES, audio_delivery_ready, transcribe_audio
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 
 MAX_AUDIO_DURATION_S = 3600.0
 EXTRACT_TIMEOUT_S = 120.0
@@ -47,8 +48,9 @@ def ensure_narration(store: ProjectStore, source: Source, *,
     prior = store.load_transcript(source.id)
     if prior is not None and prior.engine != "none":
         return prior
-    video = Path(source.path) if source.path else None
-    if video is not None and (sidecar := find_sidecar(video)):
+    logical = Path(source.path) if source.path else None  # the sidecar sits beside THIS path
+    video = local_blob(logical) if logical else None  # M51: GridFS-backed bytes
+    if logical is not None and (sidecar := find_sidecar(logical)):
         transcript = Transcript.read_sidecar(sidecar, source.id)
     elif video is None or not video.is_file():
         transcript = _missing_narration(source.id, "source media unavailable")

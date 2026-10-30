@@ -8,6 +8,7 @@ from html import escape
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 
+from autotester.store.run_store import local_blob
 from autotester.ui import theme
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id
 
@@ -83,7 +84,7 @@ def learned_frame(slug: str, source_id: str, name: str) -> FileResponse:
     _require_safe_id(source_id, "source_id")
     if not _FRAME_RE.fullmatch(name):
         raise HTTPException(400, "invalid frame name")
-    path = store.paths.source_frames_dir(source_id) / name
+    path = local_blob(store.paths.source_frames_dir(source_id) / name)
     if not path.is_file():
         raise HTTPException(404, "frame not found")
     return FileResponse(path, media_type="image/png")
