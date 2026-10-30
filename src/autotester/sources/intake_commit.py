@@ -31,6 +31,7 @@ from autotester.schema.project import Source
 from autotester.sources.bounded_write import copy_bounded, read_chunks
 from autotester.sources.zip_names import ensure_inside
 from autotester.stages.ingest import require_recording_suffix
+from autotester.store.filestore import delete_path, exists_path, list_children
 from autotester.store.project_store import ProjectStore
 
 LOCK_NAME = ".intake.lock"
@@ -93,10 +94,12 @@ def sweep_orphans(store: ProjectStore) -> int:
         removed += 1
     known = {s.id for s in store.list_sources()}
     base = store.paths.sources_dir
-    for folder in list(base.iterdir()) if base.is_dir() else []:
-        if not folder.is_dir() or folder.name in known:
-            continue
-        for stray in [*folder.glob(f"{RECORDING_STEM}.*"), *folder.glob(".tmp-*")]:
+    for folder in (base / name for name in list_children(base) if name not in known):
+        for name in list_children(folder):
+            if name.startswith(f"{RECORDING_STEM}."):
+                delete_path(folder / name)
+                removed += 1
+        for stray in folder.glob(".tmp-*"):  # not listed by list_children (atomic-write temps)
             stray.unlink(missing_ok=True)
             removed += 1
         with suppress(OSError):
@@ -123,7 +126,7 @@ def _copy_in(staged: Path, target: Path, digest: str) -> None:
     with staged.open("rb") as handle:
         result = copy_bounded(read_chunks(handle), temp, staged.stat().st_size)
     if result.sha256 != digest:
-        temp.unlink(missing_ok=True)
+        delete_path(temp)
         raise ValueError("the stored copy does not match its sha256")
     os.replace(temp, target)
 
@@ -156,13 +159,13 @@ def commit_video(store: ProjectStore, staged: Path, *, digest: str, suffix: str,
                    recorded_on=recorded_on)
     target = ensure_inside(store.paths.source_dir(draft.id) / f"{RECORDING_STEM}{suffix}",
                            store.paths.sources_dir)
-    if target.exists():
+    if exists_path(target):
         raise FileExistsError("a recording is already stored at that place")
     try:
         _place(staged, target, digest)
         store.add_source(draft.model_copy(update={"path": str(target)}))
     except BaseException:
-        target.unlink(missing_ok=True)
+        delete_path(target)
         with suppress(OSError):
             target.parent.rmdir()
         raise

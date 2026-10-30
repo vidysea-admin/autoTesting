@@ -13,7 +13,7 @@ from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.failure_bundle import BundleAssembly, BundleIndex, BundleSource
 from autotester.schema.run import Run
 from autotester.stages.failure_bundle import build_failure_bundle, load_bundle
-from autotester.store.filestore import read_json, write_json
+from autotester.store.filestore import list_children, read_json, write_json
 from autotester.store.project_store import ProjectStore
 
 _LOG = logging.getLogger(__name__)
@@ -54,8 +54,8 @@ def _assemble_case(store, run, case, result, verdict, redactor,
                                             step_order=shot.step_order, masked=True))
         spans = read_spans(_inside(store.paths.run_trace(run.id), run_dir))
         spans = [s for s in spans if not hasattr(s, "fed_id") or s.fed_id == case.id]
-        for existing in store.paths.bundles_dir(run.id).glob("*"):
-            _inside(existing, run_dir)
+        for name in list_children(store.paths.bundles_dir(run.id)):
+            _inside(store.paths.bundles_dir(run.id) / name, run_dir)
         bundle = build_failure_bundle(out_dir=store.paths.bundles_dir(run.id), run_id=run.id,
                                       case=case, result=result, verdict=verdict, sources=sources,
                                       spans=spans, redactor=redactor)

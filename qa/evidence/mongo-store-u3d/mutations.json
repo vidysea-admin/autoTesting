@@ -1,0 +1,102 @@
+{
+  "tests": [
+    "tests/test_state_bypass_rule.py"
+  ],
+  "mutations": [
+    {
+      "name": "m1: work_dir() no longer a state root",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "\"paths\", \"work_dir\"})",
+      "new": "\"paths\"})",
+      "kills": [
+        "test_m50_a_work_dir_root_is_a_state_root[call-root]",
+        "test_m50_a_work_dir_root_is_a_state_root[bound-name]",
+        "test_m50_a_work_dir_root_is_a_state_root[mkdir]"
+      ]
+    },
+    {
+      "name": "m2: getattr(p, verb) form not recognised",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "fn.func.id == \"getattr\"",
+      "new": "fn.func.id == \"getattr_\"",
+      "kills": [
+        "test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr]",
+        "test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-unlink]",
+        "test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias]"
+      ]
+    },
+    {
+      "name": "m3: bound-method alias not followed",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "        return alias.get(fn.id)",
+      "new": "        return None",
+      "kills": [
+        "test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[bound-alias]",
+        "test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias]"
+      ]
+    },
+    {
+      "name": "m4: is_file no longer flagged",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "\"is_file\", \"is_dir\", \"read_text\", \"read_bytes\"})",
+      "new": "\"is_dir\", \"read_text\", \"read_bytes\"})",
+      "kills": [
+        "test_m50_existence_and_read_verbs_are_flagged[is_file]"
+      ]
+    },
+    {
+      "name": "m5: is_dir no longer flagged",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "\"is_file\", \"is_dir\", \"read_text\", \"read_bytes\"})",
+      "new": "\"is_file\", \"read_text\", \"read_bytes\"})",
+      "kills": [
+        "test_m50_existence_and_read_verbs_are_flagged[is_dir]"
+      ]
+    },
+    {
+      "name": "m6: read_text no longer flagged",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "\"is_file\", \"is_dir\", \"read_text\", \"read_bytes\"})",
+      "new": "\"is_file\", \"is_dir\", \"read_bytes\"})",
+      "kills": [
+        "test_m50_existence_and_read_verbs_are_flagged[read_text]"
+      ]
+    },
+    {
+      "name": "m7: read_bytes no longer flagged",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "\"is_file\", \"is_dir\", \"read_text\", \"read_bytes\"})",
+      "new": "\"is_file\", \"is_dir\", \"read_text\"})",
+      "kills": [
+        "test_m50_existence_and_read_verbs_are_flagged[read_bytes]"
+      ]
+    },
+    {
+      "name": "m8: Path.replace no longer flagged",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "\"open\", \"replace\", \"is_file\",",
+      "new": "\"open\", \"is_file\",",
+      "kills": [
+        "test_m50_replace_touch_and_deletions_are_flagged[replace]"
+      ]
+    },
+    {
+      "name": "m9: str.replace flagged like Path.replace (argument check removed)",
+      "file": "src/autotester/ledger/committed_fresh.py",
+      "old": "if method == \"replace\" and (len(call.args) != 1 or call.keywords):",
+      "new": "if False:",
+      "kills": [
+        "test_m50_a_str_replace_is_not_a_path_replace"
+      ]
+    },
+    {
+      "name": "m10: a baseline row falls back to the retired U3d owner tag",
+      "file": "pyproject.toml",
+      "old": "\"core/paths.py:ProjectPaths.ensure:mkdir | U9: directory creation moves with the hosting module (M49)\"",
+      "new": "\"core/paths.py:ProjectPaths.ensure:mkdir | U3d\"",
+      "kills": [
+        "test_m49_every_baseline_row_has_a_live_owner_and_a_reason"
+      ]
+    }
+  ]
+}

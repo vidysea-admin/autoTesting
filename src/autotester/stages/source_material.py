@@ -12,7 +12,7 @@ from autotester.schema.teaching import TeachingUnit
 from autotester.schema.teaching_run import TeachingInput, TeachingMaterial
 from autotester.sources.extract import extract_document_text
 from autotester.stages.analyze_video import load_transcript
-from autotester.store.filestore import read_json
+from autotester.store.filestore import exists_path, read_json
 from autotester.store.project_store import ProjectStore
 
 DECLARED_KINDS = {SourceKind.EVAL, SourceKind.CONDITION, SourceKind.USE_CASE}
@@ -97,10 +97,11 @@ def _reading_bytes(store: ProjectStore, source: Source) -> str:
     paths = [store.paths.sources_dir / source.id / "document.json"]
     if source.kind in {SourceKind.AUDIO, SourceKind.VIDEO}:
         transcript = store.paths.sources_dir / source.id / "transcript.json"
-        if not transcript.exists() and source.path:
+        if not exists_path(transcript) and source.path:
             transcript = Path(source.path).with_suffix(".transcript.json")
         paths.append(transcript)
-    return content_id("readings", [file_sha256(path) if path.exists() else None for path in paths])
+    digests = [file_sha256(path) if exists_path(path) else None for path in paths]
+    return content_id("readings", digests)
 
 
 def _reading_payload(reading):

@@ -18,6 +18,7 @@ import logging
 from dataclasses import dataclass
 
 from autotester.schema.enums import EvidenceKind
+from autotester.store.filestore import delete_path, list_children
 from autotester.store.project_store import ProjectStore
 
 _LOG = logging.getLogger(__name__)
@@ -44,11 +45,7 @@ def _ordering_key(ref: _VideoRef) -> tuple[str, int, str]:
 
 def _collect(store: ProjectStore) -> list[_VideoRef]:
     refs: list[_VideoRef] = []
-    runs_dir = store.paths.runs_dir
-    if not runs_dir.exists():
-        return refs
-    for run_path in sorted(p for p in runs_dir.iterdir() if p.is_dir()):
-        run_id = run_path.name
+    for run_id in list_children(store.paths.runs_dir):
         run = store.load_run(run_id)
         order = {cid: i for i, cid in enumerate(run.case_ids)} if run is not None else {}
         for result in store.load_results(run_id):
@@ -79,7 +76,7 @@ def prune_old_videos(store: ProjectStore, keep: int = DEFAULT_KEEP) -> list[str]
             changed = False
             for item in result.evidence:
                 if item.kind is EvidenceKind.VIDEO and item.path in rel_paths:
-                    (store.paths.run_dir(run_id) / item.path).unlink(missing_ok=True)
+                    delete_path(store.paths.run_dir(run_id) / item.path)
                     deleted.append(item.path)
                     changed = True
                     continue

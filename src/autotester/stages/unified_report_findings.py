@@ -12,7 +12,7 @@ from __future__ import annotations
 from autotester.core.redact import Redactor
 from autotester.schema.multi_role_finding import MultiRoleFinding
 from autotester.stages.leak_evidence import FINDINGS_DIR
-from autotester.store.filestore import read_json
+from autotester.store.filestore import list_children, read_json
 from autotester.store.project_store import ProjectStore
 
 
@@ -20,10 +20,8 @@ def load_run_findings(store: ProjectStore, run_id: str,
                       redactor: Redactor) -> list[MultiRoleFinding]:
     """Every finding recorded for `run_id`, scrubbed; raises on an unreadable file."""
     folder = store.paths.run_dir(run_id) / FINDINGS_DIR
-    if not folder.is_dir():
-        return []
     found: list[MultiRoleFinding] = []
-    for path in sorted(folder.glob("*.json")):
+    for path in (folder / name for name in list_children(folder, suffix=".json")):
         finding = read_json(path, MultiRoleFinding)
         if finding is not None:
             found.append(MultiRoleFinding.model_validate(
