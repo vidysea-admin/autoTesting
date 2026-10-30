@@ -73,14 +73,34 @@ def encode_slot_key(key: str) -> str:
     return safe_name(quote(_refuse_structure(key), safe=""))
 
 
+def _device(name: str) -> bool:
+    return name.split(".", 1)[0].rstrip(" ").lower() in _DEVICES
+
+
+def _bad_segment(segment: str, *, partial: bool) -> bool:
+    """A dot or empty segment always; a trailing dot/space or device name only once it is whole
+    (`p/CON` as a prefix may be the start of `p/CONFIG.json`)."""
+    if segment in {"", ".", ".."}:
+        return True
+    return not partial and (segment.endswith((".", " ")) or _device(segment))
+
+
 def safe_key(key: str, *, prefix: bool = False) -> str:
     """A state-store key: a relative POSIX path inside the data root, else `UnsafeName` (M17).
 
-    Refused before any I/O: a backslash, NUL, a leading `/`, a drive letter in any segment and a
-    `.`, `..` or empty segment. A `prefix` may be empty or end in `/`; a key may not be empty."""
+    Refused before any I/O, with the same answer on Windows and Linux: a backslash, a control
+    character (NUL), any of `: < > " | ? *` (drive letter, `nul:`, a stream), a leading `/`, a `.`,
+    `..` or empty segment, and a whole segment that ends in a dot or space or is a reserved
+    device name (`CON`, `nul.txt`, `COM1`).
+    A `prefix` may be empty or end in `/`, and its last segment may be unfinished; a key may not
+    be empty."""
     body = key[:-1] if prefix and key.endswith("/") else key
     segments = body.split("/") if body else []
-    if ("\\" in key or "\x00" in key or (not body and not prefix)
-            or any(seg in {"", ".", ".."} or _DRIVE.match(seg) for seg in segments)):
+    open_end = prefix and not key.endswith("/")
+    last = len(segments) - 1
+    if ("\\" in key or _CONTROL.search(key) or _FORBIDDEN.search(key)
+            or (not body and not prefix)
+            or any(_bad_segment(seg, partial=open_end and i == last)
+                   for i, seg in enumerate(segments))):
         raise UnsafeName(f"unsafe state key {key!r}: not a relative path inside the data root")
     return key

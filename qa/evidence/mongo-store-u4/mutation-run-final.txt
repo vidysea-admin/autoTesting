@@ -1,0 +1,53 @@
+=== mutations-f (final tree) ===
+KILLED  f1: FileBackend.append_text truncates instead of appending  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[file]
+    actually failed: tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[file], tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_refuse_a_path_that_leaves_the_root
+KILLED  f2: MongoBackend.append_text on a row set keeps only the first line  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line[mongo]
+    actually failed: tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document, tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line[mongo]
+KILLED  f3: MongoBackend.append_text on a document replaces instead of extending  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[mongo]
+    actually failed: tests/test_mongo_backend_fence.py::test_a_document_append_that_loses_the_compare_and_set_retries_and_keeps_both, tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[mongo], tests/test_state_backend_contract.py::test_append_text_loses_no_append_among_16_callers[mongo], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo]
+KILLED  f4: MongoBackend.append_text gives up after one lost compare-and-set  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_a_document_append_that_loses_the_compare_and_set_retries_and_keeps_both
+    actually failed: tests/test_mongo_backend_fence.py::test_a_document_append_that_loses_the_compare_and_set_retries_and_keeps_both
+KILLED  f5: delete_path ignores missing_ok=False  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file]
+    actually failed: tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo], tests/test_state_wrappers.py::test_append_path_and_delete_path_refuse_a_path_that_leaves_the_root
+KILLED  f6: append_path stringifies bytes instead of decoding them  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory]
+    actually failed: tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo]
+KILLED  f7: append_text on an insert-only document overwrites it  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document
+    actually failed: tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document
+KILLED  f8: the fake bucket numbers files by document count again  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_a_fake_bucket_never_reuses_a_file_id_after_a_delete
+    actually failed: tests/test_mongo_guard_chain.py::test_a_fake_bucket_never_reuses_a_file_id_after_a_delete
+
+8/8 mutations killed
+exit=0
+=== mutations-d (final tree) ===
+KILLED  d1: exists_path ignores directories  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file]
+    actually failed: tests/test_state_wrappers.py::test_a_directory_listing_fans_out_across_the_backends_of_its_areas, tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[memory], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[mongo], tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+KILLED  d2: a directory is listed from one backend only  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_a_directory_listing_fans_out_across_the_backends_of_its_areas
+    actually failed: tests/test_state_wrappers.py::test_a_directory_listing_fans_out_across_the_backends_of_its_areas
+KILLED  d3: a path outside the data root is routed as state  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+    actually failed: tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[memory], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[mongo], tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+KILLED  d4: mtime_path is always None  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file]
+    actually failed: tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file], tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+KILLED  d5: an unrouted area may be flipped to mongo  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[auth]
+    actually failed: tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[auth], tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[blobs], tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[credentials]
+KILLED  d6: approvals stay in the projects area  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_the_approvals_and_queue_families_have_an_area_so_they_can_be_flipped
+    actually failed: tests/test_state_selection.py::test_the_approvals_and_queue_families_have_an_area_so_they_can_be_flipped
+KILLED  d7: mongo without a URI starts silently  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_mongo_without_a_uri_stops_startup_and_names_the_variable
+    actually failed: tests/test_state_selection.py::test_mongo_without_a_uri_stops_startup_and_names_the_variable, tests/test_state_selection.py::test_one_area_on_mongo_only_fails_the_keys_in_that_area
+
+7/7 mutations killed
+exit=0

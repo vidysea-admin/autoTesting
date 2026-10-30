@@ -1,0 +1,122 @@
+=== mutations-e ===
+KILLED  e1: find returns the lazy cursor untranslated  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_a_lazy_cursor_that_dies_mid_iteration_is_translated_and_clean
+    actually failed: tests/test_mongo_guard_chain.py::test_a_lazy_cursor_that_dies_mid_iteration_is_translated_and_clean
+KILLED  e2: the invalid-URI error is raised inside the except  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain[notmongo://u:CANARY-p4ssw0rd-9f3a@h/]
+    actually failed: tests/test_mongo_guard_chain.py::test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain[mongodb://u:CANARY-p4ssw0rd-9f3a@/], tests/test_mongo_guard_chain.py::test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain[mongodb://u:CANARY-p4ssw0rd-9f3a@h:notaport/], tests/test_mongo_guard_chain.py::test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain[notmongo://u:CANARY-p4ssw0rd-9f3a@h/], tests/test_mongo_guard_chain.py::test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain[u:CANARY-p4ssw0rd-9f3a@h/]
+
+2/2 mutations killed
+exit=0
+=== mutations-c ===
+KILLED  c1: a trailing dot or space is allowed  (pytest exit 1)
+    claims to kill : tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/x.]
+    actually failed: tests/test_safe_key.py::test_a_complete_segment_of_a_prefix_is_judged_like_a_key[a/x /], tests/test_safe_key.py::test_a_complete_segment_of_a_prefix_is_judged_like_a_key[a/x./], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/..x./y], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/b /c], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/b./c], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/x ], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/x.], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[x ], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[x.], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/x ], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/x.], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/x ], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/x.], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/x ], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/x.]
+KILLED  c2: a Windows device name is allowed  (pytest exit 1)
+    claims to kill : tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/CON]
+    actually failed: tests/test_safe_key.py::test_a_complete_segment_of_a_prefix_is_judged_like_a_key[a/CON/], tests/test_safe_key.py::test_a_complete_segment_of_a_prefix_is_judged_like_a_key[a/nul.txt/], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[CON], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/COM1], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/COM\xb9], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/CON .json], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/CON], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/Con.json], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/LPT1], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/NUL.tar.gz], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/PRN], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/aux.log], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/com9.json], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/con], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/lpt9.x], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/nul.txt], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/COM1.json], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/CONIN$], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/CON], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/aux .x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/lpt9], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/nul.txt], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/COM1.json], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/CONIN$], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/CON], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/aux .x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/lpt9], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/nul.txt], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/COM1.json], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/CONIN$], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/CON], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/aux .x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/lpt9], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/nul.txt]
+KILLED  c3: a colon is allowed in a key  (pytest exit 1)
+    claims to kill : tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a:b]
+    actually failed: tests/test_safe_key.py::test_a_complete_segment_of_a_prefix_is_judged_like_a_key[a/b:], tests/test_safe_key.py::test_a_complete_segment_of_a_prefix_is_judged_like_a_key[a:b], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[C:/x], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/C:/y], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/b/c:], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a/b:stream], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[a:b], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[c:x], tests/test_safe_key.py::test_a_windows_aliased_key_is_refused[nul:], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-C:/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/C:/y], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/b:c], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-c:x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-C:/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/C:/y], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-a/b:c], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-c:x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-C:/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/C:/y], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-a/b:c], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[mongo-c:x]
+KILLED  c4: a prefix's last segment is judged as a whole one  (pytest exit 1)
+    claims to kill : tests/test_safe_key.py::test_a_partial_last_segment_of_a_prefix_may_be_the_start_of_a_longer_name[p/CON]
+    actually failed: tests/test_safe_key.py::test_a_partial_last_segment_of_a_prefix_may_be_the_start_of_a_longer_name[p/CON], tests/test_safe_key.py::test_a_partial_last_segment_of_a_prefix_may_be_the_start_of_a_longer_name[p/a ], tests/test_safe_key.py::test_a_partial_last_segment_of_a_prefix_may_be_the_start_of_a_longer_name[p/nul], tests/test_safe_key.py::test_a_partial_last_segment_of_a_prefix_may_be_the_start_of_a_longer_name[p/x.]
+
+4/4 mutations killed
+exit=0
+=== mutations-d ===
+KILLED  d1: exists_path ignores directories  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file]
+    actually failed: tests/test_state_wrappers.py::test_a_directory_listing_fans_out_across_the_backends_of_its_areas, tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[memory], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[mongo], tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+KILLED  d2: a directory is listed from one backend only  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_a_directory_listing_fans_out_across_the_backends_of_its_areas
+    actually failed: tests/test_state_wrappers.py::test_a_directory_listing_fans_out_across_the_backends_of_its_areas
+KILLED  d3: a path outside the data root is routed as state  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+    actually failed: tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[memory], tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[mongo], tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+KILLED  d4: mtime_path is always None  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file]
+    actually failed: tests/test_state_wrappers.py::test_exists_list_children_and_mtime_follow_the_backend[file], tests/test_state_wrappers.py::test_the_path_functions_on_the_real_file_routing
+KILLED  d5: an unrouted area may be flipped to mongo  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[auth]
+    actually failed: tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[auth], tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[blobs], tests/test_state_selection.py::test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file[credentials]
+KILLED  d6: approvals stay in the projects area  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_the_approvals_and_queue_families_have_an_area_so_they_can_be_flipped
+    actually failed: tests/test_state_selection.py::test_the_approvals_and_queue_families_have_an_area_so_they_can_be_flipped
+KILLED  d7: mongo without a URI starts silently  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_mongo_without_a_uri_stops_startup_and_names_the_variable
+    actually failed: tests/test_state_selection.py::test_mongo_without_a_uri_stops_startup_and_names_the_variable, tests/test_state_selection.py::test_one_area_on_mongo_only_fails_the_keys_in_that_area
+
+7/7 mutations killed
+exit=0
+=== mutations-a ===
+KILLED  a1: put_if ignores the expected digest  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing[mongo]
+    actually failed: tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing[mongo]
+KILLED  a2: create_exclusive overwrites  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_create_exclusive_never_overwrites[mongo]
+    actually failed: tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[.work/team/delivery/d1.json], tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[projects/p/bug_events/e1.json], tests/test_state_backend_contract.py::test_create_exclusive_never_overwrites[mongo]
+KILLED  a3: every appended row gets seq 1  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_rows_are_ordered_and_a_missing_key_has_none[mongo]
+    actually failed: tests/test_mongo_backend_fence.py::test_an_insert_only_row_set_takes_appends_and_refuses_every_edit[projects/p/approval_revocations.jsonl], tests/test_mongo_backend_fence.py::test_an_insert_only_row_set_takes_appends_and_refuses_every_edit[projects/p/approvals.jsonl], tests/test_mongo_backend_layout.py::test_upsert_keeps_the_seq_of_the_row_it_replaces, tests/test_state_backend_contract.py::test_mtime_is_none_when_absent_and_moves_forward_on_every_write[mongo], tests/test_state_backend_contract.py::test_rows_are_ordered_and_a_missing_key_has_none[mongo], tests/test_state_backend_contract.py::test_upsert_keeps_position_and_adding_twice_is_idempotent[mongo]
+KILLED  a4: upsert drops the seq of the row it replaces  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_upsert_keeps_the_seq_of_the_row_it_replaces
+    actually failed: tests/test_mongo_backend_fence.py::test_a_whole_workload_touches_only_the_configured_database[mongodb://h/?authSource=admin], tests/test_mongo_backend_fence.py::test_a_whole_workload_touches_only_the_configured_database[mongodb://h/], tests/test_mongo_backend_fence.py::test_a_whole_workload_touches_only_the_configured_database[mongodb://h/scratch], tests/test_mongo_backend_layout.py::test_upsert_keeps_the_seq_of_the_row_it_replaces, tests/test_state_backend_contract.py::test_upsert_keeps_position_and_adding_twice_is_idempotent[mongo]
+KILLED  a5: delete_prefix without the segment boundary  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]
+    actually failed: tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]
+KILLED  a6: delete_prefix deletes before checking insert-only  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_delete_prefix_over_an_insert_only_family_deletes_nothing
+    actually failed: tests/test_mongo_backend_fence.py::test_delete_prefix_over_an_insert_only_family_deletes_nothing
+KILLED  a7: the secret gate scans nothing  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_a_known_secret_is_refused_everywhere_and_never_quoted
+    actually failed: tests/test_mongo_backend_fence.py::test_a_known_secret_is_refused_everywhere_and_never_quoted, tests/test_mongo_backend_fence.py::test_a_secret_hidden_by_a_row_that_is_not_the_first_is_still_refused, tests/test_mongo_backend_fence.py::test_the_default_redactor_reads_the_repo_env_without_echoing_it
+KILLED  a8: the secret gate skips the key  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_a_known_secret_is_refused_everywhere_and_never_quoted
+    actually failed: tests/test_mongo_backend_fence.py::test_a_known_secret_is_refused_everywhere_and_never_quoted
+KILLED  a9: the 12 MB cap is lifted  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_a_body_over_12_mb_is_refused_and_nothing_is_stored
+    actually failed: tests/test_mongo_backend_layout.py::test_a_body_over_12_mb_is_refused_and_nothing_is_stored
+KILLED  a10: insert-only rows are editable (no StoreImmutable)  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_an_insert_only_row_set_takes_appends_and_refuses_every_edit[projects/p/approvals.jsonl]
+    actually failed: tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[.work/team/delivery/d1.json], tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[projects/p/bug_events/e1.json], tests/test_mongo_backend_fence.py::test_an_insert_only_row_set_takes_appends_and_refuses_every_edit[projects/p/approval_revocations.jsonl], tests/test_mongo_backend_fence.py::test_an_insert_only_row_set_takes_appends_and_refuses_every_edit[projects/p/approvals.jsonl]
+KILLED  a11: an insert-only document may be overwritten with other text  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[projects/p/bug_events/e1.json]
+    actually failed: tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[.work/team/delivery/d1.json], tests/test_mongo_backend_fence.py::test_an_insert_only_document_is_written_once_and_never_changed[projects/p/bug_events/e1.json]
+KILLED  a12: the identity marker reads as a state document  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_the_identity_marker_is_not_a_state_document_and_is_never_rewritten
+    actually failed: tests/test_mongo_backend_fence.py::test_the_identity_marker_is_not_a_state_document_and_is_never_rewritten
+KILLED  a13: mtime is a constant  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_mtime_is_none_when_absent_and_moves_forward_on_every_write[mongo]
+    actually failed: tests/test_state_backend_contract.py::test_mtime_is_none_when_absent_and_moves_forward_on_every_write[mongo]
+KILLED  a14: the (k, seq) index is not unique  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing
+    actually failed: tests/test_mongo_backend_layout.py::test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing
+KILLED  a15: only five collections are indexed  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing
+    actually failed: tests/test_mongo_backend_layout.py::test_indexes_exist_for_every_routed_collection_and_a_second_pass_changes_nothing
+KILLED  a16: media.json routes to source_docs  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_each_key_family_lands_in_the_collection_the_table_names[projects/p/sources/s1/media.json-source_media-projects-False]
+    actually failed: tests/test_mongo_backend_layout.py::test_each_key_family_lands_in_the_collection_the_table_names[projects/p/sources/s1/media.json-source_media-projects-False]
+KILLED  a17: within() matches on a string prefix, not a segment  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]
+    actually failed: tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[file], tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[memory], tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]
+KILLED  a18: require_scope accepts the empty prefix  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]
+    actually failed: tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[file], tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[memory], tests/test_state_backend_contract.py::test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary[mongo]
+
+18/18 mutations killed
+exit=0
+=== mutations-b ===
+KILLED  b1: the persona is never split  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_a_persona_over_4_mb_splits_into_kg_rows_and_reads_back_equal
+    actually failed: tests/test_mongo_backend_layout.py::test_a_persona_over_4_mb_splits_into_kg_rows_and_reads_back_equal, tests/test_mongo_backend_layout.py::test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows
+KILLED  b2: an overwrite leaves the old generation behind  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows
+    actually failed: tests/test_mongo_backend_layout.py::test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows
+KILLED  b3: delete leaves the graph rows behind  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_layout.py::test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows
+    actually failed: tests/test_mongo_backend_layout.py::test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows
+
+3/3 mutations killed
+exit=0

@@ -1,0 +1,28 @@
+KILLED  f1: FileBackend.append_text truncates instead of appending  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[file]
+    actually failed: tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[file], tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_refuse_a_path_that_leaves_the_root
+KILLED  f2: MongoBackend.append_text on a row set keeps only the first line  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line[mongo]
+    actually failed: tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document, tests/test_state_backend_contract.py::test_append_text_to_a_row_set_adds_one_row_per_line[mongo]
+KILLED  f3: MongoBackend.append_text on a document replaces instead of extending  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[mongo]
+    actually failed: tests/test_state_backend_contract.py::test_append_text_creates_then_extends_and_keeps_every_byte[mongo], tests/test_state_backend_contract.py::test_append_text_loses_no_append_among_16_callers[mongo], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo]
+>>> SURVIVED  f4: MongoBackend.append_text gives up after one lost compare-and-set  (pytest exit 0)
+    claims to kill : tests/test_state_backend_contract.py::test_append_text_loses_no_append_among_16_callers[mongo]
+    actually failed: (nothing)
+    SURVIVING      : tests/test_state_backend_contract.py::test_append_text_loses_no_append_among_16_callers[mongo]  <- INCONCLUSIVE: this mutation did not make them fail
+KILLED  f5: delete_path ignores missing_ok=False  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file]
+    actually failed: tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo], tests/test_state_wrappers.py::test_append_path_and_delete_path_refuse_a_path_that_leaves_the_root
+KILLED  f6: append_path stringifies bytes instead of decoding them  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory]
+    actually failed: tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[file], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[memory], tests/test_state_wrappers.py::test_append_path_and_delete_path_follow_the_backend[mongo]
+KILLED  f7: append_text on an insert-only document overwrites it  (pytest exit 1)
+    claims to kill : tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document
+    actually failed: tests/test_mongo_backend_fence.py::test_append_text_to_an_insert_only_family_adds_rows_but_never_edits_a_document
+KILLED  f8: the fake bucket numbers files by document count again  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_a_fake_bucket_never_reuses_a_file_id_after_a_delete
+    actually failed: tests/test_mongo_guard_chain.py::test_a_fake_bucket_never_reuses_a_file_id_after_a_delete
+
+7/8 mutations killed
+exit=1

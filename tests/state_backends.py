@@ -1,7 +1,7 @@
 """The backends the one contract suite runs on (mongo-store M15), and the dict-backed double.
 
-`BACKEND_FACTORIES` is the single place a backend joins the suite: U4 adds one `"mongo"` entry that
-builds a `MongoBackend` over `fake_mongo`, and every contract test then runs on it unchanged.
+`BACKEND_FACTORIES` is the single place a backend joins the suite: the `"mongo"` entry builds a
+`MongoBackend` over `fake_mongo`, and every contract test runs on it unchanged.
 
 `InMemoryBackend` is the second leg.
 
@@ -15,16 +15,30 @@ and compare-and-set guarantees need in a single process.
 from __future__ import annotations
 
 import threading
+import time
 from collections.abc import Callable
 from pathlib import Path
 
+from fake_mongo import FakeMongoServer, open_store
+
+from autotester.core.redact import Redactor
 from autotester.core.safe_names import safe_key
-from autotester.store.filestore import FileBackend, StateBackend, row_matches, text_sha
+from autotester.store.filestore import FileBackend
+from autotester.store.mongo_backend import MongoBackend
+from autotester.store.mongo_routes import (
+    StateBackend,
+    child_names,
+    require_scope,
+    row_matches,
+    text_sha,
+    within,
+)
 
 
 class InMemoryBackend:
     def __init__(self) -> None:
         self.docs: dict[str, str] = {}
+        self.stamps: dict[str, float] = {}
         self._lock = threading.RLock()
 
     def get(self, key: str) -> str | None:
@@ -34,6 +48,7 @@ class InMemoryBackend:
     def put(self, key: str, data: str | bytes) -> None:
         with self._lock:
             self.docs[safe_key(key)] = data.decode("utf-8") if isinstance(data, bytes) else data
+            self.stamps[key] = time.time()
 
     def put_if(self, key: str, text: str, expect_sha: str | None) -> bool:
         with self._lock:
@@ -47,11 +62,12 @@ class InMemoryBackend:
         with self._lock:
             if safe_key(key) in self.docs:
                 return False
-            self.docs[key] = text
+            self.put(key, text)
             return True
 
     def delete(self, key: str) -> bool:
         with self._lock:
+            self.stamps.pop(key, None)
             return self.docs.pop(safe_key(key), None) is not None
 
     def exists(self, key: str) -> bool:
@@ -65,7 +81,21 @@ class InMemoryBackend:
 
     def delete_prefix(self, prefix: str) -> int:
         with self._lock:
-            return sum(self.delete(key) for key in self.keys(prefix))
+            return sum(self.delete(k) for k in self.keys(require_scope(prefix))
+                       if within(k, prefix))
+
+    def children(self, key: str, suffix: str = "") -> list[str]:
+        with self._lock:
+            return child_names(self.docs, safe_key(key) if key else "", suffix)
+
+    def is_dir(self, key: str) -> bool:
+        with self._lock:
+            base = safe_key(key) if key else ""
+            return not base or any(k.startswith(base + "/") for k in self.docs)
+
+    def mtime(self, key: str) -> float | None:
+        with self._lock:
+            return self.stamps.get(safe_key(key))
 
     def rows(self, key: str) -> list[str]:
         return [line for line in (self.get(key) or "").splitlines() if line.strip()]
@@ -73,6 +103,10 @@ class InMemoryBackend:
     def append_row(self, key: str, text: str) -> None:
         with self._lock:
             self.put(key, (self.get(key) or "") + text + "\n")
+
+    def append_text(self, key: str, text: str) -> None:
+        with self._lock:
+            self.put(key, (self.get(key) or "") + text)
 
     def replace_rows(self, key: str, rows: list[str]) -> None:
         self.put(key, "".join(f"{row}\n" for row in rows))
@@ -96,7 +130,14 @@ class InMemoryBackend:
         return None
 
 
+def mongo_backend(_root: Path, server: FakeMongoServer | None = None) -> MongoBackend:
+    """A `MongoBackend` over the hand-written double (no socket); `server` shares one database."""
+    store = open_store(client=(server or FakeMongoServer()).client())
+    return MongoBackend(store, Redactor({}))
+
+
 BACKEND_FACTORIES: dict[str, Callable[[Path], StateBackend]] = {
     "file": FileBackend,
     "memory": lambda _root: InMemoryBackend(),
+    "mongo": mongo_backend,
 }

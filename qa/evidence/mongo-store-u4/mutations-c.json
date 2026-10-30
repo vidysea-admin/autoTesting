@@ -1,0 +1,44 @@
+{
+ "tests": [
+  "tests/test_safe_key.py",
+  "tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io"
+ ],
+ "mutations": [
+  {
+   "name": "c1: a trailing dot or space is allowed",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "return not partial and (segment.endswith((\".\", \" \")) or _device(segment))",
+   "new": "return not partial and _device(segment)",
+   "kills": [
+    "test_a_windows_aliased_key_is_refused[a/x.]"
+   ]
+  },
+  {
+   "name": "c2: a Windows device name is allowed",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "return not partial and (segment.endswith((\".\", \" \")) or _device(segment))",
+   "new": "return not partial and segment.endswith((\".\", \" \"))",
+   "kills": [
+    "test_a_windows_aliased_key_is_refused[a/CON]"
+   ]
+  },
+  {
+   "name": "c3: a colon is allowed in a key",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "_FORBIDDEN = re.compile(r'[<>:\"|?*]')",
+   "new": "_FORBIDDEN = re.compile(r'[<>\"|?*]')",
+   "kills": [
+    "test_a_windows_aliased_key_is_refused[a:b]"
+   ]
+  },
+  {
+   "name": "c4: a prefix's last segment is judged as a whole one",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "partial=open_end and i == last",
+   "new": "partial=False",
+   "kills": [
+    "test_a_partial_last_segment_of_a_prefix_may_be_the_start_of_a_longer_name[p/CON]"
+   ]
+  }
+ ]
+}
