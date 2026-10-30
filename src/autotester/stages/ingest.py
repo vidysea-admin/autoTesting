@@ -111,11 +111,11 @@ def register_source(store: ProjectStore, path: Path, *, label: str | None = None
     fetched from Drive goes through this ONE video adapter rather than a
     reimplementation (SA1)."""
     require_recording_suffix(path.name)
-    if not path.exists():
+    if not (real := local_blob(path)).exists():  # M51: Drive bytes may be in GridFS only
         raise FileNotFoundError(f"no such recording: {path}")
-    if not path.is_file():  # AT-446: `dir.mp4` passes the suffix rule and exists()
+    if not real.is_file():  # AT-446: `dir.mp4` passes the suffix rule and exists()
         raise NotARecording("that is a folder, not a recording file")
-    digest = file_sha256(path)
+    digest = file_sha256(real)
     for existing in store.list_sources():
         if existing.sha256 == digest:
             return existing

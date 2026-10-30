@@ -37,7 +37,7 @@ from autotester.sources.audio import AUDIO_SUFFIXES, transcribe_audio
 from autotester.sources.extract import DOC_SUFFIXES, Extraction, extract_document_text
 from autotester.store.filestore import write_json
 from autotester.store.project_store import ProjectStore
-from autotester.store.run_store import source_path
+from autotester.store.run_store import local_blob
 
 _EXTRACTION_ERROR_PREFIX = "extraction_error"
 
@@ -95,19 +95,20 @@ def register_document(
 
     Optional `provenance`/`url` retain email-parent and Drive-file attribution.
     """
-    if not path.exists():
+    real = local_blob(path)  # M51: the bytes may be in GridFS only; `path` stays the logical path
+    if not real.exists():
         raise FileNotFoundError(f"no such document: {path}")
-    if not path.is_file():
+    if not real.is_file():
         raise IsADirectoryError(f"that is a folder, not a document file: {path}")
     if path.suffix.lower() not in DOC_SUFFIXES:
         raise ValueError(
             "that is not a document — add a file ending in " + ", ".join(sorted(DOC_SUFFIXES))
         )
-    digest = file_sha256(path)
+    digest = file_sha256(real)
     existing = _existing_by_digest(store, digest)
     if existing is not None:
         return Registration(existing, created=False)
-    extraction = _sanitize_pdf_reading(store, extract_document_text(path))
+    extraction = _sanitize_pdf_reading(store, extract_document_text(real))
     note = (
         f"{_EXTRACTION_ERROR_PREFIX}: {extraction.error}" if extraction.error is not None else None
     )
@@ -115,7 +116,7 @@ def register_document(
         Source(
             project=store.paths.slug,
             kind=SourceKind.DOC,
-            path=source_path(path),
+            path=str(path.resolve()),
             sha256=digest,
             text=extraction.text,
             label=label,
@@ -176,7 +177,7 @@ def register_audio(
     leaves them `None`.
     """
     _require_audio_file(path)
-    digest = file_sha256(path)
+    digest = file_sha256(local_blob(path))  # M51: read through the blob store, record `path`
     existing = _existing_by_digest(store, digest)
     if existing is not None:
         return Registration(existing, created=False)
@@ -187,10 +188,11 @@ def register_audio(
 
 
 def _require_audio_file(path: Path) -> None:
-    """Raise unless `path` is a real file with a recognised audio suffix."""
-    if not path.exists():
+    """Raise unless `path` is a real file (or a stored blob) with a recognised audio suffix."""
+    real = local_blob(path)
+    if not real.exists():
         raise FileNotFoundError(f"no such audio file: {path}")
-    if not path.is_file():
+    if not real.is_file():
         raise IsADirectoryError(f"that is a folder, not an audio file: {path}")
     if path.suffix.lower() not in AUDIO_SUFFIXES:
         raise ValueError(
@@ -217,12 +219,12 @@ def _add_audio_source(
     here, so the `Transcript` can cite it before the real Source exists (SA4).
     """
     provisional_id = Source(project=store.paths.slug, kind=SourceKind.AUDIO, sha256=digest).id
-    outcome = transcribe_audio(path, provisional_id, provider=provider, secrets=secrets)
+    outcome = transcribe_audio(local_blob(path), provisional_id, provider=provider, secrets=secrets)
     source = store.add_source(
         Source(
             project=store.paths.slug,
             kind=SourceKind.AUDIO,
-            path=source_path(path),
+            path=str(path.resolve()),
             sha256=digest,
             label=label,
             recorded_on=recorded_on,

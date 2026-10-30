@@ -42,7 +42,7 @@ from autotester.sources.email import EMAIL_SUFFIXES, Attachment, iter_mbox_messa
 from autotester.sources.extract import DOC_SUFFIXES
 from autotester.store.filestore import exists_path
 from autotester.store.project_store import ProjectStore
-from autotester.store.run_store import source_path, store_media
+from autotester.store.run_store import store_media
 
 _PROVENANCE_STAGE = "sources.email"
 
@@ -133,7 +133,7 @@ def _register_unparseable_mbox(
         Source(
             project=store.paths.slug,
             kind=SourceKind.EMAIL,
-            path=source_path(path),
+            path=str(path.resolve()),
             sha256=digest,
             label=label,
             recorded_on=recorded_on,
@@ -191,7 +191,7 @@ def _register_unrecognised_attachment(
         Source(
             project=store.paths.slug,
             kind=SourceKind.DOC,
-            path=source_path(path),
+            path=str(path.resolve()),
             sha256=digest,
             label=attachment.filename,
             notes=(
