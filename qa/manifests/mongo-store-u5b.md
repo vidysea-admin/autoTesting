@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u5b
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 2, qa/verdicts/mongo-store-u5b.md)
 **Fix cycle:** 2
 **Contract:** `qa/contracts/mongo-store.md` (amended on master 001d10d6), unit U5b. **Criteria judged by U5b:** M24, M25, M51, M54, M55, plus the U5a checker W1 body-scan widening (= M54) and the `core/image_privacy.py:_sanitize_one:stat` baseline row (U3c verdict).
 **Branch:** `feat/mongo-store-u5b`. **Base SHA:** `001d10d6` (master at the contract amendment; master `30db1b7a` (U9) was merged into this branch for cycle 1, merge commit `e6442a6e`). Not merged to master, not pushed.
