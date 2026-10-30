@@ -207,7 +207,7 @@ def test_a_purge_that_fails_part_way_leaves_markers_and_records_together_and_no_
             raise PermissionError("in use by another process")
         return real(src, dst)
 
-    monkeypatch.setattr(schedule_store.os, "replace", flaky)
+    monkeypatch.setattr(os, "replace", flaky)
     with pytest.raises(PermissionError):
         purge_project(tmp_path / "claims", path, "p")
     monkeypatch.undo()

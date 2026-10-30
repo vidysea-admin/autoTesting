@@ -7,17 +7,15 @@ without its file and matching sha256. The one window a kill can leave open is a 
 row; the next intake sweeps it (`sweep_orphans`) before doing anything else, which is also what
 removes the staging a killed run left behind.
 
-Only portable primitives: an `O_CREAT | O_EXCL` lock file (no `fcntl`, no `flock`),
-`os.replace`, `pathlib`. Nothing here is POSIX-only, and nothing at import time touches the disk.
+Only store verbs: an exclusive-create lock key (no `fcntl`, no `flock`), and local scratch verbs
+for staging. Nothing here is POSIX-only, and nothing at import time touches the disk.
 """
 
 from __future__ import annotations
 
-import os
-import shutil
 import time
 from collections.abc import Callable, Iterator
-from contextlib import contextmanager, suppress
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
@@ -29,7 +27,16 @@ from autotester.schema.intake import SourceOrigin
 from autotester.schema.project import Source
 from autotester.sources.zip_names import ensure_inside
 from autotester.stages.ingest import require_recording_suffix
-from autotester.store.filestore import delete_path, exists_path, list_children
+from autotester.store.filestore import delete_path, exists_path, list_children, mtime_path
+from autotester.store.filestore_paths import (
+    create_exclusive_path,
+    remove_empty_dir,
+    remove_stray_temps,
+    scratch_children,
+    scratch_mkdir,
+    scratch_rmtree,
+    touch_path,
+)
 from autotester.store.project_store import ProjectStore
 from autotester.store.run_store import place_media
 
@@ -45,9 +52,10 @@ class IntakeBusy(RuntimeError):
 
 def _lock_is_stale(path: Path, stale_s: float) -> bool:
     try:
-        return time.time() - path.stat().st_mtime > stale_s
+        stamp = mtime_path(path)
     except OSError:
         return False
+    return stamp is not None and time.time() - stamp > stale_s
 
 
 @contextmanager
@@ -58,23 +66,18 @@ def intake_lock(store: ProjectStore, *, timeout_s: float = LOCK_TIMEOUT_S,
     long expansion is not mistaken for a crashed holder; a lock untouched for `stale_s` is taken
     over (a killed process never releases it)."""
     path = store.paths.dir / LOCK_NAME
-    path.parent.mkdir(parents=True, exist_ok=True)
     deadline = time.monotonic() + timeout_s
-    while True:
-        try:
-            os.close(os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
-            break
-        except FileExistsError:
-            if _lock_is_stale(path, stale_s):
-                path.unlink(missing_ok=True)
-                continue
-            if time.monotonic() > deadline:
-                raise IntakeBusy("another intake into this project is still running") from None
-            time.sleep(poll_s)
+    while not create_exclusive_path(path, ""):  # one winner per project, on any backend (M19)
+        if _lock_is_stale(path, stale_s):
+            delete_path(path)
+            continue
+        if time.monotonic() > deadline:
+            raise IntakeBusy("another intake into this project is still running")
+        time.sleep(poll_s)
     try:
-        yield lambda: os.utime(path, None)
+        yield lambda: touch_path(path)
     finally:
-        path.unlink(missing_ok=True)
+        delete_path(path)
 
 
 def staging_root(store: ProjectStore) -> Path:
@@ -88,8 +91,8 @@ def sweep_orphans(store: ProjectStore) -> int:
     (media, transcripts) in a row-less folder is left alone. Returns the number removed."""
     removed = 0
     root = staging_root(store)
-    for leftover in list(root.iterdir()) if root.is_dir() else []:
-        shutil.rmtree(leftover, ignore_errors=True)
+    for leftover in scratch_children(root):  # local scratch: video bytes, never state (M25)
+        scratch_rmtree(leftover)
         removed += 1
     known = {s.id for s in store.list_sources()}
     base = store.paths.sources_dir
@@ -98,11 +101,8 @@ def sweep_orphans(store: ProjectStore) -> int:
             if name.startswith(f"{RECORDING_STEM}."):
                 delete_path(folder / name)
                 removed += 1
-        for stray in folder.glob(".tmp-*"):  # not listed by list_children (atomic-write temps)
-            stray.unlink(missing_ok=True)
-            removed += 1
-        with suppress(OSError):
-            folder.rmdir()
+        removed += remove_stray_temps(folder)  # atomic-write temps `list_children` does not list
+        remove_empty_dir(folder)
     return removed
 
 
@@ -112,11 +112,11 @@ def intake_session(store: ProjectStore, **lock_kwargs) -> Iterator[tuple[Path, C
     with intake_lock(store, **lock_kwargs) as beat:
         sweep_orphans(store)
         staging = staging_root(store) / ulid()
-        staging.mkdir(parents=True)
+        scratch_mkdir(staging)
         try:
             yield staging, beat
         finally:
-            shutil.rmtree(staging, ignore_errors=True)
+            scratch_rmtree(staging)
 
 
 def commit_video(store: ProjectStore, staged: Path, *, digest: str, suffix: str,
@@ -144,7 +144,6 @@ def commit_video(store: ProjectStore, staged: Path, *, digest: str, suffix: str,
         store.add_source(draft.model_copy(update={"path": str(target)}))
     except BaseException:
         delete_path(target)
-        with suppress(OSError):
-            target.parent.rmdir()
+        remove_empty_dir(target.parent)
         raise
     return draft.model_copy(update={"path": str(target)}), True

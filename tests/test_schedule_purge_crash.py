@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import multiprocessing as mp
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -55,7 +56,7 @@ def _interrupt_on_second_move(monkeypatch: pytest.MonkeyPatch, exc: BaseExceptio
             raise exc
         return real(src, dst)
 
-    monkeypatch.setattr(schedule_store.os, "replace", interrupted)
+    monkeypatch.setattr(os, "replace", interrupted)
 
 
 @pytest.mark.parametrize("exc", [SystemExit(1), KeyboardInterrupt()],
@@ -92,7 +93,7 @@ def test_a_failed_restore_does_not_stop_the_rollback_of_the_files_after_it(
             raise PermissionError("still in use")
         return real(src, dst)
 
-    monkeypatch.setattr(schedule_store.os, "replace", flaky)
+    monkeypatch.setattr(os, "replace", flaky)
     with pytest.raises(PermissionError, match="in use by another process"):
         purge_project(tmp_path / "claims", path, "p")
     monkeypatch.undo()
@@ -112,9 +113,9 @@ def _die_after_n_moves(base: str, n: int, patch_rmtree: bool) -> None:
             os._exit(3)  # a hard kill: no except, no finally, no atexit
 
     if patch_rmtree:  # die at the very end instead: all moved and committed, stage not deleted
-        schedule_store.shutil.rmtree = lambda *a, **k: os._exit(3)
+        shutil.rmtree = lambda *a, **k: os._exit(3)
     else:
-        schedule_store.os.replace = replace_then_die
+        os.replace = replace_then_die
     root = Path(base)
     purge_project(root / "claims", project_records_path(root / "records", "p"), "p")
 
@@ -188,6 +189,6 @@ def _purge_pp_then_die(base: str) -> None:
         if count[0] == 1:
             os._exit(3)
 
-    schedule_store.os.replace = replace_then_die
+    os.replace = replace_then_die
     root = Path(base)
     purge_project(root / "claims", project_records_path(root / "records", "pp"), "pp")

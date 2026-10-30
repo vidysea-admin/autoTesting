@@ -5,6 +5,8 @@ in-memory backend (keys are paths relative to `tmp_path`), and the bytes land th
 disk. (2) Static: an AST walk of `stages/` and `sources/` pins every remaining raw write call, so a
 new `write_text` on a state path cannot appear unlisted. Every entry of `LEFT` stays on disk for a
 reason given in qa/manifests/mongo-store-u3a.md ("Left on disk"); none is a state document.
+U7 routed schedule_store, drive_intake and intake_commit through `store/filestore_paths.py`, so
+those three entries are gone.
 """
 
 from __future__ import annotations
@@ -33,12 +35,8 @@ LEFT: dict[str, dict[str, int]] = {
     "stages/real_acceptance.py": {"write_text": 1},  # checked-in evidence, not state (M49)
     "stages/report_export.py": {"write_text": 1},
     "stages/unified_report.py": {"write_text": 1},
-    "stages/schedule_store.py": {"shutil.rmtree": 3, "write_text": 1, "os.replace": 2,
-                                 "os.rename": 1, "os.open": 1, "os.fdopen": 1},
     "sources/bounded_write.py": {"open": 1},
-    "sources/drive_intake.py": {"shutil.rmtree": 3},
     "sources/gws_drive.py": {"shutil.rmtree": 3},
-    "sources/intake_commit.py": {"shutil.rmtree": 2, "os.open": 1},
     "sources/pdf_worker.py": {"write_text": 1},
 }
 

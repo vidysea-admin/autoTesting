@@ -11,13 +11,13 @@ and Ubuntu.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from pydantic import BaseModel
 
 from autotester.core.paths import team_path
 from autotester.store.filestore import ModelT, read_json, write_json
+from autotester.store.filestore_paths import create_exclusive_path
 
 __all__ = ["create_marker", "read_model", "write_model"]
 
@@ -36,15 +36,4 @@ def read_model(root: Path | None, model_cls: type[ModelT], *parts: str) -> Model
 
 def create_marker(root: Path | None, *parts: str, body: str = "") -> bool:
     """Create the marker file once. True for the one caller that created it, else False."""
-    return _create_exclusive(team_path(*parts, root=root), body)
-
-
-def _create_exclusive(path: Path, body: str) -> bool:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    except FileExistsError:
-        return False
-    with os.fdopen(fd, "w", encoding="utf-8") as handle:
-        handle.write(body)
-    return True
+    return create_exclusive_path(team_path(*parts, root=root), body)

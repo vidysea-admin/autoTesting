@@ -18,7 +18,7 @@ from zip_fixtures import (
 )
 
 from autotester.schema.intake import IntakeOutcome, IntakeStatus
-from autotester.sources import intake_commit, zip_intake
+from autotester.sources import zip_intake
 from autotester.sources.zip_intake import expand_zip
 from autotester.store.project_store import ProjectStore
 
@@ -95,7 +95,7 @@ def test_ti6_failure_inside_the_copy_never_leaves_a_row_without_its_file(tmp_pat
                 raise OSError(errno.ENOSPC, "No space left on device")
         return real_replace(src, dst)
 
-    monkeypatch.setattr(intake_commit.os, "replace", failing)
+    monkeypatch.setattr(os, "replace", failing)
     report = _run(store, _three(tmp_path))
     assert [m.outcome for m in report.members].count(IntakeOutcome.FAILED) == 1
     assert report.status is IntakeStatus.PARTIAL and len(_rows(store)) == 2

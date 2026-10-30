@@ -212,7 +212,6 @@ def _write_attachment_to_disk(store: ProjectStore, parent_id: str, attachment: A
     addressed onto disk rather than overwritten."""
     safe_name = re.sub(r"[^\w.\-]", "_", attachment.filename) or "attachment"
     target_dir = store.paths.source_dir(parent_id) / "attachments"
-    target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / safe_name
     if exists_path(target) and target.read_bytes() != attachment.content:
         prefix = hashlib.sha256(attachment.content).hexdigest()[:8]

@@ -12,7 +12,8 @@ from autotester.schema.provider_migration import (
     ProviderMigrationOutcome,
     ProviderMigrationPlan,
 )
-from autotester.store.filestore import exists_path, write_bytes
+from autotester.store.filestore import write_bytes
+from autotester.store.filestore_paths import read_bytes_path
 
 _LEGACY = {"vision": "gemini", "agent": "langchain-fallback", "judge": "langchain-fallback"}
 _SLUG = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -75,8 +76,8 @@ def plan_legacy_roles(root: Path, slugs: list[str]) -> ProviderMigrationPlan:
     for slug in dict.fromkeys(slugs):
         path = _project_path(root, slug)
         entry = ProviderMigrationEntry(slug=slug, status="missing")
-        if path.is_file():
-            raw = path.read_bytes()
+        raw = read_bytes_path(path)
+        if raw is not None:
             entry.before_sha256 = _hash(raw)
             try:
                 record = _read_record(raw, slug)
@@ -110,17 +111,26 @@ def _migration_bytes(raw: bytes, entry: ProviderMigrationEntry) -> bytes:
     return replacement
 
 
+def _stored(path: Path) -> bytes:
+    """The stored bytes of `path`; `FileNotFoundError` (an `OSError`) when there are none."""
+    raw = read_bytes_path(path)
+    if raw is None:
+        raise FileNotFoundError(path)
+    return raw
+
+
 def _payload(raw: bytes, backup: Path, entry: ProviderMigrationEntry, restore: bool) -> bytes:
     if restore:
-        original = backup.read_bytes()
+        original = _stored(backup)
         if _hash(original) != entry.before_sha256:
             raise ValueError("migration_backup_identity_mismatch")
         _migration_bytes(original, entry)
         return original
     replacement = _migration_bytes(raw, entry)
-    if exists_path(backup) and _hash(backup.read_bytes()) != entry.before_sha256:
+    held = read_bytes_path(backup)
+    if held is not None and _hash(held) != entry.before_sha256:
         raise ValueError("migration_backup_identity_mismatch")
-    if not exists_path(backup):
+    if held is None:
         write_bytes(backup, raw)
     return replacement
 
@@ -133,7 +143,7 @@ def _change_one(root: Path, entry: ProviderMigrationEntry,
         return outcome
     path, backup = _project_path(root, entry.slug), _backup_path(root, entry)
     try:
-        raw = path.read_bytes()
+        raw = _stored(path)
     except OSError:
         outcome.status, outcome.reason = "stale", "project_unavailable"
         return outcome
@@ -151,7 +161,7 @@ def _change_one(root: Path, entry: ProviderMigrationEntry,
     except (OSError, ValueError, TypeError):
         outcome.status, outcome.reason = "stale", "plan_or_backup_invalid"
         return outcome
-    if _hash(path.read_bytes()) != expected:
+    if _hash(_stored(path)) != expected:
         outcome.status, outcome.reason = "stale", "project_changed_before_write"
         return outcome
     write_bytes(path, replacement)

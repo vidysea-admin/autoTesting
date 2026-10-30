@@ -14,9 +14,7 @@ Once the marker is older than `STALE_AFTER` it is closed as one terminal `failed
 from __future__ import annotations
 
 import json
-import os
 import re
-import uuid
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -32,6 +30,7 @@ from autotester.schema.delivery import (
     safe_id,
 )
 from autotester.store.filestore import exists_path, list_children, read_json
+from autotester.store.filestore_paths import create_exclusive_path, read_text_path
 
 RETRY_DELAYS = (timedelta(minutes=1), timedelta(minutes=5), timedelta(minutes=30))
 MAX_ATTEMPTS = len(RETRY_DELAYS) + 1   # the first try plus one retry per delay
@@ -79,20 +78,6 @@ _PART = r"(?:[a-z0-9.-]|_[a-z0-9])+"
 _CHANNELS = "|".join(re.escape(c.value) for c in DeliveryChannel)
 
 
-def _create_once(path: Path, data: str) -> bool:
-    """Create `path` with `data` only if it does not exist. True if this caller created it."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{uuid.uuid4().hex}.tmp")
-    tmp.write_text(data, encoding="utf-8")
-    try:
-        os.link(tmp, path)
-        return True
-    except FileExistsError:
-        return False
-    finally:
-        tmp.unlink(missing_ok=True)
-
-
 class DeliveryLog:
     """Append-only records under `<root>/records` and attempt claims under `<root>/attempts`."""
 
@@ -101,17 +86,17 @@ class DeliveryLog:
 
     def append(self, key: str, record: DeliveryRecord) -> None:
         path = self.records_dir / f"{key}.{record.attempts:02d}.json"
-        if not _create_once(path, record.model_dump_json()):
+        if not create_exclusive_path(path, record.model_dump_json()):
             raise FileExistsError("a record for this attempt already exists")
 
     def claim(self, key: str, attempt: int, now: datetime) -> bool:
-        return _create_once(self.attempts_dir / f"{key}.{attempt:02d}.json",
-                            json.dumps({"started_at": now.isoformat()}))
+        return create_exclusive_path(self.attempts_dir / f"{key}.{attempt:02d}.json",
+                                     json.dumps({"started_at": now.isoformat()}))
 
     def claimed_at(self, key: str, attempt: int) -> datetime | None:
         path = self.attempts_dir / f"{key}.{attempt:02d}.json"
         try:
-            return datetime.fromisoformat(json.loads(path.read_text("utf-8"))["started_at"])
+            return datetime.fromisoformat(json.loads(read_text_path(path) or "")["started_at"])
         except (OSError, ValueError, KeyError):
             return None
 
