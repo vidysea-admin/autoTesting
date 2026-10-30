@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u3d
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, qa/verdicts/mongo-store-u3d.md)
 **Fix cycle:** 1 (checker A verdict FAIL cycle 0: `qa/verdicts/mongo-store-u3d.md`, commit `d218c494`)
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29, amended 2026-10-31 at `001d10d6`), unit U3d, criteria M16 (pointer), M49, M50. Normal criticality (U3d row has no dual mark).
 **Authority:** D-121, D-123 (no new `src/` module, no file on the D-123 list added; `store/*` untouched, so no path-level primitive was invented, M53)
