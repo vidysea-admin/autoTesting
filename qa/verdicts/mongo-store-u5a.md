@@ -1,42 +1,46 @@
-# Verdict - mongo-store-u5a (checker A, functional/contract)
-Verdict: FAIL
-Cycle checked: 0
-Head tested: 4b75c05c (feat/mongo-store-u5a; code commit de49a203, base 0a2cbe45). Unit U5a, normal (not dual). Criteria judged: M2, M5, M8, M23, M25 (BlobStore half).
-Class: all LOCAL. No Mongo connection (hand-written fake only), no `.env` value printed. Worktree `.venv`, `-o addopts=`, at most 2 test files per call, `env -u ANTHROPIC_BASE_URL`. I did not read any other checker's verdict on this unit and re-ran every claim myself.
+# Verdict - mongo-store-u5a
 
-## Result per criterion
-| Crit | Result | Evidence |
-|---|---|---|
-| M2 no database name | PASS | grep for `pymongo|gridfs|MongoClient|get_database|import bson|db_name` on `blobs.py`: only the docstring word "database" at `:4`, `:6`. `inspect.signature` walk over every function, class and method in the module: offenders `[]` (a `db`/`database`/`db_name` parameter). Only handle is `store.bucket()` `blobs.py:190`; `mongo_guard` is imported under `TYPE_CHECKING :30-31` and lazily at `:226`. |
-| M5 URI database never used | PASS | `test_blobs_mongo.py` spy test over `mongodb://h/`, `/scratch`, `/?authSource=admin` green (104-test pair); the module cannot name a database. |
-| M8 no secret in a stored blob | PASS with warning (findings 2, 3 of the warnings) | A planted secret is refused (`BlobRefused`, no value in the message) in key, kind, content_type, `text/plain` body, `application/json` body, utf-16 body, bytearray body, whitespace-split body, on both stores (probe 1). Metadata (what M8 literally names) is fully covered. The body scan is bypassable, finding 2. |
-| M23 GridFS invariants | PASS | Unmasked `screenshot` refused (also `Screenshot` and `screenshot2` via the kind regex, `blobs.py:99,101`). My crash simulation: `_prune` patched to raise after `upload` gives revisions 2, `stat` sha = the new bytes, `get` returns the new bytes; an equal put then heals to 1 revision (probe 2). Tampered stored bytes: `get` and `materialize` both raise `BlobCorrupt`. |
-| M25 what does not move | **FAIL** (finding 1) | `.work`, `profiles`, `chunks`, `crawl_summaries`, `.blobmeta` segments, `.env`/`.env.*`/`.ENV`, `.xlsx`/`.XLSX`, kind `export`/`Export`, `a/./.work/b` (UnsafeName), `a/../b` all refused. But the segment match is case-sensitive, finding 1. Cache cap 512 MB LRU (`:36`, `_evict :255`) and its 3 tests are green. |
+**Verdict:** PASS
+**Cycle checked:** 1
+**Checker:** A (fresh, re-check of fix cycle 1; the cycle 0 FAIL stays in git history at 5cca3e06)
+**Code under check:** branch `feat/mongo-store-u5a`, HEAD `7a67b4ca` (code fix `60d90dfa`), base `0a2cbe45`
+**Contract:** `qa/contracts/mongo-store.md` M2, M5, M8, M23, M25 and the U5a row (normal criticality, single check)
+
+## Cycle 0 findings, re-judged
+
+| # | Cycle 0 finding | Result | Evidence |
+|---|---|---|---|
+| 1 | M25 exclusions bypassable by case / trailing dot / space | FIXED | `blobs.py:57-59` `_folded` (casefold, then `rstrip(". ")`) applied to every segment at `:110`; the segment set, `.env*` and `.xlsx` tests at `:112-113` run on the folded parts. Own probe (below): `.wOrK/a`, `a/.work../b`, `a/.Work /b`, `.Env.local`, `a/.ENV.Local.`, `a/.ENV. `, `X.XlSx..`, `x.XLSX `, `A/Chunks/x`, `a/CRAWL_SUMMARIES./x`, `a/.BLOBMETA../x`, `a/Profiles. . ./x`, `a/.work.` all raise `BlobRefused`. |
+| 2 | M8 body scan skipped non-lowercase / +json / +xml / parameterised types | FIXED for the named classes | `blobs.py:51-54` `_is_text`. Own probe: `Text/Html`, `application/vnd.api+JSON`, `application/x-www-form-urlencoded;charset=x`, ` application/json`, `APPLICATION/JSON ; charset=utf-8`, `application/json;`, `application/xhtml+xml`, `Application/Atom+XML`, `application/vnd.api+yaml`, `application/problem+json; x=y`, `application/x-ndjson`, `TEXT/` all refuse a planted secret body. See WARNING W1 for the residual. |
+| 3 | racing prune raised `StoreNotFound` | FIXED | `blobs.py:218-222` `_prune` suppresses only `mongo_guard.StoreNotFound` (not `StoreUnavailable`, which stays loud). `tests/blob_support.py:27-30` `UniqueBucket.delete` now raises `NoFile` on a missing id like pymongo; the guard's `_translate` (`mongo_guard.py:68-69`) maps it to `StoreNotFound`. `test_two_racing_puts_never_leave_zero_revisions` and the new delete-racing-delete test pass; mutant b6 is killed. |
+
+## Regression check on cycle-0-passing criteria
+
+- Only `blobs.py`, tests and evidence changed since cycle 0: `git diff --stat 4b75c05c..HEAD` lists `src/autotester/store/blobs.py`, `tests/blob_support.py`, `tests/test_blobs.py`, `tests/test_blobs_mongo.py`, `qa/evidence/mongo-store-u5a/*`, `qa/manifests/mongo-store-u5a.md`, `qa/verdicts/mongo-store-u5a.md`. `src/autotester/store/mongo_guard.py`, `tests/fake_mongo.py` and `src/autotester/core/` are untouched (empty diff).
+- M3 / driver import: `blobs.py` imports `mongo_guard` only under `TYPE_CHECKING` (`:31-32`) and lazily inside `_prune :219` and `_verified :244`; `tests/test_mongo_guard_scan.py` (39 with the cache file) passes, as does the fresh-interpreter file-mode import test.
+- M2: no `db`/`database`/`db_name` parameter in the module; `test_no_public_blob_api_takes_a_database_name` passes.
+- M23: unmasked screenshot refused `:117-118`; upload-then-prune order `:232-233`; interrupted-put and failed-upload tests pass.
+- Materialize: `:258-270` still verifies sha256 before returning and re-hashes a cache hit; the cache path is `<cache>/<sha256>/<basename>` with the key vetted by `safe_key`, so nothing leaves `.work/blob-cache/` (INFO I2).
+- Size: `blobs.py` is 284 lines (cap 300); `autotester doctor` clean (function-length rule included).
+
+## Commands run (worktree `D:/autoTesting/.claude/worktrees/mongo-u5a`, `-o addopts=`, 2 files per call, `env -u ANTHROPIC_BASE_URL`)
+
+```
+pytest tests/test_blobs.py tests/test_blobs_mongo.py              -> 148 passed
+pytest tests/test_blobs_cache.py tests/test_mongo_guard_scan.py   ->  39 passed
+ruff check src tests scripts                                      -> All checks passed!
+autotester doctor (> .work/doctor-chk-a1.txt)                     -> exit 0, "doctor: clean"
+mutation_check.py qa/evidence/mongo-store-u5a/mutations-a.json    -> 28/28 mutations killed
+mutation_check.py qa/evidence/mongo-store-u5a/mutations-b.json    ->  6/6 mutations killed
+mutation_check.py qa/evidence/mongo-store-u5a/mutations-c.json    ->  7/7 mutations killed
+git status after the mutation runs                                -> clean
+```
+Own adversarial probe: a script in the checker scratchpad drove `FileBlobStore` (same `_vet` as the Mongo store) with a `Redactor` holding a canary value; keys and content types listed above. No `.env` value was read or printed.
 
 ## Findings
-1. **FAIL - M25 segment exclusion is case-sensitive; `.WORK`, `Profiles`, `CHUNKS`, `Crawl_Summaries`, `.BLOBMETA` are stored.** `blobs.py:94-96`: `name = parts[-1].casefold()` is folded (so `.ENV` and `x.XLSX` are caught) but `NOT_BLOB_SEGMENTS.intersection(parts)` is not. Probe 1, both stores: `.WORK/a`, `a/.Work/b`, `Profiles/x`, `CHUNKS/x`, `Crawl_Summaries/x`, `a/.BLOBMETA/x` -> ACCEPTED. This matters on the project's own host: on Windows (case-insensitive) the file store given `.WORK/leak.txt` created `<root>/.work/leak.txt` (verified, tree listing `['.blobmeta', '.blobmeta/.WORK', '.blobmeta/.WORK/leak.txt.json', '.work', '.work/leak.txt']`), i.e. straight into the scratch dir M25 says never goes through the blob store; on Mongo, `.WORK/ceo-bench/answers.json` (the private CEO-bench answer list) would be stored. The maker's mutants (`mutations-a.json` a5, a7) and `test_blobs.py:142` cover `.xlsx`/`.XLSX` case but no segment case, so the gap is untested and the 35/35 kill score does not see it. Fix in place: `parts = [p.casefold() for p in safe_key(key).split("/")]` at `:94`; add `.WORK/x`, `Profiles/x`, `a/.Work/b`, `CHUNKS/x`, `Crawl_Summaries/x`, `a/.BLOBMETA/x` to the refused-keys list at `test_blobs.py:142` and a mutant "segment compare case-sensitive".
-2. **WARNING - M8 body scan is gated on a case-sensitive, narrow content-type test.** `blobs.py:104` `content_type.startswith(TEXT_TYPES)`: `Text/Plain`, `TEXT/PLAIN`, `Application/JSON` (MIME types are case-insensitive) and `application/problem+json`, `image/svg+xml`, `application/javascript`, `application/x-www-form-urlencoded`, `application/yaml`, `application/har+json` all ACCEPTED a body containing a planted secret (probe 1). The default `application/octet-stream` text body is also unscanned (maker flag 4, accepted: binary is compressed bytes). Not a contract FAIL (M8 names metadata, which is clean; the body scan is the maker's addition) but the claim "text bodies are scanned" is weaker than stated. Fix: `content_type.casefold()`, and match `+json`, `+xml`, `javascript`, `yaml`, `x-www-form-urlencoded`; add a mutant for the case fold.
-3. **WARNING - a racing prune raises after a successful upload on a real server.** `blobs.py:215` and `:202-204` call `mongo_guard.GuardedBucket.delete :201-203`. Installed `pymongo 4.17.0` `GridFSBucket.delete` raises `NoFile` when `deleted_count == 0` (I read the source), which `_translate` maps to `StoreNotFound` (`mongo_guard.py:69-70`). Two puts that saw the same old revision both prune it; the loser gets a `StoreNotFound` (a `KeyError`) from `put` although its new revision is stored; same for `delete` racing `delete`. No data loss and the next put heals, but the exception is false. The fake hides it: `tests/fake_mongo.py:221-222` `FakeBucket.delete` never raises on a missing id, so `test_two_racing_puts_never_leave_zero_revisions` cannot see it. Fix: tolerate `StoreNotFound` in `_prune` (the module already lazily imports `mongo_guard`), and make the fake raise `NoFile`.
-4. **INFO (Windows only) - trailing dot / space segments pass M25.** `x.xlsx.`, `x.xlsx ` and `.env ` are accepted (probe 1) because `safe_key` (`core/safe_names.py:76-86`) does not apply the `safe_name` trailing-dot rule per segment; Win32 strips the dot or space so they alias `x.xlsx` / `.env`. Same root as finding 1: strip trailing `. ` before comparing, in the same fix.
-5. **INFO - `materialize` cannot be driven out of `.work/blob-cache/`.** Key traversal is stopped by `safe_key` before `stat` (`..`, `a//b`, `a/./b` raise UnsafeName). Odd basenames (`con.png`, `x.`, `sp `, `..x`, `%2e%2e`, a 130-char name, `AUX`, `com1`) all resolved inside `<cache>/<sha256>/` (`resolve()` starts with the cache dir, True for each); `p/a/nul` raised a raw `FileExistsError` and `p/a/foo:bar` a raw `OSError` (Windows device / ADS) before anything left the cache dir. Unverified bytes cannot be served: a tampered revision raises `BlobCorrupt` from both `get` and `materialize` (`:231-232`). Not a finding against the unit; U5b should treat an `OSError` from `materialize` as "not available".
-6. **Judgement on the maker's flags.** (a) `BlobInfo` as a frozen dataclass outside `schema/`: acceptable. The rule is about shapes the system persists or exchanges; `BlobInfo` is an in-memory return type, GridFS metadata is a plain dict, doctor is clean, and a new `schema/` file is not on the D-122 list. Revisit only if U5b serialises it. (b) M8 refusing a key that contains a short `.env` value: accepted as designed; `Redactor` is floorless (D-041) and M8 names blob metadata; the cost is a false-positive refusal, never a leak. (c) `put_seq = time.time_ns()` under clock skew: accepted; skew only matters inside a put race, `stat` picks the highest `put_seq`, `download` the newest `uploadDate`, and a disagreement raises `BlobCorrupt` (`:231`), never wrong bytes; mutant b5 is killed. (d) `UniqueBucket` override of `FakeBucket` id reuse: accepted for U5a (`tests/blob_support.py:23-27`); the real fix belongs in `tests/fake_mongo.py`, which is also where finding 3's missing `NoFile` belongs, so repair the fake once and drop the override.
-7. Sizes: `blobs.py` is 266 lines (cap 300); no function over 35 lines (cap 50). `git diff 0a2cbe45 --stat`: 12 files, all U5a's; no sibling-unit file edited.
 
-## Commands run and outputs
-```
-pytest tests/test_blobs.py tests/test_blobs_mongo.py                 -> 104 passed
-pytest tests/test_blobs_cache.py tests/test_mongo_guard_scan.py      ->  39 passed
-ruff check src tests scripts                                         -> All checks passed!
-autotester doctor (> .work/doctor-chkA.txt)                          -> exit 0, "doctor: clean"
-scripts/mutation_check.py qa/evidence/mongo-store-u5a/mutations-a.json --repo . -> 23/23 mutations killed
-scripts/mutation_check.py qa/evidence/mongo-store-u5a/mutations-b.json --repo . ->  5/5 mutations killed
-scripts/mutation_check.py qa/evidence/mongo-store-u5a/mutations-c.json --repo . ->  7/7 mutations killed
-probe 1 (25 keys x 2 stores, 12 content types, secret in key/kind/ct/body/utf-16/bytearray/split) -> findings 1, 2, 4
-probe 2 (crash after upload, odd materialize basenames, tampered revision)                      -> finding 5, M23 PASS
-file-store Windows probe: put(".WORK/leak.txt") -> created <root>/.work/leak.txt                -> finding 1
-gridfs.grid_file.GridFSBucket.delete source (pymongo 4.17.0): raises NoFile if deleted_count == 0 -> finding 3
-```
-All three suites and 35/35 mutants are green and leave finding 1 standing: no test and no mutant targets segment case.
+1. **W1 (WARNING, M8, non-blocking). Body scan is a deny-by-default list of textual types.** `blobs.py:44-48,54`. Probe: a secret body under `application/ndjson`, `application/jsonl`, `application/sql`, `application/toml`, `application/x-sh`, `application/csv`, `multipart/form-data`, `message/rfc822`, `application/rtf`, or an empty / bare `text` type is accepted unscanned. M8's text requires key, kind and content_type (metadata) to be clean, which holds, and its falsifier names case bodies, trace rows, audit rows and GridFS metadata, not blob bodies, so this is extra defence and not a contract failure. Suggested follow-up: invert the rule (skip only `image/*`, `video/*`, `audio/*`, `application/octet-stream`, `application/pdf`, zip) or scan whenever the bytes decode as UTF-8.
+2. **I1 (INFO, M25). Windows name aliases beyond case and trailing dot/space are not folded.** NTFS 8.3 short names (`PROFIL~1/x`) and `dir::$INDEX_ALLOCATION` stream syntax are accepted by `safe_key` and `_vet` (colon segments then fail with a raw `OSError` in the file store on Windows, probe: `.work:x/a`, `.work::$DATA/a`). Both are exotic, need a deliberate caller, and the Mongo store has no filesystem to alias. `PROFİLES` (dotted capital I) and fullwidth forms are accepted and are not NTFS aliases of `profiles`, so that is correct. A tab inside a segment (`.work\t/a`) passes `_vet` and then fails in the OS layer; not an alias.
+3. **I2 (INFO, materialize, carried from cycle 0 finding 5).** Odd basenames (`nul`, `foo:bar`) raise raw OS errors inside the cache directory before anything could leave it; no path escape found.
 
-## Required for cycle 1 (small, in place, `blobs.py` + `test_blobs.py`, plus the fake for finding 3)
-Finding 1 (with finding 4's trailing `. ` strip) is the blocker. Findings 2 and 3 are warnings that touch the same two functions (`_vet`, `_prune`) and should ride the same fix cycle; a maker that defers them must say so in the manifest.
+No BLOCKING finding. M2, M5, M8 (metadata and the named textual body classes), M23 and M25 hold on this code; the three cycle 0 defects are fixed and mutation-protected (41/41 mutants killed).
