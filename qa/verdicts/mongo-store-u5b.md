@@ -1,103 +1,43 @@
-# Verdict - mongo-store-u5b (media blob write-through)
+# Verdict - mongo-store-u5b
 
-**Verdict:** FAIL
-**Cycle checked:** 1
-**Checker:** checker-A (fresh context, read-only toward src/ and tests/; did not read any other checker's verdict for this cycle)
-**Unit / branch:** U5b, `feat/mongo-store-u5b`, code SHA `2a1f9fc3`, manifest commit `1af91f3e`
-**Criteria judged:** M24, M25, M51, M54, M55 (+ the `_sanitize_one:stat` baseline row)
-
-## Summary
-
-Cycle-0 F1 (drive/email documents) and F2 (`source_material` readers) are fixed for the shapes the maker tested.
-F1 is **not closed**: a **Drive-fetched video** (`.mp4 .webm .mov .mkv .avi`) still records a `.work/blob-cache` path in
-`Source.path`, and the manifest explicitly (and wrongly) excluded that call site. One BLOCK; the rest holds.
+**Verdict:** PASS
+**Cycle checked:** 2
+**Checker:** chk-mongo-u5b-a (fresh, independent; did not read any other checker's verdict on this unit)
+**Code SHA checked:** `fdb4baa8` (manifest commit `e2fb613f` on `feat/mongo-store-u5b`; master `2d350794` merged as `e0033f0b`)
+**Criteria judged:** M24, M25, M51, M54, M55, the U5b row, and the `core/image_privacy.py:_sanitize_one:stat` baseline row. Cycle-1 findings F1 (Drive video recorded the blob-cache path) and W1 (process-local `_LOGICAL` dict) re-judged.
 
 ## Findings
 
-### F1 (BLOCK, M51 / M24): a Drive video still records the blob-cache copy as `Source.path`
+No Block. Two Warnings (both already recorded by the maker; neither falsifies a criterion).
 
-- `src/autotester/sources/drive_register.py:111` `_write_bytes` -> `store_media` (returns the **cache copy**, `store/run_store.py:208-210`) ->
-  `_dispatch_by_suffix` `drive_register.py:135-139`: `if suffix in RECORDING_SUFFIXES: source = register_source(store, path, ...)` ->
-  `src/autotester/stages/ingest.py:123`: `path=str(path.resolve())`. `source_path()` is not applied on this line, so the cache path is recorded.
-- The manifest says `stages/ingest.py:123 (register_source, a user's local video path) is not a store_media product and is unchanged`.
-  That is false for the Drive path: `register_drive` hands `register_source` exactly the `store_media` product.
-- Own probe (scratchpad `test_probe_u5b.py`: blob area on mongo, `_write_bytes` then `_dispatch_by_suffix`, wipe `rig.cache`, then `local_blob(Path(source.path))`):
+1. **F1 (cycle 1 BLOCK) CLOSED.** `store_media` now returns the logical `target` in blob mode (`src/autotester/store/run_store.py:197-209`); the cache copy is never returned. Every adapter reads bytes through `local_blob(path)` and records `str(path.resolve())`: `sources/adapters.py:98-111` (`register_document`), `:180` and `:191-193` (`register_audio`, `_require_audio_file`), `:222` (transcriber gets `local_blob(path)`); `stages/ingest.py:114-118` (`register_source`), `:217` (`verify_source_bytes`), `:266` (`see_video`); `sources/drive_register.py:173` (unreadable-type hash). My own probes (below) show the Drive `.webm/.mp4/.mov` path no longer lands under `blob-cache`.
+2. **W1 (cycle 1 WARNING) CLOSED.** `grep -rn "_LOGICAL\|source_path" src` finds nothing relevant (only the unrelated `schema/ledger.py:101` `_citation_source_path`). No module-global map; `_BLOBS` (`run_store.py:44`) only caches the store handle.
+3. **Source constructor audit (done by me with `grep -rn "Source(" src`).** `git diff 2d350794 HEAD` shows zero change at every `Source(... path=...)` constructor versus master. Sites: `sources/adapters.py:69` (text, no path), `:116`, `:224` (`str(path.resolve())`, bytes via `local_blob`); `drive_register.py:82,150` (no path), `:169` (`path.resolve()`, path from `_write_bytes` = logical); `email_register.py:106` (no path), `:133` (user's local mbox, never passes `store_media`), `:191` (attachment, logical); `intake_commit.py:135` (`str(target)`, `place_media` logical); `stages/ingest.py:122` (`path.resolve()`, reads via `local_blob`); `acceptance_baseline.py:128` (project-relative, out of media scope); `read_context.py:128` (repo-relative reference); `ui/routes_sources.py:78,94` (user text or reference). Readers of `Source.path` all go through `local_blob`: `cli_video_review.py:249`, `media_prep.py:57,138`, `source_material.py:28,147`, `ingest.py:217,266`, `routes_video_review.py:78`, `video_access.py:174`; `narration.py:51` uses the logical path for the sidecar only. I found no raw reader left.
+4. **Merge `e0033f0b` kept U3d.** Parents `a3f15955` and `2d350794`. `git diff 2d350794 HEAD --stat` outside `src/` shows only U5b files plus `pyproject.toml` (6 deletions) and `tests/test_sweep_u3a.py` (LEFT table: drive/email entries removed, `intake_commit.py` `os.replace` 2 -> 0). `intake_commit.py:32,96-99,140,146` still use U3d's `exists_path` / `delete_path` / `list_children`; `report_export.py:28,44` keeps `list_children`; `drive_register.py:46,195` and `email_register.py:43,217` keep `exists_path`. `_copy_in`/`_place` deleted, their logic moved into `place_media` (`run_store.py:212-235`).
+5. **Baseline: exactly 6 rows dropped, none added** (`git diff 2d350794 HEAD -- pyproject.toml`): `image_privacy:_sanitize_one:stat`, `drive_register:_write_bytes:write_bytes`, `email_register:_write_attachment_to_disk:write_bytes`, `intake_commit:_copy_in:os.replace`, `_place:mkdir`, `_place:os.replace`. No media row moved to `permanent`; the remaining U3d/M53-gated rows (`mkdir`, `read_bytes`, lock) are untouched. Doctor clean, no `state-bypass-stale`.
+6. **M24 holds.** Writers put through `put_file`/`write_blob_file` with `masked=True` only for post-`MASK_CSS` captures (`browser/evidence.py:160`, `stages/leak_evidence.py` `write_blob_file(..., masked=True)`); frames are `kind="frame"` (`stages/media_prep.py`); `RunStoreMixin.save_result` (`run_store.py:53-58`) syncs blobs before writing the result JSON (mutants b3/b4 killed). Evidence schema untouched. M23 mirror: my probe `test_m23` shows an unmasked screenshot refused with nothing stored.
+7. **M25 holds.** A fresh interpreter importing `run_store`, `drive_register`, `email_register`, `intake_commit`, `ingest` with no `AUTOTESTER_STORE*` env has no `pymongo`/`gridfs` in `sys.modules` (my probe `test_m25_no_pymongo`). The driver is imported lazily in `blob_store()` (`run_store.py`, the `from autotester.store import mongo_backend, mongo_guard` inside the function).
+8. **M54 holds.** My probe stores nothing and raises `BlobRefused` for a secret in bodies typed ndjson, jsonl, sql, toml, x-sh, text/csv, multipart/form-data, message/rfc822, rtf, empty, bare `text`, and also `image/png`, `application/octet-stream`, `video/mp4` (UTF-8 decodable), on both `FileBlobStore` and `MongoBlobStore`.
+9. **M55 holds.** My probe over 14 hostile keys (`PROFIL~1/x`, `a::$INDEX_ALLOCATION`, `foo:bar`, `nul`, `con`, `aux`, `prn`, `com1`, `lpt1`, `p/NUL.txt`, `p/WORK~2.TXT`, `p/a:b/c`, `x/..`, `C:/x`): put/get/stat/delete/materialize raise only `UnsafeName` on both stores and the tree is unchanged.
+10. **Line cap and split.** `tests/test_media_sources_logical.py` 143 lines, `tests/test_media_sources_blobs.py` 200, `store/run_store.py` 235, `stages/ingest.py` 299 (at the cap, line-neutral); the doctor's line and function rules are clean. The split is legitimate: shared helpers are imported from the sibling (`from test_media_sources_blobs import VIDEO, _commit, _store`), no copies.
+11. **WARNING (recorded by maker; not a criterion failure).** `place_media` reads a whole recording into memory for the put, and a blob orphan is possible if `add_source` fails after `place_media` (`commit_video` only deletes the local path). `prune_old_videos` does not delete blobs. These belong on the M52 readiness table for `blobs`.
+12. **WARNING (design note).** Screenshots and kept videos stay on local disk as well as in GridFS (write-through; `local_blob` is local-first). Source media (M51) leaves nothing under the data root, as the criterion requires; M24 does not forbid the local copy. A blobs-area flip at G1 should state that run evidence is still mirrored on the container disk.
 
-  ```
-  RECORDED rec.mp4  ...\cache\ee2573cf...\rec.mp4       (a blob-cache path)
-  RECORDED rec.webm ...\cache\ad195e69...\rec.webm      (a blob-cache path)
-  RECORDED a.mp3    ...\root\projects\pathlynks\sources\p\files\a.mp3   (logical, OK)
-  FAILED rec.mp4  - FileNotFoundError: ...\cache\ee2573cf...\rec.mp4
-  FAILED rec.webm - FileNotFoundError: ...\cache\ad195e69...\rec.webm
-  ```
-  After a cache wipe or a restart on Cloud Run (ephemeral disk) a Drive-registered teaching video is unreadable: `local_blob` cannot map a
-  cache path back to a blob key (`_key` derives the key from the data-root-relative path). Same defect class as cycle-0 F1, on the most
-  important Drive media type (the teaching recording).
-- Why the tests and the cycle-1 mutants miss it: `tests/test_media_sources_blobs.py` drives Drive only with `.txt` and `.png`
-  (`:152-158`) and email with `.txt` and `.png`; there is no `.mp4/.webm` Drive case; no mutant in `mutations-a..d.json` touches `register_source`.
-- Fix direction (maker's call, in place): `ingest.py:123` `path=source_path(path)` (file mode unchanged: same `str(path.resolve())`), plus a Drive-video
-  case (`.webm` through `_dispatch_by_suffix`) with a wiped cache, plus a mutant dropping it. `ingest.py` already imports `run_store` (`:34`).
-
-### W1 (Warning): `_LOGICAL` is process-global mutable state, unbounded, and race-prone
-
-`store/run_store.py:44` `_LOGICAL: dict[Path, Path]`, written `:209`, read `:218`.
-- **Restart / multi-process:** safe for what it is used for. The map is only read in the call chain that wrote it; the persisted `Source.path` is the
-  logical path, so a restart or a second instance does not need the map (verified: the wipe-cache tests read back with no map entry needed).
-- **Same-sha collision:** the key is the cache path `<sha>/<name>`, so two logical targets with the same bytes and name collide.
-  Probe: `_write_bytes(store,"A",f1,body)`, `_write_bytes(store,"B",f2,body)` (same body and name), then register A -> `Source.path` ends
-  `.../sources/B/files/n.txt` (A's source recorded B's logical path). Sequential flows are fine (the last `store_media` is the one being registered, and
-  `register_document` dedupes by digest first), but intake jobs run in concurrent daemon threads (`ui/routes_intake.py:82`), so two Drive jobs with
-  identical bytes and file name can interleave `store_media` and `source_path`. Impact: a wrong (but byte-identical) logical path, not data loss; low probability.
-- **Growth:** one entry per stored medium for the life of the process, never evicted (probe: 50 stores grew the dict by 50). Small per entry; a long-lived process leaks slowly.
-- **Second home of a concept:** it is the inverse of the key derivation (`_key` / `materialize`) held in a module-level dict; "logical path of a stored
-  medium" now lives both in the map and in the `Source` row. A stateless design (adapters keep the logical `target` and read `local_blob(target)`) would remove the map.
-  Not a Block on its own; it is why F1 was easy to miss (every `Source(path=...)` site must remember to call `source_path`).
-
-### W2 (carried, M52 readiness for `blobs`, no code here)
-Retention does not delete blobs (`stages/video_retention.py:81-90`); `place_media` reads the whole video into memory (`store/run_store.py:225`). Agree with the maker's W1/W2; both must be closed before G1 flips `blobs`.
-
-### O1 (pre-existing, not U5b)
-`tests/test_safe_names_windows.py::test_ordinary_names_still_pass[lpt0]` fails. `git diff 001d10d6 HEAD -- src/autotester/core/safe_names.py` touches only
-`_SHORT` and the `_bad_segment` clause; `_DIGITS`/`_device` are unchanged, so U5b did not cause it. Owner: U4.
-
-## Verified OK (not regressed after merge `e6442a6e`)
-
-- **F1 for documents/audio:** Drive `.txt`, `.png`, `.mp3` and email `.txt`, `.png` record the logical path and read back after a cache wipe (probe plus
-  `test_a_registered_*_records_the_logical_path_and_survives_a_cache_wipe`). File mode records the same string as before (`source_path` falls back to
-  `Path(path).resolve()`; `test_drive_and_email_sources_in_file_mode_record_the_same_path_as_today`).
-- **F2:** grep of every `source.path` / `Path(...path)` byte reader under `src/`.
-  Routed through `local_blob`: `stages/source_material.py:28` (document text), `:146` (sha256 bytes-changed check), `stages/ingest.py:217,266`,
-  `stages/media_prep.py:57,138`, `stages/video_access.py:174`, `media/narration.py:52`, `cli_video_review.py:249`, `ui/routes_video_review.py:78`.
-  Not readers (print/compare only): `cli_video.py:81`, `stages/issues.py:92`, `ui/app.py:148`, `ui/routes_sources.py:48`, `cli_video_review.py:161,233`.
-  `analyze_video.py:122` uses derived chunk paths (M25). `ingest.py:123` register_source is a reader/writer for local videos but see F1 for the Drive call.
-  **Sidecar exemption (`ingest.py:195`, `source_material.py:102`, `media/narration.py:53`) judged justified:** a `<video>.transcript.json` is a user-supplied file
-  beside a local recording; no writer (`place_media`, `store_media`) puts a sidecar in the blob store and `intake_commit` does not copy one, so `materialize`
-  would have nothing to return; a blob-backed source has no sidecar, as before.
-- **commit_video then resolve_teaching_material with the cache wiped is available:** `test_teaching_material_of_a_gridfs_only_video_and_document_is_available` passes.
-- **M25:** `test_a_default_selection_run_never_imports_a_database_driver` (fresh interpreter, empty driver list) passes; file-mode writers byte-identical tests pass.
-- **M54 / M55:** `tests/test_blob_scan_names.py` all green (621 passed together with `test_safe_names_windows.py`, the 1 failure being O1).
-- Files <= 300 lines (`run_store.py` 243, `blobs.py` 278, `cli_video_review.py` 300, `source_material.py` 172); `autotester doctor` clean (enforces functions <= 50).
-
-## Commands run (worktree `D:/autoTesting/.claude/worktrees/mongo-u5b`, `PYTHONPATH=src`, `env -u ANTHROPIC_BASE_URL uv run pytest <2 files> -o addopts=`)
+## Commands run (worktree `D:/autoTesting/.claude/worktrees/mongo-u5b`, `PYTHONPATH=<worktree>\src`, two files per call, `env -u ANTHROPIC_BASE_URL`)
 
 | Command | Result |
 |---|---|
-| `tests/test_media_sources_blobs.py tests/test_media_blobs.py` | 24 passed |
-| `tests/test_teaching_documents.py tests/test_teaching_inputs.py` | 13 passed |
-| `tests/test_source_adapters_drive.py tests/test_source_adapters_email.py` | 11 passed |
-| `tests/test_blob_scan_names.py tests/test_sweep_u3a.py` | 112 passed |
-| `tests/test_safe_names_windows.py tests/test_blob_scan_names.py` | 621 passed, 1 failed (O1, pre-existing) |
-| own probe `test_probe_u5b.py` (scratchpad, `-p media_blob_support`) | Drive `.mp4`, `.webm` FAIL (F1); `.mp3` ok; same-sha collision recorded B's path (W1); growth 50 (W1) |
-| `uv run ruff check src tests scripts` | exit 0, `All checks passed!` |
-| `uv run autotester doctor > .work/doctor-chk.txt` | exit 0, `doctor: clean` |
-| `scripts/mutation_check.py` `mutations-a.json` | 5/5 killed |
-| `mutations-b.json` | 10/10 killed |
-| `mutations-c.json` | 9/9 killed |
-| `mutations-d.json` | 4/4 killed |
+| `pytest tests/test_media_sources_blobs.py tests/test_media_sources_logical.py -o addopts=` | 17 passed |
+| `pytest tests/test_ingest.py tests/test_source_adapters_drive.py -o addopts=` | 15 passed |
+| `pytest tests/test_state_bypass_rule.py tests/test_sweep_u3a.py -o addopts=` | 84 passed |
+| `uv run ruff check src tests scripts` | All checks passed! |
+| `uv run autotester doctor` (redirected to `.work/chk-doctor.txt`) | exit 0, `doctor: clean` (only the 2 advisory D-087 known-disputed warnings) |
+| my probe `scratchpad/probe/test_chk_probe.py` (blob mode via `blob_area`, file mode via `file_area`) | 13 passed: Drive `.txt .png .mp3 .webm .mp4 .mov .pdf .xyz` and email `.txt .png .mp4 .docx` each register, cache wiped, `Source.path` has no `blob-cache`, `local_blob` returns the bytes, no media file under the data root; `register_source` on a Drive video then `verify_source_bytes` after a wiped cache passes and a second register dedupes; two folders `A`/`B` with identical name and bytes keep their own logical paths, same folder with different bytes gets a digest-prefixed name; file mode `Source.path == str(path.resolve())`; a local upload outside the data root in blob mode records its own path |
+| my probe `scratchpad/probe/test_chk_probe2.py` | 30 passed (M55 x14, M54 x14, M23, M25) |
+| `scripts/mutation_check.py qa/evidence/mongo-store-u5b/mutations-{a,b,c,d,e}.json` | a 5/5, b 10/10, c 9/9, d 2/2, e 6/6 killed (32/32), each exit 0 |
 
-Full suite not run (brief). No `.env` value printed; no network; no Mongo connection (hand-written fake only).
+The full suite was not run (instruction). `tests/test_safe_names_windows.py::test_ordinary_names_still_pass[lpt0]` is the known U4 failure and was not touched. No `.env` value was printed.
 
-## Required for cycle 2
+## Result
 
-1. F1: `stages/ingest.py:123` records `source_path(path)`; add a Drive `.webm`/`.mp4` case (register, wipe cache, `local_blob(Path(source.path))` returns the bytes) and a mutant for it; re-run the file-mode pin.
-2. Re-enumerate every `Source(... path=...)` constructor under `src/` and state each as logical-path-safe. W1 is optional, but the stateless design would close the class.
+U5b cycle 2 satisfies M24, M25, M51, M54 and M55. F1 and W1 are closed by a stateless redesign whose property (logical path in both modes, bytes via `local_blob`) I verified with independent blob-mode probes and 32/32 killed mutants. PASS.
