@@ -1,6 +1,6 @@
 # ts6-auth-store — TS6 scheduler import boundary admits the U6a AuthStore seam
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, qa/verdicts/ts6-auth-store.md, dee4b03c)
 **Fix cycle:** 0
 **Contract:** qa/contracts/team-schedules.md TS6 (scheduler side reaches no browser/pipeline module); qa/contracts/mongo-store.md M29
 **Authority:** D-120..D-123 (mongo-store U6a, merged 3400132f)
