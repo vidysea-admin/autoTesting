@@ -22,6 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, TypeVar
 
+from autotester.browser.profiles import capture_session, restore_session
 from autotester.browser.secrets import SecretStore, host_of
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
@@ -128,6 +129,7 @@ class RoleSessions:
             state.evidence_prefix = account.id  # siblings share run_dir; files stay apart (AT-572)
         try:
             session.start()
+            restore_session(session, self.project, account.id)  # U12: store on only, else a no-op
         except BaseException:
             with contextlib.suppress(Exception):
                 session.close()
@@ -198,5 +200,6 @@ class RoleSessions:
             session.fill(password_locator, f"{{{{SECRET:{account.password_key}}}}}")
             session.click(submit_locator)
             session.settle()  # the sign-in navigation finishes before anything else is driven
+            capture_session(session, self.project, account.id)  # U12 (M38): store on only
 
         self.run_as(account_id, _login)

@@ -1,0 +1,71 @@
+KILLED  cookie scoping removed (M38)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else, tests/test_session_store_u12.py::test_scope_uses_the_projects_allowed_domains_and_fails_closed
+    actually failed: tests/test_session_store_u12.py::test_a_restore_adds_cookies_and_a_scoped_local_storage_script, tests/test_session_store_u12.py::test_a_restore_re_scopes_what_the_store_holds, tests/test_session_store_u12.py::test_a_state_with_nothing_in_scope_stores_nothing_and_drops_the_old_one, tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else, tests/test_session_store_u12.py::test_scope_uses_the_projects_allowed_domains_and_fails_closed
+KILLED  origin scoping removed (M38)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else, tests/test_session_store_u12.py::test_scope_uses_the_projects_allowed_domains_and_fails_closed
+    actually failed: tests/test_session_store_u12.py::test_a_restore_adds_cookies_and_a_scoped_local_storage_script, tests/test_session_store_u12.py::test_a_restore_re_scopes_what_the_store_holds, tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else, tests/test_session_store_u12.py::test_scope_uses_the_projects_allowed_domains_and_fails_closed
+KILLED  restore no longer re-scopes (M38 out)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_a_restore_re_scopes_what_the_store_holds
+    actually failed: tests/test_session_store_u12.py::test_a_restore_re_scopes_what_the_store_holds
+KILLED  expired document restored (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_expired_state_is_deleted_and_never_restored
+    actually failed: tests/test_session_store_u12.py::test_an_expired_state_is_deleted_and_never_restored
+KILLED  age cap removed (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_expired_cookie_is_dropped_and_the_age_is_capped
+    actually failed: tests/test_session_store_u12.py::test_an_expired_cookie_is_dropped_and_the_age_is_capped
+KILLED  expired cookie kept on save (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_expired_cookie_is_dropped_and_the_age_is_capped
+    actually failed: tests/test_session_store_u12.py::test_an_expired_cookie_is_dropped_and_the_age_is_capped
+KILLED  foreign document is used (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten
+    actually failed: tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten
+KILLED  foreign document overwritten (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten
+    actually failed: tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten
+KILLED  forget ignores the project (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten
+    actually failed: tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten
+KILLED  ambiguous id allowed (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_ambiguous_session_id_is_refused[a|b-t1], tests/test_session_store_u12.py::test_an_ambiguous_session_id_is_refused[pl-t|1]
+    actually failed: tests/test_session_store_u12.py::test_an_ambiguous_session_id_is_refused[a|b-t1], tests/test_session_store_u12.py::test_an_ambiguous_session_id_is_refused[pl-t|1]
+KILLED  entry run restores a login (RU5)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_entry_run_never_restores_a_login
+    actually failed: tests/test_session_store_u12.py::test_an_entry_run_never_restores_a_login
+KILLED  a logout leaves the state (M39)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_a_logout_removes_the_state_so_nothing_restores_it
+    actually failed: tests/test_session_store_u12.py::test_a_logout_removes_the_state_so_nothing_restores_it
+KILLED  capture does not mask (M40)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate, tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+    actually failed: tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate, tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+KILLED  restore does not mask (M40)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_a_restored_session_joins_the_redactor
+    actually failed: tests/test_session_store_u12_redaction.py::test_a_restored_session_joins_the_redactor
+KILLED  run-wide redactor omits sessions (M40)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions
+    actually failed: tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions
+KILLED  write gate not rebuilt after a session write (M34)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions
+    actually failed: tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions
+KILLED  short values masked (M40 hygiene)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_short_values_are_not_masked_and_the_set_is_capped
+    actually failed: tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate, tests/test_session_store_u12_redaction.py::test_short_values_are_not_masked_and_the_set_is_capped
+KILLED  mask set uncapped  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_short_values_are_not_masked_and_the_set_is_capped
+    actually failed: tests/test_session_store_u12_redaction.py::test_short_values_are_not_masked_and_the_set_is_capped
+KILLED  JSON leaves not masked (M40)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate
+    actually failed: tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate, tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions
+KILLED  store off still reads the store  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_with_the_store_off_nothing_is_read_written_or_touched
+    actually failed: tests/test_session_store_u12_redaction.py::test_with_the_store_off_nothing_is_read_written_or_touched
+KILLED  role session not restored at start  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+    actually failed: tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+KILLED  role sign-in does not save  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+    actually failed: tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+KILLED  export written to a path (M38 plain, in memory)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else
+    actually failed: tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else, tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate, tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+
+23/23 mutations killed

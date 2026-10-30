@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from autotester.browser.profiles import MAIN_ACCOUNT, capture_session
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
 from autotester.core.paths import ProjectPaths
@@ -44,5 +45,6 @@ def manual_login(
             f"A browser window is open at {project.base_url}.\n"
             "Log in by hand, then press Enter here to save the session..."
         )
+        capture_session(session, project, MAIN_ACCOUNT)  # U12 (M39): store on only, else a no-op
     finally:
         session.close()

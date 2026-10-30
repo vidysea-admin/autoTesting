@@ -236,15 +236,16 @@ class SecretStore:
         return {**self._shadow, **self._values}
 
     def scrub_values(self) -> dict[str, str]:
-        """Every masked value by key, for a caller that needs the mapping itself (a secret
-        gate over a prompt, a `Redactor`) rather than a ready `redactor()`."""
+        """Every masked value by key, for a caller that needs the mapping itself."""
         return dict(self._all_values())
 
     def has_value(self, key: str) -> bool:
-        """Whether a declared key currently has a usable value. Says nothing
-        about what the value is — callers use this to fail a run up front
-        rather than mid-step."""
+        """Whether a declared key currently has a usable value (never says what it is)."""
         return bool(self._values.get(key))
+
+    def mask_also(self, values: dict[str, str]) -> None:
+        """Mask `values` too, never resolvable (a restored browser session's cookies, M40)."""
+        self._shadow.update({k: v for k, v in values.items() if v})
 
     def redactor(self, *, exclude: frozenset[str] = frozenset()) -> Redactor:
         """A `Redactor` that masks every value in .env, declared or not (AT-004),

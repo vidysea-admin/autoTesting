@@ -15,6 +15,7 @@ from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 
 from autotester.browser.entry_reset import reset_to_logged_out
+from autotester.browser.profiles import MAIN_ACCOUNT, restore_session
 from autotester.browser.profiles import wipe_entry_profile as _wipe_entry_profile
 from autotester.browser.secrets import SecretStore
 from autotester.browser.session import BrowserSession
@@ -174,6 +175,7 @@ def _run_normal_cases(
             budget.check_start()
             if lent is None:
                 _start_session(session, judge, budget, None)
+                restore_session(session, project, MAIN_ACCOUNT)  # U12: store on only (never entry)
             budget.check()
         except Exception as exc:
             startup_error = secrets.redactor().scrub(f"{type(exc).__name__}: {exc}")

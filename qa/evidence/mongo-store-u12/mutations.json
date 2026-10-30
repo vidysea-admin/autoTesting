@@ -1,0 +1,219 @@
+{
+ "tests": [
+  "tests/test_session_store_u12.py",
+  "tests/test_session_store_u12_redaction.py"
+ ],
+ "mutations": [
+  {
+   "name": "cookie scoping removed (M38)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "               and _in_scope(project, str(c.get(\"domain\") or \"\").lstrip(\".\"))]",
+   "new": "               and True]",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else",
+    "tests/test_session_store_u12.py::test_scope_uses_the_projects_allowed_domains_and_fails_closed"
+   ]
+  },
+  {
+   "name": "origin scoping removed (M38)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "if isinstance(o, dict) and _in_scope(project, host_of(str(o.get(\"origin\") or \"\")))]",
+   "new": "if isinstance(o, dict)]",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else",
+    "tests/test_session_store_u12.py::test_scope_uses_the_projects_allowed_domains_and_fails_closed"
+   ]
+  },
+  {
+   "name": "restore no longer re-scopes (M38 out)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    kept = scope_state(state, project)\n    kept[\"cookies\"] = [c for c in kept[\"cookies\"] if not _expired(c, at)]\n    return kept if",
+   "new": "    kept = {\"cookies\": list(state.get(\"cookies\", [])), \"origins\": list(state.get(\"origins\", []))}\n    kept[\"cookies\"] = [c for c in kept[\"cookies\"] if not _expired(c, at)]\n    return kept if",
+   "kills": [
+    "tests/test_session_store_u12.py::test_a_restore_re_scopes_what_the_store_holds"
+   ]
+  },
+  {
+   "name": "expired document restored (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "if not isinstance(expires, (int, float)) or expires <= at or not isinstance(state, dict):",
+   "new": "if not isinstance(expires, (int, float)) or not isinstance(state, dict):",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_expired_state_is_deleted_and_never_restored"
+   ]
+  },
+  {
+   "name": "age cap removed (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "min([at + MAX_AGE_S, *live])",
+   "new": "min(live or [at + MAX_AGE_S])",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_expired_cookie_is_dropped_and_the_age_is_capped"
+   ]
+  },
+  {
+   "name": "expired cookie kept on save (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    kept[\"cookies\"] = [c for c in kept[\"cookies\"] if not _expired(c, at)]\n    if not kept[\"cookies\"]",
+   "new": "    if not kept[\"cookies\"]",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_expired_cookie_is_dropped_and_the_age_is_capped"
+   ]
+  },
+  {
+   "name": "foreign document is used (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    if doc is None or doc.get(\"p\") != project.slug or doc.get(\"_id\") != sid:",
+   "new": "    if doc is None:",
+   "kills": [
+    "tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten"
+   ]
+  },
+  {
+   "name": "foreign document overwritten (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    if held is not None and held.get(\"p\") != project.slug:",
+   "new": "    if False:",
+   "kills": [
+    "tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten"
+   ]
+  },
+  {
+   "name": "forget ignores the project (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "        coll.delete_one({\"_id\": session_id(project.slug, account_id), \"p\": project.slug}))",
+   "new": "        coll.delete_one({\"_id\": session_id(project.slug, account_id)}))",
+   "kills": [
+    "tests/test_session_store_u12.py::test_a_foreign_document_is_ignored_not_used_not_deleted_not_overwritten"
+   ]
+  },
+  {
+   "name": "ambiguous id allowed (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    if not slug or not account_id or \"|\" in slug or \"|\" in account_id:",
+   "new": "    if not slug or not account_id:",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_ambiguous_session_id_is_refused[a|b-t1]",
+    "tests/test_session_store_u12.py::test_an_ambiguous_session_id_is_refused[pl-t|1]"
+   ]
+  },
+  {
+   "name": "entry run restores a login (RU5)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": ".endswith(ENTRY_SUFFIX)",
+   "new": ".endswith(\"-never\")",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_entry_run_never_restores_a_login"
+   ]
+  },
+  {
+   "name": "a logout leaves the state (M39)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    return False if coll is None else bool(",
+   "new": "    return False if True else bool(",
+   "kills": [
+    "tests/test_session_store_u12.py::test_a_logout_removes_the_state_so_nothing_restores_it"
+   ]
+  },
+  {
+   "name": "capture does not mask (M40)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    session.secrets.mask_also(session_values(kept, f\"session:{account_id}\"))",
+   "new": "    pass",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate",
+    "tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account"
+   ]
+  },
+  {
+   "name": "restore does not mask (M40)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    session.secrets.mask_also(session_values(state, f\"session:{account_id}\"))",
+   "new": "    pass",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_a_restored_session_joins_the_redactor"
+   ]
+  },
+  {
+   "name": "run-wide redactor omits sessions (M40)",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "**stored_session_values(),",
+   "new": "**{},",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions"
+   ]
+  },
+  {
+   "name": "write gate not rebuilt after a session write (M34)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    reset_default_backend()  # the write gate rebuilds with the new values (M34)",
+   "new": "    pass",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_the_run_wide_redactor_and_the_write_gate_cover_stored_sessions"
+   ]
+  },
+  {
+   "name": "short values masked (M40 hygiene)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "MIN_VALUE_LEN = 8",
+   "new": "MIN_VALUE_LEN = 0",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_short_values_are_not_masked_and_the_set_is_capped"
+   ]
+  },
+  {
+   "name": "mask set uncapped",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "values[:MAX_MASKED]",
+   "new": "values",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_short_values_are_not_masked_and_the_set_is_capped"
+   ]
+  },
+  {
+   "name": "JSON leaves not masked (M40)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "        if text[:1] in \"{[\":",
+   "new": "        if False:",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate"
+   ]
+  },
+  {
+   "name": "store off still reads the store",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    if store_selection()[\"credentials\"] != \"mongo\":",
+   "new": "    if False:",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_with_the_store_off_nothing_is_read_written_or_touched"
+   ]
+  },
+  {
+   "name": "role session not restored at start",
+   "file": "src/autotester/stages/multi_role_session.py",
+   "old": "            restore_session(session, self.project, account.id)  # U12: store on only, else a no-op",
+   "new": "            pass",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account"
+   ]
+  },
+  {
+   "name": "role sign-in does not save",
+   "file": "src/autotester/stages/multi_role_session.py",
+   "old": "            capture_session(session, self.project, account.id)  # U12 (M38): store on only",
+   "new": "            pass",
+   "kills": [
+    "tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account"
+   ]
+  },
+  {
+   "name": "export written to a path (M38 plain, in memory)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "context.storage_state())",
+   "new": "context.storage_state(path=\"state.json\"))",
+   "kills": [
+    "tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else"
+   ]
+  }
+ ]
+}
