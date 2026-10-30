@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u3c
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, qa/verdicts/mongo-store-u3c.md, a4286fb4)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U3c (sweep of trace / orchestrate checkpoint / audit log / delivery inbox / schedule store, plus the M16 doctor rule). **Criticality:** normal.
 **Authority:** D-120, D-121, D-122/D-123 (no new `src/` module; see judgement call 1)
