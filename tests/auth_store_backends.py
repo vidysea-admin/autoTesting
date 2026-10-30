@@ -10,19 +10,21 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
+import time
 from collections.abc import Iterator
 from contextlib import ExitStack
 from pathlib import Path
 
 import pytest
 from auth_harness import gate_on
-from fake_mongo import FakeMongoServer, seams
+from fake_mongo import FakeCollection, FakeMongoServer, seams
 
 from autotester.auth import db
 from autotester.auth.store_mongo import reset_auth_store
 
 BACKENDS = ("sqlite", "mongo")
 OLD = "2000-01-01T00:00:00+00:00"
+_REAL_DOWN = FakeCollection._down
 DATABASE = "autotester"  # `[tool.autotester.store].database`
 
 
@@ -32,14 +34,19 @@ class AuthEnv:
         self.server = FakeMongoServer()
         self._count = 0
 
-    def fresh(self) -> None:
-        """A brand-new, empty auth store (a new SQLite file, or a new fake Mongo server)."""
+    def fresh(self, slow: bool = False) -> None:
+        """A brand-new, empty auth store (a new SQLite file, or a new fake Mongo server).
+        `slow` stretches every fake Mongo call by a moment, so a missing lock cannot hide in a
+        race window too short to hit (the race tests need it; nothing else does)."""
         self._count += 1
         if self.name == "sqlite":
             self._mp.setenv("AUTOTESTER_AUTH_DIR", str(self.tmp_path / f"auth-{self._count}"))
         else:
             self.server = FakeMongoServer()
             reset_auth_store()
+            if slow:
+                self._mp.setattr(FakeCollection, "_down",
+                                 lambda coll: (_REAL_DOWN(coll), time.sleep(0.0005))[0])
 
     def digests(self) -> list[str]:
         """The session ids the store holds (only ever the sha256 of a token)."""

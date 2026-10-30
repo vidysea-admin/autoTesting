@@ -122,7 +122,7 @@ def test_delete_user_takes_sessions_and_grants_with_it(env: AuthEnv) -> None:
     assert accounts.get_user(user.id) is None and sessions.resolve_session(token) is None
     assert access.resource_for("proj-a").owner_email is None
     assert access.resource_for("proj-b").shared_with == frozenset()
-    assert env.digests() == []
+    assert env.digests() == [] and "proj-" not in env.dump()  # no orphan grant stays behind
     with pytest.raises(accounts.AccountError, match="no such account"):
         accounts.delete_user(user.id)
 
@@ -224,7 +224,7 @@ def test_bootstrap_admin_creates_then_resets(env: AuthEnv) -> None:
 
 def test_concurrent_first_signups_yield_exactly_one_admin(env: AuthEnv) -> None:
     for _ in range(5):
-        env.fresh()
+        env.fresh(slow=True)
         made = race([lambda i=i: accounts.signup(f"u{i}@team.test", PASSWORD) for i in range(6)])
         assert all(kind == "ok" for kind, _ in made), made
         assert len([u for _, u in made if "Admin/CEO" in u.groups]) == 1
@@ -232,7 +232,7 @@ def test_concurrent_first_signups_yield_exactly_one_admin(env: AuthEnv) -> None:
 
 def test_concurrent_claims_yield_exactly_one_admin(env: AuthEnv) -> None:
     for _ in range(5):
-        env.fresh()
+        env.fresh(slow=True)
         users = [accounts.signup(f"c{i}@team.test", PASSWORD, secure_cookie=True)
                  for i in range(4)]
         assert all(not u.groups for u in users)
@@ -243,7 +243,7 @@ def test_concurrent_claims_yield_exactly_one_admin(env: AuthEnv) -> None:
 
 def test_disabling_the_last_two_admins_leaves_one_enabled(env: AuthEnv) -> None:
     for _ in range(15):
-        env.fresh()
+        env.fresh(slow=True)
         a, _ = accounts.bootstrap_admin("a@team.test", PASSWORD)
         b, _ = accounts.bootstrap_admin("b@team.test", PASSWORD)
         outcome = race([lambda uid=a.id: accounts.set_disabled(uid, True),
