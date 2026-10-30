@@ -33,7 +33,7 @@ from autotester.core.paths import ProjectPaths
 from autotester.schema.project import Project, SecretRef
 from autotester.ui import theme
 from autotester.ui.credential_guard import refuse_foreign_key
-from autotester.ui.env_editor import drop_credentials
+from autotester.ui.env_editor import drop_credentials, restore_credentials, snapshot_credentials
 from autotester.ui.helpers import (
     _load_project_or_404,
     _refuse_unsafe_submission,
@@ -259,6 +259,14 @@ def undeclare_secret(slug: str, key: str) -> RedirectResponse:
     if project.secret(key) is None:
         raise HTTPException(404, f"no declared credential '{key}'")
     kept = [r for r in project.secrets if r.key != key]
-    store.save_project(project.model_copy(update={"secrets": kept}))
-    drop_credentials(slug, [key])  # M37: with the credential store on, the value goes too
+    # M37: with the credential store on, the value goes FIRST. An outage then raises before anything
+    # changed (the 503 is true, no value is orphaned under a key nobody declares), and a failed
+    # project save puts the stored document back, so a re-declaration never revives a stale value.
+    held = snapshot_credentials([key])
+    drop_credentials(slug, [key])
+    try:
+        store.save_project(project.model_copy(update={"secrets": kept}))
+    except Exception:
+        restore_credentials(held)
+        raise
     return RedirectResponse(f"/projects/{slug}/edit", status_code=303)
