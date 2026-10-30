@@ -32,6 +32,7 @@ from autotester.schema.approval import RunApproval
 from autotester.schema.crawl import CrawlBounds, SafetyPolicy
 from autotester.schema.enums import ApprovalKind
 from autotester.schema.project import Project
+from autotester.store.filestore import list_children
 from autotester.store.project_store import ProjectStore
 
 
@@ -141,8 +142,8 @@ def _default_account_keys(project: Project, store: ProjectStore, secrets: Secret
 
 def _approval_history(store: ProjectStore) -> list[RunApproval]:
     """Repository-wide typed history, read only inside key creation's lock."""
-    return [row for directory in store.paths.dir.parent.iterdir() if directory.is_dir()
-            for row in ProjectStore(directory.name, store.paths.root).list_approvals()]
+    return [row for name in list_children(store.paths.dir.parent)
+            for row in ProjectStore(name, store.paths.root).list_approvals()]
 
 
 def require_consent(project: Project, store: ProjectStore, bounds: CrawlBounds,

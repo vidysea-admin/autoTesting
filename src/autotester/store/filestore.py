@@ -24,6 +24,7 @@ from autotester.store.mongo_routes import (
     StateBackend,
     StoreSelectionError,
     area_of,
+    ping_backends,
     require_scope,
     row_matches,
     store_selection,
@@ -156,11 +157,8 @@ def _backend(name: str) -> StateBackend:
 
 
 def validate_store_env() -> dict[str, str]:
-    """Startup check: the selection parses and every backend it chose is available (M13)."""
-    selection = store_selection()
-    for name in set(selection.values()):
-        _backend(name)
-    return selection
+    """Startup check (M13, M27): the selection parses and each backend it chose answers a ping."""
+    return ping_backends(store_selection(), _backend)
 
 
 def backend_for(key: str) -> StateBackend:
@@ -230,7 +228,7 @@ def read_jsonl(path: Path, model_cls: type[ModelT]) -> list[ModelT]:
 
 
 def append_path(path: Path, text: str | bytes) -> None:
-    """Append to a log-style state file, creating it; each call is one atomic append."""
+    """Append to a log-style state file, creating it (atomic on Memory/Mongo, plain `a` on File)."""
     backend, key = _route(path)
     backend.append_text(key, text if isinstance(text, str) else text.decode("utf-8"))
 

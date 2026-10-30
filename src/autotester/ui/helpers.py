@@ -29,6 +29,7 @@ from autotester.core.redact import PLACEHOLDER_RE
 from autotester.schema.enums import Action
 from autotester.schema.flowspec import Step
 from autotester.schema.project import Project
+from autotester.store.filestore import exists_path, list_children
 from autotester.store.project_store import ProjectStore
 from autotester.ui.credential_guard import (
     _credential_variants,
@@ -157,9 +158,8 @@ def _require_reachable_navigate_steps(steps: list[Step], project: Project) -> No
 
 def _project_slugs() -> list[str]:
     projects_dir = repo_root() / "projects"
-    if not projects_dir.exists():
-        return []
-    return sorted(p.name for p in projects_dir.iterdir() if (p / "project.json").exists())
+    return sorted(name for name in list_children(projects_dir)
+                  if exists_path(projects_dir / name / "project.json"))
 
 
 def _load_project_or_404(slug: str) -> tuple[ProjectStore, Project]:

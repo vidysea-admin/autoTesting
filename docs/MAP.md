@@ -790,6 +790,7 @@
 | `KnowledgeGraph` (`schema/portal_persona.py`) | Screen, control, flow, scenario, case, verdict, API and release nodes with typed |
 | `PortalPersona` (`schema/portal_persona.py`) | The durable, cross-run model of one product under test (PP1). A single |
 | `SecretRef` (`schema/project.py`) | A declared credential. Holds the KEY and its scope — never the value. |
+| `SecretDeclarations` (`schema/project.py`) | Only `secrets[*].key` of a `project.json`, tolerant of any other shape (env.py reads it). |
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
 | `Source` (`schema/project.py`) | An immutable input the system learned from. |
 | `TrackerConfig` (`schema/project.py`) | Where a project's confirmed bugs go (Group 10, T-205/TF6 placeholder). |
@@ -840,6 +841,7 @@
 | `ScheduleConfig` (`schema/schedule.py`) |  |
 | `SlotRecord` (`schema/schedule.py`) | One append-only line per slot decision. Holds no secret: ids, instants and a short cause. |
 | `SlotClaim` (`schema/schedule.py`) | The content of a claim marker: what the winning tick decided, so a crash can be re-driven. |
+| `Heartbeat` (`schema/schedule.py`) | The tick heartbeat file: when the scheduler last ran, as ISO text. |
 | `TickReport` (`schema/schedule.py`) | What one `autotester schedule tick` did: the JSON document of `--output json`. |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
 | `ApiCall` (`schema/screen_graph.py`) | One successful first-party API request a screen made: method + path pattern + status. |

@@ -30,16 +30,15 @@ LEFT: dict[str, dict[str, int]] = {
     "stages/failure_bundle.py": {"shutil.rmtree": 2, "write_text": 2, "rename": 1,
                                  "shutil.copyfile": 1},
     "stages/leak_evidence.py": {"write_bytes": 1},
+    "stages/real_acceptance.py": {"write_text": 1},  # checked-in evidence, not state (M49)
     "stages/report_export.py": {"write_text": 1},
     "stages/unified_report.py": {"write_text": 1},
-    "stages/schedule_store.py": {"shutil.rmtree": 3, "write_text": 2, "os.replace": 3,
-                                 "os.rename": 1, "os.open": 2, "os.fdopen": 1},
+    "stages/schedule_store.py": {"shutil.rmtree": 3, "write_text": 1, "os.replace": 2,
+                                 "os.rename": 1, "os.open": 1, "os.fdopen": 1},
     "sources/bounded_write.py": {"open": 1},
     "sources/drive_intake.py": {"shutil.rmtree": 3},
-    "sources/drive_register.py": {"write_bytes": 1},
-    "sources/email_register.py": {"write_bytes": 1},
     "sources/gws_drive.py": {"shutil.rmtree": 3},
-    "sources/intake_commit.py": {"os.replace": 2, "shutil.rmtree": 2, "os.open": 1},
+    "sources/intake_commit.py": {"shutil.rmtree": 2, "os.open": 1},
     "sources/pdf_worker.py": {"write_text": 1},
 }
 

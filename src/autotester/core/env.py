@@ -15,25 +15,20 @@ parsers for one file format is the same duplication in a smaller costume.
 Secrets never pass through here as values — this only populates `os.environ`
 from a gitignored file, and `core.redact` remains the gate before any model call.
 
-**It refuses to run inside a test process, and that is load-bearing.** The first
-version of this did not, and the suite caught it immediately: every `CliRunner`
-invocation ran the CLI callback, which loaded the real `.env` into the shared
-test process for good, and four provider tests that assert "no key present"
-started passing a real key instead. `ui/app.py` had already solved this by
-loading in a lifespan hook rather than at import ("so TestClient(app) never leaks
-real .env values into the test process") — moving the load to a CLI callback
-re-opened the hole one door over. A repo whose premise is that a secret never
-reaches a model, a log or an artifact cannot put real credentials into every
-test process as a side effect of testing a CLI.
+**It refuses to run inside a test process, and that is load-bearing.** The first version did
+not: every `CliRunner` invocation ran the CLI callback, which loaded the real `.env` into the
+shared test process for good, and provider tests asserting "no key present" started passing a
+real key. A repo whose premise is that a secret never reaches a model, a log or an artifact
+cannot put real credentials into every test process as a side effect of testing a CLI.
 """
 
 from __future__ import annotations
 
-import json
 import os
 import re
+from collections.abc import Mapping
 from pathlib import Path, PurePosixPath
-from typing import IO
+from typing import IO, Any
 
 from dotenv import dotenv_values
 
@@ -58,22 +53,31 @@ def key_namespace(slug: str) -> str:
 
 
 def is_server_key(key: str) -> bool:
-    """A key the server reads (provider keys, `AUTOTESTER_*`): always exported, not a project's."""
-    return key in PROVIDER_KEYS or key.startswith(SERVER_PREFIX)
+    """A key the server reads (provider keys, `AUTOTESTER_*`): always exported, not a project's.
+    Any letter case: `autotester_approval_key` is the server's key to a case-blind environment."""
+    upper = key.upper()
+    return upper in PROVIDER_KEYS or upper.startswith(SERVER_PREFIX)
 
 
 def project_credentials(root: Path) -> tuple[tuple[str, ...], frozenset[str]]:
     """(namespaces of every project, keys any project declares) read straight from
     `projects/*/project.json`. A project's credential is read from the file by
     `SecretStore` and typed into a page; it is never a setting for this process."""
+    from autotester.schema.project import SecretDeclarations
+    from autotester.store.filestore import exists_path, list_children, read_json  # store imports us
+
     prefixes: list[str] = []
     declared: set[str] = set()
-    for config in sorted((root / "projects").glob("*/project.json")):
-        prefixes.append(key_namespace(config.parent.name))
+    projects = root / "projects"
+    for name in list_children(projects):
+        config = projects / name / "project.json"
+        if not exists_path(config):
+            continue
+        prefixes.append(key_namespace(name))
         try:
-            rows = json.loads(config.read_text(encoding="utf-8")).get("secrets", [])
+            rows = (read_json(config, SecretDeclarations) or SecretDeclarations()).secrets
             declared.update(str(row["key"]) for row in rows if isinstance(row, dict))
-        except (OSError, ValueError, KeyError, AttributeError):
+        except (OSError, ValueError, KeyError):
             continue  # an unreadable project still reserves its namespace
     return tuple(prefixes), frozenset(declared)
 
@@ -207,6 +211,73 @@ def load_repo_env(root: Path | None = None) -> list[str]:
         os.environ[key] = value
         loaded.append(key)
     return loaded
+
+
+MONGO_URI_ENV = "PATHLYNKS_MONGO_URI"
+"""The one name of the state-store connection string (D-120; mongo-store M28, M36)."""
+
+
+def mongo_uri(root: Path | None = None) -> str:
+    """The state-store URI, or `""`: a non-blank process variable, else the repo-root `.env`
+    value (the same `read_dotenv` reading as every other `.env` reader). The value is a secret:
+    it is returned to the one caller that opens the store and is never logged or echoed.
+
+    A test process with no `AUTOTESTER_ROOT` would read the real code tree's `.env`; it does not,
+    so a unit test can never pick up a developer's live URI (same reason `load_repo_env` skips)."""
+    live = os.environ.get(MONGO_URI_ENV, "").strip()
+    if live:
+        return live
+    if root is None and TEST_MARKER in os.environ and not os.environ.get("AUTOTESTER_ROOT"):
+        return ""
+    path = (root or repo_root()) / ENV_FILE
+    return (read_dotenv(path).get(MONGO_URI_ENV) or "").strip() if path.is_file() else ""
+
+
+def credential_collection() -> Any:
+    """The `secrets` collection when the credentials area is on mongo, else `None` (file mode: no
+    driver is imported, M13). The ONE place the collection is named (M31); the write door is
+    `ui/env_editor.py`. No encryption and no key (D-123, M32)."""
+    from autotester.store.mongo_routes import store_selection  # lazy: it imports this module
+
+    if store_selection()["credentials"] != "mongo":
+        return None
+    from autotester.store.mongo_backend import default_store
+
+    return default_store().collection("secrets")
+
+
+def stored_secret_values() -> dict[str, str]:
+    """Key -> value of every stored credential, any project; `{}` when the area is on file."""
+    coll = credential_collection()
+    return {} if coll is None else {d["_id"]: d["value"] for d in coll.find({})}
+
+
+def redaction_values(file_values: Mapping[str, str]) -> dict[str, str]:
+    """`file_values` plus every stored value under a `KEY@store` label, so a key held in both
+    places keeps both values masked (M8, M34)."""
+    return {**file_values, **{f"{k}@store": v for k, v in stored_secret_values().items()}}
+
+
+def resolve_credentials(file_values: Mapping[str, str], slug: str,
+                        declared: set[str]) -> tuple[dict[str, str], dict[str, str]]:
+    """`(usable, shadow)` for one project. Store off: exactly the `.env` values, as ever. Store on
+    (M33): this project's own stored value beats the process environment, which beats the file.
+    Every value a layer hides, and every other project's, stays in `shadow` (masked, never
+    resolvable); a project resolves only the keys it declares."""
+    values, extra = dict(file_values), {}
+    coll = credential_collection()
+    if coll is not None:
+        docs = coll.find({})
+        own = {d["_id"]: d["value"] for d in docs if d.get("p") == slug and d["_id"] in declared}
+        for layer in ({k: os.environ[k] for k in declared if os.environ.get(k)}, own):
+            for key, value in layer.items():
+                if values.get(key) not in (None, "", value):
+                    extra[f"{key}@{len(extra)}"] = values[key]
+                values[key] = value
+        extra.update({f"{d['_id']}@{d.get('p')}": d["value"] for d in docs
+                      if d["_id"] not in own})
+    usable = {k: v for k, v in values.items() if k in declared and v}
+    return usable, {**extra, **{k: v for k, v in values.items() if k not in declared and v}}
 
 
 PUBLIC_ENV_KEYS: frozenset[str] = frozenset({

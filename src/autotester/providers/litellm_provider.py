@@ -9,7 +9,7 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
-from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS, read_dotenv
+from autotester.core.env import ENV_FILE, PUBLIC_ENV_KEYS, read_dotenv, redaction_values
 from autotester.core.paths import repo_root
 from autotester.core.redact import assert_no_raw_secrets
 from autotester.providers import ollama_cloud
@@ -57,10 +57,10 @@ def _env_secret_values() -> list[str]:
     """Every non-empty value in the repo-root `.env` that is not a setting: the
     same "anything in .env is a secret" rule `SecretStore` applies at the stage."""
     path = repo_root() / ENV_FILE
-    if not path.exists():
-        return []
     skip = _CONFIG_KEYS | PUBLIC_ENV_KEYS
-    return [v for k, v in read_dotenv(path).items() if k and v and k not in skip]
+    values = read_dotenv(path) if path.exists() else {}
+    stored = list(redaction_values({}).values())  # credentials held in the store (U11); none off
+    return [v for k, v in values.items() if k and v and k not in skip] + stored
 
 
 def _texts(messages: list[dict[str, Any]]) -> list[str]:

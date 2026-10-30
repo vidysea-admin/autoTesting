@@ -12,7 +12,7 @@ from autotester.schema.provider_migration import (
     ProviderMigrationOutcome,
     ProviderMigrationPlan,
 )
-from autotester.store.filestore import write_bytes
+from autotester.store.filestore import exists_path, write_bytes
 
 _LEGACY = {"vision": "gemini", "agent": "langchain-fallback", "judge": "langchain-fallback"}
 _SLUG = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -118,9 +118,9 @@ def _payload(raw: bytes, backup: Path, entry: ProviderMigrationEntry, restore: b
         _migration_bytes(original, entry)
         return original
     replacement = _migration_bytes(raw, entry)
-    if backup.exists() and _hash(backup.read_bytes()) != entry.before_sha256:
+    if exists_path(backup) and _hash(backup.read_bytes()) != entry.before_sha256:
         raise ValueError("migration_backup_identity_mismatch")
-    if not backup.exists():
+    if not exists_path(backup):
         write_bytes(backup, raw)
     return replacement
 

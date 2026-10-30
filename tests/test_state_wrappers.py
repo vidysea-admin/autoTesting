@@ -236,7 +236,7 @@ def test_a_directory_listing_fans_out_across_the_backends_of_its_areas(
     root.mkdir()
     monkeypatch.setenv("AUTOTESTER_ROOT", str(root))
     monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "runs=mongo")
-    monkeypatch.setenv("AUTOTESTER_MONGO_URI", "mongodb://h/")
+    monkeypatch.setenv("PATHLYNKS_MONGO_URI", "mongodb://h/")
     monkeypatch.delenv("AUTOTESTER_STORE", raising=False)
     reset_default_backend()
     base = root.resolve() / "projects" / "p"

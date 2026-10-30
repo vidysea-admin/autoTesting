@@ -22,6 +22,7 @@ from autotester.schema.run import RawResult
 from autotester.schema.verdict import Failure, Judgment, Rubric, Verdict
 from autotester.stages.grade_images import judge_images, met_assertions, visual_decision
 from autotester.stages.grade_note_guard import note_guard
+from autotester.store.run_store import local_blob
 
 SKILL_NAME = "grade"  # src/autotester/skills/grade/SKILL.md (T-175, was grade_v1.md)
 
@@ -132,9 +133,8 @@ def _screenshot_paths(result: RawResult, run_dir: Path | None) -> list[Path]:
     gets today's text-only behavior, never a crash."""
     if run_dir is None:
         return []
-    return [
-        run_dir / ev.path for ev in result.evidence if ev.kind is EvidenceKind.SCREENSHOT
-    ]
+    return [local_blob(run_dir / ev.path) for ev in result.evidence
+            if ev.kind is EvidenceKind.SCREENSHOT]
 
 
 def _withheld(

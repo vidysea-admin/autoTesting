@@ -1,0 +1,32 @@
+KILLED  b1: the screenshot is put unmasked  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_a_screenshot_is_kept_on_disk_and_put_masked_in_the_blob_store
+    actually failed: tests/test_media_blobs.py::test_a_screenshot_is_kept_on_disk_and_put_masked_in_the_blob_store
+KILLED  b2: the screenshot writer does not put  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_a_screenshot_is_kept_on_disk_and_put_masked_in_the_blob_store
+    actually failed: tests/test_media_blobs.py::test_a_screenshot_is_kept_on_disk_and_put_masked_in_the_blob_store
+KILLED  b3: save_result does not sync media  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_save_result_puts_the_screenshot_and_the_kept_video_before_the_result
+    actually failed: tests/test_media_blobs.py::test_a_refused_screenshot_means_the_result_is_not_saved, tests/test_media_blobs.py::test_save_result_puts_the_screenshot_and_the_kept_video_before_the_result
+KILLED  b4: the result is written before its media  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_a_refused_screenshot_means_the_result_is_not_saved
+    actually failed: tests/test_media_blobs.py::test_a_refused_screenshot_means_the_result_is_not_saved
+KILLED  b5: video evidence is not synced  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_save_result_puts_the_screenshot_and_the_kept_video_before_the_result
+    actually failed: tests/test_media_blobs.py::test_save_result_puts_the_screenshot_and_the_kept_video_before_the_result
+KILLED  b6: png_base64 reads only the local file  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_a_screenshot_whose_local_file_is_gone_is_still_embedded_from_the_blob_store
+    actually failed: tests/test_media_blobs.py::test_a_screenshot_whose_local_file_is_gone_is_still_embedded_from_the_blob_store
+KILLED  b7: the leak shot is not put  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_a_masked_leak_shot_is_put_masked_through_write_blob_file
+    actually failed: tests/test_media_blobs.py::test_a_masked_leak_shot_is_put_masked_through_write_blob_file
+KILLED  b8: the leak shot is put unmasked  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_a_masked_leak_shot_is_put_masked_through_write_blob_file
+    actually failed: tests/test_media_blobs.py::test_a_masked_leak_shot_is_put_masked_through_write_blob_file
+KILLED  b9: local_blob always materializes  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_local_blob_is_the_path_itself_while_the_file_exists_and_when_nothing_is_stored
+    actually failed: tests/test_media_blobs.py::test_local_blob_is_the_path_itself_while_the_file_exists_and_when_nothing_is_stored
+KILLED  b10: file mode builds the blob store  (pytest exit 1)
+    claims to kill : tests/test_media_blobs.py::test_with_the_area_on_file_a_screenshot_is_the_same_file_and_no_blob_is_put
+    actually failed: tests/test_media_blobs.py::test_save_result_in_file_mode_puts_nothing, tests/test_media_blobs.py::test_with_the_area_on_file_a_screenshot_is_the_same_file_and_no_blob_is_put
+
+10/10 mutations killed

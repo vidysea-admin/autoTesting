@@ -22,6 +22,7 @@ from pydantic import ValidationError
 from autotester.auth.access import authorize, resource_for, set_owner
 from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
+from autotester.core.env import stored_secret_values
 from autotester.core.paths import ProjectPaths
 from autotester.schema.auth import PermissionKey
 from autotester.schema.platform import Platform
@@ -32,6 +33,7 @@ from autotester.store.project_store import ProjectStore
 from autotester.ui import role_accounts_view as view
 from autotester.ui import theme
 from autotester.ui.credential_guard import _refuse_unsafe_submission, refuse_reserved_slug
+from autotester.ui.env_editor import restore_credentials, snapshot_credentials
 from autotester.ui.helpers import _load_project_or_404, _require_project_name, _require_slug
 
 router = APIRouter()
@@ -148,7 +150,8 @@ def _guard(project: Project, platforms: Sequence[Platform], accounts: Sequence[R
 
 def _env_now(slug: str) -> dict[str, str]:
     path = ProjectPaths(slug).env_file
-    return parse_env(path.read_text(encoding="utf-8")) if path.exists() else {}
+    file_values = parse_env(path.read_text(encoding="utf-8")) if path.exists() else {}
+    return {**file_values, **stored_secret_values()}  # store off: the file alone
 
 
 @router.get("/onboard/roles", response_class=HTMLResponse)
@@ -205,18 +208,23 @@ def _restore(env_path: Path, snapshot: bytes | None, store: ProjectStore,
 def _commit(store: ProjectStore, updated: Project, previous: Project | None,
             values: dict[str, str], owner_id: int | None) -> None:
     """`.env` first (atomic), then project.json, then the owner grant. A failure after the
-    first write restores both files, so a failed write never leaves a saved project -- and a
-    new project never exists without its owner."""
+    first write restores both files (and, with the credential store on, the stored documents it
+    touched), so a failed write never leaves a saved project -- and a new project never exists
+    without its owner."""
     env_path = store.paths.env_file
     snapshot = env_path.read_bytes() if env_path.exists() else None
+    kept_docs = snapshot_credentials(values)
     try:
         if values:
-            ro.write_values(env_path, values)
+            ro.write_values(env_path, values, store.paths.slug)
         store.save_project(updated)
         if owner_id is not None:
             set_owner(store.paths.slug, owner_id)
     except Exception:
-        _restore(env_path, snapshot, store, previous)
+        try:
+            _restore(env_path, snapshot, store, previous)
+        finally:  # the stored documents go back even when the project restore itself fails
+            restore_credentials(kept_docs)
         raise
 
 

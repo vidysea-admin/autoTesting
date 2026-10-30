@@ -19,6 +19,7 @@ from autotester.browser import assertions
 from autotester.schema.enums import EvidenceKind
 from autotester.schema.run import Evidence
 from autotester.stages.run_budget import RunBudgetExceeded
+from autotester.store.run_store import put_file
 
 # CSS applied to secret inputs right before capture. Text becomes unreadable
 # without changing layout, so the screenshot still shows *where* the field is.
@@ -156,6 +157,7 @@ class EvidenceMixin:
             self.page.screenshot(path=path, full_page=False, **self._timeout())
         self._timeout()
         self._recapture_blank(path, rel, step_order)
+        put_file(full, kind="screenshot", masked=True)  # M24: masked above; blob-backed area too
         return self._record(EvidenceKind.SCREENSHOT, rel, step_order=step_order, label=label)
 
     def _recapture_blank(self, path: str, rel: str, step_order: int | None) -> None:

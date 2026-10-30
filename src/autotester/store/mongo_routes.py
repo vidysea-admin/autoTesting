@@ -12,12 +12,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from fnmatch import fnmatchcase
 from functools import cache
 from typing import NamedTuple, Protocol
 
-from autotester.core.env import read_dotenv
+from autotester.core.env import MONGO_URI_ENV, mongo_uri, read_dotenv, redaction_values
 from autotester.core.paths import repo_root
 from autotester.core.redact import Redactor
 from autotester.core.safe_names import UnsafeName
@@ -25,7 +25,7 @@ from autotester.core.safe_names import UnsafeName
 AREAS = ("settings", "projects", "runs", "crawls", "approvals", "auth", "credentials", "blobs",
          "queue")
 BACKENDS = ("file", "mongo")
-UNROUTED = {"credentials": "the credential store (U11)", "blobs": "the blob store (U5)"}
+UNROUTED: dict[str, str] = {}
 """Areas whose data never travels through a state key: flipping one would route nothing."""
 RUN_AUX_FILES = frozenset({
     "run.json", "ux_report.json", "state.json", "checkpoint.json", "scope.json", "release.json",
@@ -119,6 +119,11 @@ class StoreSelectionError(ValueError):
     """`AUTOTESTER_STORE` / `AUTOTESTER_STORE_AREAS` names something unknown or not wired."""
 
 
+class StoreDown(RuntimeError):
+    """Driver-free base of `mongo_guard.StoreUnavailable`: the UI maps it to 503 (M26) without
+    importing a driver in file mode (M13)."""
+
+
 class StoreImmutable(RuntimeError):
     """A replace, update or delete was asked of an insert-only collection (M7, D-018)."""
 
@@ -182,10 +187,13 @@ def under(directory: str) -> list[tuple[str, str]]:
 
 
 def repo_redactor(extra: dict[str, str] | None = None) -> Redactor:
-    """A `Redactor` over every non-empty repo `.env` value plus `extra` (the Mongo URI)."""
+    """A `Redactor` over every non-empty repo `.env` value, every stored credential (U11, M8), the
+    live Mongo URI and `extra`."""
     path = repo_root() / ".env"
     values = {k: v for k, v in read_dotenv(path).items() if k and v} if path.is_file() else {}
-    return Redactor({**values, **(extra or {})})
+    uri = mongo_uri()
+    return Redactor({**redaction_values(values), **({MONGO_URI_ENV: uri} if uri else {}),
+                     **(extra or {})})
 
 
 def text_sha(text: str) -> str:
@@ -238,6 +246,21 @@ def store_selection() -> dict[str, str]:
         if name not in BACKENDS:
             raise StoreSelectionError(f"unknown store backend {name!r}; use one of {BACKENDS}")
     return chosen
+
+
+def ping_backends(selection: dict[str, str],
+                  open_backend: Callable[[str], StateBackend]) -> dict[str, str]:
+    """Open and ping each backend the selection chose, once (M27). A failure is re-raised with
+    fixed text, the exception class name and the areas on that backend; the source message is
+    never relayed (M9), so a raiser that quotes a URI cannot leak it through here."""
+    for name in sorted(set(selection.values())):
+        try:
+            open_backend(name).ping()
+        except StoreDown as exc:
+            areas = ", ".join(a for a, n in selection.items() if n == name)
+            raise type(exc)(f"state store unreachable ({type(exc).__name__}); "
+                           f"areas on {name}: {areas}") from None
+    return selection
 
 
 def split_graph(text: str) -> tuple[str, list[str], list[str]] | None:

@@ -40,7 +40,9 @@ from autotester.sources.adapters import (
 from autotester.sources.audio import AUDIO_SUFFIXES
 from autotester.sources.email import EMAIL_SUFFIXES, Attachment, iter_mbox_messages, parse_eml_bytes
 from autotester.sources.extract import DOC_SUFFIXES
+from autotester.store.filestore import exists_path
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import store_media
 
 _PROVENANCE_STAGE = "sources.email"
 
@@ -212,8 +214,7 @@ def _write_attachment_to_disk(store: ProjectStore, parent_id: str, attachment: A
     target_dir = store.paths.source_dir(parent_id) / "attachments"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / safe_name
-    if target.exists() and target.read_bytes() != attachment.content:
+    if exists_path(target) and target.read_bytes() != attachment.content:
         prefix = hashlib.sha256(attachment.content).hexdigest()[:8]
         target = target_dir / f"{prefix}_{safe_name}"
-    target.write_bytes(attachment.content)
-    return target
+    return store_media(target, attachment.content)  # M51: GridFS when the blobs area is on mongo

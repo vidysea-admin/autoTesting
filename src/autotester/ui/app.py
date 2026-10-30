@@ -17,7 +17,7 @@ from autotester.auth.access import set_owner, visible_slugs
 from autotester.auth.config import check_startup
 from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
-from autotester.core.env import load_repo_env
+from autotester.core.env import load_repo_env, stored_secret_values
 from autotester.core.paths import ProjectPaths
 from autotester.schema.auth import PermissionKey
 from autotester.schema.project import Project, Source
@@ -36,7 +36,7 @@ from autotester.ui import (
 from autotester.ui.access_log_scrub import install_access_log_scrub
 from autotester.ui.auth_middleware import auth_middleware
 from autotester.ui.credential_guard import refuse_reserved_slug
-from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
+from autotester.ui.env_editor import InvalidEnvValue, save_credentials, validate_env_values
 from autotester.ui.helpers import (
     _load_project_or_404,
     _project_slugs,
@@ -66,9 +66,10 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     yield
 
 
-# D-066 Origin guard first, then the T-204 login gate (auth.md AU18)
+# mongo-store M26 store-outage 503 outermost; D-066 Origin guard, then the T-204 login gate (AU18)
 app = FastAPI(title="AutoTester", lifespan=_lifespan,
-              middleware=[*origin_guard_middleware(), *auth_middleware()])
+              middleware=[*error_pages.store_down_middleware(), *origin_guard_middleware(),
+                          *auth_middleware()])
 install_access_log_scrub()  # AT-1390 / AU22: no query string or /v/<token> in the access log
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
 routers.include_all(app)  # T-204/T-205 (TF3): the one router list lives in ui/routers.py
@@ -123,6 +124,7 @@ def _guard_intake(project: Project, sources: list[Source], values: dict[str, str
     """Apply old and newly submitted secrets before any intake artifact write."""
     env_path = ProjectPaths(project.slug).env_file
     present = parse_env(env_path.read_text(encoding="utf-8")) if env_path.exists() else {}
+    present.update(stored_secret_values())  # store off: nothing added
     submitted = {ref.key for ref in project.secrets}
     owned_elsewhere = {
         ref.key
@@ -191,7 +193,7 @@ async def onboard_submit(request: Request) -> RedirectResponse:
     store.save_project(project)
     for source in sources:
         store.add_source(source)
-    set_env_values(env_path, values)
+    save_credentials(slug, env_path, values)
     who = current_principal()
     if who is not None and who.user_id:  # AU8 vocabulary: the creator owns the project
         set_owner(slug, who.user_id)

@@ -157,16 +157,25 @@ def _writes(backend: MongoBackend, key: str, text: str) -> list[Any]:
             lambda: backend.append_text(key, text)]
 
 
+def _quotes_nothing(error: BaseException) -> bool:
+    """The secret is in no rendering of the error: str, repr, or any of its args."""
+    return all(SECRET not in text for text in (str(error), repr(error), *map(str, error.args)))
+
+
 def test_a_known_secret_is_refused_everywhere_and_never_quoted() -> None:
     backend, server, _ = make(redactor=Redactor({"PATHLYNKS_PASSWORD": SECRET}))
     for text in (f"password={SECRET}", f'{{"id": "1", "note": "{SECRET}"}}'):
         for call in _writes(backend, "projects/p/x.json", text):
             with pytest.raises(StoreSecretRefused) as caught:
                 call()
-            assert SECRET not in str(caught.value) + repr(caught.value)
+            assert _quotes_nothing(caught.value)
             assert caught.value.__cause__ is None and caught.value.__context__ is None
-    with pytest.raises(StoreSecretRefused):
+    with pytest.raises(StoreSecretRefused) as keyed:
         backend.put(f"projects/p/{SECRET}.json", "clean text")  # the key is scanned too
+    assert _quotes_nothing(keyed.value)  # cycle 1: the refusal never echoes the key either
+    with pytest.raises(StoreSecretRefused) as huge:  # ... nor does the size check run first
+        backend.put(f"projects/p/{SECRET}.json", "x" * (backend_module.MAX_DOC_BYTES + 1))
+    assert _quotes_nothing(huge.value)
     assert SECRET not in dump(server)
     assert backend.keys("") == []
 
@@ -226,3 +235,16 @@ def test_a_document_append_that_loses_the_compare_and_set_retries_and_keeps_both
     backend.get = racing  # type: ignore[method-assign]
     backend.append_text("logs/x.log", "mine\n")
     assert real("logs/x.log") == "a\nother\nmine\n" and fired
+
+
+def test_append_text_is_all_or_nothing_when_a_later_line_is_refused() -> None:
+    """Cycle 1: every line is vetted before the first one is written."""
+    backend, server, _ = make(redactor=Redactor({"K": SECRET}))
+    backend.append_row("logs/a.jsonl", '{"id": "0"}')
+    text = '{"id": "1"}\n{"id": "2"}\n' + f'{{"id": "{SECRET}"}}\n'
+    with pytest.raises(StoreSecretRefused):
+        backend.append_text("logs/a.jsonl", text)
+    assert backend.rows("logs/a.jsonl") == ['{"id": "0"}'] and SECRET not in dump(server)
+
+
+

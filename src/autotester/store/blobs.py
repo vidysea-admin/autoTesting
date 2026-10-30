@@ -22,11 +22,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 
-from autotester.core.env import read_dotenv
-from autotester.core.paths import repo_root, work_dir
+from autotester.core.paths import work_dir
 from autotester.core.redact import Redactor
 from autotester.core.safe_names import safe_key
 from autotester.store.filestore import FileBackend
+from autotester.store.mongo_routes import repo_redactor  # the one definition (U4)
 
 if TYPE_CHECKING:
     from autotester.store.mongo_guard import GuardedStore
@@ -41,17 +41,20 @@ NOT_BLOB_SEGMENTS = frozenset({".work", "profiles", "chunks", "crawl_summaries",
 NOT_BLOB_KINDS = frozenset({"export"})
 UNMASKED_REFUSED = frozenset({"screenshot"})  # the FB3 mirror (Evidence.masked)
 KIND = re.compile(r"[a-z][a-z_]{0,31}")
-TEXT_MEDIA = frozenset({
-    "application/json", "application/xml", "application/javascript", "application/x-javascript",
-    "application/ecmascript", "application/yaml", "application/x-yaml", "application/x-ndjson",
-    "application/x-www-form-urlencoded", "application/graphql"})
-TEXT_SUFFIXES = ("+json", "+xml", "+yaml")
+BINARY_PREFIXES = ("image/", "video/", "audio/")  # M54: the scan skips these, and only these,
+BINARY_TYPES = frozenset({"application/octet-stream", "application/pdf", "application/zip"})
 
 
-def _is_text(content_type: str) -> bool:
-    """A media type is case-insensitive and may carry parameters: scan every textual body."""
+def _scan_text(content_type: str, data: bytes) -> str | None:
+    """The body to secret-scan (M54): every type except known-binary media, and any body whose
+    bytes decode as UTF-8 whatever it claims to be. `None`: binary and not text, nothing to scan."""
     media = content_type.split(";")[0].strip().casefold()
-    return media.startswith("text/") or media in TEXT_MEDIA or media.endswith(TEXT_SUFFIXES)
+    try:
+        return data.decode("utf-8")
+    except UnicodeDecodeError:
+        if media.startswith(BINARY_PREFIXES) or media in BINARY_TYPES:
+            return None
+        return data.decode("utf-8", errors="replace")
 
 
 def _folded(part: str) -> str:
@@ -92,14 +95,6 @@ class BlobStore(Protocol):
     def materialize(self, key: str) -> Path: ...
 
 
-def repo_redactor() -> Redactor:
-    """A `Redactor` over every repo-root `.env` value (M8). The credential store's values join
-    it when U11 passes its own `redactor` callable."""
-    env = repo_root() / ".env"
-    values = read_dotenv(env) if env.is_file() else {}
-    return Redactor({k: v for k, v in values.items() if v})
-
-
 def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -107,20 +102,19 @@ def _sha(data: bytes) -> str:
 def _vet(key: str, data: object, kind: str, masked: bool, content_type: str,
          redactor: Redactor) -> None:
     """Refuse before any write. Nothing here echoes the key, the body or a secret."""
-    parts = [_folded(p) for p in safe_key(key).split("/")]
+    parts = [_folded(p) for p in key.split("/")]  # before safe_key: "x.xlsx." is a blob refusal
     name = parts[-1]
     if (NOT_BLOB_SEGMENTS.intersection(parts) or name == ".env" or name.startswith(".env.")
             or name.endswith(".xlsx") or kind in NOT_BLOB_KINDS):
         raise BlobRefused("this path or kind is not stored as a blob (M25)")
+    safe_key(key)
     if not isinstance(data, bytes | bytearray) or not KIND.fullmatch(kind):
         raise BlobRefused("a blob is bytes with a plain lower-case kind")
     if kind in UNMASKED_REFUSED and not masked:
         raise BlobRefused(f"a {kind} must be stored masked")
-    text = [key, kind, content_type]
-    if _is_text(content_type):
-        text.append(bytes(data).decode("utf-8", errors="replace"))
+    body = _scan_text(content_type, bytes(data))
     try:
-        for part in text:
+        for part in (key, kind, content_type, *([] if body is None else [body])):
             redactor.assert_clean(part)
     except ValueError:
         raise BlobRefused("a declared secret value is in the blob or its metadata") from None

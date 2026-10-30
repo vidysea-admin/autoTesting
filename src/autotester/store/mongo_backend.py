@@ -11,12 +11,12 @@ delete with a named error (M7).
 from __future__ import annotations
 
 import logging
-import os
 import re
 import time
 import uuid
 from typing import Any
 
+from autotester.core.env import MONGO_URI_ENV, mongo_uri
 from autotester.core.redact import Redactor
 from autotester.core.safe_names import safe_key
 from autotester.store import mongo_routes as routes
@@ -32,7 +32,6 @@ from autotester.store.mongo_routes import repo_redactor  # re-exported: the secr
 __all__ = ["MongoBackend", "default_backend", "repo_redactor", "reset_default_backend"]
 
 LOG = logging.getLogger(__name__)
-URI_ENV = "AUTOTESTER_MONGO_URI"  # provisional name; U9 owns the wiring in core/env.py
 MAX_DOC_BYTES, WARN_DOC_BYTES, APPEND_RETRIES = 12 * 1024 * 1024, 4 * 1024 * 1024, 8
 INDEXES: tuple[tuple[list[tuple[str, int]], bool, str], ...] = (
     ([("k", 1)], False, "k"), ([("p", 1), ("k", 1)], False, "p_k"),
@@ -61,19 +60,19 @@ class MongoBackend:
                 self._store.collection(name).create_index(keys, unique=unique, name=label)
 
     def _guard(self, key: str, text: str) -> None:
-        size = len(text.encode("utf-8"))
-        if size > MAX_DOC_BYTES:
-            raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; the limit is {MAX_DOC_BYTES}")
-        if size > WARN_DOC_BYTES:
-            LOG.warning("state document %s is %d bytes", key, size)
         self._redactor = self._redactor or repo_redactor()
         refused = False
         try:
             self._redactor.assert_clean(f"{key}\n{text}")
         except ValueError:
             refused = True
-        if refused:  # raised outside `except`: nothing chained, and the text is never quoted
-            raise routes.StoreSecretRefused(f"refusing to store {key!r}: it carries a secret value")
+        if refused:  # outside `except`: nothing chained; neither the key nor the text is quoted
+            raise routes.StoreSecretRefused("refusing to store: the key or text carries a secret")
+        size = len(text.encode("utf-8"))
+        if size > MAX_DOC_BYTES:
+            raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; the limit is {MAX_DOC_BYTES}")
+        if size > WARN_DOC_BYTES:
+            LOG.warning("state document %s is %d bytes", key, size)
 
     def _route(self, key: str, *, rows: bool | None = None) -> routes.Route:
         route = routes.route(safe_key(key))
@@ -110,8 +109,9 @@ class MongoBackend:
         coll = self._store.collection(route.collection)
         if isinstance(coll, GuardedCollection):
             coll.replace_one({"_id": key}, doc, upsert=True)
-        else:
-            self._insert_once(coll, key, doc)
+        elif not self._claim(coll, doc) and (
+                (coll.find_one({"_id": key}) or {}).get("text") != doc["text"]):  # same text: no-op
+            raise routes.StoreImmutable(f"{key!r} already exists and its collection is insert-only")
         if old and old != doc.get("split"):
             self._drop_graph(key, old)
 
@@ -136,18 +136,12 @@ class MongoBackend:
             return False
         return True
 
-    @staticmethod
-    def _insert_once(coll: Any, key: str, doc: dict[str, Any]) -> None:
-        if MongoBackend._claim(coll, doc):
-            return
-        if (coll.find_one({"_id": key}) or {}).get("text") != doc["text"]:
-            raise routes.StoreImmutable(f"{key!r} already exists and its collection is insert-only")
-
     def delete(self, key: str) -> bool:
         route = self._route(key)
         coll = self._mutable(route)
         if route.rows:
-            return coll.delete_many({"k": key}) > 0
+            hits = self._docs(route, key)  # by _id: the catch-all refuses a bare k filter
+            return bool([coll.delete_one({"_id": hit["_id"]}) for hit in hits])
         old = self._generation(route, key)
         gone = coll.delete_one({"_id": key})
         if old:
@@ -161,8 +155,7 @@ class MongoBackend:
 
     def mtime(self, key: str) -> float | None:
         coll = self._store.collection(self._route(key).collection)
-        stamps = [d["updated_at"] for d in coll.find({"k": key})]
-        return max(stamps) if stamps else None
+        return max((d["updated_at"] for d in coll.find({"k": key})), default=None)
 
     def keys(self, prefix: str, suffix: str = "") -> list[str]:
         safe_key(prefix, prefix=True)
@@ -192,9 +185,12 @@ class MongoBackend:
         return [d["text"] for d in self._docs(route, key)]
 
     def append_text(self, key: str, text: str) -> None:
-        """Extend a log: a row set gets one row per line, a document a compare-and-set."""
+        """Extend a log: a row set gets one row per line (all vetted first), a document a CAS."""
         if self._route(key).rows:
-            for line in filter(str.strip, text.splitlines()):
+            lines = list(filter(str.strip, text.splitlines()))
+            for line in lines:
+                self._guard(key, line)
+            for line in lines:
                 self.append_row(key, line)
             return
         for _ in range(16 * APPEND_RETRIES):
@@ -228,9 +224,7 @@ class MongoBackend:
         route = self._route(key, rows=True)
         coll = self._mutable(route)
         hits = [d for d in self._docs(route, key) if routes.row_matches(d["text"], field, value)]
-        for hit in hits:
-            coll.delete_one({"_id": hit["_id"]})
-        return bool(hits)
+        return bool([coll.delete_one({"_id": hit["_id"]}) for hit in hits])
 
     def replace_rows(self, key: str, rows: list[str]) -> None:
         """New rows go in after the old ones, then the old ones go: a crash leaves duplicates,
@@ -248,6 +242,9 @@ class MongoBackend:
 
     def ping(self) -> None:
         self._store.ping()
+
+    def rearm(self) -> None:  # a credential changed: the secret gate is rebuilt on the next write
+        self._redactor = None
 
     def _build(self, route: routes.Route, key: str, text: str) -> dict[str, Any]:
         """The document to store; a persona over 4 MB keeps its graph as `kg_*` rows instead."""
@@ -286,14 +283,18 @@ class MongoBackend:
 
 
 def default_backend() -> MongoBackend:
-    """The process's one backend, opened on first use from `AUTOTESTER_MONGO_URI` (provisional)."""
+    """The process's one backend, opened on first use from `core.env.mongo_uri` (U9)."""
     if "backend" not in _CACHE:
-        uri = os.environ.get(URI_ENV, "").strip()
+        uri = mongo_uri()
         if not uri:
-            raise routes.StoreSelectionError(f"{URI_ENV} is not set; the mongo store needs it")
-        _CACHE["backend"] = MongoBackend(GuardedStore(uri), repo_redactor({URI_ENV: uri}))
+            raise routes.StoreSelectionError(f"{MONGO_URI_ENV} is not set; the store needs it")
+        _CACHE["backend"] = MongoBackend(GuardedStore(uri))  # gate: repo_redactor() lazily
     return _CACHE["backend"]
 
 
 def reset_default_backend() -> None:
     _CACHE.clear()
+
+
+def default_store() -> GuardedStore:  # the credential door's handle on `secrets` (U11)
+    return default_backend()._store

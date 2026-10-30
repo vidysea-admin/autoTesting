@@ -1,0 +1,44 @@
+KILLED  a1 helpers: list the data root again  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_the_project_list_comes_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_a_foreign_namespace_is_found_through_the_store, tests/test_state_sweep_u3b.py::test_the_project_list_comes_from_the_store
+KILLED  a2 helpers: ignore project.json presence  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_the_project_list_comes_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_the_project_list_comes_from_the_store
+KILLED  a3 credential_guard: no other project seen  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_a_foreign_namespace_is_found_through_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_a_foreign_namespace_is_found_through_the_store
+KILLED  a4 project_view: config mtime from disk only  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_last_change_reads_the_store_mtime
+    actually failed: tests/test_state_sweep_u3b.py::test_last_change_reads_the_store_mtime
+KILLED  a5 project_view: run.json checked on disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_a_corrupt_run_is_found_through_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_a_corrupt_run_is_found_through_the_store
+KILLED  a6 project_view: list runs on disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_a_corrupt_run_is_found_through_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_a_corrupt_run_is_found_through_the_store
+KILLED  a7 env: declared keys dropped  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store, tests/test_state_sweep_u3b.py::test_file_mode_credentials_tolerate_every_shape_of_project_json
+    actually failed: tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store, tests/test_state_sweep_u3b.py::test_file_mode_credentials_tolerate_every_shape_of_project_json
+KILLED  a8 env: a dir without project.json reserves a namespace  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_file_mode_credentials_tolerate_every_shape_of_project_json
+    actually failed: tests/test_state_sweep_u3b.py::test_file_mode_credentials_tolerate_every_shape_of_project_json
+KILLED  a9 env: a malformed project.json escapes  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_file_mode_credentials_tolerate_every_shape_of_project_json
+    actually failed: tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store, tests/test_state_sweep_u3b.py::test_file_mode_credentials_tolerate_every_shape_of_project_json
+KILLED  a10 env: a missing key row is not tolerated  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store
+KILLED  a11 schema: SecretDeclarations refuses other fields  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_declared_credentials_are_read_from_the_store
+KILLED  a12 schedule_wiring: list the data root again  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_scheduled_projects_are_listed_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_scheduled_projects_are_listed_from_the_store
+KILLED  a13 schedule_wiring: mtime from disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_scheduled_projects_are_listed_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_scheduled_projects_are_listed_from_the_store
+KILLED  a14 schedule_wiring: stray dir is a project  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3b.py::test_scheduled_projects_are_listed_from_the_store
+    actually failed: tests/test_state_sweep_u3b.py::test_scheduled_projects_are_listed_from_the_store
+
+14/14 mutations killed

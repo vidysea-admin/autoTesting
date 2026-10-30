@@ -1,0 +1,64 @@
+{
+ "tests": [
+  "tests/test_media_sources_logical.py"
+ ],
+ "mutations": [
+  {
+   "name": "e1: register_source (Drive video) reads the logical path directly",
+   "file": "src/autotester/stages/ingest.py",
+   "old": "if not (real := local_blob(path)).exists():",
+   "new": "if not (real := path).exists():",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe"
+   ]
+  },
+  {
+   "name": "e2: store_media hands back the blob-cache copy (the cycle-0/1 defect)",
+   "file": "src/autotester/store/run_store.py",
+   "old": "        put_file(target, data, kind=\"source\", masked=False)\n        return target\n    FileBackend",
+   "new": "        put_file(target, data, kind=\"source\", masked=False)\n        return local_blob(target)\n    FileBackend",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe",
+    "test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe",
+    "test_two_folders_with_the_same_bytes_and_name_each_keep_their_own_logical_path"
+   ]
+  },
+  {
+   "name": "e3: register_document reads the logical path directly",
+   "file": "src/autotester/sources/adapters.py",
+   "old": "    real = local_blob(path)  # M51: the bytes may be in GridFS only; `path` stays the logical path",
+   "new": "    real = path",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe",
+    "test_a_registered_email_attachment_records_the_logical_path_and_survives_a_cache_wipe"
+   ]
+  },
+  {
+   "name": "e4: register_audio hashes the logical path directly",
+   "file": "src/autotester/sources/adapters.py",
+   "old": "digest = file_sha256(local_blob(path))  # M51",
+   "new": "digest = file_sha256(path)  # M51",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe"
+   ]
+  },
+  {
+   "name": "e5: the audio transcriber is handed the logical path",
+   "file": "src/autotester/sources/adapters.py",
+   "old": "transcribe_audio(local_blob(path), provisional_id,",
+   "new": "transcribe_audio(path, provisional_id,",
+   "kills": [
+    "test_a_gridfs_only_audio_is_transcribed_from_a_readable_copy_and_records_the_logical_path"
+   ]
+  },
+  {
+   "name": "e6: the unreadable-type Drive hash reads the logical path directly",
+   "file": "src/autotester/sources/drive_register.py",
+   "old": "hashlib.sha256(local_blob(path).read_bytes())",
+   "new": "hashlib.sha256(path.read_bytes())",
+   "kills": [
+    "test_a_registered_drive_source_records_the_logical_path_and_survives_a_cache_wipe"
+   ]
+  }
+ ]
+}

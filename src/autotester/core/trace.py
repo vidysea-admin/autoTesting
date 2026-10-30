@@ -24,6 +24,7 @@ from autotester.core.redact import Redactor
 from autotester.schema.base import utc_now
 from autotester.schema.run_state import StageCheckpoint
 from autotester.schema.trace import LLMSpan, PhaseSpan, StageSpan, ToolSpan
+from autotester.store.filestore import append_path, exists_path
 
 SLOW_PHASE_S = 30.0
 """A phase longer than this prints one stderr line, so a stall is visible while it happens."""
@@ -66,9 +67,7 @@ class TraceWriter:
         hard gate BEFORE JSON encoding -- structurally, so the encoded line is always valid
         JSON and a JSON escape (quote, backslash) cannot hide a secret from the scrub."""
         clean = _LINE.dump_json(self._scrub_value(span.model_dump(mode="python"))).decode("utf-8")
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.path.open("a", encoding="utf-8") as fh:
-            fh.write(clean + "\n")
+        append_path(self.path, clean + "\n")
 
     def record_stage(self, checkpoint: StageCheckpoint) -> None:
         """RT3: one span for a finished `StageCheckpoint`."""
@@ -139,7 +138,7 @@ def traced_phase(trace: TraceWriter | None, case_id: str | None, phase: str, *,
 
 def read_tool_spans(path: Path) -> list[ToolSpan]:
     """The agent-layer lines of `trace.jsonl`, in order; no trace yet returns an empty list."""
-    if not path.exists():
+    if not exists_path(path):
         return []
     rows = (json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()
             if line.strip())
@@ -153,7 +152,7 @@ def read_spans(
     VIEW over the file. A run with no trace yet returns an empty list, never
     an error. Phase spans are returned only with `include_phases=True`, so the
     stage/LLM consumers (run view, failure bundle) see exactly what they always did."""
-    if not path.exists():
+    if not exists_path(path):
         return []
     spans: list[StageSpan | LLMSpan | PhaseSpan] = []
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
