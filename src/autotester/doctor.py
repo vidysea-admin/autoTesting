@@ -277,7 +277,10 @@ def run(root: Path | None = None) -> list[Violation]:
         check_qa_issue_rows,
     )
     from autotester.ledger.citations import check_citation_subjects, check_decision_citations
-    from autotester.ledger.committed_fresh import check_committed_generated_fresh
+    from autotester.ledger.committed_fresh import (
+        check_committed_generated_fresh,
+        check_state_bypass,
+    )
     from autotester.ledger.env_warning import check_env_dollar
     from autotester.ledger.evidence_specs import check_stale_evidence_specs
     from autotester.ledger.issue_ids import check_issue_id_unique
@@ -292,6 +295,6 @@ def run(root: Path | None = None) -> list[Violation]:
                   check_goal_pytest_q, check_stale_evidence_specs,
                   check_generated_fresh, check_committed_generated_fresh,
                   check_architecture_budget, check_docs_routed, check_decision_citations,
-                  check_citation_subjects, check_env_dollar):
+                  check_citation_subjects, check_env_dollar, check_state_bypass):
         violations.extend(check(base))
     return violations

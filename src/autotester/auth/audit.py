@@ -12,16 +12,16 @@ import threading
 from datetime import UTC, datetime
 
 from autotester.core.paths import repo_root
+from autotester.store.filestore import append_path
 
 _LOCK = threading.Lock()
 
 
 def _append(row: dict[str, object]) -> None:
     path = repo_root() / ".work" / "audit.jsonl"
-    path.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps({"ts": datetime.now(UTC).isoformat(), **row}, ensure_ascii=False)
-    with _LOCK, path.open("a", encoding="utf-8") as handle:
-        handle.write(line + "\n")
+    with _LOCK:
+        append_path(path, line + "\n")
 
 
 def record_request(email: str, method: str, template: str, status: int) -> None:

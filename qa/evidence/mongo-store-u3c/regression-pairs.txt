@@ -1,0 +1,17 @@
+test_schedule_purge_crash test_schedule_gaps -> ======================= 26 passed, 2 warnings in 44.43s =======================
+test_schedule_failures test_schedule_wiring -> ======================= 35 passed, 2 warnings in 3.09s ========================
+test_schedule_catchup test_schedule_overlap -> ======================= 28 passed, 2 warnings in 1.94s ========================
+test_schedule_advisories test_schedule_inbox -> ======================= 7 passed, 2 warnings in 12.23s ========================
+test_schedule_routes test_schedule_marker -> ================== 48 passed, 2 warnings in 69.89s (0:01:09) ==================
+test_schedule_tick test_schedule_due -> ======================= 35 passed, 10 warnings in 8.25s =======================
+test_cli_schedule test_schedule_owner_guard -> ======================= 17 passed, 2 warnings in 2.71s ========================
+test_delivery_failure test_delivery_records_for_run -> ======================= 21 passed, 2 warnings in 2.55s ========================
+test_inbox_delivery test_inbox_scope -> ======================= 16 passed, 2 warnings in 11.66s =======================
+test_trace_numeric_secret test_run_trace -> ======================= 16 passed, 7 warnings in 3.44s ========================
+test_ui_auth_refusal_audit test_ui_runs_parallel_trace -> ======================= 12 passed, 2 warnings in 5.98s ========================
+test_agent_layer test_provider_attempts -> ======================= 23 passed, 2 warnings in 33.02s =======================
+test_run_teardown_stall test_teardown_residuals -> ======================= 26 passed, 2 warnings in 2.68s ========================
+test_orchestrate test_orchestrate_downstream -> ======================= 19 passed, 8 warnings in 4.99s ========================
+test_cli_orchestrate test_cli_orchestrate_resume -> ======================== 8 passed, 2 warnings in 3.83s ========================
+test_committed_fresh test_doctor -> ======================= 48 passed, 3 warnings in 17.38s =======================
+test_hosting_gaps test_sweep_u3a -> ======================= 45 passed, 2 warnings in 20.53s =======================

@@ -31,6 +31,7 @@ from autotester.schema.delivery import (
     RenderedMessage,
     safe_id,
 )
+from autotester.store.filestore import exists_path, list_children, read_json
 
 RETRY_DELAYS = (timedelta(minutes=1), timedelta(minutes=5), timedelta(minutes=30))
 MAX_ATTEMPTS = len(RETRY_DELAYS) + 1   # the first try plus one retry per delay
@@ -116,10 +117,11 @@ class DeliveryLog:
 
     def _load(self, name: re.Pattern[str]) -> list[DeliveryRecord]:
         """Records whose WHOLE file name matches `name` (never a prefix or a glob), by name."""
-        if not self.records_dir.is_dir():
+        if not exists_path(self.records_dir):
             return []
-        return [DeliveryRecord.model_validate_json(p.read_text("utf-8"))
-                for p in sorted(self.records_dir.iterdir()) if name.fullmatch(p.name)]
+        records = (read_json(self.records_dir / n, DeliveryRecord)
+                   for n in list_children(self.records_dir) if name.fullmatch(n))
+        return [r for r in records if r is not None]
 
     def records_for_key(self, key: str) -> list[DeliveryRecord]:
         return self._load(re.compile(re.escape(key) + r"\.\d+\.json"))

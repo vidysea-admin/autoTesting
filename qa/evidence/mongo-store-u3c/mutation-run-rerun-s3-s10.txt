@@ -1,0 +1,8 @@
+KILLED  s3: read_tool_spans asks the disk whether a trace exists  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+    actually failed: tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+KILLED  s10: read_all_records asks the disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_every_projects_records_are_listed_from_the_store
+    actually failed: tests/test_state_sweep_u3c.py::test_every_projects_records_are_listed_from_the_store
+
+2/2 mutations killed
