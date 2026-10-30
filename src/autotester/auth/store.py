@@ -89,6 +89,12 @@ class AuthStore(Protocol):
 
 
 def auth_store() -> AuthStore:
-    """The active auth store. SQLite today; U6b adds the Mongo implementation."""
+    """The active auth store: SQLite unless the `auth` area is selected as `mongo` through
+    `AUTOTESTER_STORE` / `AUTOTESTER_STORE_AREAS`. The Mongo module (and its driver) loads only
+    then, so a file-mode process never imports `pymongo` (M13)."""
+    from autotester.store.mongo_routes import store_selection
+    if store_selection()["auth"] == "mongo":
+        from autotester.auth.store_mongo import mongo_auth_store
+        return mongo_auth_store()
     from autotester.auth.store_sqlite import SqliteAuthStore
     return SqliteAuthStore()
