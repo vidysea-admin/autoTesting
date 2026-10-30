@@ -1,0 +1,134 @@
+{
+ "tests": [
+  "tests/test_state_sweep_u3b.py"
+ ],
+ "mutations": [
+  {
+   "name": "a1 helpers: list the data root again",
+   "file": "src/autotester/ui/helpers.py",
+   "old": "    return sorted(name for name in list_children(projects_dir)",
+   "new": "    return sorted(name for name in [p.name for p in projects_dir.iterdir()]",
+   "kills": [
+    "test_the_project_list_comes_from_the_store"
+   ]
+  },
+  {
+   "name": "a2 helpers: ignore project.json presence",
+   "file": "src/autotester/ui/helpers.py",
+   "old": "                  if exists_path(projects_dir / name / \"project.json\"))",
+   "new": "                  if True)",
+   "kills": [
+    "test_the_project_list_comes_from_the_store"
+   ]
+  },
+  {
+   "name": "a3 credential_guard: no other project seen",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "    for slug in (s for s in _project_slugs() if s != project.slug):",
+   "new": "    for slug in (s for s in [] if s != project.slug):",
+   "kills": [
+    "test_a_foreign_namespace_is_found_through_the_store"
+   ]
+  },
+  {
+   "name": "a4 project_view: config mtime from disk only",
+   "file": "src/autotester/ui/project_view.py",
+   "old": "mtime_path(store.paths.config), ",
+   "new": "None, ",
+   "kills": [
+    "test_last_change_reads_the_store_mtime"
+   ]
+  },
+  {
+   "name": "a5 project_view: run.json checked on disk",
+   "file": "src/autotester/ui/project_view.py",
+   "old": "        if exists_path(runs_dir / name / \"run.json\"):",
+   "new": "        if (runs_dir / name / \"run.json\").exists():",
+   "kills": [
+    "test_a_corrupt_run_is_found_through_the_store"
+   ]
+  },
+  {
+   "name": "a6 project_view: list runs on disk",
+   "file": "src/autotester/ui/project_view.py",
+   "old": "    for name in list_children(runs_dir):",
+   "new": "    for name in [p.name for p in runs_dir.iterdir()]:",
+   "kills": [
+    "test_a_corrupt_run_is_found_through_the_store"
+   ]
+  },
+  {
+   "name": "a7 env: declared keys dropped",
+   "file": "src/autotester/core/env.py",
+   "old": "            rows = (read_json(config, SecretDeclarations) or SecretDeclarations()).secrets",
+   "new": "            rows = []",
+   "kills": [
+    "test_declared_credentials_are_read_from_the_store",
+    "test_file_mode_credentials_tolerate_every_shape_of_project_json"
+   ]
+  },
+  {
+   "name": "a8 env: a dir without project.json reserves a namespace",
+   "file": "src/autotester/core/env.py",
+   "old": "        if not exists_path(config):",
+   "new": "        if False:",
+   "kills": [
+    "test_file_mode_credentials_tolerate_every_shape_of_project_json"
+   ]
+  },
+  {
+   "name": "a9 env: a malformed project.json escapes",
+   "file": "src/autotester/core/env.py",
+   "old": "        except (OSError, ValueError, KeyError):",
+   "new": "        except (OSError, KeyError):",
+   "kills": [
+    "test_file_mode_credentials_tolerate_every_shape_of_project_json"
+   ]
+  },
+  {
+   "name": "a10 env: a missing key row is not tolerated",
+   "file": "src/autotester/core/env.py",
+   "old": "        except (OSError, ValueError, KeyError):",
+   "new": "        except (OSError, ValueError):",
+   "kills": [
+    "test_declared_credentials_are_read_from_the_store"
+   ]
+  },
+  {
+   "name": "a11 schema: SecretDeclarations refuses other fields",
+   "file": "src/autotester/schema/project.py",
+   "old": "    model_config = ConfigDict(extra=\"ignore\")\n    secrets: list[object]",
+   "new": "    model_config = ConfigDict(extra=\"forbid\")\n    secrets: list[object]",
+   "kills": [
+    "test_declared_credentials_are_read_from_the_store"
+   ]
+  },
+  {
+   "name": "a12 schedule_wiring: list the data root again",
+   "file": "src/autotester/stages/schedule_wiring.py",
+   "old": "    for slug in list_children(base):",
+   "new": "    for slug in sorted(p.name for p in base.iterdir()):",
+   "kills": [
+    "test_scheduled_projects_are_listed_from_the_store"
+   ]
+  },
+  {
+   "name": "a13 schedule_wiring: mtime from disk",
+   "file": "src/autotester/stages/schedule_wiring.py",
+   "old": "            stamp = mtime_path(config)",
+   "new": "            stamp = config.stat().st_mtime",
+   "kills": [
+    "test_scheduled_projects_are_listed_from_the_store"
+   ]
+  },
+  {
+   "name": "a14 schedule_wiring: stray dir is a project",
+   "file": "src/autotester/stages/schedule_wiring.py",
+   "old": "        if not exists_path(config):",
+   "new": "        if False:",
+   "kills": [
+    "test_scheduled_projects_are_listed_from_the_store"
+   ]
+  }
+ ]
+}

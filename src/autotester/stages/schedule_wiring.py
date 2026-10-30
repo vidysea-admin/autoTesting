@@ -38,6 +38,7 @@ from autotester.stages.schedule_store import (
 from autotester.stages.schedule_sweep import sweep_dead_enqueued
 from autotester.stages.schedule_tick import ScheduledProject, run_tick
 from autotester.stages.scheduler import DEFAULT_GRACE_MINUTES, QueueSnapshot, Slot, TickDeps
+from autotester.store.filestore import exists_path, list_children, mtime_path
 from autotester.store.project_store import ProjectStore
 
 
@@ -101,11 +102,16 @@ def scheduled_projects(root: Path | None = None) -> tuple[list[ScheduledProject]
     base = (root or repo_root()) / "projects"
     items: list[ScheduledProject] = []
     invalid: list[str] = []
-    for config in sorted(base.glob("*/project.json")) if base.is_dir() else []:
-        slug = config.parent.name
+    for slug in list_children(base):
+        config = base / slug / "project.json"
+        if not exists_path(config):
+            continue
         try:
             project = ProjectStore(slug, root).load_project()
-            since = datetime.fromtimestamp(config.stat().st_mtime, tz=UTC)
+            stamp = mtime_path(config)
+            if stamp is None:
+                raise FileNotFoundError(config)  # gone since the listing: named as invalid
+            since = datetime.fromtimestamp(stamp, tz=UTC)
             since = min(since, heartbeat) if heartbeat else since
         except (ValueError, OSError):
             invalid.append(slug)

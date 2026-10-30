@@ -29,7 +29,6 @@ test process as a side effect of testing a CLI.
 
 from __future__ import annotations
 
-import json
 import os
 import re
 from pathlib import Path, PurePosixPath
@@ -66,14 +65,21 @@ def project_credentials(root: Path) -> tuple[tuple[str, ...], frozenset[str]]:
     """(namespaces of every project, keys any project declares) read straight from
     `projects/*/project.json`. A project's credential is read from the file by
     `SecretStore` and typed into a page; it is never a setting for this process."""
+    from autotester.schema.project import SecretDeclarations
+    from autotester.store.filestore import exists_path, list_children, read_json  # store imports us
+
     prefixes: list[str] = []
     declared: set[str] = set()
-    for config in sorted((root / "projects").glob("*/project.json")):
-        prefixes.append(key_namespace(config.parent.name))
+    projects = root / "projects"
+    for name in list_children(projects):
+        config = projects / name / "project.json"
+        if not exists_path(config):
+            continue
+        prefixes.append(key_namespace(name))
         try:
-            rows = json.loads(config.read_text(encoding="utf-8")).get("secrets", [])
+            rows = (read_json(config, SecretDeclarations) or SecretDeclarations()).secrets
             declared.update(str(row["key"]) for row in rows if isinstance(row, dict))
-        except (OSError, ValueError, KeyError, AttributeError):
+        except (OSError, ValueError, KeyError):
             continue  # an unreadable project still reserves its namespace
     return tuple(prefixes), frozenset(declared)
 
