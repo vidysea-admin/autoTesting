@@ -24,6 +24,7 @@ from autotester.schema.approval import RunApproval
 from autotester.schema.crawl import CrawlBounds
 from autotester.schema.enums import ApprovalKind, Result
 from autotester.stages.generic_acceptance import Mode, ModeResult, ModeSeams, ModeSpec, run_mode
+from autotester.store.filestore import write_text
 from autotester.store.project_store import ProjectStore
 
 EVIDENCE_DIR = Path("qa") / "evidence" / "t169-real"
@@ -162,7 +163,7 @@ def write_evidence(store: ProjectStore, result: ModeResult, approval_ids: list[s
         for text in texts.values():
             redactor.assert_clean(text)
     for name, text in texts.items():
-        (out / name).write_text(text, encoding="utf-8")
+        write_text(out / name, text)
     return out, lines
 
 

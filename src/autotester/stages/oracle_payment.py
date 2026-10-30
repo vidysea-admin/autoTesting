@@ -38,6 +38,7 @@ from autotester.schema.payment_path import (
 )
 from autotester.schema.platform import IMPLICIT_PLATFORM_ID
 from autotester.schema.role_step import RoleStep
+from autotester.store.filestore import read_json, write_text
 
 REPORT_FILE = "payment_report.json"
 
@@ -53,13 +54,14 @@ class PaymentUnobservedError(RuntimeError):
 def load_declaration(run_dir: str) -> PaymentDeclaration:
     """The declared paid paths in `run_dir`, or `PaymentNotDeclaredError`."""
     try:
-        text = (Path(run_dir) / PAYMENT_FILE).read_text(encoding="utf-8")
+        declaration = read_json(Path(run_dir) / PAYMENT_FILE, PaymentDeclaration)
     except OSError:
-        raise PaymentNotDeclaredError("no payment paths declared") from None
-    try:
-        return PaymentDeclaration.model_validate_json(text)
+        declaration = None
     except ValueError:
         raise PaymentNotDeclaredError("payment declaration is invalid") from None
+    if declaration is None:
+        raise PaymentNotDeclaredError("no payment paths declared")
+    return declaration
 
 
 class _Walk:
@@ -176,7 +178,7 @@ def _write_report(run_dir: str, reports: list[PathReport]) -> None:
         return
     body = "[" + ",".join(r.model_dump_json() for r in reports) + "]"
     try:
-        (folder / REPORT_FILE).write_text(body, encoding="utf-8")
+        write_text(folder / REPORT_FILE, body)
     except OSError:
         return
 
