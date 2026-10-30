@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u11f
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: qa/verdicts/mongo-store-u11f.md + .b.md)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE), unit U11 follow-up. Criteria M31-M37 and M34, closing the warnings of the U11 dual check (`qa/verdicts/mongo-store-u11.md`, `.b.md`). **Criticality:** CRITICAL rows (M31-M36), so the follow-up is dual-checked like U11.
 **Authority:** D-120, D-122, D-123. No new `src/` module (D-122/D-123 list untouched); no crypto, no new dependency.
