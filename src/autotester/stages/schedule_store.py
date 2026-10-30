@@ -6,7 +6,7 @@ serialise). The caller passes every path; this module knows no data root.
 
 - **Claim marker**: `os.open(O_CREAT | O_EXCL | O_WRONLY)` is the atomic "first wins" for a
   slot. The file name is the percent-encoded `slot_key` (reversible, no `:` for Windows).
-- **Slot record**: one JSON line appended with a single `os.write` on an `O_APPEND` handle.
+- **Slot record**: one JSON line appended through the store's `append_path`, under the locks.
 - **Purge**: `purge_project` removes a deleted project's markers and its own records file,
   together or not at all, also across an interrupt or a kill (a manifest lets the next purge adopt
   a stranded stage).
@@ -28,8 +28,14 @@ from urllib.parse import quote, unquote
 from pydantic import ValidationError
 
 from autotester.core.file_lock import file_lock
-from autotester.schema.schedule import SlotClaim, SlotOutcome, SlotRecord
-from autotester.store.filestore import write_text
+from autotester.schema.schedule import Heartbeat, SlotClaim, SlotOutcome, SlotRecord
+from autotester.store.filestore import (
+    append_path,
+    exists_path,
+    list_children,
+    read_json,
+    write_text,
+)
 
 _CLAIM_SUFFIX = ".claim"
 
@@ -54,13 +60,13 @@ def list_claims(claim_dir: Path) -> dict[str, SlotClaim | None]:
     """Every claimed slot key. The value is None while the winner has not finished writing
     (or the file is torn): the slot is still claimed, but cannot be re-driven yet."""
     out: dict[str, SlotClaim | None] = {}
-    if not claim_dir.is_dir():
+    if not exists_path(claim_dir):
         return out
-    for path in sorted(claim_dir.glob(f"*{_CLAIM_SUFFIX}")):
-        key = unquote(path.name[: -len(_CLAIM_SUFFIX)])
+    for name in list_children(claim_dir, suffix=_CLAIM_SUFFIX):
+        key = unquote(name[: -len(_CLAIM_SUFFIX)])
         try:
-            out[key] = SlotClaim.model_validate_json(path.read_text(encoding="utf-8"))
-        except (OSError, ValidationError):
+            out[key] = read_json(claim_dir / name, SlotClaim)
+        except (OSError, ValueError):  # a torn file raises the store's ValueError
             out[key] = None
     return out
 
@@ -89,15 +95,9 @@ def _lock_path(path: Path) -> Path:
 
 
 def _append_line(path: Path, record: SlotRecord) -> bool:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    data = (record.model_dump_json() + chr(10)).encode("utf-8")
     # thread lock for in-process callers, file lock so separate OS processes serialise too
     with _APPEND_LOCK, file_lock(_lock_path(path), what="records"):
-        fd = os.open(path, os.O_APPEND | os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0))
-        try:
-            os.write(fd, data)
-        finally:
-            os.close(fd)
+        append_path(path, record.model_dump_json() + chr(10))
     return True
 
 
@@ -139,9 +139,10 @@ def read_records(path: Path) -> list[SlotRecord]:
 
 def read_all_records(records_dir: Path) -> list[SlotRecord]:
     """Every project's slot records (the inbox lists the blocked ones: TS5). Empty if none."""
-    if not records_dir.is_dir():
+    if not exists_path(records_dir):
         return []
-    return [r for f in sorted(records_dir.glob("*.jsonl")) for r in read_records(f)]
+    return [r for n in list_children(records_dir, suffix=".jsonl")
+            for r in read_records(records_dir / n)]
 
 
 def project_records_path(records_dir: Path, project: str) -> Path:
@@ -250,7 +251,8 @@ def write_heartbeat(path: Path, now: datetime) -> None:
 def read_heartbeat(path: Path) -> datetime | None:
     """The last tick time, or None when absent or unreadable (never shown as healthy)."""
     try:
-        stamp = datetime.fromisoformat(json.loads(path.read_text(encoding="utf-8"))["last_tick"])
-    except (OSError, ValueError, KeyError, TypeError):
+        beat = read_json(path, Heartbeat)
+        stamp = None if beat is None else datetime.fromisoformat(beat.last_tick)
+    except (OSError, ValueError):
         return None
-    return stamp if stamp.tzinfo is not None else None
+    return stamp if stamp is not None and stamp.tzinfo is not None else None

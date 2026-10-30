@@ -217,6 +217,14 @@ class SlotClaim(BaseModel):
     superseded_by: str | None = None
 
 
+class Heartbeat(BaseModel):
+    """The tick heartbeat file: when the scheduler last ran, as ISO text."""
+
+    model_config = ConfigDict(extra="ignore", strict=True)  # as tolerant as the old reader
+
+    last_tick: str
+
+
 class TickReport(BaseModel):
     """What one `autotester schedule tick` did: the JSON document of `--output json`.
 

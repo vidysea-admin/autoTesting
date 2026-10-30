@@ -7,10 +7,9 @@ blob out of HEAD and compares it, LF-normalised on both sides (git stores LF whi
 Where no committed object can exist (not its own git repo, or no commit yet) the leg is reported as
 `committed-leg-skipped` and named, never as passed.
 
-It also hosts `check_state_bypass` (mongo-store M16), a second doctor rule: no raw filesystem call
-on a state path outside `store/` and `browser/`. It lives here only because `doctor.py` and the
-other ledger check modules are at the 300-line cap and a new module needs a D-122 entry; move it
-to its own module when one is approved.
+It also hosts `check_state_bypass` (mongo-store M16): no raw filesystem call on a state path
+outside `store/` and `browser/`. It lives here only because `doctor.py` and the other ledger check
+modules are at the 300-line cap and a new module needs a D-122 entry; move it out when one exists.
 """
 
 from __future__ import annotations
@@ -19,6 +18,8 @@ import ast
 import os
 import subprocess
 import tomllib
+from collections import Counter
+from collections.abc import Iterator
 from pathlib import Path
 
 from autotester.core.paths import RepoDocs
@@ -105,9 +106,14 @@ _STATE_MODULES = frozenset({  # modules that persist state under a path the CALL
 _STATE_NAMES = frozenset({"ProjectPaths", "team_path", "paths"})
 _STATE_PARTS = frozenset({".work", "projects", ".env"})
 _ROOT_NAMES = frozenset({"repo_root", "root", "base"})
-_METHODS = frozenset({"write_text", "write_bytes", "unlink", "glob", "rglob", "iterdir",
-                      "exists", "stat"})
-_OS_CALLS = frozenset({"replace", "rename", "link", "open", "remove", "unlink"})
+_METHODS = frozenset({"write_text", "write_bytes", "unlink", "glob", "rglob", "iterdir", "exists",
+                      "stat", "mkdir", "touch", "rename", "rmdir", "symlink_to", "hardlink_to"})
+_OS_CALLS = frozenset({"replace", "rename", "link", "open", "remove", "unlink", "makedirs",
+                       "mkdir", "rmdir", "removedirs", "listdir", "scandir", "walk", "stat",
+                       "symlink", "truncate", "utime", "chmod"})
+_OS_PATH = frozenset({"exists", "isfile", "isdir", "lexists", "getsize", "getmtime"})
+_FS_MODULES = frozenset({"os", "shutil"})
+_FuncDef = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 
 def _names(expr: ast.AST) -> set[str]:
@@ -115,72 +121,155 @@ def _names(expr: ast.AST) -> set[str]:
         n.attr for n in ast.walk(expr) if isinstance(n, ast.Attribute)}
 
 
-def _is_state(expr: ast.AST, tainted: set[str], roots: set[str]) -> bool:
-    names = _names(expr)
-    if names & (_STATE_NAMES | tainted):
-        return True
-    parts = {n.value for n in ast.walk(expr) if isinstance(n, ast.Constant)}
-    return bool(parts & _STATE_PARTS) and bool(names & (roots | _ROOT_NAMES))
+class _Taint:
+    """Names bound to a state path (`tainted`), to the data root (`roots`), and module functions
+    returning a state path (`funcs`). Scope-blind on purpose: it errs towards flagging."""
+
+    def __init__(self, tree: ast.AST) -> None:
+        self.tainted: set[str] = set()
+        self.roots: set[str] = set()
+        self.funcs: set[str] = set()
+        pairs = _pairs(tree)
+        for _ in range(4):  # a short fixpoint: `a = paths.x` then `b = a / "y"`
+            for names, value in pairs:
+                if _names(value) & _ROOT_NAMES:
+                    self.roots.update(names)
+                if self.is_state(value):
+                    self.tainted.update(names)
+            for fn in ast.walk(tree):
+                if isinstance(fn, _FuncDef) and any(
+                        r.value is not None and self.is_state(r.value)
+                        for r in ast.walk(fn) if isinstance(r, ast.Return)):
+                    self.funcs.add(fn.name)
+
+    def is_state(self, expr: ast.AST) -> bool:
+        names = _names(expr)
+        if names & (_STATE_NAMES | self.tainted):
+            return True
+        if any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in self.funcs
+               for n in ast.walk(expr)):
+            return True
+        parts = {n.value for n in ast.walk(expr) if isinstance(n, ast.Constant)}
+        return bool(parts & _STATE_PARTS) and bool(names & (self.roots | _ROOT_NAMES))
 
 
-def _bindings(tree: ast.AST) -> tuple[set[str], set[str]]:
-    """`(tainted, roots)`: names bound (module-wide) to a state path, and to the data root."""
-    tainted: set[str] = set()
-    roots: set[str] = set()
-    pairs = [(t, n.value) for n in ast.walk(tree) if isinstance(n, (ast.Assign, ast.AnnAssign))
-             and n.value is not None
-             for t in (n.targets if isinstance(n, ast.Assign) else [n.target])]
-    for _ in range(4):  # a short fixpoint: `a = paths.x` then `b = a / "y"`
-        for target, value in pairs:
-            if not isinstance(target, ast.Name):
-                continue
-            if _names(value) & _ROOT_NAMES:
-                roots.add(target.id)
-            if _is_state(value, tainted, roots):
-                tainted.add(target.id)
-    return tainted, roots
+def _bound(target: ast.AST, value: ast.AST) -> list[tuple[list[str], ast.AST]]:
+    """`(names, value)` pairs for one binding; `a, b = x, y` pairs element by element."""
+    if (isinstance(target, (ast.Tuple, ast.List)) and isinstance(value, (ast.Tuple, ast.List))
+            and len(target.elts) == len(value.elts)):
+        return [p for t, v in zip(target.elts, value.elts, strict=True) for p in _bound(t, v)]
+    return [([n.id for n in ast.walk(target) if isinstance(n, ast.Name)], value)]
 
 
-def _writes(call: ast.Call) -> bool:
-    """`open(...)` / `Path.open(...)` with a literal mode that writes, appends or creates."""
-    literals = [*call.args, *(k.value for k in call.keywords if k.arg == "mode")]
-    texts = [a.value for a in literals if isinstance(a, ast.Constant) and isinstance(a.value, str)]
-    return any(set(t) & set("wax+") for t in texts if len(t) <= 4)
+def _pairs(tree: ast.AST) -> list[tuple[list[str], ast.AST]]:
+    """Every binding in the module: assignment, loop and comprehension target, `with ... as`."""
+    out: list[tuple[list[str], ast.AST]] = []
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Assign):
+            bindings = [(t, n.value) for t in n.targets]
+        elif isinstance(n, ast.AnnAssign) and n.value is not None:
+            bindings = [(n.target, n.value)]
+        elif isinstance(n, (ast.For, ast.AsyncFor, ast.comprehension)):
+            bindings = [(n.target, n.iter)]
+        elif isinstance(n, ast.withitem) and n.optional_vars is not None:
+            bindings = [(n.optional_vars, n.context_expr)]
+        else:
+            continue
+        out += [p for t, v in bindings for p in _bound(t, v)]
+    return out
 
 
-def _kind(call: ast.Call, hit) -> str | None:  # type: ignore[no-untyped-def]
+def _imports(tree: ast.AST) -> dict[str, str]:
+    """Local name -> dotted origin for `os` / `shutil` imports, so an alias cannot hide a call."""
+    out: dict[str, str] = {}
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            for a in n.names:
+                top = a.name.split(".")[0]
+                if top in _FS_MODULES:
+                    out[a.asname or top] = a.name if a.asname else top
+        elif isinstance(n, ast.ImportFrom) and n.module in {*_FS_MODULES, "os.path"}:
+            out.update({a.asname or a.name: f"{n.module}.{a.name}" for a in n.names})
+    return out
+
+
+def _dotted(fn: ast.AST, imports: dict[str, str]) -> str | None:
+    """`os.path.exists` for a call target spelled through any alias, else None."""
+    attrs: list[str] = []
+    while isinstance(fn, ast.Attribute):
+        attrs.append(fn.attr)
+        fn = fn.value
+    if not isinstance(fn, ast.Name) or fn.id not in imports:
+        return None
+    return ".".join([imports[fn.id], *reversed(attrs)])
+
+
+def _fs_call(canon: str | None) -> bool:
+    if canon is None:
+        return False
+    if canon.startswith("os.path."):
+        return canon[len("os.path."):] in _OS_PATH
+    head, _, tail = canon.partition(".")
+    return bool(tail) and (head == "shutil" or (head == "os" and tail in _OS_CALLS))
+
+
+def _writes(call: ast.Call, builtin: bool) -> bool:
+    """`open(...)` / `Path.open(...)` whose mode writes, appends or creates. A mode that is not a
+    literal is unknown, so it counts as a write; no mode at all is a read."""
+    index = 1 if builtin else 0
+    mode = call.args[index] if len(call.args) > index else next(
+        (k.value for k in call.keywords if k.arg == "mode"), None)
+    if mode is None:
+        return False
+    if isinstance(mode, ast.Constant):
+        return isinstance(mode.value, str) and bool(set(mode.value) & set("wax+"))
+    return True
+
+
+def _kind(call: ast.Call, hit, imports: dict[str, str]) -> str | None:  # type: ignore[no-untyped-def]
     """The raw-filesystem kind of `call` when it acts on a state path, else None."""
     fn = call.func
-    if isinstance(fn, ast.Attribute) and isinstance(fn.value, ast.Name) and fn.value.id in {
-            "os", "shutil"}:
-        wanted = fn.value.id == "shutil" or fn.attr in _OS_CALLS
-        return f"{fn.value.id}.{fn.attr}" if wanted and any(hit(a) for a in call.args) else None
+    canon = _dotted(fn, imports)
+    if _fs_call(canon):
+        return canon if any(hit(a) for a in call.args) else None
     if isinstance(fn, ast.Attribute) and fn.attr in _METHODS and hit(fn.value):
         return fn.attr
-    if isinstance(fn, ast.Attribute) and fn.attr == "open" and hit(fn.value) and _writes(call):
-        return "open"
+    if isinstance(fn, ast.Attribute) and fn.attr == "open" and hit(fn.value):
+        return "open" if _writes(call, False) else None
     if isinstance(fn, ast.Name) and fn.id == "open" and call.args and hit(call.args[0]):
-        return "open" if _writes(call) else None
+        return "open" if _writes(call, True) else None
     return None
 
 
-def _sites(path: Path, rel: str) -> list[tuple[int, str]]:
+def _scoped_calls(node: ast.AST, scope: tuple[str, ...] = ()) -> Iterator[tuple[ast.Call, str]]:
+    """Every call with the dotted name of the function or class that encloses it."""
+    for child in ast.iter_child_nodes(node):
+        if isinstance(child, ast.Call):
+            yield child, ".".join(scope) or "<module>"
+        if isinstance(child, (*_FuncDef, ast.ClassDef)):
+            yield from _scoped_calls(child, (*scope, child.name))
+        else:
+            yield from _scoped_calls(child, scope)
+
+
+def _sites(path: Path, rel: str) -> list[tuple[int, str, str]]:
+    """`(line, function, kind)` for each raw call on a state path in the module."""
     tree = ast.parse(path.read_text(encoding="utf-8"))
-    tainted, roots = _bindings(tree)
-    everywhere = rel in _STATE_MODULES
-    hit = (lambda e: True) if everywhere else (lambda e: _is_state(e, tainted, roots))
-    found = [(c.lineno, k) for c in ast.walk(tree) if isinstance(c, ast.Call)
-             and (k := _kind(c, hit)) is not None]
+    taint, imports = _Taint(tree), _imports(tree)
+    hit = (lambda e: True) if rel in _STATE_MODULES else taint.is_state
+    found = [(c.lineno, scope, k) for c, scope in _scoped_calls(tree)
+             if (k := _kind(c, hit, imports)) is not None]
     return sorted(found)
 
 
-def _allowed(root: Path, key: str) -> set[str]:
-    """`path:line:kind` entries of `[tool.autotester.doctor.state-bypass].<key>`; the text after
-    ` | ` is the owning unit (baseline) or the reason (permanent)."""
+def _allowed(root: Path, key: str) -> list[str]:
+    """`path:function:kind` entries of `[tool.autotester.doctor.state-bypass].<key>` (a repeated
+    entry allows that many sites); the text after ` | ` is the owning unit or the reason. Keyed on
+    the enclosing function, not the line, so an unrelated edit above a site never moves it."""
     table = root / "pyproject.toml"
     data = tomllib.loads(table.read_text(encoding="utf-8")) if table.exists() else {}
     rows = data.get("tool", {}).get("autotester", {}).get("doctor", {}).get("state-bypass", {})
-    return {row.split(" | ", 1)[0] for row in rows.get(key, [])}
+    return [row.split(" | ", 1)[0] for row in rows.get(key, [])]
 
 
 def check_state_bypass(root: Path) -> list[Violation]:
@@ -189,21 +278,22 @@ def check_state_bypass(root: Path) -> list[Violation]:
     A call is flagged when its path derives from `ProjectPaths`, `team_path` or `repo_root()` with
     `.work`/`projects`, or when it sits in a module that persists state under a caller's path. The
     `baseline` rows are the known remaining sites (each tagged with the unit that removes it); a
-    baseline row that no longer matches a call is itself reported, so the list can only shrink."""
-    baseline, permanent = _allowed(root, "baseline"), _allowed(root, "permanent")
-    seen: set[str] = set()
-    out: list[Violation] = []
+    row that no longer matches a call is itself reported, so the list can only shrink."""
+    allowed = Counter(_allowed(root, "baseline") + _allowed(root, "permanent"))
+    seen: dict[str, list[int]] = {}
     base = root / "src" / "autotester"
     for path in sorted(base.rglob("*.py")):
         rel = path.relative_to(base).as_posix()
         if "__pycache__" in path.parts or rel.split("/")[0] in _EXEMPT_DIRS:
             continue
-        for line, kind in _sites(path, rel):
-            entry = f"{rel}:{line}:{kind}"
-            seen.add(entry)
-            if entry not in baseline | permanent:
-                out.append(Violation(STATE_BYPASS, f"{rel}:{line}", f"`{kind}` on a state path: "
-                                     "go through store.filestore (mongo-store M16)"))
-    out += [Violation(STATE_BYPASS_STALE, e, "baseline/permanent row matches no call; delete it")
-            for e in sorted((baseline | permanent) - seen)]
+        for line, scope, kind in _sites(path, rel):
+            seen.setdefault(f"{rel}:{scope}:{kind}", []).append(line)
+    out: list[Violation] = []
+    for key, lines in seen.items():
+        for line in lines[allowed[key]:]:  # the sites beyond what the baseline allows
+            out.append(Violation(STATE_BYPASS, f"{key.partition(':')[0]}:{line}",
+                                 f"`{key.rpartition(':')[2]}` on a state path: go through "
+                                 f"store.filestore (mongo-store M16); baseline row `{key}`"))
+    out += [Violation(STATE_BYPASS_STALE, key, "baseline/permanent row matches no call; delete it")
+            for key, n in sorted(allowed.items()) for _ in range(n - len(seen.get(key, [])))]
     return out
