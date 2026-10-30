@@ -235,7 +235,7 @@ def _click_loop(rt: ExploreRuntime, node: ScreenNode, typed: int) -> bool:
     """The click phase after the typing pre-pass (AT-533: ONE shared per-node budget).
     Returns False when the node ended ABORTED_DIALOG/ABORTED_ERROR; True otherwise."""
     tried, seen = 0, len(node.elements)
-    queue = explore_safety.destructive_last(node.elements, rt.policy)
+    queue = explore_traversal.ordered_candidates(rt, node)
     while queue:
         el = queue.pop(0)
         # AT-533: typing and clicking share ONE per-node budget (typed pre-pass first)

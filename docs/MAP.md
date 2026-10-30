@@ -161,6 +161,7 @@
 | `schema/cli_output.py` | The machine-readable result of a run (T-174, CM2/CM4). |
 | `schema/coverage.py` | Coverage gaps and the video requests that close them. |
 | `schema/crawl.py` | Crawl-safety and crawl-envelope primitives (Track B). |
+| `schema/crawl_guidance.py` | Shapes for model-guided crawl ordering (qa/contracts/crawl-guidance.md G1-G8, D-118). |
 | `schema/crawl_summary.py` | CrawlSummary: the small, redacted, TRACKED record of one finished crawl. |
 | `schema/credential_policy.py` | What a project declares about its password rules and its credential mail (MP27). |
 | `schema/cross_role_assertion.py` | A timed cross-role assertion and the evidence the runner records for it (MP13, MP14). |
@@ -297,6 +298,8 @@
 | `stages/explore.py` | EXPLORE: a bounded, safety-gated BFS crawl of a (usually logged-in) app. |
 | `stages/explore_consent.py` | The crawl's consent pre-flight (D-018 gate 2) — split from `explore.py` |
 | `stages/explore_flows.py` | One job: derive reviewable `Flow` PROPOSALS from a crawl's discovery tree (AT-887, D-084). |
+| `stages/explore_guidance.py` | Model-guided ORDER of one screen's controls, with bounds, fallback and KG reuse (D-118). |
+| `stages/explore_guidance_payload.py` | The pure half of crawl guidance: what is sent, and how the answer is read (G1, G3). |
 | `stages/explore_incremental.py` | Incremental crawl: don't re-explore a screen the persona already knows. |
 | `stages/explore_merge.py` | Fold a crawl's screen graph into the reviewed FlowSpec (Track B5). |
 | `stages/explore_node.py` | One node's worth of exploring: try each safe candidate action, record what |
@@ -626,6 +629,11 @@
 | `CrawlCoverage` (`schema/crawl.py`) | What a crawl covered, stated by the crawl itself (coverage.md V7). The books balance: |
 | `NoiseCount` (`schema/crawl.py`) | One third-party host's dropped-request tally (never an issue, X9). |
 | `Crawl` (`schema/crawl.py`) | The envelope for one bounded BFS run — `stages/explore.py`'s output. |
+| `GuidanceOptIn` (`schema/crawl_guidance.py`) | G5/D-118 item 3: the per-project egress switch. Absent (None on `Project`) means OFF. |
+| `NextActionRanking` (`schema/crawl_guidance.py`) | What the model returns for ONE screen: indices into the numbered candidate list, best |
+| `GuidanceAnnotation` (`schema/crawl_guidance.py`) | G7: an ADVISORY ranking stored on a knowledge-graph screen node. Never read as coverage, |
+| `GuidanceFallback` (`schema/crawl_guidance.py`) | One recorded reason a screen used rule order, and how many screens it hit (G4). |
+| `CrawlGuidance` (`schema/crawl_guidance.py`) | G8: what guidance did during one crawl. Present only when guidance was active. |
 | `CrawlSummary` (`schema/crawl_summary.py`) |  |
 | `PasswordRule` (`schema/credential_policy.py`) | The rule names a finding reports. The value is what the report says, never a password. |
 | `MailRule` (`schema/credential_policy.py`) | The rule a credential-bearing mail breaks. |

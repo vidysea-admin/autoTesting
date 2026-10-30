@@ -1,7 +1,7 @@
 // Enumerate interactive elements on the current page. Loaded by
 // browser/observe.py via page.evaluate(). Returns an array of
 // {role, name, selector, enabled, visible, obscured, href, is_form_submit, in_row,
-// target_blank, tag} objects, one per interactive element found.
+// target_blank, tag, type, field_label} objects, one per interactive element found.
 //
 // Selector priority: data-testid > a stable (non-generated-looking) #id >
 // [aria-label] > a role+name locator with an nth index > an xpath fallback.
@@ -76,6 +76,75 @@
     return "";
   }
 
+  // crawl-guidance G3: a data-bearing control's NAME can be its value, shown text or option text
+  // (nameOf), which must never leave the machine. This reports its label sources only:
+  // aria-label, aria-labelledby (never the control itself or what contains it), an associated
+  // <label>, a placeholder; the text taken from a label or a labelledby target leaves out every
+  // field inside it (textOutsideFields). null = not a data field. Fields: native
+  // input/textarea/select, anything inside a select or datalist (options, the customizable-select
+  // button), contenteditable, the ARIA value widgets (combobox, textbox, searchbox, spinbutton,
+  // listbox, option, slider) under ANY token of a role fallback list, and a button that opens a
+  // listbox/tree/grid/dialog (MUI, Ant, react-select). Additive: nameOf, selectors and every
+  // other key are unchanged.
+  const FIELD_ROLES = ["combobox", "textbox", "searchbox", "spinbutton", "listbox", "option",
+    "slider"];
+  const FIELD_POPUPS = ["listbox", "tree", "grid", "true", "dialog"];
+  function isFieldEl(el) {
+    const tag = el.tagName.toLowerCase();
+    const caption = ["submit", "button", "reset", "image"].includes(
+      (el.getAttribute("type") || "").toLowerCase());
+    const roles = (el.getAttribute("role") || "").toLowerCase().split(/\s+/);
+    const popup = (el.getAttribute("aria-haspopup") || "").trim().toLowerCase();
+    return (["input", "textarea", "select"].includes(tag) && !caption) ||
+      el.isContentEditable || roles.some((r) => FIELD_ROLES.includes(r)) ||
+      FIELD_POPUPS.includes(popup) || !!el.closest("select, datalist");
+  }
+  // Rendered text only: a text node under `root` is skipped when an element between it and `root`
+  // (root excluded) is display:none / [hidden] / <noscript> / <template> / <script> / <style> /
+  // the closed body of a <details>, or when its own parent is visibility:hidden while `root` is
+  // visible. `root` itself is read even when hidden (ARIA lets a label target be hidden).
+  function hiddenBelow(root, text) {
+    const rootHidden = window.getComputedStyle(root).visibility !== "visible";
+    for (let n = text, p = text.parentElement; p && p !== root; n = p, p = p.parentElement) {
+      const hidden = window.getComputedStyle(p);
+      const closed = p.tagName === "DETAILS" && !p.open && n.tagName !== "SUMMARY";
+      if (hidden.display === "none" || closed ||
+        ["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"].includes(p.tagName)) return true;
+      if (n === text && !rootHidden && hidden.visibility !== "visible") return true;
+    }
+    return false;
+  }
+  // The text of `root` with every field inside it (and a root that is itself a field) and every
+  // hidden descendant left out: a field's text is a value or the option texts, not a caption.
+  function textOutsideFields(root) {
+    if (isFieldEl(root)) return "";
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const parts = [];
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      let keep = !hiddenBelow(root, t);
+      for (let p = t.parentElement; p && keep; p = p === root ? null : p.parentElement) {
+        keep = !isFieldEl(p);
+      }
+      if (keep) parts.push(t.nodeValue);
+    }
+    return parts.join(" ").replace(/\s+/g, " ").trim();
+  }
+  function fieldLabelOf(el) {
+    if (!isFieldEl(el)) return null;
+    const aria = el.getAttribute("aria-label");
+    if (aria && aria.trim()) return aria.trim().slice(0, 60);
+    const named = (el.getAttribute("aria-labelledby") || "").split(/\s+/)
+      .map((id) => document.getElementById(id))
+      .filter((n) => n && n !== el && !n.contains(el) && !el.contains(n))
+      .map(textOutsideFields).filter(Boolean).join(" ");
+    if (named) return named.slice(0, 60);
+    const label = el.labels && el.labels[0];
+    const text = label ? textOutsideFields(label) : "";
+    if (text) return text.slice(0, 60);
+    const hint = el.getAttribute("placeholder");
+    return hint && hint.trim() ? hint.trim().slice(0, 60) : "";
+  }
+
   function isGeneratedId(id) {
     return /^[0-9]+$/.test(id) || /[0-9a-f]{8}/.test(id) || id.length > 40;
   }
@@ -145,6 +214,7 @@
       target_blank: el.getAttribute("target") === "_blank",
       tag: tag,
       type: tag === "input" ? (el.type || "").toLowerCase() : "",
+      field_label: fieldLabelOf(el),
     });
   }
   return out;

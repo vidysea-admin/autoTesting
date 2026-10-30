@@ -26,6 +26,7 @@ from autotester.schema.screen_graph import CrawlFrontier, ScreenNode
 from autotester.stages import (
     crawl_coverage,
     explore_consent,
+    explore_guidance,
     explore_incremental,
     explore_node,
     explore_status,
@@ -64,15 +65,13 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
     """Run the human-authored login case through `run_case` — the ONLY place
     the explorer types anything, and the only pre-crawl form submit (X10).
 
-    **AT-226.** A persistent browser profile can already hold a live session,
-    in which case the login page itself redirects away before the case's own
-    FILL step ever runs — the field it names is not on the page at all, and
-    `run_case` blocks for the full step timeout before reporting ERRORED.
-    Checked once, before the case runs, against the case's own NAVIGATE step:
-    if the browser lands somewhere other than the login page itself, the
-    session is already authenticated and the case is skipped rather than run
-    to a guaranteed timeout — a login page that redirects away from itself
-    has already done its job, no app-specific marker needed."""
+    **AT-226.** A persistent browser profile can already hold a live session, in which case the
+    login page itself redirects away before the case's own FILL step ever runs — the field it
+    names is not on the page at all, and `run_case` blocks for the full step timeout before
+    reporting ERRORED. Checked once, before the case runs, against the case's own NAVIGATE step:
+    if the browser lands somewhere other than the login page itself, the session is already
+    authenticated and the case is skipped rather than run to a guaranteed timeout — a login page
+    that redirects away from itself has already done its job, no app-specific marker needed."""
     login_step = next(
         (s for s in sorted(case.steps, key=lambda s: s.order) if s.action is Action.NAVIGATE),
         None,
@@ -85,13 +84,12 @@ def _bootstrap_login(rt: ExploreRuntime, case: Case) -> bool:
             rt, case, result.failing_step, login_step and login_step.target):
         rt.stop_reason = f"login case did not complete (AT-889): {result.error}"
         return False
-    # AT-528: a COMPLETED step sequence is NOT proof of authentication — run_case
-    # observes, it never judges (E1); the live Pathlynks crawl
-    # crawl_01M31V5GHN91TE38MMB4BKM6HF completed while the app rendered "Invalid
-    # credentials" (expected.visible_text is best-effort settle, never a gate).
-    # The product's own verdict during the bootstrap is a first-party 401 on the
-    # login API — precise, app-reported, fixture-neutral. A signed-out crawl may
-    # never read COMPLETED: end LOGIN_FAILED naming the evidence.
+    # AT-528: a COMPLETED step sequence is NOT proof of authentication — run_case observes, it
+    # never judges (E1); the live Pathlynks crawl crawl_01M31V5GHN91TE38MMB4BKM6HF completed while
+    # the app rendered "Invalid credentials" (expected.visible_text is best-effort settle, never a
+    # gate). The product's own verdict during the bootstrap is a first-party 401 on the login API
+    # — precise, app-reported, fixture-neutral. A signed-out crawl may never read COMPLETED: end
+    # LOGIN_FAILED naming the evidence.
     _console, failed, _dialogs, _popups = rt.observer.drain()
     auth_401 = [(u, why) for u, why in failed if why.rstrip().endswith("401")]
     if auth_401:
@@ -229,6 +227,7 @@ def _finish(rt: ExploreRuntime, status: CrawlStatus) -> Crawl:
         "skipped_unchanged": rt.skipped_unchanged,  # CR3/CR5: visible on every surface
         "noise_counts": [NoiseCount(host=h, count=c) for h, c in sorted(rt.noise.items())],
         "coverage": crawl_coverage.of_run(rt, status),  # V7
+        **explore_guidance.crawl_fields(rt),  # G8: {} unless guidance was active
     })
     rt.crawl = crawl
     explore_summary.save_crawl(rt, crawl)
@@ -250,6 +249,7 @@ def run_crawl(
     clock: Callable[[], float] = time.monotonic,
     strategy: TraversalStrategy = TraversalStrategy.BFS,
     incremental: bool = False,
+    guide: explore_guidance.Guidance | None = None,
 ) -> Crawl:
     """Crawl `project` breadth-first within `bounds`, refusing anything
     `policy` denies. Returns the finished `Crawl` envelope; the graph itself
@@ -279,6 +279,7 @@ def run_crawl(
         breaker=DialogBreaker(crawl.bounds.dialog_repeat_limit), clock=clock,
         started=clock(), frontier=CrawlFrontier(), strategy=strategy,
         persona=explore_incremental.load_index(store, enabled=incremental),
+        guidance=explore_guidance.attach(guide, project, bounds),
     )
     try:
         return _walk(rt, login_case)

@@ -292,18 +292,26 @@ from quietly breaking that honesty:
 nodes shows every skipped node counted and labelled on the crawl report, and the report's headline
 completeness language does not claim full exploration when skips occurred.
 
-### CR6 — DOM-driven and deterministic, still (X12 carried forward)
+### CR6 — DOM-driven and deterministic, still (X12 carried forward, as amended by D-118)
 Strategy selection (`bfs` vs `hybrid`), the depth-first candidate ordering within `hybrid`, and the
-CR3 skip decision are all pure functions of frontier/persona state on disk — no provider, no model,
-anywhere in this unit (core-invariants C8). A `hybrid` crawl completes with `provider=mock`, the
-same discipline `explore.md` X12 already holds `bfs` to; a model's only permitted role anywhere in
-this contract is unchanged from X12 — naming an already-discovered screen for human readability,
-never choosing a traversal step or a skip.
+CR3 skip decision are all pure functions of frontier/persona state on disk — **no provider, no
+model, anywhere in the traversal and incremental modules this unit adds** (core-invariants C8). A
+`hybrid` crawl completes with `provider=mock`, the same discipline `explore.md` X12 holds `bfs` to.
+**Amended 2026-10-29 (D-118):** the traversal strategy, the CR3 skip decision and the depth bound
+remain provider-free. The one place a model enters is ordering the ORDINARY (non-destructive)
+candidate controls of a single screen through `stages/explore_guidance.py` (`crawl-guidance.md` G1,
+G2, G9), called by `explore_traversal.ordered_candidates` only when per-project guidance is ON. The
+model never chooses a traversal step, never causes a skip (a guided order cannot make CR3 skip or
+re-visit a screen it would not otherwise), never reorders the destructive tail (D-040) and never
+adds a control. With guidance off, behaviour and the falsifier below are exactly as before.
 
 **Falsifiable:** `grep -rn` for a `Provider`/vendor-SDK import in the traversal/incremental modules
-this unit adds returns nothing; a `hybrid` crawl run with `provider=mock` completes and its
-strategy/skip decisions are identical to a run with a real provider configured but never called
-(same assertion shape as `explore.md` X12's existing verify).
+this unit adds returns nothing, **with one named exception: `stages/explore_guidance.py` is the sole
+module under `stages/explore_*` permitted to import `Provider`** (and `explore_traversal.py` may
+import only that module's ordering function, never a provider type); a `hybrid` crawl run with
+`provider=mock` completes and its strategy/skip decisions are identical to a run with a real
+provider configured but never called, **and identical to a guided run whose fake provider answers
+garbage** (same assertion shape as `explore.md` X12's verify).
 
 ### CR7 — Nothing here widens the safety matrix, deny-list, or typing rules (X5/X6/X10 untouched)
 This is a traversal and bookkeeping contract. `write_policy` enforcement (X5), the never-click
@@ -434,3 +442,10 @@ belongs in a stated-reason new module (C3) rather than pushed into a file alread
   all. Recorded under CR4 **with the analysis that rules out the naive closure**, because the obvious
   subset rule would replace that silence with a fabricated deletion on every crawl of every two-state
   screen.
+- 2026-10-29 · CRITICAL amendment · **CR6 amended (rewritten in place) under D-118** (Approved-by
+  Umesh, chat 2026-10-29). CR6 said no model anywhere in the unit; it now keeps that for strategy
+  selection, the CR3 skip decision and depth ordering, and permits exactly one model-assisted seam:
+  ordering one screen's ordinary candidate controls via `explore_guidance.py`, default OFF, fully
+  specified by `qa/contracts/crawl-guidance.md`. The CR6 grep falsifier is scoped (one named module
+  exception) rather than deleted, and gains a guided-with-garbage-answer equivalence assertion.
+  CR1-CR5 and CR7 are byte-unchanged; X5/X6/X10/X10-b remain untouched (CR7).

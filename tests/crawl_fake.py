@@ -221,7 +221,8 @@ def grant_crawl_approval(store: ProjectStore, project: Project,
 def crawl_it(tmp_path: Path, *, project: Project | None = None,
              bounds: CrawlBounds | None = None, policy: SafetyPolicy | None = None,
              clock: Any = None, strategy: Any = None, incremental: bool = False,
-             store: ProjectStore | None = None) -> tuple[Any, ProjectStore, FakeSitePage]:
+             store: ProjectStore | None = None,
+             guide: Any = None) -> tuple[Any, ProjectStore, FakeSitePage]:
     """T-165: `strategy`/`incremental` are passed through only when set, so every
     pre-existing caller gets byte-identical behaviour (bfs, no persona skip).
     `store` is accepted so a test can crawl the SAME project twice — CR3's
@@ -239,5 +240,7 @@ def crawl_it(tmp_path: Path, *, project: Project | None = None,
         kwargs["strategy"] = strategy
     if incremental:
         kwargs["incremental"] = True
+    if guide is not None:  # crawl-guidance: passed only when set, so every old caller is unchanged
+        kwargs["guide"] = guide
     crawl = run_crawl(project, session, store, **kwargs)
     return crawl, store, page

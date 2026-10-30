@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from autotester.core.ids import content_id
 from autotester.schema.base import Artifact
+from autotester.schema.crawl_guidance import GuidanceAnnotation
 from autotester.schema.enums import Action, EdgeOutcome, NodeStatus
 
 
@@ -48,6 +49,12 @@ class ElementRef(BaseModel):
         description="the `<input>`'s real type ('password', 'file', 'text', ...), lowercased; "
         "'' for any non-input and for a graph stored before AT-650. The typing gate "
         "(`stages/explore_safety.py::typing_target_allowed`) reads it, never the name alone",
+    )
+    field_label: str | None = Field(
+        default=None, exclude=True,
+        description="crawl-guidance G3: set by enumerate.js for a data-bearing form control only "
+        "(aria-label / <label> / placeholder text, never the value or option text); '' = none. "
+        "In memory only (exclude=True): never persisted, so crawl artifacts are unchanged",
     )
 
 
@@ -96,6 +103,9 @@ class ScreenNode(Artifact):
     console_errors: list[str] = Field(default_factory=list)
     failed_requests: list[str] = Field(default_factory=list)
     discovered_by: str | None = Field(default=None, description="the ScreenEdge.id that found it")
+    guidance: list[GuidanceAnnotation] | None = Field(
+        default=None, description="crawl-guidance (D-119): this screen's rankings, grafted onto "
+        "PortalPersona.graph by the persona build")
     api_calls: list[ApiCall] = Field(
         default_factory=list,
         description="successful (status < 400) first-party XHR/fetch requests seen while on "

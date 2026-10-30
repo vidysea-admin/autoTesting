@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from autotester.schema.base import Artifact
 from autotester.schema.crawl import PermittedControl
+from autotester.schema.crawl_guidance import GuidanceOptIn
 from autotester.schema.enums import ProviderRole, SourceKind, WritePolicy
 from autotester.schema.image_privacy import CEILING_MASK_LIMIT, DEFAULT_MASK_LIMIT
 from autotester.schema.intake import SourceOrigin
@@ -236,6 +237,8 @@ class Project(Artifact):
         description="G11 MP1/MP3: the linked products. None (an old project) reads as ONE implicit "
                     "platform of base_url/allowed_domains (`effective_platforms`), never written",
     )
+    crawl_guidance: GuidanceOptIn | None = Field(
+        default=None, description="crawl-guidance G5: the per-project egress opt-in; None = OFF")
     platform_links: list[PlatformLink] | None = Field(
         default=None, description="G11 MP1: declared hops between platform ids")
     role_accounts: list[RoleAccount] | None = Field(

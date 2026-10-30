@@ -1,0 +1,145 @@
+"""The pure half of crawl guidance: what is sent, and how the answer is read (G1, G3).
+
+One job: turn one screen's candidate controls into a redacted TEXT-ONLY payload, and turn
+whatever came back into a validated order. No network, no clock, no model import (qa/contracts/
+crawl-guidance.md G9: `explore_guidance.py` owns the call). A control is numbered `0..n-1`; the
+answer is indices only, cleaned in ONE place (`clean_indices`) and completed in rule order, so
+the result is always a permutation of the code's own list: a model can order a control, never add,
+drop or invent one.
+
+Sent per screen: url template (query and fragment stripped, never the example URL), title, depth,
+known screen templates (capped). Sent per control: index, role, name (trimmed, scrubbed), tag,
+type, is_form_submit, in_row, has_href and the href PATH only (http(s) only, templated; any
+other scheme is just `<mailto>`, `<tel>` ...; a malformed href is `<href>`). A data field (input,
+textarea, select, an ARIA combobox/textbox/searchbox/spinbutton/listbox/option/slider, or a
+button with aria-haspopup) sends its label text (aria-label, aria-labelledby, <label>,
+placeholder; text inside a field is left out of a label) or `<field:kind>`, never its value,
+displayed text or option text.
+A control inside a list row has its name replaced by a fixed placeholder (rows are where student
+names live) and no href.
+Never sent: images, input values, cookies, headers, tokens, query strings, the example URL.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from collections.abc import Callable
+from typing import Any, TypeVar
+from urllib.parse import urlsplit
+
+from autotester.core.ids import content_hash
+from autotester.core.urls import url_template
+from autotester.schema.screen_graph import ElementRef, ScreenNode
+
+T = TypeVar("T")
+MAX_CANDIDATES = 80
+"""G1: controls ranked per call; the rest follow in rule order after the ranked head."""
+NAME_CHARS = 60
+TITLE_CHARS = 80
+KNOWN_CAP = 30
+ROW_PLACEHOLDER = "<row item>"
+FIELD_TAGS = ("input", "textarea", "select")
+FIELD_ROLES = ("combobox", "textbox", "searchbox", "spinbutton", "listbox", "option", "slider")
+CAPTION_TYPES = ("submit", "button", "reset", "image")
+"""A button-like input's `value` is its caption, not user data, so its name is still sent."""
+
+
+def href_path(href: str | None) -> str:
+    """What a link may say: an http(s) path templated by `core/urls.url_template` with no host,
+    `;params`, query or fragment; any other scheme (mailto, tel, javascript, data) as `<scheme>`
+    only, since its payload is an address, a number or code; `<href>` when the page's own href
+    cannot be parsed (it must never raise: a page controls its hrefs). "" when no path."""
+    if not href:
+        return ""
+    try:
+        parts = urlsplit(href.strip())
+        if parts.scheme and parts.scheme.lower() not in ("http", "https"):
+            return f"<{parts.scheme.lower()}>"
+        path = "/".join(re.split(r";|%3b", seg, flags=re.I)[0] for seg in parts.path.split("/"))
+        return url_template(path, keep_host=False) if path.strip() else ""
+    except Exception:  # any parse failure is neutral, never a breaker strike
+        return "<href>"
+
+
+def is_field(el: ElementRef) -> bool:
+    """A data-bearing control: its name may be its value, shown text or option text (B1)."""
+    return (el.field_label is not None or bool(_field_role(el))
+            or (el.tag in FIELD_TAGS and el.type not in CAPTION_TYPES))
+
+
+def _field_role(el: ElementRef) -> str:
+    """The first token of a role fallback list that is a field role ("foo combobox" -> combobox),
+    "" when none is (N5: a page can put any token first)."""
+    return next((r for r in el.role.lower().split() if r in FIELD_ROLES), "")
+
+
+def _kind(el: ElementRef) -> str:
+    """`<field:KIND>`: the input type, else a native control's tag, else the ARIA field role,
+    else the tag (a contenteditable or aria-haspopup widget with no field role)."""
+    if el.type or el.tag in FIELD_TAGS:
+        return el.type or el.tag
+    return _field_role(el) or el.tag
+
+
+def _template(url_template: str) -> str:
+    return href_path(url_template) or "/"
+
+
+def candidate_hash(cands: list[ElementRef]) -> str:
+    """Content hash of the numbered candidate set (role, folded name, selector), order included,
+    so a changed or reordered control set misses the stored ranking (G7)."""
+    return content_hash([[c.role, " ".join(c.name.casefold().split()), c.selector] for c in cands])
+
+
+def _control(i: int, el: ElementRef, scrub: Callable[[str | None], str | None]) -> dict[str, Any]:
+    shown = (el.field_label or f"<field:{_kind(el)}>") if is_field(el) else el.name
+    name = ROW_PLACEHOLDER if el.in_row else (scrub(shown.strip()) or "")  # scrub, THEN cut
+    path = "" if el.in_row else scrub(href_path(el.href)) or ""
+    return {"i": i, "role": el.role, "name": name[:NAME_CHARS], "tag": el.tag, "type": el.type,
+            "is_form_submit": el.is_form_submit, "in_row": el.in_row,
+            "has_href": bool(el.href), "href_path": path}
+
+
+def build_payload(node: ScreenNode, cands: list[ElementRef], known: list[str],
+                  scrub: Callable[[str | None], str | None]) -> dict[str, Any]:
+    """The redacted payload for `cands[:MAX_CANDIDATES]` (the caller passes the head)."""
+    return {
+        "screen": {"url_template": scrub(_template(node.url_template)),
+                   "title": (scrub(node.title.strip()) or "")[:TITLE_CHARS], "depth": node.depth},
+        "known_screens": [scrub(_template(k)) or "" for k in known[:KNOWN_CAP]],
+        "controls": [_control(i, el, scrub) for i, el in enumerate(cands)],
+    }
+
+
+def render_prompt(skill_body: str, body: dict[str, Any]) -> str:
+    """The finished prompt text: the versioned skill body, then the payload as JSON."""
+    return f"{skill_body.rstrip()}\n\n{json.dumps(body, ensure_ascii=True, sort_keys=True)}\n"
+
+
+def clean_indices(ints: list[int], n: int) -> list[int] | None:
+    """THE range and duplicate filter (G1): in-range, first occurrence only, order kept.
+    None when nothing usable is left (an answer of garbage is a failure, not an empty order)."""
+    kept = [i for i in dict.fromkeys(ints) if 0 <= i < n]
+    return kept or None
+
+
+def parse_ranking(raw: Any, n: int) -> list[int] | None:
+    """The usable ranked indices of a model answer, or None for any failure: wrong shape, a
+    non-integer entry (strings and bools are not indices), empty, or nothing in range."""
+    ranked = raw.get("ranked") if isinstance(raw, dict) else getattr(raw, "ranked", raw)
+    if not isinstance(ranked, list):
+        return None
+    if any(isinstance(i, bool) or not isinstance(i, int) for i in ranked):
+        return None
+    return clean_indices(ranked, n)
+
+
+def complete_order(ranked: list[int], n: int) -> list[int]:
+    """`ranked` (already cleaned) then every index it did not mention, in rule order."""
+    mentioned = set(ranked)
+    return [*ranked, *(i for i in range(n) if i not in mentioned)]
+
+
+def reorder(items: list[T], order: list[int]) -> list[T]:
+    return [items[i] for i in order]

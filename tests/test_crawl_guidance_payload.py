@@ -1,0 +1,216 @@
+"""crawl-guidance Unit 2, pure half (qa/contracts/crawl-guidance.md G1, G3): no network, no clock.
+
+G1: whatever a model returns, the order is a permutation of the code's own list. G3: only a
+redacted, text-only payload is built. A gate no test defends is decorative, so the permutation
+property is also run against a SABOTAGED range check and must fail there.
+"""
+
+from __future__ import annotations
+
+import json
+import random
+from pathlib import Path
+from typing import Any
+
+import pytest
+from crawl_guidance_support import FakeProvider, controls, guide, make_rt, reverse, screen
+
+from autotester.schema.crawl_guidance import NextActionRanking
+from autotester.schema.screen_graph import ElementRef, ScreenNode
+from autotester.stages import explore_guidance_payload as payload
+
+SECRET = "S3cretPlant-91xyz"
+
+
+def _cands(n: int) -> list[ElementRef]:
+    return [ElementRef(role="button", name=f"Control {i}", selector=f"#c{i}") for i in range(n)]
+
+
+def _fuzz_outputs(rng: random.Random, n: int) -> list[Any]:
+    junk: list[Any] = [None, "", "garbage", 7, 3.5, True, [], {}, [[0]], {"ranked": "x"},
+                       {"ranked": [None]}, {"ranked": ["0", "1"]}, {"ranked": [0.5]},
+                       {"ranked": [True, False]}, {"nope": [0]}, ["a", 1], b"bytes"]
+    outs = list(junk)
+    for _ in range(400):
+        size = rng.choice([0, 1, 2, n, n + 3, 3 * n + 5])
+        ints = [rng.choice([-5, -1, 0, n - 1, n, n + 9, 10**12, rng.randrange(-3, n + 4)])
+                for _ in range(size)]
+        outs += [{"ranked": ints}, NextActionRanking(ranked=ints), ints]
+    return outs
+
+
+def _order(raw: Any, n: int) -> list[int] | None:
+    usable = payload.parse_ranking(raw, n)
+    return None if usable is None else payload.complete_order(usable, n)
+
+
+def check_permutation_property(n: int) -> int:
+    """For every fuzzed model output: failure (None) or a permutation of range(n). Returns the
+    number of outputs that produced an order, so the property cannot pass vacuously."""
+    produced = 0
+    for raw in _fuzz_outputs(random.Random(1017), n):
+        order = _order(raw, n)
+        if order is None:
+            continue
+        produced += 1
+        assert sorted(order) == list(range(n)), (raw, order)
+        items = _cands(n)
+        assert sorted(e.selector for e in payload.reorder(items, order)) == sorted(
+            e.selector for e in items)
+    return produced
+
+
+@pytest.mark.parametrize("n", [2, 3, 7, 40])
+def test_any_model_output_yields_a_permutation_or_a_failure(n: int) -> None:
+    assert check_permutation_property(n) > 100
+
+
+def test_sabotaged_range_check_is_caught_by_the_property(monkeypatch: pytest.MonkeyPatch) -> None:
+    """G1 verify: let an out-of-range index through and at least one test must fail."""
+    monkeypatch.setattr(payload, "clean_indices", lambda ints, n: list(dict.fromkeys(ints)) or None)
+    with pytest.raises((AssertionError, IndexError)):
+        check_permutation_property(7)
+
+
+def test_sabotaged_duplicate_check_is_caught_by_the_property(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(payload, "clean_indices",
+                        lambda ints, n: [i for i in ints if 0 <= i < n] or None)
+    with pytest.raises(AssertionError):
+        check_permutation_property(7)
+
+
+def test_unmentioned_candidates_follow_in_rule_order() -> None:
+    assert payload.complete_order([3, 1], 5) == [3, 1, 0, 2, 4]
+    assert payload.parse_ranking({"ranked": [9, 2, 2, -1, 0]}, 4) == [2, 0]
+
+
+def test_empty_and_wrong_shape_answers_are_failures_not_empty_orders() -> None:
+    for raw in (None, "text", {}, {"ranked": []}, {"ranked": [99]}, {"ranked": ["1"]}, [True]):
+        assert payload.parse_ranking(raw, 5) is None, raw
+
+
+def test_candidate_hash_tracks_the_set_and_its_order() -> None:
+    a, b = _cands(3), _cands(3)
+    assert payload.candidate_hash(a) == payload.candidate_hash(b)
+    b[1].name = "Control X"
+    assert payload.candidate_hash(a) != payload.candidate_hash(b)
+    assert payload.candidate_hash(a) != payload.candidate_hash(list(reversed(a)))
+
+
+def _node() -> ScreenNode:
+    return ScreenNode(id="node_1", crawl_id="c", project="demo", url_template="/people?page=2#x",
+                      url_example="https://app.test/people?page=2&token=ABC123", signature="s",
+                      title="People", depth=2)
+
+
+def _payload_text() -> str:
+    cands = [
+        ElementRef(role="link", name="Reports", selector="a.r", href="/reports?year=2026&q=z#top"),
+        ElementRef(role="link", name="Jane Doe 9th grade", selector="a.j", href="/people/77",
+                   in_row=True),
+        ElementRef(role="textbox", name="Search", selector="input.s", tag="input", type="password"),
+        ElementRef(role="button", name=f"Export {SECRET}", selector="b.e", tag="button"),
+    ]
+    scrub = lambda text: (text or "").replace(SECRET, "[REDACTED]")  # noqa: E731
+    body = payload.build_payload(_node(), cands, ["/", "/a?x=1"], scrub)
+    return json.dumps(body)
+
+
+def test_payload_is_text_only_and_leaves_no_query_row_name_or_secret() -> None:
+    text = _payload_text()
+    for forbidden in ("token=ABC123", "page=2", "year=2026", "q=z", "#top", "Jane Doe",
+                      "/people/77", SECRET, "app.test", "x=1"):
+        assert forbidden not in text, forbidden
+    assert "<row item>" in text and "[REDACTED]" in text and "/reports" in text
+
+
+def test_a_secret_straddling_either_cap_is_scrubbed_before_the_cut() -> None:
+    scrub = lambda text: (text or "").replace(SECRET, "[REDACTED]")  # noqa: E731
+    cands = [ElementRef(role="button", name="n" * 54 + SECRET, selector="#a")]
+    node = _node()
+    node.title = "t" * 74 + SECRET
+    text = json.dumps(payload.build_payload(node, cands, [], scrub))
+    assert SECRET[:4] not in text and SECRET[-4:] not in text
+    assert len(payload.build_payload(node, cands, [], scrub)["controls"][0]["name"]) <= (
+        payload.NAME_CHARS)
+
+
+@pytest.mark.parametrize(("href", "expected"), [
+    ("mailto:jane.doe@example.org?subject=hi", "<mailto>"),
+    ("tel:+911234567890", "<tel>"),
+    ("javascript:openStudent('Jane Doe', 4412)", "<javascript>"),
+    ("JAVASCRIPT:alert(1)", "<javascript>"),
+    ("data:text/html,<b>secret</b>", "<data>"),
+    ("sms:+911234567890", "<sms>"),
+])
+def test_a_non_http_href_sends_only_its_scheme(href: str, expected: str) -> None:
+    assert payload.href_path(href) == expected
+    el = ElementRef(role="link", name="Contact", selector="#c", href=href, tag="a")
+    text = json.dumps(payload.build_payload(_node(), [el], [], lambda t: t))
+    for leaked in ("jane", "1234567890", "Jane Doe", "4412", "alert", "secret"):
+        assert leaked not in text, leaked
+
+
+def test_a_path_parameter_such_as_a_session_id_is_dropped() -> None:
+    assert payload.href_path("/files;jsessionid=ABC123SESSION/list;v=2?x=1#f") == "/files/list"
+    assert payload.href_path("https://app.test/a;sid=ZZ99/b") == "/a/b"
+
+
+def test_an_http_path_goes_through_url_template_with_no_host_query_or_fragment() -> None:
+    assert payload.href_path("https://app.test:8443/people/77?token=T#top") == "/people/{id}"
+    assert payload.href_path("/reports/2026-01-02") == "/reports/{date}"
+    assert payload.href_path("//cdn.test/x/y") == "/x/y"
+    assert payload.href_path("#top") == "" and payload.href_path("?q=1") == ""
+    assert payload.href_path(None) == "" and payload.href_path("") == ""
+
+
+def test_payload_caps_names_known_screens_and_indexes_candidates() -> None:
+    cands = [ElementRef(role="button", name="N" * 500, selector=f"#b{i}") for i in range(3)]
+    body = payload.build_payload(_node(), cands, [f"/s{i}" for i in range(500)], lambda t: t)
+    assert [c["i"] for c in body["controls"]] == [0, 1, 2]
+    assert all(len(c["name"]) <= payload.NAME_CHARS for c in body["controls"])
+    assert len(body["known_screens"]) == payload.KNOWN_CAP
+
+
+def test_href_path_keeps_only_the_path() -> None:
+    assert payload.href_path("https://evil.test/a/b?x=1#f") == "/a/b"
+    assert payload.href_path("/a?b=c") == "/a" and payload.href_path(None) == ""
+
+
+JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+
+
+@pytest.mark.parametrize("segment", ["a@b.com", "jane.doe@example.org", JWT,
+                                     "Zm9vYmFyYmF6cXV4MTIzNDU2Nzg5MGFiY2RlZg"])
+def test_an_email_or_token_path_segment_is_masked(segment: str) -> None:
+    """The url_template opaque-token masking (master a238d406) reaches the payload."""
+    out = payload.href_path(f"/users/{segment}/edit")
+    assert segment not in out and "@" not in out and "eyJ" not in out, out
+    el = ElementRef(role="link", name="Edit", selector="#e", href=f"/users/{segment}/edit", tag="a")
+    assert segment not in json.dumps(payload.build_payload(_node(), [el], [], lambda t: t))
+
+
+def test_an_encoded_semicolon_path_parameter_is_cut_too() -> None:
+    for href in ("/files%3Bjsessionid=ABC123SESSION/list",
+                 "/files%3bjsessionid=ABC123SESSION/list"):
+        out = payload.href_path(href)
+        assert "ABC123SESSION" not in out and "jsessionid" not in out.lower(), out
+        assert out == "/files/list"
+
+
+@pytest.mark.parametrize("href", ["http://[::1/x", "https://[bad"])
+def test_a_malformed_href_sends_the_neutral_token_and_never_raises(href: str) -> None:
+    assert payload.href_path(href) == "<href>"
+
+
+def test_a_malformed_href_is_not_a_breaker_strike(tmp_path: Path) -> None:
+    """A page controls its own hrefs: one that makes urlsplit raise must not cost the crawl its
+    guidance (a raise in order() counts as a model strike)."""
+    cands = [ElementRef(role="link", name="Bad", selector="#a", href="http://[::1/x", tag="a"),
+             *controls(2)]
+    model = FakeProvider(reverse)
+    g = guide(model)
+    g.order(make_rt(tmp_path), screen(), cands)
+    assert model.calls == 1 and g.strikes == 0 and not g.fallbacks and not g.stopped
+    assert '"href_path": "<href>"' in model.prompts[0]

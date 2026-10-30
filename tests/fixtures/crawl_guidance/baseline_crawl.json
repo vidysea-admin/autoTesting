@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "created_at":"T",
+  "id": "crawl_ID",
+  "project": "demo",
+  "status": "completed",
+  "bounds": {
+    "max_screens": 30,
+    "max_actions": 200,
+    "wall_clock_s": 600.0,
+    "max_depth": 6,
+    "per_node_action_cap": 25,
+    "dialog_repeat_limit": 3,
+    "settle_ms": 2500,
+    "heartbeat_every_actions": 5,
+    "heartbeat_stale_after_s": 90.0
+  },
+  "policy": {
+    "write_policy": "read_only",
+    "deny_patterns": [
+      "\\bdelete\\b",
+      "\\bremove\\b",
+      "\\bdeactivate\\b",
+      "\\bdisable\\b",
+      "\\barchive\\b",
+      "\\bpurge\\b",
+      "\\bdrop\\b",
+      "\\breset\\b",
+      "\\brevoke\\b",
+      "\\bterminate\\b",
+      "\\bcancel subscription\\b",
+      "\\bpay\\b",
+      "\\bcheckout\\b",
+      "\\bsend\\b",
+      "\\bsubmit\\b",
+      "\\bapprove\\b",
+      "\\breject\\b",
+      "\\bpublish\\b",
+      "\\bunsubscribe\\b",
+      "\\b(?:close|cancel|end|stop)\\b (?:\\w+ ){0,3}(?:account|subscriptions?|memberships?|plan|auto ?renew\\w*)\\b(?! settings$)",
+      "\\bturn off (?:\\w+ )?auto ?renew"
+    ],
+    "never_click_patterns": [
+      "\\blog ?out\\b",
+      "\\blog\\b[\\s\\w]{0,10}\\bout\\b",
+      "\\bsign ?out\\b",
+      "\\bsignout\\b",
+      "\\bsign\\b[\\s\\w]{0,10}\\bout\\b"
+    ],
+    "third_party_ignore": [
+      "google-analytics.com",
+      "googletagmanager.com",
+      "doubleclick.net",
+      "facebook.net",
+      "connect.facebook.net",
+      "hotjar.com",
+      "clarity.ms",
+      "sentry.io",
+      "segment.io",
+      "intercom.io",
+      "fonts.gstatic.com",
+      "fonts.googleapis.com"
+    ],
+    "click_unnamed": false,
+    "synthetic_typing": false
+  },
+  "strategy": "bfs",
+  "incremental": false,
+  "skipped_unchanged": 0,
+  "approval_id": "appr_ID",
+  "approval_production": false,
+  "started_at":"T",
+  "finished_at":"T",
+  "stop_reason": "frontier empty",
+  "screens": 4,
+  "edges": 12,
+  "actions": 5,
+  "denied": 7,
+  "issues": 1,
+  "tool_failures": 0,
+  "noise_counts": [],
+  "coverage": {
+    "controls_discovered": 12,
+    "controls_exercised": 5,
+    "screens_reached": 4,
+    "screens_queued_unvisited": 0,
+    "percent": 41,
+    "holes": [
+      {
+        "node_id": "node_ef35af6763e7",
+        "url_template": "/",
+        "selector": "a.ext",
+        "name": "External",
+        "reason": "off_domain"
+      },
+      {
+        "node_id": "node_5d28c6ca3784",
+        "url_template": "/settings",
+        "selector": "button.del",
+        "name": "Delete account",
+        "reason": "policy:not exercised: account-destroying (policy)"
+      },
+      {
+        "node_id": "node_5d28c6ca3784",
+        "url_template": "/settings",
+        "selector": "button.save",
+        "name": "Save",
+        "reason": "policy:form submit under read_only"
+      },
+      {
+        "node_id": "node_5d28c6ca3784",
+        "url_template": "/settings",
+        "selector": "a.out",
+        "name": "Log out",
+        "reason": "policy:never-click pattern (logout/sign-out)"
+      },
+      {
+        "node_id": "node_5d28c6ca3784",
+        "url_template": "/settings",
+        "selector": "button.icon",
+        "name": "",
+        "reason": "unnamed"
+      },
+      {
+        "node_id": "node_5d28c6ca3784",
+        "url_template": "/settings",
+        "selector": "input.displayname",
+        "name": "Display name",
+        "reason": "policy:typing disabled under this policy (X10-b)"
+      },
+      {
+        "node_id": "node_5d28c6ca3784",
+        "url_template": "/settings",
+        "selector": "select.grade",
+        "name": "Grade",
+        "reason": "policy:typing disabled under this policy (X10-b)"
+      }
+    ],
+    "screens_not_entered": [],
+    "denominator_basis": "screens-reached",
+    "permitted_holes": []
+  },
+  "heartbeat_at":"T"
+}

@@ -1,12 +1,11 @@
 """The durable Portal Persona — what AutoTester knows about one product, kept
 across runs instead of scoped to a single crawl (T-164, contract portal-persona.md).
 
-One `PortalPersona` model, persisted at `projects/<slug>/portal_persona.json`
-via the filestore; `knowledge.md` is a regenerated VIEW of it, never a second
-source of truth. Auth is described by field/domain SHAPE only — a `SecretRef`
-key, never a value (PP5). `history` is a dated, append-only trail of what each
-update changed (PP3). The knowledge graph (T-166, EC1) is this same persona's typed
-nodes and edges (`graph`) — JSON on the filestore, no graph database, no second schema.
+One `PortalPersona` model, persisted at `projects/<slug>/portal_persona.json` via the filestore;
+`knowledge.md` is a regenerated VIEW of it, never a second source of truth. Auth is described by
+field/domain SHAPE only — a `SecretRef` key, never a value (PP5). `history` is a dated, append-only
+trail of what each update changed (PP3). The knowledge graph (T-166, EC1) is this same persona's
+typed nodes and edges (`graph`) — JSON on the filestore, no graph database, no second schema.
 """
 
 from __future__ import annotations
@@ -16,6 +15,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from autotester.schema.base import Artifact
+from autotester.schema.crawl_guidance import GuidanceAnnotation
 
 
 class PersonaProfile(BaseModel):
@@ -212,6 +212,7 @@ class GraphNode(BaseModel):
     id: str
     kind: NodeKind
     label: str = ""
+    guidance: list[GuidanceAnnotation] | None = None  # G7: advisory only, None = none stored
 
     @classmethod
     def make(cls, kind: NodeKind, ref: str, label: str = "") -> GraphNode:

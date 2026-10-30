@@ -112,13 +112,15 @@ def test_au18_a_repeated_origin_or_host_header_is_refused_on_login(
     assert resp.status_code == 403 and _sessions() == before
 
 
-def test_au18_a_wildcard_in_the_allowed_origins_allows_nothing(
+def test_au18_a_wildcard_in_the_allowed_origins_is_an_opt_in_allow_all(
         root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """D-110 (amends D-066/AU18): `AUTOTESTER_ALLOWED_ORIGINS=*` accepts any origin, so the
+    login POST is no longer refused for being cross-site; it reaches the handler and succeeds."""
     account(ADMIN)
     monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", "*")
     resp = client().post("/auth/login", headers={"origin": "https://evil.example"},
                          data={"email": ADMIN, "password": PASSWORD})
-    assert resp.status_code == 403
+    assert resp.status_code == 303
 
 
 # -- AU15: a role never skips an approval -------------------------------------------------
