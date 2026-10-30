@@ -72,8 +72,15 @@ Set `AUTOTESTER_ALLOWED_ORIGINS` once the server is reachable by name: the Origi
 refuses a state-changing request from any other origin. `AUTOTESTER_ALLOWED_HOSTS` belongs to
 the Host allow-list (AT-758): any request, GET included, whose Host header is not loopback, the
 host of an `AUTOTESTER_ALLOWED_ORIGINS` entry, or listed in `AUTOTESTER_ALLOWED_HOSTS` exactly
-(port included, no wildcard) gets an empty 403. Set one of them or every request from the proxy
+(port included; the only wildcard is a bare `*`, below) gets an empty 403. Set one of them or every request from the proxy
 is refused.
+
+No fixed name yet (a new VM IP, a fresh Cloud Run URL)? Set `AUTOTESTER_ALLOWED_ORIGINS=*` (D-110,
+D-124): it turns off both guards and the server starts with no `AUTOTESTER_PUBLIC_ORIGIN`. Do **not**
+use `AUTOTESTER_ALLOWED_HOSTS=*` alone: it turns off only the Host guard, so the server starts and
+pages load but every login and form POST gets 403, because the browser's Origin is still checked.
+`*` re-opens CSRF and Host-header spoofing (accepted in D-110 for this internal tool); replace it
+with the real name once the server has one.
 
 Put the model keys (`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`) and `AUTOTESTER_APPROVAL_KEY` in
 `<data>/.env`.

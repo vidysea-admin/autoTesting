@@ -3012,3 +3012,15 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Links:** D-122, D-120, mongo-store
 
 **Changes-authorized:** The `qa/contracts/mongo-store.md` credential criteria, by the checker. No enforcement path.
+
+## D-124 | 2026-10-30 | type: fix | status: ACTIVE
+
+**What:** **Corrects D-110's `Result` deploy instruction (docs only; D-110's `What` and the shipped code stand).** D-110 told DevOps to set `AUTOTESTER_ALLOWED_HOSTS=*`. With that alone the Host guard is open but the Origin guard is not, so a hosted server starts and serves pages while every login and form POST from a browser gets 403. The working setting for a deploy with no fixed name is `AUTOTESTER_ALLOWED_ORIGINS=*`, which turns off both guards and drops the `AUTOTESTER_PUBLIC_ORIGIN` requirement. `*` in `AUTOTESTER_ALLOWED_HOSTS` keeps its D-110 meaning (Host guard only). `.env.example` and `docker/DEPLOY.md` now say this.
+
+**Why:** The D-110 unit's code review and both checkers (qa/verdicts/d110-allow-all.md, qa/verdicts/d110-allow-all.b.md, cycle 0) reproduced it: with only `ALLOWED_HOSTS=*`, `origin_refusal` refuses a same-origin POST from `http://34.47.136.12:8000`. Offered the choice in chat, either correct the docs or make `HOSTS=*` also open the Origin guard, the user chose "Correct docs only" (2026-10-30). That needs no code change and no change to the criteria the checkers passed.
+
+**Result:** `.env.example` (Where the server answers) and `docker/DEPLOY.md` (allow-list section) document `ALLOWED_ORIGINS=*` as the no-fixed-name setting and warn that `HOSTS=*` alone breaks login. The auth contract AU18 already says so (checker A, 3231fdb4). Open for the checker: `qa/contracts/hosting.md` HO13 still says `*` is refused once a domain exists.
+
+**Links:** D-110, D-066, qa/contracts/auth.md AU18, qa/contracts/auth.md AU20, qa/manifests/d110-allow-all.md
+
+**Changes-authorized:** `.env.example`, `docker/DEPLOY.md`. No code, no ARCHITECTURE.md prose, no enforcement path.
