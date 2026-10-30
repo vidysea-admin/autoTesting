@@ -252,3 +252,20 @@ def test_star_in_allowed_hosts_opens_only_the_host_guard_not_the_origin_guard(
     monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "*")
     assert client.get("/", headers={"Host": "anything.evil.example"}).status_code == 200
     assert client.post("/projects/nope/run", headers={"Origin": EVIL}).status_code == 403
+
+
+@pytest.mark.parametrize(("value", "expected"), [
+    ("**", False), ("*.evil.com", False), ("https://*", False), ("*:443", False),
+    ("'*'", False), ('"*"', False), ("%2A", False), ("\uff0a", False),
+    (" * ", True), ("*,a.com", True), ("a.com *", True), ("a.com,*", True),
+])
+def test_allow_all_matches_only_a_whole_star_token_never_a_near_miss(
+    monkeypatch: pytest.MonkeyPatch, value: str, expected: bool,
+) -> None:
+    """D-110: `*` is a whole comma/space-separated token. A near-miss that merely contains a
+    star (`**`, `*.evil.com`, `https://*`, `*:443`, quoted, %-encoded, fullwidth U+FF0A) must
+    NOT turn the guard off -- a substring match would silently open it to everyone."""
+    from autotester.ui.helpers import _allow_all
+
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", value)
+    assert _allow_all("AUTOTESTER_ALLOWED_ORIGINS") is expected
