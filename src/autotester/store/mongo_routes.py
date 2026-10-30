@@ -248,14 +248,16 @@ def store_selection() -> dict[str, str]:
 
 def ping_backends(selection: dict[str, str],
                   open_backend: Callable[[str], StateBackend]) -> dict[str, str]:
-    """Open and ping each backend the selection chose, once (M27). A failure keeps the guard's
-    fixed text (exception class only, never the URI) and adds the areas that sit on it."""
+    """Open and ping each backend the selection chose, once (M27). A failure is re-raised with
+    fixed text, the exception class name and the areas on that backend; the source message is
+    never relayed (M9), so a raiser that quotes a URI cannot leak it through here."""
     for name in sorted(set(selection.values())):
         try:
             open_backend(name).ping()
         except StoreDown as exc:
             areas = ", ".join(a for a, n in selection.items() if n == name)
-            raise type(exc)(f"{exc}; areas on {name}: {areas}") from None
+            raise type(exc)(f"state store unreachable ({type(exc).__name__}); "
+                           f"areas on {name}: {areas}") from None
     return selection
 
 

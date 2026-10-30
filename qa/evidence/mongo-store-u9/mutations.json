@@ -1,5 +1,8 @@
 {
- "tests": "tests/test_store_startup_u9.py",
+ "tests": [
+  "tests/test_store_startup_u9.py",
+  "tests/test_store_outage_u9.py"
+ ],
  "mutations": [
   {
    "name": "u1: the .env beats the process environment",
@@ -61,11 +64,12 @@
   {
    "name": "u7: the startup failure no longer names the areas",
    "file": "src/autotester/store/mongo_routes.py",
-   "old": "raise type(exc)(f\"{exc}; areas on {name}: {areas}\") from None",
-   "new": "raise type(exc)(f\"{exc}\") from None",
+   "old": "raise type(exc)(f\"state store unreachable ({type(exc).__name__}); \"\n                           f\"areas on {name}: {areas}\") from None",
+   "new": "raise type(exc)(f\"state store unreachable ({type(exc).__name__})\") from None",
    "kills": [
     "tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only",
-    "tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping"
+    "tests/test_store_startup_u9.py::test_a_server_that_dies_after_connecting_is_caught_by_the_ping",
+    "tests/test_store_outage_u9.py::test_the_startup_refusal_never_relays_the_source_message"
    ]
   },
   {
@@ -93,7 +97,7 @@
    "old": "        except StoreDown:\n            if any(started):",
    "new": "        except ZeroDivisionError:\n            if any(started):",
    "kills": [
-    "tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]"
+    "tests/test_store_outage_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]"
    ]
   },
   {
@@ -102,7 +106,7 @@
    "old": "{\"detail\": STORE_DOWN}, status_code=503)",
    "new": "{\"detail\": STORE_DOWN}, status_code=500)",
    "kills": [
-    "tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]"
+    "tests/test_store_outage_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]"
    ]
   },
   {
@@ -111,8 +115,8 @@
    "old": "middleware=[*error_pages.store_down_middleware(), *origin_guard_middleware(),",
    "new": "middleware=[*origin_guard_middleware(),",
    "kills": [
-    "tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]",
-    "tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too"
+    "tests/test_store_outage_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]",
+    "tests/test_store_outage_u9.py::test_an_outage_raised_below_the_router_is_a_503_too"
    ]
   },
   {
@@ -121,7 +125,7 @@
    "old": "middleware=[*error_pages.store_down_middleware(), *origin_guard_middleware(),\n                          *auth_middleware()])",
    "new": "middleware=[*origin_guard_middleware(), *auth_middleware(),\n                          *error_pages.store_down_middleware()])",
    "kills": [
-    "tests/test_store_startup_u9.py::test_an_outage_raised_below_the_router_is_a_503_too"
+    "tests/test_store_outage_u9.py::test_an_outage_raised_below_the_router_is_a_503_too"
    ]
   },
   {
@@ -130,7 +134,7 @@
    "old": "class StoreUnavailable(StoreDown):",
    "new": "class StoreUnavailable(RuntimeError):",
    "kills": [
-    "tests/test_store_startup_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]",
+    "tests/test_store_outage_u9.py::test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body[application/json]",
     "tests/test_store_startup_u9.py::test_an_unreachable_server_stops_startup_naming_the_area_and_class_only"
    ]
   },
@@ -140,8 +144,8 @@
    "old": "        \"store\": store_readiness(),\n",
    "new": "",
    "kills": [
-    "tests/test_store_startup_u9.py::test_healthz_reports_a_reachable_mongo_area",
-    "tests/test_store_startup_u9.py::test_healthz_in_file_mode_reports_every_area_as_file_without_a_reach_probe"
+    "tests/test_store_outage_u9.py::test_healthz_reports_a_reachable_mongo_area",
+    "tests/test_store_outage_u9.py::test_healthz_in_file_mode_reports_every_area_as_file_without_a_reach_probe"
    ]
   },
   {
@@ -150,8 +154,8 @@
    "old": "    try:\n        validate_store_env()\n    except Exception:",
    "new": "    try:\n        pass\n    except Exception:",
    "kills": [
-    "tests/test_store_startup_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing",
-    "tests/test_store_startup_u9.py::test_healthz_with_the_store_unconfigured_reports_it_without_failing"
+    "tests/test_store_outage_u9.py::test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing",
+    "tests/test_store_outage_u9.py::test_healthz_with_the_store_unconfigured_reports_it_without_failing"
    ]
   },
   {
@@ -160,7 +164,44 @@
    "old": "    if who is None or not authorize(who, PermissionKey.SETTINGS_MANAGE):\n        return {\"ok\": True}",
    "new": "    if who is None or not authorize(who, PermissionKey.SETTINGS_MANAGE):\n        return {\"ok\": True, \"store\": store_readiness()}",
    "kills": [
-    "tests/test_store_startup_u9.py::test_healthz_stays_200_and_anonymous_learns_nothing_new"
+    "tests/test_store_outage_u9.py::test_healthz_stays_200_and_anonymous_learns_nothing_new"
+   ]
+  },
+  {
+   "name": "u18: the startup refusal relays the source message again",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "raise type(exc)(f\"state store unreachable ({type(exc).__name__}); \"\n                           f\"areas on {name}: {areas}\") from None",
+   "new": "raise type(exc)(f\"{exc}; areas on {name}: {areas}\") from None",
+   "kills": [
+    "tests/test_store_outage_u9.py::test_the_startup_refusal_never_relays_the_source_message"
+   ]
+  },
+  {
+   "name": "u19: the startup refusal chains the original exception",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "areas on {name}: {areas}\") from None",
+   "new": "areas on {name}: {areas}\")",
+   "kills": [
+    "tests/test_store_outage_u9.py::test_the_startup_refusal_never_relays_the_source_message"
+   ]
+  },
+  {
+   "name": "u20: the HTML outage page goes back through theme.page (store sidebar)",
+   "file": "src/autotester/ui/error_pages.py",
+   "old": "HTMLResponse(_store_down_html(), status_code=503) if html",
+   "new": "_error_page(503, STORE_DOWN) if html",
+   "kills": [
+    "tests/test_store_outage_u9.py::test_the_themed_503_renders_without_reading_the_down_store[selection0]",
+    "tests/test_store_outage_u9.py::test_the_themed_503_renders_without_reading_the_down_store[selection1]"
+   ]
+  },
+  {
+   "name": "u21: no static fallback when the outage page fails to render",
+   "file": "src/autotester/ui/error_pages.py",
+   "old": "    except Exception:  # whatever went wrong, the reply stays a 503 with a fixed body",
+   "new": "    except ZeroDivisionError:  # whatever went wrong, the reply stays a 503 with a fixed body",
+   "kills": [
+    "tests/test_store_outage_u9.py::test_a_failure_while_rendering_the_outage_page_falls_back_to_a_fixed_body"
    ]
   }
  ]

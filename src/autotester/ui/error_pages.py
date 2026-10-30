@@ -42,6 +42,7 @@ from autotester.core.redact import Redactor
 from autotester.schema.project import Project
 from autotester.store.mongo_routes import StoreDown
 from autotester.ui import theme
+from autotester.ui.theme_style import PAGE_STYLE
 
 _NO_PROJECT_SCOPE = Project(slug="error-pages", name="error-pages", base_url="")
 """Not a real onboarded product -- a pure data carrier so `SecretStore.load`
@@ -130,6 +131,22 @@ STORE_DOWN = "State store unavailable, nothing was changed"
 """The whole body of a store outage (M26): no exception text, host, URI or database name."""
 
 
+_STATIC_503 = f"<!doctype html><title>503 Service Unavailable</title><p>{STORE_DOWN}</p>"
+
+
+def _store_down_html() -> str:
+    """The themed outage page WITHOUT the project sidebar: `theme.page` lists projects from the
+    store, which is the thing that is down (M26). Same shell as the sign-in page (`auth_view`).
+    Any failure while building it falls back to a fixed static body."""
+    try:
+        body = theme.card(f"<p>{STORE_DOWN}</p>", title="503 Service Unavailable")
+        return (f"<!doctype html><title>503 Service Unavailable — AutoTester</title>"
+                f"{PAGE_STYLE}<div class='layout'><main style='max-width:440px;margin:40px auto'>"
+                f"{body}</main></div>")
+    except Exception:  # whatever went wrong, the reply stays a 503 with a fixed body
+        return _STATIC_503
+
+
 class _StoreDownGate:
     """Outermost ASGI middleware: a `StoreDown` from a route OR from the auth gate below becomes
     one fixed 503, never a 500 with a traceback and never a request that falls through allowed.
@@ -155,7 +172,7 @@ class _StoreDownGate:
             if any(started):
                 raise
             html = "text/html" in Request(scope).headers.get("accept", "")
-            reply = _error_page(503, STORE_DOWN) if html else JSONResponse(
+            reply = HTMLResponse(_store_down_html(), status_code=503) if html else JSONResponse(
                 {"detail": STORE_DOWN}, status_code=503)
             await reply(scope, receive, send)
 

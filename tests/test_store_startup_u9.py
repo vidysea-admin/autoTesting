@@ -13,11 +13,9 @@ from pathlib import Path
 
 import pytest
 from fake_mongo import CANARY, FakeMongoServer, seams
-from fastapi.testclient import TestClient
 
 import autotester.core.paths as paths
 import autotester.ui.app as app_module
-import autotester.ui.routes_live as routes_live
 from autotester.core.env import MONGO_URI_ENV, mongo_uri
 from autotester.store.filestore import validate_store_env
 from autotester.store.mongo_backend import reset_default_backend
@@ -151,7 +149,7 @@ def test_an_unreachable_server_stops_startup_naming_the_area_and_class_only(
     text = "".join(traceback.format_exception(info.value)) + str(info.value)
     out = capsys.readouterr()
     assert CANARY not in text + out.out + out.err + caplog.text
-    assert "runs" in str(info.value) and "AutoReconnect" in str(info.value)
+    assert "runs" in str(info.value) and "StoreUnavailable" in str(info.value)
     assert _tree(tmp_path / "root") == before  # M26: no file appears
 
 
@@ -180,104 +178,3 @@ def test_the_server_refuses_to_start_when_the_store_is_down(
 
     with seams(client_factory=lambda _uri: server.client()), pytest.raises(StoreUnavailable):
         asyncio.run(start())
-
-
-# ---- 503 (M26) --------------------------------------------------------------------------------
-
-FIXED = "State store unavailable, nothing was changed"
-
-
-def _boom(monkeypatch: pytest.MonkeyPatch, exc: Exception) -> None:
-    def raiser() -> list[str]:
-        raise exc
-    monkeypatch.setattr(app_module, "_project_slugs", raiser)
-
-
-@pytest.mark.parametrize("accept", ["application/json", "text/html"])
-def test_a_store_outage_in_a_route_is_a_503_with_a_fixed_body(
-        monkeypatch: pytest.MonkeyPatch, accept: str) -> None:
-    _boom(monkeypatch, StoreUnavailable(f"state store unavailable ({URI})"))
-    resp = TestClient(app).get("/", headers={"accept": accept})
-    assert resp.status_code == 503
-    assert FIXED in resp.text
-    assert CANARY not in resp.text and "mongodb" not in resp.text
-
-
-def test_an_unrelated_error_is_not_turned_into_a_503(monkeypatch: pytest.MonkeyPatch) -> None:
-    _boom(monkeypatch, ValueError("plain bug"))
-    with pytest.raises(ValueError):
-        TestClient(app).get("/")
-
-
-def test_an_outage_raised_below_the_router_is_a_503_too(
-        monkeypatch: pytest.MonkeyPatch) -> None:
-    """The auth gate is middleware, outside the router's exception handling: a store error there
-    must still deny with a 503 and never fall through as allowed."""
-    from autotester.ui import auth_middleware
-
-    def down(_request: object) -> None:
-        raise StoreUnavailable(f"state store unavailable ({URI})")
-    monkeypatch.setattr(auth_middleware, "_principal", down)
-    resp = TestClient(app).get("/")
-    assert resp.status_code == 503 and FIXED in resp.text and CANARY not in resp.text
-
-
-# ---- readiness (M26) ----------------------------------------------------------------------------
-
-
-def _admin() -> TestClient:
-    return TestClient(app)
-
-
-def test_healthz_stays_200_and_anonymous_learns_nothing_new(
-        monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("AUTOTESTER_TEST_NO_AUTO_LOGIN", "1")
-    monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
-    monkeypatch.setenv(MONGO_URI_ENV, URI)
-    resp = TestClient(app).get("/healthz")
-    assert resp.status_code == 200 and resp.json() == {"ok": True}
-
-
-def test_healthz_in_file_mode_reports_every_area_as_file_without_a_reach_probe() -> None:
-    body = _admin().get("/healthz").json()
-    assert set(body["store"]["areas"].values()) == {"file"}
-    assert body["store"]["reachable"] is True
-    assert "mongo" not in str(body["store"])
-
-
-def test_healthz_reports_a_reachable_mongo_area(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "runs=mongo")
-    monkeypatch.setenv(MONGO_URI_ENV, URI)
-    server = FakeMongoServer()
-    with seams(client_factory=lambda _uri: server.client()):
-        body = _admin().get("/healthz").json()
-    assert body["store"]["areas"]["runs"] == "mongo"
-    assert body["store"]["areas"]["projects"] == "file"
-    assert body["store"]["reachable"] is True
-
-
-def test_healthz_stays_200_while_the_store_is_down_and_leaks_nothing(
-        monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
-    monkeypatch.setenv(MONGO_URI_ENV, URI)
-    server = FakeMongoServer(down_message=f"cannot reach {URI}")
-    with seams(client_factory=lambda _uri: server.client()):
-        _admin().get("/healthz")  # opens the backend while up
-        server.down = True
-        resp = _admin().get("/healthz")
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["store"]["reachable"] is False
-    assert CANARY not in resp.text and "mongodb" not in resp.text
-    assert "database" not in str(body["store"]) and "autotester" not in str(body["store"])
-
-
-def test_healthz_with_the_store_unconfigured_reports_it_without_failing(
-        monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("AUTOTESTER_STORE", "mongo")  # no URI anywhere
-    resp = _admin().get("/healthz")
-    assert resp.status_code == 200 and resp.json()["store"]["reachable"] is False
-
-
-def test_the_readiness_helper_is_the_one_in_routes_live() -> None:
-    assert callable(routes_live.store_readiness)
