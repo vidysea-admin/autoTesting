@@ -1,0 +1,47 @@
+KILLED  a1: save_job writes the file directly again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_drive_job_is_saved_and_loaded_through_the_backend
+    actually failed: tests/test_sweep_u3a.py::test_a_drive_job_is_saved_and_loaded_through_the_backend, tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed, tests/test_sweep_u3a.py::test_save_job_gives_up_after_the_last_try, tests/test_sweep_u3a.py::test_save_job_retries_a_busy_replace
+KILLED  a2: load_job reads the disk again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_drive_job_is_saved_and_loaded_through_the_backend
+    actually failed: tests/test_sweep_u3a.py::test_a_drive_job_is_saved_and_loaded_through_the_backend
+KILLED  a3: a corrupt job is no longer treated as absent  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_corrupt_drive_job_reads_as_absent
+    actually failed: tests/test_sweep_u3a.py::test_a_corrupt_drive_job_reads_as_absent
+KILLED  a4: the busy-replace retry is gone  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_save_job_gives_up_after_the_last_try, tests/test_sweep_u3a.py::test_save_job_retries_a_busy_replace
+    actually failed: tests/test_sweep_u3a.py::test_save_job_gives_up_after_the_last_try, tests/test_sweep_u3a.py::test_save_job_retries_a_busy_replace
+KILLED  a5: the last failed try is swallowed  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_save_job_gives_up_after_the_last_try
+    actually failed: tests/test_sweep_u3a.py::test_save_job_gives_up_after_the_last_try
+KILLED  a6: the payment report is written to disk directly again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_the_payment_report_is_written_through_the_backend
+    actually failed: tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed, tests/test_sweep_u3a.py::test_the_payment_report_is_written_through_the_backend
+KILLED  a7: the payment report is written into a folder that does not exist  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_the_payment_report_is_not_written_into_a_missing_folder
+    actually failed: tests/test_sweep_u3a.py::test_the_payment_report_is_not_written_into_a_missing_folder
+KILLED  a8: the payment declaration is read from disk again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_payment_declaration_and_a_credential_policy_load_through_the_backend
+    actually failed: tests/test_sweep_u3a.py::test_a_payment_declaration_and_a_credential_policy_load_through_the_backend
+KILLED  a9: the credential policy is read from disk again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_payment_declaration_and_a_credential_policy_load_through_the_backend
+    actually failed: tests/test_sweep_u3a.py::test_a_payment_declaration_and_a_credential_policy_load_through_the_backend
+KILLED  a10: an invalid declaration reads as not declared  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_payment_declaration_and_a_credential_policy_load_through_the_backend
+    actually failed: tests/test_sweep_u3a.py::test_a_payment_declaration_and_a_credential_policy_load_through_the_backend
+KILLED  a11: the masked leak screenshot is copied to disk directly again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_a_masked_leak_screenshot_is_stored_through_the_backend, tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+    actually failed: tests/test_sweep_u3a.py::test_a_masked_leak_screenshot_is_stored_through_the_backend, tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+KILLED  a12: knowledge.md is written to disk directly again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+    actually failed: tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+KILLED  a13: the real-acceptance evidence is written to disk directly again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+    actually failed: tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+KILLED  a14: the baseline source input is written to disk directly again  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+    actually failed: tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+KILLED  a15: a new raw write appears in a stage, unlisted  (pytest exit 1)
+    claims to kill : tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+    actually failed: tests/test_sweep_u3a.py::test_every_raw_write_left_in_stages_and_sources_is_listed
+
+15/15 mutations killed
