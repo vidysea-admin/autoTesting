@@ -8,6 +8,7 @@
 **Date:** 2026-10-30
 **Dual check:** required
 dual-trigger: auth src/autotester/ui/helpers.py:201
+**Round cap:** (a) SECURITY CLASS -- auth: the unit changes the D-066 Host/Origin guards (`_host_allowed`, `_origin_allowed`) and the AU20 hosted-startup check, i.e. CSRF and Host-spoofing protection on every authenticated route; D-014 never caps it.
 **Persona walk:** skip (no screen or navigation change; startup/guard configuration only)
 **Issues addressed:** none (clears the `decision-citation-dangling` D-110 notes other manifests recorded once this lands)
 **Executor:** claude-opus-main
