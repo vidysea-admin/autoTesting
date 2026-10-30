@@ -1,0 +1,169 @@
+{
+ "tests": [
+  "tests/test_session_store_u12f.py"
+ ],
+ "mutations": [
+  {
+   "name": "A-W1 save resets the backend again (new client per save)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "default_backend().rearm()",
+   "new": "__import__(\"autotester.store.mongo_backend\", fromlist=[\"x\"]).reset_default_backend()",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_session_saves_reuse_one_client_and_the_gate_still_rebuilds"
+   ]
+  },
+  {
+   "name": "A-W1 save no longer rearms the gate",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "default_backend().rearm()",
+   "new": "None",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_session_saves_reuse_one_client_and_the_gate_still_rebuilds"
+   ]
+  },
+  {
+   "name": "B-W1 manual login no longer saves",
+   "file": "src/autotester/stages/manual_login.py",
+   "old": "capture_session(session, project, MAIN_ACCOUNT)",
+   "new": "None",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_manual_login_is_saved_under_the_project_account"
+   ]
+  },
+  {
+   "name": "B-W1 manual login saves under the wrong account",
+   "file": "src/autotester/stages/manual_login.py",
+   "old": "capture_session(session, project, MAIN_ACCOUNT)",
+   "new": "capture_session(session, project, \"t1\")",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_manual_login_is_saved_under_the_project_account"
+   ]
+  },
+  {
+   "name": "B-W1 normal run no longer restores",
+   "file": "src/autotester/ui/run_execution.py",
+   "old": "restore_session(session, project, MAIN_ACCOUNT)",
+   "new": "None",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_normal_run_restores_the_project_account_login"
+   ]
+  },
+  {
+   "name": "B-W1 normal run restores the wrong account",
+   "file": "src/autotester/ui/run_execution.py",
+   "old": "restore_session(session, project, MAIN_ACCOUNT)",
+   "new": "restore_session(session, project, \"t1\")",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_normal_run_restores_the_project_account_login"
+   ]
+  },
+  {
+   "name": "W2 sign-in saves before the proof",
+   "file": "src/autotester/stages/multi_role_session.py",
+   "old": "            session.settle()  # the sign-in navigation finishes before anything else is driven",
+   "new": "            session.settle()\n            capture_session(session, self.project, account.id)",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_failed_login_never_replaces_a_good_stored_session"
+   ]
+  },
+  {
+   "name": "W2 saved even when the proof fails",
+   "file": "src/autotester/stages/role_session_port.py",
+   "old": "            if proven:  # U12 (W2): saved only after the proof, never before it",
+   "new": "            if True:",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_failed_login_never_replaces_a_good_stored_session"
+   ]
+  },
+  {
+   "name": "W2 proven login not saved",
+   "file": "src/autotester/stages/role_session_port.py",
+   "old": "                self.roles.save_login(role_id)",
+   "new": "                pass",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_proven_login_is_saved"
+   ]
+  },
+  {
+   "name": "W3 malformed state kept (cookies=5)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    return state if all(isinstance(part, list) for part in parts) else None",
+   "new": "    return state",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_malformed_stored_state_is_deleted_not_raised"
+   ]
+  },
+  {
+   "name": "W3 age cap not re-applied on load",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    if min(expires, saved + MAX_AGE_S) <= at:",
+   "new": "    if expires <= at:",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_tampered_far_future_expiry_is_not_trusted_on_load"
+   ]
+  },
+  {
+   "name": "W3 future save time trusted",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "saved > at + SKEW_S",
+   "new": "False",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login"
+   ]
+  },
+  {
+   "name": "W3 redactor trusts cookie shape",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "raw = [str(c.get(\"value\") or \"\") for c in _dicts(state.get(\"cookies\"))]",
+   "new": "raw = [str(c.get(\"value\") or \"\") for c in state.get(\"cookies\") or []]",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_bad_stored_item_never_breaks_the_run_wide_redactor"
+   ]
+  },
+  {
+   "name": "W3 redactor trusts localStorage shape",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "raw += [str(i.get(\"value\") or \"\") for i in _dicts(origin.get(\"localStorage\"))]",
+   "new": "raw += [str(i.get(\"value\") or \"\") for i in origin.get(\"localStorage\") or []]",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_bad_stored_item_never_breaks_the_run_wide_redactor"
+   ]
+  },
+  {
+   "name": "W3 scope trusts localStorage shape",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "\"localStorage\": [i for i in _dicts(o.get(\"localStorage\"))",
+   "new": "\"localStorage\": [i for i in (o.get(\"localStorage\") or [])",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_stored_localstorage_shape_error_does_not_stop_a_restore"
+   ]
+  },
+  {
+   "name": "W4 undeclare forgets nothing",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "            forget_session(project, acct.id)",
+   "new": "            pass",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login"
+   ]
+  },
+  {
+   "name": "W4 undeclare matches only the username key",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "if key in (acct.username_key, acct.password_key):",
+   "new": "if key == acct.username_key:",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login"
+   ]
+  },
+  {
+   "name": "W4 undeclare forgets every account",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "if key in (acct.username_key, acct.password_key):",
+   "new": "if True:",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login"
+   ]
+  }
+ ]
+}

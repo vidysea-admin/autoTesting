@@ -123,6 +123,8 @@ def test_role_sessions_save_after_sign_in_and_restore_per_account(rig: CredRig) 
     sign_in = dict(user_locator="#u", password_locator="#p", submit_locator="#s")
     with RoleSessions(PROJECT, secrets, rig.root / "runs", **kwargs) as roles:
         roles.sign_in("t1", "https://app.pl.test/login", **sign_in)
+        assert docs(rig) == []  # U12f (W2): signing in alone saves nothing; the proof comes first
+        assert roles.save_login("t1")
     assert [d["_id"] for d in docs(rig)] == ["pl|t1"]
     assert SID not in secrets.redactor().scrub(f"x {SID}")  # masked from sign-in on
     RoleFake.made.clear()

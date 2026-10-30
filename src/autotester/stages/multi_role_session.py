@@ -200,6 +200,12 @@ class RoleSessions:
             session.fill(password_locator, f"{{{{SECRET:{account.password_key}}}}}")
             session.click(submit_locator)
             session.settle()  # the sign-in navigation finishes before anything else is driven
-            capture_session(session, self.project, account.id)  # U12 (M38): store on only
 
         self.run_as(account_id, _login)
+
+    def save_login(self, account_id: str) -> bool:
+        """Store this account's signed-in browser state (U12, M38; store on only, else a no-op).
+        Called only once the sign-in is PROVEN, so a failed login never replaces a good session."""
+        self.account(account_id)
+        return self.run_as(account_id,
+                           lambda s: capture_session(s, self.project, account_id))

@@ -110,6 +110,8 @@ class LiveRolePort(SurfaceMixin, NetworkMixin, AuthzMixin, MailMixin):
                                submit_locator=spec.submit_locator)
             proven = self.roles.run_as(
                 role_id, lambda s: role_probe.appears(s, spec.signed_in_target))
+            if proven:  # U12 (W2): saved only after the proof, never before it
+                self.roles.save_login(role_id)
         except Exception as exc:  # the type only: a message may hold a URL
             state.signed_in, state.failed = False, type(exc).__name__
             raise RoleLoginFailed(f"role {role_id} could not sign in ({state.failed})") from None
