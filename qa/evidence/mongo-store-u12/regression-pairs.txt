@@ -23,3 +23,7 @@
 == test_session_store_u12 test_session_store_u12_redaction
 ======================= 23 passed, 2 warnings in 1.02s ========================
 DONE
+== RE-RUN after moving the store gate off credential_collection( (the 1 failure above was U11's pin test_only_the_door_writes_secrets_and_no_crypto_exists, fixed in code, test untouched)
+== test_credential_store_u11 test_credential_store_u11_routes -> 32 passed
+== test_manual_login test_multi_role_session -> 13 passed
+== test_session_store_u12 test_session_store_u12_redaction -> 23 passed

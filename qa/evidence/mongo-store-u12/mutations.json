@@ -214,6 +214,15 @@
    "kills": [
     "tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else"
    ]
+  },
+  {
+   "name": "project-level account id collides with a role account id",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "MAIN_ACCOUNT = \"_project\"",
+   "new": "MAIN_ACCOUNT = \"main\"",
+   "kills": [
+    "tests/test_session_store_u12.py::test_the_project_level_account_id_cannot_collide_with_a_role_account"
+   ]
   }
  ]
 }

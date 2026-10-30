@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -27,6 +28,7 @@ from session_store_support import (
 
 from autotester.browser import profiles
 from autotester.browser.profiles import (
+    MAIN_ACCOUNT,
     SessionRefused,
     capture_session,
     forget_session,
@@ -37,6 +39,7 @@ from autotester.browser.profiles import (
     session_id,
 )
 from autotester.schema.project import Project
+from autotester.schema.role_account import ROLE_ACCOUNT_ID_PATTERN
 from autotester.ui.env_editor import drop_credentials
 
 
@@ -157,12 +160,12 @@ def test_one_accounts_state_never_reaches_another_account(rig: CredRig) -> None:
 
 def test_an_entry_run_never_restores_a_login(rig: CredRig) -> None:
     fresh = {"cookies": [cookie("sid", SID, expires=-1)], "origins": []}
-    save_session(PROJECT, "main", fresh)
+    save_session(PROJECT, MAIN_ACCOUNT, fresh)
     entry = make_session(rig.root, "pl-entry-test", fresh)
-    assert restore_session(entry, PROJECT, "main") is False
+    assert restore_session(entry, PROJECT, MAIN_ACCOUNT) is False
     assert entry._context.cookies == [] and entry._context.scripts == []
     shared = make_session(rig.root, "pl", fresh)
-    assert restore_session(shared, PROJECT, "main") is True
+    assert restore_session(shared, PROJECT, MAIN_ACCOUNT) is True
 
 
 def test_a_logout_removes_the_state_so_nothing_restores_it(rig: CredRig) -> None:
@@ -181,3 +184,7 @@ def test_removing_a_project_removes_its_sessions_only(rig: CredRig) -> None:
     assert [d["_id"] for d in docs(rig)] == ["zz|t1"]
 
 
+
+
+def test_the_project_level_account_id_cannot_collide_with_a_role_account() -> None:
+    assert not re.match(ROLE_ACCOUNT_ID_PATTERN, MAIN_ACCOUNT)

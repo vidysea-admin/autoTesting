@@ -67,5 +67,8 @@ KILLED  role sign-in does not save  (pytest exit 1)
 KILLED  export written to a path (M38 plain, in memory)  (pytest exit 1)
     claims to kill : tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else
     actually failed: tests/test_session_store_u12.py::test_an_exported_state_is_stored_plain_scoped_and_nowhere_else, tests/test_session_store_u12_redaction.py::test_a_captured_session_joins_the_redactor_and_the_prompt_gate, tests/test_session_store_u12_redaction.py::test_role_sessions_save_after_sign_in_and_restore_per_account
+KILLED  project-level account id collides with a role account id  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12.py::test_the_project_level_account_id_cannot_collide_with_a_role_account
+    actually failed: tests/test_session_store_u12.py::test_the_project_level_account_id_cannot_collide_with_a_role_account
 
-23/23 mutations killed
+24/24 mutations killed

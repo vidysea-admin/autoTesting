@@ -24,7 +24,7 @@ MAX_AGE_S = 24 * 3600  # a saved login is never replayed older than this, whatev
 MIN_VALUE_LEN = 8  # shorter values ("1", "en") would corrupt every trace if masked everywhere
 MAX_MASKED = 200
 ENTRY_SUFFIX = "-entry-test"
-MAIN_ACCOUNT = "main"  # the project-level login (manual login, the shared-profile run)
+MAIN_ACCOUNT = "_project"  # the project-level login; not a valid RoleAccount id, so no collision
 
 
 def wipe_entry_profile(profile: Path) -> None:
