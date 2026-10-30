@@ -1,10 +1,10 @@
 # Manifest - mongo-store-u5b
 
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Contract:** `qa/contracts/mongo-store.md` (amended on master 001d10d6), unit U5b. **Criteria judged by U5b:** M24, M25, M51, M54, M55, plus the U5a checker W1 body-scan widening (= M54) and the `core/image_privacy.py:_sanitize_one:stat` baseline row (U3c verdict).
 **Branch:** `feat/mongo-store-u5b`. **Base SHA:** `001d10d6` (master at the contract amendment; master `30db1b7a` (U9) was merged into this branch for cycle 1, merge commit `e6442a6e`). Not merged to master, not pushed.
-**Code SHA:** `2a1f9fc392b0bf7217b28fc7f04710cbd1f5e6a8` (cycle-1 code commit; cycle-0 code was `cee2f25b`; this manifest is a separate commit on top).
+**Code SHA:** `fdb4baa86205094a230b420157b8ecc0a0d8a7dd` (cycle-2 code commit, on top of the master `2d350794` merge `e0033f0b`; earlier code: cycle 1 `2a1f9fc3`, cycle 0 `cee2f25b`; this manifest is a separate commit on top).
 **Authority:** D-122/D-123 module list untouched: NO new `src/` module (the media helpers live in the existing `store/run_store.py`; see judgment call 1). `store/mongo_guard.py`, `store/mongo_backend.py`, `auth/`, `core/env.py`, `ui/error_pages.py`, `ui/routes_live.py` are not edited.
 
 ## What changed (src)
@@ -112,6 +112,78 @@ The full suite was NOT run (machine low on memory; brief). `uv run ruff check sr
 10. A blob-backed drive or email register still creates an empty `files/` or `attachments/` directory (U3d owns the `mkdir`).
 11. `UNROUTED` now only lists `auth` and `credentials`; `tests/test_state_selection.py` passes unchanged.
 12. Not in scope, not changed: `stages/acceptance_baseline.py:127` writes baseline image blobs through `write_bytes`. (The cycle-0 claim that `cli_video_review.py`, `media/narration.py` and `ui/routes_video_review.py` were out of scope is withdrawn: cycle 1 routes all three.)
+
+## Fix cycle 2 (checker verdict FAIL cycle 1: F1 Drive video, W1 `_LOGICAL`)
+
+### Step 1 - merge of master `2d350794` (U3d landed), merge commit `e0033f0b`
+
+Conflicts and how both sides' intent was kept:
+- `sources/intake_commit.py`: U3d's routed `exists_path` / `delete_path` / `list_children` kept; U5b's `place_media` kept; `_copy_in` and `_place` stay deleted (their `os.replace`, `mkdir` moved into `place_media`).
+- `stages/report_export.py`: both imports kept (`list_children` from U3d, `local_blob` from U5b).
+- `pyproject.toml` state-bypass baseline: master's version taken (U3d rewrote the whole list, labelling the media rows `U5b`), then exactly the 6 rows that U5b's routing makes stale were deleted (the doctor named them): `core/image_privacy.py:_sanitize_one:stat`, `sources/drive_register.py:_write_bytes:write_bytes`, `sources/email_register.py:_write_attachment_to_disk:write_bytes`, `sources/intake_commit.py:_copy_in:os.replace`, `_place:mkdir`, `_place:os.replace`. U3d's `exists`/`mkdir`/`unlink`/`rmdir` rows are untouched.
+- After the merge: `tests/test_state_bypass_rule.py tests/test_sweep_u3a.py` 84 passed; doctor clean.
+
+### F1 (BLOCK, M51/M24) - a Drive-fetched video recorded the blob-cache path
+
+The checker was right: the cycle-1 manifest line "`stages/ingest.py:123` is not a `store_media` product" was false for Drive. `register_drive` -> `_write_bytes` (returned the cache copy) -> `_dispatch_by_suffix` -> `register_source` -> `ingest.py:123 path=str(path.resolve())` recorded the cache path.
+
+### W1 - the stateless design (the cycle-1 mechanism is gone)
+
+Rather than patch one more constructor, the class is closed by changing the contract: **`store_media` returns the LOGICAL path in both modes**, so every `Path` handed to an adapter is the path a `Source` should record, and every adapter reads bytes through `local_blob(path)` (the identity in file mode). `_LOGICAL`, `source_path` and the `source_path` import in three modules are deleted (`store/run_store.py` 243 -> 235 lines); no module-global state remains and nothing is keyed on a hash+name.
+
+| Site | Change |
+|---|---|
+| `store/run_store.py` `store_media` | blob branch returns `target` (after the digest-prefix rename on a clash); file branch unchanged |
+| `sources/adapters.py` `register_document` | `real = local_blob(path)` for exists / is_file / hash / `extract_document_text`; `Source(path=str(path.resolve()))` as on master |
+| `sources/adapters.py` `register_audio`, `_require_audio_file`, `_add_audio_source` | hash and `transcribe_audio` read `local_blob(path)`; `Source(path=str(path.resolve()))` |
+| `stages/ingest.py` `register_source` | `if not (real := local_blob(path)).exists()` then `real.is_file()` and `file_sha256(real)` (line-neutral, the file is 299 lines); `Source(path=str(path.resolve()))` as on master |
+| `sources/drive_register.py` `_register_unreadable_type` | sha256 of `local_blob(path).read_bytes()`; `path=str(path.resolve())` |
+| `sources/email_register.py` | `path=str(path.resolve())` as on master (attachment `digest` is passed in) |
+
+Versus master the net diff of these registration constructors is now ZERO lines at the `Source(... path=...)` sites; only the byte reads changed.
+
+### Every `Source(... path=...)` constructor under `src/` (re-enumerated, per site)
+
+Found with `grep -rn "Source(" src` plus `grep -rn "\"path\":"` for `model_copy(update=...)`.
+
+| Site | Path recorded | Logical-path-safe because |
+|---|---|---|
+| `sources/adapters.py:116` `register_document` | `str(path.resolve())` | `path` is what the caller passed: the logical target for Drive/email attachments (`store_media` returns it), or a user's local file for a direct upload; bytes read via `local_blob` |
+| `sources/adapters.py:224` `_add_audio_source` | `str(path.resolve())` | same |
+| `sources/drive_register.py:169` `_register_unreadable_type` | `str(path.resolve())` | `path` from `_write_bytes` = `store_media` = logical |
+| `sources/email_register.py:133` `_register_unparseable_mbox` | `str(path.resolve())` | `path` is the user's LOCAL `.mbox` handed to `register_email`; never passed through `store_media` |
+| `sources/email_register.py:191` `_register_unrecognised_attachment` | `str(path.resolve())` | `path` from `_write_attachment_to_disk` = `store_media` = logical |
+| `stages/ingest.py:122` `register_source` | `str(path.resolve())` | called by the CLI/UI with a local video, and by `_dispatch_by_suffix` for a Drive video with the logical target; reads via `local_blob`. Covered by the Drive `.webm/.mp4/.mov` test |
+| `sources/intake_commit.py:144,150` `commit_video` | `str(target)` | the logical target `place_media` stored to (unchanged since cycle 0) |
+| `sources/adapters.py:69` `register_text`, `:221` provisional id, `email_register.py:106`, `drive_register.py:82,150`, `ui/routes_sources.py:78` | none | no `path` (text/url/folder id) |
+| `ui/routes_sources.py:94` | the user-typed reference | a user-supplied reference, not stored media |
+| `stages/acceptance_baseline.py:128` | project-relative `input-N<suffix>` | already a logical (project-relative) path; the bytes are written by `write_bytes` (judgment call 12, out of this unit's media scope) |
+| `stages/read_context.py:128` | project-relative path or `None` | a reference to a source file in the user's repo, not stored media |
+
+### Tests and mutants (cycle 2)
+
+New file `tests/test_media_sources_logical.py` (the cycle-1 tests moved out of `test_media_sources_blobs.py`, which hit the 300-line doctor rule at 318): Drive `.txt .png .mp3 .webm .mp4 .mov` each through `_write_bytes` + `_dispatch_by_suffix`, cache wiped, `Source.path` is not under the cache and `local_blob(Path(source.path))` returns the bytes; a Drive `.mp3` whose transcriber is handed a readable copy; email `.txt .png`; two folders with the same bytes and name keep their own logical path and the module has no `_LOGICAL`/`source_path`; file-mode pin; teaching material; narration.
+`mutations-e.json` / `mutation-run-e.txt`: **6/6 killed** (e1 `register_source` reads the logical path directly = the checker's Drive-video probe; e2 `store_media` hands back the cache copy = the cycle-0/1 defect; e3 `register_document`; e4 `register_audio` hash; e5 transcriber path; e6 unreadable-type hash). `mutations-d.json` trimmed to the two still-relevant mutants d3/d4 (the old d1/d2 mutated the removed `source_path`): 2/2 killed. a/b/c re-run after the merge and the redesign: 5/5, 10/10, 9/9 killed (outputs refreshed).
+
+| Command (two files per call) | Result |
+|---|---|
+| `tests/test_media_sources_blobs.py tests/test_media_sources_logical.py` | 17 passed |
+| `tests/test_media_sources_blobs.py tests/test_media_blobs.py` | 26 passed |
+| `tests/test_state_bypass_rule.py tests/test_sweep_u3a.py` | 84 passed |
+| `tests/test_ingest.py tests/test_ingest_narration.py` | 14 passed |
+| `tests/test_source_adapters.py tests/test_source_adapters_audio.py` | 19 passed |
+| `tests/test_source_adapters_drive.py tests/test_source_adapters_email.py` | 11 passed |
+| `tests/test_drive_intake.py tests/test_ui_intake_drive.py` | 33 passed |
+| `tests/test_zip_intake_register.py tests/test_ui_intake.py` | 54 passed |
+| `tests/test_blob_scan_names.py tests/test_cli_intake.py` | 111 passed |
+| `ruff check src tests scripts` / `autotester doctor` (to `.work/doctor-u5b.txt`) | All checks passed / exit 0, `doctor: clean` |
+
+The full suite was NOT run (coordinator instruction). `tests/test_safe_names_windows.py::test_ordinary_names_still_pass[lpt0]` untouched (U4's).
+
+W2 (whole-video-in-memory `place_media`, and W1 of cycle 1 = `prune_old_videos` not deleting blobs) remain recorded only, as M52 readiness follow-ups for `blobs` (see the cycle-1 section).
+
+---
+(The cycle-1 section below is kept for history. Its F1 "mechanism" (`_LOGICAL`, `source_path`) and its claim that `ingest.py:123` was out of scope are superseded by cycle 2 above.)
 
 ## Fix cycle 1 (checker verdict FAIL cycle 0: F1, F2; W1-W4, O1 recorded)
 
