@@ -4,6 +4,8 @@
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U6a. **Criticality:** CRITICAL (security backbone), dual check (D-100).
 **Branch:** `feat/mongo-store-u6a` from `feat/mongo-store-u1` (`4cc05569`). Not merged, not pushed.
+**Base SHA:** `0f89becc` (master, D-124; merged in, so D-109 claim admin and D-110 allow-all are in the base). Original branch point `4cc05569`.
+**Code SHA:** `21c488ca` (U6a code, unchanged by the sync); merge commit `4a56cdab` (master into this branch). The manifest-update commit follows it.
 **Criteria owned by U6a (unit table):** M29 (invariants preserved, SQLite side: the existing auth tests are the oracle, run unchanged) and M30 (hashes stay inside, SQLite side). U6b re-runs both over `store_mongo.py`; M29's Mongo two-thread tests are U6b's.
 
 ## What changed (D-122 list only: `auth/store.py`, `auth/store_sqlite.py`; no other new module)
@@ -67,6 +69,31 @@ New: `tests/test_auth_store_seam.py` -> `13 passed` (re-run after the ruff fix).
 `ruff check --no-cache src tests scripts` -> `All checks passed!`.
 `doctor`: before regeneration only `stale-generated` / `stale-committed` for `docs/MAP.md` and `docs/SNAPSHOT.md`; regenerated with `autotester map` and `autotester snapshot`, committed. No design-rule finding: store.py 94, store_sqlite.py 246, accounts.py 259 lines, every function under 50.
 The full suite was not run (memory rule). The 30 files are every test that imports an auth module or builds the login gate via `auth_harness` / `auth_login_fixture`, plus `test_acceptance_isolation`, `test_hosting_gaps`, `test_inbox_scope`.
+
+## Sync with master (2026-10-30, fix cycle still 0)
+
+`git merge master` into `feat/mongo-store-u6a` (merge `4a56cdab`). Only one conflict: `docs/SNAPSHOT.md` (generated), resolved by taking master's file. `src/autotester/auth/accounts.py` had **no master-side change** since `4cc05569` (D-109 `claim_admin`, `_has_admin_member`, `_claim_refusal`, `may_claim_admin` were already in the base U6a was cut from), so the U6a rewrite stands: `accounts.py::claim_admin` runs `_claim_refusal(tx, tx.get_user(id))` and `tx.add_membership` + `tx.ensure_an_admin_remains` inside one `auth_store().transaction()` (SQLite `BEGIN IMMEDIATE`, `db.py:163`), the same single-transaction re-check-and-insert as the old inline SQL. The master side brought D-110 in `ui/helpers.py` (`_allow_all`, `_origin_allowed`, `_host_allowed`) and `auth/config.py::_check_hosted`; neither touches the seam (no `sqlite3`, no SQL), no code change was needed.
+
+Fresh runs after the merge (each call 2 files, `uv run pytest <files> -o addopts=`, in the worktree's own venv):
+
+```
+test_auth_store_seam + test_ui_auth_claim_admin           21 passed
+test_ui_auth_accounts + test_ui_auth_host_and_consent     26 passed
+test_ui_auth_own_origin + test_ui_origin_guard           205 passed
+test_ui_auth_groups + test_ui_auth_login                  54 passed
+test_ui_auth_cli_and_limits + test_ui_auth_survivors      10 passed
+test_ui_auth_escalation + test_ui_auth_hardening          40 passed
+test_ui_auth_envkeys + test_ui_auth_policy_table          23 passed, 2 failed (ANTHROPIC_BASE_URL, see below)
+test_ui_auth_refusal_audit + test_ui_auth_surface         27 passed
+test_auth_loopback + test_auth_deploy_files               10 passed
+test_account_generation + test_ui_signup_requests         22 passed
+test_role_accounts_routes + test_authz_gate               31 passed
+test_hosting_gaps + test_intake_gate_auth                 52 passed
+ruff check src tests scripts                              All checks passed!
+autotester doctor > .work/doctor-u6a.txt                  exit 0, "doctor: clean"
+```
+
+The 2 envkeys failures (`test_au21_no_onboarded_key_becomes_an_environment_variable[anthropic-ANTHROPIC_BASE_URL]`, `test_au21_env_add_and_undeclare_leave_nothing_exported[anthropic-ANTHROPIC_BASE_URL]`) are environmental: the agent session exports `ANTHROPIC_BASE_URL` and the test asserts it is absent from `os.environ`. With `env -u ANTHROPIC_BASE_URL uv run pytest tests/test_ui_auth_envkeys.py -o addopts=` it is `23 passed`. Not a code regression.
 
 ## Mutation spec (`qa/evidence/mongo-store-u6a/mutation-run.txt`, runner `mutate.py`; 11/11 killed)
 
