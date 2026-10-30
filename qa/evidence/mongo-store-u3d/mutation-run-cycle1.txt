@@ -1,0 +1,17 @@
+KILLED  c1: sweep_orphans lists the source folders from disk, not the store  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3d.py::test_sweep_orphans_lists_and_deletes_through_the_store
+    actually failed: tests/test_state_sweep_u3d.py::test_sweep_orphans_lists_and_deletes_through_the_store
+KILLED  c2: sweep_orphans deletes a recording from disk, not through the store  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3d.py::test_sweep_orphans_lists_and_deletes_through_the_store
+    actually failed: tests/test_state_sweep_u3d.py::test_sweep_orphans_lists_and_deletes_through_the_store
+KILLED  c3: the raw .tmp-* leg of sweep_orphans is dropped  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3d.py::test_sweep_orphans_in_file_mode_removes_recordings_and_atomic_temps
+    actually failed: tests/test_state_sweep_u3d.py::test_sweep_orphans_in_file_mode_removes_recordings_and_atomic_temps
+KILLED  c4: stored_reviews lists from disk, not the store  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3d.py::test_stored_reviews_lists_orders_and_filters_from_the_store
+    actually failed: tests/test_state_sweep_u3d.py::test_stored_reviews_lists_orders_and_filters_from_the_store
+KILLED  c5: the approval history lists projects from disk, not the store  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3d.py::test_the_approval_history_spans_projects_in_the_store
+    actually failed: tests/test_state_sweep_u3d.py::test_the_approval_history_spans_projects_in_the_store
+
+5/5 mutations killed

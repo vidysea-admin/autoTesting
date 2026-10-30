@@ -1,10 +1,10 @@
-warning: decision-citation-coverage: 3933 advisory finding(s) (D-087, non-blocking)
+warning: decision-citation-coverage: 3942 advisory finding(s) (D-087, non-blocking)
   decision-citation-coverage: qa/gates/at113-cycle3-recovery.md:40 — D-070 occurrence 1 needs one current review
   decision-citation-coverage: qa/gates/at638-four-contract-files-authorization.md:122 — D-054 occurrence 1 needs one current review
   decision-citation-coverage: qa/gates/at654-d029-dev-only-vs-production-pathlynks.md:4 — D-053 occurrence 1 needs one current review
   decision-citation-coverage: qa/gates/at654-d029-dev-only-vs-production-pathlynks.md:18 — D-053 occurrence 1 needs one current review
   decision-citation-coverage: qa/gates/at654-d029-dev-only-vs-production-pathlynks.md:28 — D-053 occurrence 1 needs one current review
-  ... and 3928 more
+  ... and 3937 more
 warning: decision-citation-declaration: 368 advisory finding(s) (D-087, non-blocking)
   decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-008 mutable authorization requires canonical visible claim
   decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-010 mutable authorization requires canonical visible claim
