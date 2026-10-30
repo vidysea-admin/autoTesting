@@ -67,8 +67,8 @@ pytest tests/test_auth_store_mongo.py tests/test_auth_store_contract.py -> 59 pa
 pytest tests/test_state_selection.py tests/test_auth_store_seam.py      -> 36 passed, 1 skipped (empty UNROUTED parametrization)
 ruff check --no-cache src tests scripts                                 -> All checks passed!
 mypy src/autotester/auth/store_mongo.py (and _tx via import)             -> Success: no issues found
-autotester doctor (> .work/doctor-u6b-c1.txt, rerun after the commit)    -> see DOCTOR below
-python scripts/mutation_check.py qa/evidence/mongo-store-u6b/mutations.json --repo . -> see MUTATION below
+autotester doctor (> .work/doctor-u6b-c1.txt, rerun after the commit)    -> `doctor: clean` (rc 0; only advisory decision-citation warnings; the old `repo_redactor` duplicate is gone after the merge)
+python scripts/mutation_check.py qa/evidence/mongo-store-u6b/mutations.json --repo . -> 17/17 mutations killed (mutation-run-cycle1.txt; first lines of the cycle-0 history unchanged)
 ```
 
 **Mutation history, said plainly:** the first run (`mutation-run-first.txt`) was 15/17. m2 (writers take no lease) survived because the fast fake let 6 threads finish before they overlapped, so the race tests proved nothing about the lock; m16 (account delete leaves its grants) survived because orphan grants are invisible through `access.resource_for`. Fix (commit `f0bc9707`, tests only): `AuthEnv.fresh(slow=True)` stretches each fake Mongo call by 0.5 ms for the three race tests, and the delete test now asserts the dump holds no `proj-` grant. The second run killed both. Mutants m1-m17 cover: last-admin guard, lease, rollback, session purge namespace, hash logged, id counter, `exists()` writing, seed guards (x2), selection ignored / default flipped, reader writes, lost-lease check, expired-lease takeover, email uniqueness, grant cascade, session expiry.
