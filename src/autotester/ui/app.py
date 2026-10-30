@@ -66,9 +66,10 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     yield
 
 
-# D-066 Origin guard first, then the T-204 login gate (auth.md AU18)
+# mongo-store M26 store-outage 503 outermost; D-066 Origin guard, then the T-204 login gate (AU18)
 app = FastAPI(title="AutoTester", lifespan=_lifespan,
-              middleware=[*origin_guard_middleware(), *auth_middleware()])
+              middleware=[*error_pages.store_down_middleware(), *origin_guard_middleware(),
+                          *auth_middleware()])
 install_access_log_scrub()  # AT-1390 / AU22: no query string or /v/<token> in the access log
 error_pages.register_exception_handler(app)  # AT-596: HTML for a browser, JSON for everyone else
 routers.include_all(app)  # T-204/T-205 (TF3): the one router list lives in ui/routers.py

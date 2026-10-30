@@ -11,12 +11,12 @@ delete with a named error (M7).
 from __future__ import annotations
 
 import logging
-import os
 import re
 import time
 import uuid
 from typing import Any
 
+from autotester.core.env import MONGO_URI_ENV, mongo_uri
 from autotester.core.redact import Redactor
 from autotester.core.safe_names import safe_key
 from autotester.store import mongo_routes as routes
@@ -32,7 +32,6 @@ from autotester.store.mongo_routes import repo_redactor  # re-exported: the secr
 __all__ = ["MongoBackend", "default_backend", "repo_redactor", "reset_default_backend"]
 
 LOG = logging.getLogger(__name__)
-URI_ENV = "AUTOTESTER_MONGO_URI"  # provisional name; U9 owns the wiring in core/env.py
 MAX_DOC_BYTES, WARN_DOC_BYTES, APPEND_RETRIES = 12 * 1024 * 1024, 4 * 1024 * 1024, 8
 INDEXES: tuple[tuple[list[tuple[str, int]], bool, str], ...] = (
     ([("k", 1)], False, "k"), ([("p", 1), ("k", 1)], False, "p_k"),
@@ -284,12 +283,12 @@ class MongoBackend:
 
 
 def default_backend() -> MongoBackend:
-    """The process's one backend, opened on first use from `AUTOTESTER_MONGO_URI` (provisional)."""
+    """The process's one backend, opened on first use from `core.env.mongo_uri` (U9)."""
     if "backend" not in _CACHE:
-        uri = os.environ.get(URI_ENV, "").strip()
+        uri = mongo_uri()
         if not uri:
-            raise routes.StoreSelectionError(f"{URI_ENV} is not set; the mongo store needs it")
-        _CACHE["backend"] = MongoBackend(GuardedStore(uri), repo_redactor({URI_ENV: uri}))
+            raise routes.StoreSelectionError(f"{MONGO_URI_ENV} is not set; the store needs it")
+        _CACHE["backend"] = MongoBackend(GuardedStore(uri), repo_redactor({MONGO_URI_ENV: uri}))
     return _CACHE["backend"]
 
 
