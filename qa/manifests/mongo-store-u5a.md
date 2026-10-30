@@ -7,7 +7,7 @@
 Round cap: normal unit, D-014 cap of 2 fix cycles applies.
 **Branch:** `feat/mongo-store-u5a`, cut from master `0a2cbe45` (U1, U2, U6a merged). Not merged, not pushed.
 **Base SHA:** `0a2cbe457630f0edcefbac96e59122864b8f6b27`
-**Code SHA:** `de49a203ec90c94bd7d5b56701074009d93a3e16` (the only code commit; this manifest is a second commit on top of it)
+**Code SHA:** cycle 0 `de49a203ec90c94bd7d5b56701074009d93a3e16`; cycle 1 fix `60d90dfa` (code, tests, evidence and the Cycle 1 section below are in that one commit; a later commit only records this line)
 
 ## Cycle 1 changes (answers checker A FAIL cycle 0, `qa/verdicts/mongo-store-u5a.md`, 5cca3e06)
 
