@@ -24,6 +24,7 @@ from autotester.store.mongo_routes import (
     StateBackend,
     StoreSelectionError,
     area_of,
+    ping_backends,
     require_scope,
     row_matches,
     store_selection,
@@ -156,11 +157,8 @@ def _backend(name: str) -> StateBackend:
 
 
 def validate_store_env() -> dict[str, str]:
-    """Startup check: the selection parses and every backend it chose is available (M13)."""
-    selection = store_selection()
-    for name in set(selection.values()):
-        _backend(name)
-    return selection
+    """Startup check (M13, M27): the selection parses and each backend it chose answers a ping."""
+    return ping_backends(store_selection(), _backend)
 
 
 def backend_for(key: str) -> StateBackend:

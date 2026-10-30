@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from fnmatch import fnmatchcase
 from functools import cache
 from typing import NamedTuple, Protocol
@@ -117,6 +117,11 @@ class StateBackend(Protocol):
 
 class StoreSelectionError(ValueError):
     """`AUTOTESTER_STORE` / `AUTOTESTER_STORE_AREAS` names something unknown or not wired."""
+
+
+class StoreDown(RuntimeError):
+    """Driver-free base of `mongo_guard.StoreUnavailable`: the UI maps it to 503 (M26) without
+    importing a driver in file mode (M13)."""
 
 
 class StoreImmutable(RuntimeError):
@@ -238,6 +243,21 @@ def store_selection() -> dict[str, str]:
         if name not in BACKENDS:
             raise StoreSelectionError(f"unknown store backend {name!r}; use one of {BACKENDS}")
     return chosen
+
+
+def ping_backends(selection: dict[str, str],
+                  open_backend: Callable[[str], StateBackend]) -> dict[str, str]:
+    """Open and ping each backend the selection chose, once (M27). A failure is re-raised with
+    fixed text, the exception class name and the areas on that backend; the source message is
+    never relayed (M9), so a raiser that quotes a URI cannot leak it through here."""
+    for name in sorted(set(selection.values())):
+        try:
+            open_backend(name).ping()
+        except StoreDown as exc:
+            areas = ", ".join(a for a, n in selection.items() if n == name)
+            raise type(exc)(f"state store unreachable ({type(exc).__name__}); "
+                           f"areas on {name}: {areas}") from None
+    return selection
 
 
 def split_graph(text: str) -> tuple[str, list[str], list[str]] | None:

@@ -30,15 +30,19 @@ from http import HTTPStatus
 
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import http_exception_handler as _default_json_handler
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.utils import is_body_allowed_for_status_code
 from starlette.exceptions import HTTPException
+from starlette.middleware import Middleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths
 from autotester.core.redact import Redactor
 from autotester.schema.project import Project
+from autotester.store.mongo_routes import StoreDown
 from autotester.ui import theme
+from autotester.ui.theme_style import PAGE_STYLE
 
 _NO_PROJECT_SCOPE = Project(slug="error-pages", name="error-pages", base_url="")
 """Not a real onboarded product -- a pure data carrier so `SecretStore.load`
@@ -121,3 +125,58 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> Respon
 
 def register_exception_handler(app: FastAPI) -> None:
     app.add_exception_handler(HTTPException, http_exception_handler)
+
+
+STORE_DOWN = "State store unavailable, nothing was changed"
+"""The whole body of a store outage (M26): no exception text, host, URI or database name."""
+
+
+_STATIC_503 = f"<!doctype html><title>503 Service Unavailable</title><p>{STORE_DOWN}</p>"
+
+
+def _store_down_html() -> str:
+    """The themed outage page WITHOUT the project sidebar: `theme.page` lists projects from the
+    store, which is the thing that is down (M26). Same shell as the sign-in page (`auth_view`).
+    Any failure while building it falls back to a fixed static body."""
+    try:
+        body = theme.card(f"<p>{STORE_DOWN}</p>", title="503 Service Unavailable")
+        return (f"<!doctype html><title>503 Service Unavailable — AutoTester</title>"
+                f"{PAGE_STYLE}<div class='layout'><main style='max-width:440px;margin:40px auto'>"
+                f"{body}</main></div>")
+    except Exception:  # whatever went wrong, the reply stays a 503 with a fixed body
+        return _STATIC_503
+
+
+class _StoreDownGate:
+    """Outermost ASGI middleware: a `StoreDown` from a route OR from the auth gate below becomes
+    one fixed 503, never a 500 with a traceback and never a request that falls through allowed.
+    Pure ASGI (no `BaseHTTPMiddleware`) so the exception arrives unwrapped; once a response has
+    started it is re-raised, since a second status line cannot be sent."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        started: list[bool] = []
+
+        async def _send(message: dict) -> None:
+            started.append(message["type"] == "http.response.start")
+            await send(message)
+
+        try:
+            await self.app(scope, receive, _send)
+        except StoreDown:
+            if any(started):
+                raise
+            html = "text/html" in Request(scope).headers.get("accept", "")
+            reply = HTMLResponse(_store_down_html(), status_code=503) if html else JSONResponse(
+                {"detail": STORE_DOWN}, status_code=503)
+            await reply(scope, receive, send)
+
+
+def store_down_middleware() -> list[Middleware]:
+    """For `FastAPI(middleware=...)`, FIRST: it must wrap the origin guard and the auth gate."""
+    return [Middleware(_StoreDownGate)]

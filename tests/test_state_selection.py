@@ -2,7 +2,7 @@
 
 `AUTOTESTER_STORE` unset means `file`. An unknown value, or an unknown area / backend in
 `AUTOTESTER_STORE_AREAS`, stops startup (never a silent default). `mongo` is wired to
-`store/mongo_backend.py` and needs `AUTOTESTER_MONGO_URI`; without it startup stops. An area whose
+`store/mongo_backend.py` and needs `PATHLYNKS_MONGO_URI`; without it startup stops. An area whose
 data never travels through a state key (auth, credentials, blobs) is refused on `mongo` until its
 unit routes it (U2 checker-B W5). The cold-start test runs a real file-mode workload in a fresh
 interpreter and asserts no database driver was imported.
@@ -35,7 +35,7 @@ from autotester.store.mongo_routes import (
 
 @pytest.fixture(autouse=True)
 def _clean_selection(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS", "AUTOTESTER_MONGO_URI"):
+    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS", "PATHLYNKS_MONGO_URI"):
         monkeypatch.delenv(name, raising=False)
     reset_default_backend()
     yield
@@ -75,15 +75,15 @@ def test_mongo_without_a_uri_stops_startup_and_names_the_variable(
         monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
     assert set(store_selection().values()) == {"mongo"}
-    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
+    with pytest.raises(StoreSelectionError, match="PATHLYNKS_MONGO_URI is not set"):
         validate_store_env()
-    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
+    with pytest.raises(StoreSelectionError, match="PATHLYNKS_MONGO_URI is not set"):
         backend_for("projects/p/project.json")
 
 
 def test_mongo_with_a_uri_is_wired_to_the_mongo_backend(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
-    monkeypatch.setenv("AUTOTESTER_MONGO_URI", "mongodb://h/")
+    monkeypatch.setenv("PATHLYNKS_MONGO_URI", "mongodb://h/")
     with seams(client_factory=lambda _uri: FakeMongoServer().client()):
         assert isinstance(backend_for("projects/p/project.json"), MongoBackend)
         assert validate_store_env()["projects"] == "mongo"
@@ -93,7 +93,7 @@ def test_one_area_on_mongo_only_fails_the_keys_in_that_area(
         monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "runs=mongo")
     assert isinstance(backend_for("projects/p/project.json"), FileBackend)
-    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
+    with pytest.raises(StoreSelectionError, match="PATHLYNKS_MONGO_URI is not set"):
         backend_for("projects/p/runs/r1/result.json")
     with pytest.raises(StoreSelectionError):
         validate_store_env()
