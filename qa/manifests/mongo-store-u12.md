@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u12
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A 764ff1e2, B 52d15363)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE), unit U12 (session store), criteria M38, M39, M40; leans on M8, M31-M37. **Criticality:** CRITICAL, dual check (two fresh checkers, D-100).
 **Authority:** D-120, D-121, D-122, D-123 (plain storage, no crypto). No new `src/` module: the session half lives in the existing `browser/profiles.py` (its module docstring says so). D-122 file list untouched.
