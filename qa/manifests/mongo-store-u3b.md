@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u3b
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, qa/verdicts/mongo-store-u3b.md, 95167ef9; merge to master held until U4 PASS)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U3b. **Criticality:** normal (not dual). Seam sweep only: no Mongo code, no driver import, no new `src/` module.
 **Authority:** D-120, D-121, D-122 (edit in place; the D-122 file list is untouched)
