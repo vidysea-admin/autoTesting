@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u3a
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, qa/verdicts/mongo-store-u3a.md, b6489532)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U3a. **Criticality:** normal (U3a row has no dual mark). Behaviour-neutral sweep under the file backend; no Mongo code.
 **Authority:** D-120, D-121, D-122, D-123 (edit in place; no new `src/` module; D-122 file list untouched)
