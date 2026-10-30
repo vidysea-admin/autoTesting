@@ -3036,3 +3036,15 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Links:** D-120, D-121, D-123, D-110, D-124, docker/DEPLOY.md
 
 **Changes-authorized:** none (operations only).
+
+## D-126 | 2026-10-31 | type: decision | status: ACTIVE
+
+**What:** Approve four new modules for the Mongo state store, beyond the D-122/D-123 list: `src/autotester/auth/store_mongo_tx.py` (U6b: the transaction/lease half of the Mongo auth store, split out of `auth/store_mongo.py`, which is 404 lines), `src/autotester/store/filestore_paths.py` (U7: the path-level primitives M53 asks for: create_exclusive, put_if, read, rename, delete-tree), `src/autotester/store/mongo_bucket.py` (GridFS `GuardedBucket.list` and prefix delete, out of `store/mongo_guard.py`, which is at 300 lines), and `src/autotester/ledger/state_bypass.py` (the state-bypass doctor rule's own home, out of `ledger/committed_fresh.py`, which is at 300 lines).
+
+**Why:** Each is forced by the 300-line file cap (design rules) on a module that is already full, or by a contract criterion (M53) that needs verbs the current path API lacks. Splitting is the in-place alternative to raising the cap. No module duplicates a concept: each takes code or a role out of exactly one existing file. Umesh approved all four in chat on 2026-10-31 ("Yes, approve all 4").
+
+**Result:** U6b applies its prepared split (`qa/evidence/mongo-store-u6b/split-proposal/`) and goes to dual check. U7 starts on `store/filestore_paths.py`. `mongo_bucket.py` and `state_bypass.py` are created only when the unit that needs them moves code into them. Generated ARCHITECTURE/MAP sections are refreshed by `autotester map`.
+
+**Links:** D-122, D-123, qa/contracts/mongo-store.md (M16, M29, M50, M53), U6b, U7
+
+**Changes-authorized:** new files `src/autotester/auth/store_mongo_tx.py`, `src/autotester/store/filestore_paths.py`, `src/autotester/store/mongo_bucket.py`, `src/autotester/ledger/state_bypass.py`; generated sections of `docs/ARCHITECTURE.md` and `docs/MAP.md` via `autotester map`.
