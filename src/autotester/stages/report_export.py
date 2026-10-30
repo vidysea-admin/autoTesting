@@ -25,6 +25,7 @@ from autotester.schema.verdict import Verdict
 from autotester.stages.run_artifacts import bundle_report_detail
 from autotester.stages.ux_advisory import add_ux_sheet, load_ux_state, ux_findings_html
 from autotester.store import ProjectStore
+from autotester.store.filestore import list_children
 from autotester.store.run_store import local_blob
 
 _BADGE_COLOR = {
@@ -39,16 +40,13 @@ def _run_sort_key(run: Run) -> tuple:
 
 def valid_runs_newest_first(store: ProjectStore) -> list[Run]:
     """Persisted Run envelopes only; auxiliary run artifacts are not runs."""
-    runs_dir = store.paths.runs_dir
-    if not runs_dir.exists():
-        return []
     runs: list[Run] = []
-    for path in sorted((p for p in runs_dir.iterdir() if p.is_dir()), reverse=True):
+    for name in sorted(list_children(store.paths.runs_dir), reverse=True):
         try:
-            run = store.load_run(path.name)
+            run = store.load_run(name)
         except ValueError:
             continue
-        if run is not None and run.id == path.name and run.project == store.paths.slug:
+        if run is not None and run.id == name and run.project == store.paths.slug:
             runs.append(run)
     runs.sort(key=_run_sort_key, reverse=True)
     return runs

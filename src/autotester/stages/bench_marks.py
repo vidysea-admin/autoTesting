@@ -63,7 +63,6 @@ def set_mark(store: ProjectStore, corpus_id: str, key: str, verdict: Verdict | N
     requests (the route runs on a thread pool) never drop each other's ruling.
     """
     path = store.paths.bench_marks(corpus_id)
-    store.paths.bench_dir.mkdir(parents=True, exist_ok=True)
     with file_lock(path.with_name(path.name + ".lock"), timeout_s=30.0, what="bench marks"):
         marks = load_marks(store, corpus_id)
         if verdict is None:

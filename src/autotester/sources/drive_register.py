@@ -43,6 +43,7 @@ from autotester.sources.audio import AUDIO_SUFFIXES
 from autotester.sources.drive import DriveClient, DriveFile
 from autotester.sources.extract import DOC_SUFFIXES
 from autotester.stages.ingest import RECORDING_SUFFIXES, register_source
+from autotester.store.filestore import exists_path
 from autotester.store.project_store import ProjectStore
 from autotester.store.run_store import source_path, store_media
 
@@ -191,7 +192,7 @@ def _write_bytes(
     target_dir = store.paths.source_dir(parent_id) / "files"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / safe_name
-    if target.exists() and target.read_bytes() != content:
+    if exists_path(target) and target.read_bytes() != content:
         prefix = hashlib.sha256(content).hexdigest()[:8]
         target = target_dir / f"{prefix}_{safe_name}"
     return store_media(target, content)  # M51: GridFS when the blobs area is on mongo

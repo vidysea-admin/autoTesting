@@ -33,6 +33,7 @@ from autotester.stages.orchestrate_runners import (
     make_ingest_runner,
     make_model_runner,
 )
+from autotester.store.filestore import list_children
 from autotester.store.project_store import ProjectStore
 
 Mode = Literal["teaching", "url_only"]
@@ -125,11 +126,10 @@ def enter_pipeline(store: ProjectStore, spec: ModeSpec, seams: ModeSeams) -> Run
 
 
 def _press_run(client: Any, store: ProjectStore) -> str:
-    before = {p.name for p in store.paths.runs_dir.iterdir()} if store.paths.runs_dir.exists() \
-        else set()
+    before = set(list_children(store.paths.runs_dir))
     _check(client.post(f"/projects/{store.paths.slug}/run", follow_redirects=False), "run")
-    made = [p.name for p in store.paths.runs_dir.iterdir()
-            if p.name not in before and store.load_run(p.name) is not None]
+    made = [n for n in list_children(store.paths.runs_dir)
+            if n not in before and store.load_run(n) is not None]
     if len(made) != 1:
         raise AssertionError(f"expected exactly one new UI run, found {made}")
     return made[0]

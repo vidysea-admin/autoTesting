@@ -47,6 +47,7 @@ from autotester.stages.report_export import (
 )
 from autotester.stages.unified_report_findings import load_run_findings
 from autotester.stages.unified_report_render import render_html
+from autotester.store.filestore import exists_path
 from autotester.store.project_store import ProjectStore
 
 _ROW = re.compile(r"^(?P<method>[A-Z]+) (?P<url>.+) -> (?P<status>-?\d+)$")
@@ -149,8 +150,7 @@ def _saw_network(store: ProjectStore, run_id: str, crawl_id: str | None,
                  results: Iterable[RawResult]) -> bool:
     if any(e.kind is EvidenceKind.NETWORK for r in results for e in r.evidence):
         return True
-    return bool(crawl_id and store.paths.crawl_network(crawl_id).exists()
-                and any(True for _ in store.list_crawl_network(crawl_id)))
+    return bool(crawl_id and store.list_crawl_network(crawl_id))
 
 
 def load_api(store: ProjectStore, run_id: str, crawl_id: str | None) -> ApiSection:
@@ -161,7 +161,7 @@ def load_api(store: ProjectStore, run_id: str, crawl_id: str | None) -> ApiSecti
         failures += _api_rows(f"run:{result.case_id}", result.evidence)
     if results:
         read.append(f"run {run_id}")
-    if crawl_id and store.paths.crawl_network(crawl_id).exists():
+    if crawl_id and exists_path(store.paths.crawl_network(crawl_id)):
         failures += _api_rows(f"crawl:{crawl_id}", store.list_crawl_network(crawl_id))
         read.append(f"crawl {crawl_id}")
     if not read:

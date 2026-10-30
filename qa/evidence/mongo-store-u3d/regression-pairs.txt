@@ -1,0 +1,43 @@
+### tests/test_orchestrate_downstream.py tests/test_orchestrate_downstream_privacy.py
+======================= 13 passed, 2 warnings in 3.48s ========================
+### tests/test_at1384_mask_limit_wiring.py tests/test_ai_report.py
+======================= 29 passed, 2 warnings in 6.61s ========================
+### tests/test_ai_persist.py tests/test_report_export.py
+======================= 26 passed, 2 warnings in 2.16s ========================
+### tests/test_report_export_reason.py tests/test_report_export_secrets.py
+======================= 14 passed, 2 warnings in 1.94s ========================
+### tests/test_run_failure_artifacts.py tests/test_ui_report_no_runs.py
+======================== 9 passed, 2 warnings in 4.07s ========================
+### tests/test_video_evidence.py tests/test_video_report_export.py
+======================= 4 passed, 2 warnings in 19.52s ========================
+### tests/test_unified_report.py tests/test_unified_report_secrets.py
+======================= 20 passed, 2 warnings in 18.01s =======================
+### tests/test_report_findings_wiring.py tests/test_report_banner.py
+======================== 12 passed, 1 warning in 1.96s ========================
+### tests/test_generic_acceptance.py tests/test_real_acceptance.py
+======================= 20 passed, 1 warning in 26.73s ========================
+### tests/test_acceptance_isolation.py tests/test_video_review_route.py
+======================== 15 passed, 1 warning in 4.15s ========================
+### tests/test_prune_guard.py tests/test_video_retention.py
+======================== 7 passed, 1 warning in 2.27s =========================
+### tests/test_teaching_documents.py tests/test_bench_marks.py
+======================== 19 passed, 1 warning in 3.09s ========================
+### tests/test_ui_bench_inputs.py tests/test_explore_consent.py
+======================= 28 passed, 1 warning in 11.74s ========================
+### tests/test_approval_prod_gate.py tests/test_schedule_gate.py
+======================= 24 passed, 1 warning in 21.62s ========================
+### tests/test_drive_verify.py tests/test_zip_intake_atomic.py
+======================== 23 passed, 1 warning in 4.65s ========================
+### tests/test_cli_intake.py tests/test_provider_migration.py
+======================== 14 passed, 1 warning in 1.39s ========================
+### tests/test_analysis_flows.py tests/test_user_persona_report.py
+======================== 25 passed, 1 warning in 4.74s ========================
+### tests/test_xlsx_formula_guard.py tests/test_goal_contract_registration.py
+======================== 10 passed, 1 warning in 0.75s ========================
+### tests/test_state_sweep_u3b.py tests/test_state_sweep_u3c.py
+======================== 17 passed, 1 warning in 1.04s ========================
+### tests/test_drive_intake.py tests/test_ui_intake_drive.py
+======================== 33 passed, 1 warning in 2.74s ========================
+### tests/test_ui_intake.py tests/test_ui_project_intake.py
+======================== 39 passed, 1 warning in 4.88s ========================
+DONE

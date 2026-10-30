@@ -30,6 +30,7 @@ LEFT: dict[str, dict[str, int]] = {
     "stages/failure_bundle.py": {"shutil.rmtree": 2, "write_text": 2, "rename": 1,
                                  "shutil.copyfile": 1},
     "stages/leak_evidence.py": {"write_bytes": 1},
+    "stages/real_acceptance.py": {"write_text": 1},  # checked-in evidence, not state (M49)
     "stages/report_export.py": {"write_text": 1},
     "stages/unified_report.py": {"write_text": 1},
     "stages/schedule_store.py": {"shutil.rmtree": 3, "write_text": 1, "os.replace": 2,

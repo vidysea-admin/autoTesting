@@ -1,0 +1,32 @@
+KILLED  m1: work_dir() no longer a state root  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_a_work_dir_root_is_a_state_root[bound-name], tests/test_state_bypass_rule.py::test_m50_a_work_dir_root_is_a_state_root[call-root], tests/test_state_bypass_rule.py::test_m50_a_work_dir_root_is_a_state_root[mkdir]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_a_work_dir_root_is_a_state_root[bound-name], tests/test_state_bypass_rule.py::test_m50_a_work_dir_root_is_a_state_root[call-root], tests/test_state_bypass_rule.py::test_m50_a_work_dir_root_is_a_state_root[mkdir], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m2: getattr(p, verb) form not recognised  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias], tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-unlink], tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias], tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-unlink], tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr]
+KILLED  m3: bound-method alias not followed  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[bound-alias], tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[bound-alias], tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias]
+KILLED  m4: is_file no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[is_file]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[is_file], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m5: is_dir no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[is_dir]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[is_dir], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m6: read_text no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[read_text]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb[getattr-alias], tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[read_text], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m7: read_bytes no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[read_bytes]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_existence_and_read_verbs_are_flagged[read_bytes], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m8: Path.replace no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_replace_touch_and_deletions_are_flagged[replace]
+    actually failed: tests/test_state_bypass_rule.py::test_m50_replace_touch_and_deletions_are_flagged[replace]
+KILLED  m9: str.replace flagged like Path.replace (argument check removed)  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m50_a_str_replace_is_not_a_path_replace
+    actually failed: tests/test_state_bypass_rule.py::test_m50_a_str_replace_is_not_a_path_replace, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m10: a baseline row falls back to the retired U3d owner tag  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_m49_every_baseline_row_has_a_live_owner_and_a_reason
+    actually failed: tests/test_state_bypass_rule.py::test_m49_every_baseline_row_has_a_live_owner_and_a_reason
+
+10/10 mutations killed

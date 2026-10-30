@@ -111,7 +111,7 @@ def test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not(tmp_path: Pa
     unknown = _fn("open(p, mode)").replace("(slug)", "(slug, mode)")
     assert _found(tmp_path, unknown) == [STATE_BYPASS]
     assert _found(tmp_path, _fn("open(p)")) == []
-    assert _found(tmp_path, _fn("open(p, 'r')\n    p.read_text()")) == []
+    assert _found(tmp_path, _fn("open(p, 'r')")) == []
     for call in ("open(p, mode='a')", "p.open('wb')"):
         assert _found(tmp_path, _fn(call)) == [STATE_BYPASS]
 
@@ -211,3 +211,53 @@ def test_a_permanent_row_allows_a_host_check(tmp_path: Path) -> None:
 
 def test_this_repo_is_clean() -> None:
     assert check_state_bypass(code_root()) == []
+
+
+WORK_DIR = "from autotester.core.paths import work_dir\n\n\ndef f(root):\n    "
+
+
+@pytest.mark.parametrize("call", [
+    "(work_dir(root) / 'x').write_text('a')",
+    "d = work_dir()\n    (d / 'x').unlink()",
+    "work_dir(root).mkdir(parents=True)",
+], ids=["call-root", "bound-name", "mkdir"])
+def test_m50_a_work_dir_root_is_a_state_root(tmp_path: Path, call: str) -> None:
+    assert _found(tmp_path, WORK_DIR + call + "\n") == [STATE_BYPASS]
+
+
+@pytest.mark.parametrize("call", [
+    "getattr(p, 'write_text')('a')",
+    "getattr(p, 'unlink')()",
+    "w = p.write_text\n    w('a')",
+    "u = getattr(p, 'read_text')\n    u()",
+], ids=["getattr", "getattr-unlink", "bound-alias", "getattr-alias"])
+def test_m50_a_getattr_or_bound_method_alias_cannot_hide_a_verb(tmp_path: Path,
+                                                               call: str) -> None:
+    assert _found(tmp_path, _fn(call)) == [STATE_BYPASS]
+
+
+@pytest.mark.parametrize("verb", ["is_file", "is_dir", "read_text", "read_bytes"])
+def test_m50_existence_and_read_verbs_are_flagged(tmp_path: Path, verb: str) -> None:
+    assert _found(tmp_path, _fn(f"p.{verb}()")) == [STATE_BYPASS]
+
+
+@pytest.mark.parametrize("call", [
+    "p.replace(p)", "p.touch()", "p.unlink()", "os.remove(p)", "shutil.rmtree(p)",
+], ids=["replace", "touch", "unlink", "os.remove", "rmtree"])
+def test_m50_replace_touch_and_deletions_are_flagged(tmp_path: Path, call: str) -> None:
+    assert _found(tmp_path, _fn(call, "import os\nimport shutil\n\n\n")) == [STATE_BYPASS]
+
+
+def test_m50_a_str_replace_is_not_a_path_replace(tmp_path: Path) -> None:
+    assert _found(tmp_path, _fn("p.name.replace('a', 'b')")) == []
+    assert _found(tmp_path, _fn("str(p).replace('a', 'b', 1)")) == []
+
+
+def test_m49_every_baseline_row_has_a_live_owner_and_a_reason() -> None:
+    import tomllib
+
+    table = tomllib.loads((code_root() / "pyproject.toml").read_text(encoding="utf-8"))
+    rows = table["tool"]["autotester"]["doctor"]["state-bypass"]["baseline"]
+    owners = {r.partition(" | ")[2].split(":")[0].split(" (")[0] for r in rows}
+    assert owners <= {"M53-gated", "U5b", "U7", "U9", "U11"}, owners
+    assert all(len(r.partition(" | ")[2].split(":", 1)[-1].strip()) > 10 for r in rows)
