@@ -1,6 +1,6 @@
 # Manifest - d110-near-miss-test (pin near-miss tokens for `_allow_all`; closes checker-B finding 1 on d110-allow-all)
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, qa/verdicts/d110-near-miss-test.md, d5b1dec2)
 **Fix cycle:** 0
 **Contract:** qa/contracts/auth.md (AU18, AU19; D-110 criterion C4: `*` is the only token with this meaning)
 **Goal task:** none (T-204 linked by D-110)
