@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u4
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, dual: A qa/verdicts/mongo-store-u4.md 6c6b42bf, B qa/verdicts/mongo-store-u4.b.md 6f768725)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U4. **Criticality:** dual (two independent checkers). Criteria judged: M2, M5, M6, M7, M8, M11, M15 (Mongo leg), M17, M18, M19, M21, M22.
 **Authority:** D-120, D-121, D-122 (superseded by D-123), D-123. Two new `src/` modules, both on the D-122/D-123 unit table for U4: `store/mongo_backend.py`, `store/mongo_routes.py`. No other new `src/` file.
