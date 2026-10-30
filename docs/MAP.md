@@ -789,6 +789,7 @@
 | `KnowledgeGraph` (`schema/portal_persona.py`) | Screen, control, flow, scenario, case, verdict, API and release nodes with typed |
 | `PortalPersona` (`schema/portal_persona.py`) | The durable, cross-run model of one product under test (PP1). A single |
 | `SecretRef` (`schema/project.py`) | A declared credential. Holds the KEY and its scope — never the value. |
+| `SecretDeclarations` (`schema/project.py`) | Only `secrets[*].key` of a `project.json`, tolerant of any other shape (env.py reads it). |
 | `ProviderConfig` (`schema/project.py`) | Which provider serves each role. Roles are swappable per project. |
 | `Source` (`schema/project.py`) | An immutable input the system learned from. |
 | `TrackerConfig` (`schema/project.py`) | Where a project's confirmed bugs go (Group 10, T-205/TF6 placeholder). |

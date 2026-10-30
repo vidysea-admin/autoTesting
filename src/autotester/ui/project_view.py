@@ -14,6 +14,7 @@ from autotester.auth.access import authorize, resource_for
 from autotester.auth.context import current_principal
 from autotester.schema.auth import PermissionKey
 from autotester.stages.report_export import valid_runs_newest_first
+from autotester.store.filestore import exists_path, list_children, mtime_path
 from autotester.store.project_store import ProjectStore
 from autotester.ui import team_run_view, theme
 from autotester.ui.routes_report import _run_counts
@@ -154,7 +155,8 @@ def _ago(then: datetime, now: datetime) -> str:
 
 def _last_change(store: ProjectStore) -> datetime | None:
     """When the project's own definition (settings or cases) last changed on disk."""
-    stamps = [p.stat().st_mtime for p in (store.paths.config, store.paths.cases) if p.exists()]
+    stamps = [m for m in (mtime_path(store.paths.config), mtime_path(store.paths.cases))
+              if m is not None]
     return datetime.fromtimestamp(max(stamps), UTC) if stamps else None
 
 
@@ -162,12 +164,10 @@ def _has_corrupt_run(store: ProjectStore) -> bool:
     """A run dir whose run.json exists but will not load -- `valid_runs_newest_first` skips
     it silently, which would make the project read as "never run" (U15 forbids that)."""
     runs_dir = store.paths.runs_dir
-    if not runs_dir.exists():
-        return False
-    for path in runs_dir.iterdir():
-        if path.is_dir() and (path / "run.json").exists():
+    for name in list_children(runs_dir):
+        if exists_path(runs_dir / name / "run.json"):
             try:
-                store.load_run(path.name)
+                store.load_run(name)
             except ValueError:
                 return True
     return False

@@ -63,6 +63,13 @@ class SecretRef(BaseModel):
         return cleaned
 
 
+class SecretDeclarations(BaseModel):
+    """Only `secrets[*].key` of a `project.json`, tolerant of any other shape (env.py reads it)."""
+
+    model_config = ConfigDict(extra="ignore")
+    secrets: list[object] = Field(default_factory=list)
+
+
 class ProviderConfig(BaseModel):
     """Which provider serves each role. Roles are swappable per project.
 
