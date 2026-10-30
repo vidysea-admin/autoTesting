@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u6a
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual, cycle 0: A qa/verdicts/mongo-store-u6a.md 91ad928e, B qa/verdicts/mongo-store-u6a.b.md 846d9cb1)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U6a. **Criticality:** CRITICAL (security backbone), dual check (D-100).
 **Branch:** `feat/mongo-store-u6a` from `feat/mongo-store-u1` (`4cc05569`). Not merged, not pushed.
