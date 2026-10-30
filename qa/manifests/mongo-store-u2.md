@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u2
 
-**Status:** ready-for-check
+**Status:** checked-PASS (dual, cycle 0: A qa/verdicts/mongo-store-u2.md 7d80b16e, B qa/verdicts/mongo-store-u2.b.md 06d78552)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U2. **Criticality:** normal (not dual; U2 row has no dual mark). Seam only: no Mongo code, no driver import.
 **Authority:** D-120, D-121, D-122 (U2 edits `store/filestore.py` in place; no new `src/` module; D-122 file list untouched)
