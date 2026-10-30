@@ -61,19 +61,19 @@ class MongoBackend:
                 self._store.collection(name).create_index(keys, unique=unique, name=label)
 
     def _guard(self, key: str, text: str) -> None:
-        size = len(text.encode("utf-8"))
-        if size > MAX_DOC_BYTES:
-            raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; the limit is {MAX_DOC_BYTES}")
-        if size > WARN_DOC_BYTES:
-            LOG.warning("state document %s is %d bytes", key, size)
         self._redactor = self._redactor or repo_redactor()
         refused = False
         try:
             self._redactor.assert_clean(f"{key}\n{text}")
         except ValueError:
             refused = True
-        if refused:  # raised outside `except`: nothing chained, and the text is never quoted
-            raise routes.StoreSecretRefused(f"refusing to store {key!r}: it carries a secret value")
+        if refused:  # outside `except`: nothing chained; neither the key nor the text is quoted
+            raise routes.StoreSecretRefused("refusing to store: the key or text carries a secret")
+        size = len(text.encode("utf-8"))
+        if size > MAX_DOC_BYTES:
+            raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; the limit is {MAX_DOC_BYTES}")
+        if size > WARN_DOC_BYTES:
+            LOG.warning("state document %s is %d bytes", key, size)
 
     def _route(self, key: str, *, rows: bool | None = None) -> routes.Route:
         route = routes.route(safe_key(key))
@@ -110,8 +110,9 @@ class MongoBackend:
         coll = self._store.collection(route.collection)
         if isinstance(coll, GuardedCollection):
             coll.replace_one({"_id": key}, doc, upsert=True)
-        else:
-            self._insert_once(coll, key, doc)
+        elif not self._claim(coll, doc) and (
+                (coll.find_one({"_id": key}) or {}).get("text") != doc["text"]):  # same text: no-op
+            raise routes.StoreImmutable(f"{key!r} already exists and its collection is insert-only")
         if old and old != doc.get("split"):
             self._drop_graph(key, old)
 
@@ -136,18 +137,12 @@ class MongoBackend:
             return False
         return True
 
-    @staticmethod
-    def _insert_once(coll: Any, key: str, doc: dict[str, Any]) -> None:
-        if MongoBackend._claim(coll, doc):
-            return
-        if (coll.find_one({"_id": key}) or {}).get("text") != doc["text"]:
-            raise routes.StoreImmutable(f"{key!r} already exists and its collection is insert-only")
-
     def delete(self, key: str) -> bool:
         route = self._route(key)
         coll = self._mutable(route)
         if route.rows:
-            return coll.delete_many({"k": key}) > 0
+            hits = self._docs(route, key)  # by _id: the catch-all refuses a bare k filter
+            return bool([coll.delete_one({"_id": hit["_id"]}) for hit in hits])
         old = self._generation(route, key)
         gone = coll.delete_one({"_id": key})
         if old:
@@ -192,9 +187,12 @@ class MongoBackend:
         return [d["text"] for d in self._docs(route, key)]
 
     def append_text(self, key: str, text: str) -> None:
-        """Extend a log: a row set gets one row per line, a document a compare-and-set."""
+        """Extend a log: a row set gets one row per line (all vetted first), a document a CAS."""
         if self._route(key).rows:
-            for line in filter(str.strip, text.splitlines()):
+            lines = list(filter(str.strip, text.splitlines()))
+            for line in lines:
+                self._guard(key, line)
+            for line in lines:
                 self.append_row(key, line)
             return
         for _ in range(16 * APPEND_RETRIES):

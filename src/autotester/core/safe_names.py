@@ -18,8 +18,8 @@ from urllib.parse import quote
 SLUG_PATTERN = r"^[a-z][a-z0-9-]*$"
 """The project slug shape (the one `schema.project.Project.slug` and `ui.helpers` share)."""
 MAX_NAME_LEN = 120
-_DIGITS = (*"123456789", "¹", "²", "³")  # Windows reserves COM¹ as COM1
-_DEVICES = frozenset({"con", "prn", "aux", "nul", "conin$", "conout$",
+_DIGITS = (*"0123456789", "¹", "²", "³")  # Windows reserves COM0 and COM¹ (as COM1) too
+_DEVICES = frozenset({"con", "prn", "aux", "nul", "conin$", "conout$", "clock$",
                       *(f"com{n}" for n in _DIGITS), *(f"lpt{n}" for n in _DIGITS)})
 _SLUG = re.compile(SLUG_PATTERN)
 _DRIVE = re.compile(r"^[A-Za-z]:")

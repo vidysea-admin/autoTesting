@@ -2,14 +2,15 @@
 
 Each test takes the `backend` fixture, which runs it once per entry of `BACKEND_FACTORIES`
 (`tests/state_backends.py`): `file`, `memory` and `mongo` (over the hand-written fake). The
-semantics asserted are the ones the stores rely on: ordered rows, upsert
-that keeps position, `delete_row` returning a bool, `keys(prefix)` ordering, one winner for an
-exclusive create, a compare-and-set loser that writes nothing, and keys that cannot escape.
+semantics asserted are the ones the stores rely on: ordered rows, upsert that keeps position,
+`delete_row` returning a bool, `keys(prefix)` ordering, one winner for an exclusive create, a
+compare-and-set loser that writes nothing, and keys that cannot escape.
 """
 
 from __future__ import annotations
 
 import json
+import sys
 import threading
 import time
 from collections.abc import Callable
@@ -122,6 +123,16 @@ def test_delete_prefix_refuses_an_empty_prefix_and_matches_on_a_segment_boundary
     assert backend.keys("") == ["p/a.json", "p/ab/2.json", "q/3.json"]
 
 
+def test_a_row_set_in_the_catch_all_collection_deletes_like_any_other(
+        backend: StateBackend) -> None:  # cycle 1: a `.jsonl` key no family claims still deletes
+    for key, ident in (("foo.jsonl", "1"), ("dir/foo.jsonl", "2"), ("dir/foo.jsonl", "3")):
+        backend.append_row(key, row(id=ident))
+    backend.put("dir/keep.json", "x")
+    assert backend.delete("foo.jsonl") is True and backend.delete("foo.jsonl") is False
+    assert backend.rows("foo.jsonl") == [] and not backend.exists("foo.jsonl")
+    assert backend.delete_prefix("dir/") == 2 and backend.keys("") == []
+
+
 def test_children_are_the_sorted_immediate_names_with_an_optional_suffix(
         backend: StateBackend) -> None:
     for key in ("d/b.json", "d/a.jsonl", "d/sub/x.json", "d/sub/y/z.json", "e/q.json"):
@@ -223,16 +234,22 @@ def test_append_text_to_a_row_set_adds_one_row_per_line(backend: StateBackend) -
     assert backend.rows("logs/a.jsonl") == [row(id="1"), row(id="2"), row(id="3")]
 
 
+def test_append_text_to_a_row_set_with_blank_lines_adds_only_the_real_rows(
+        backend: StateBackend) -> None:
+    backend.append_text("logs/b.jsonl", row(id="1") + "\n\n   \n" + row(id="2") + "\n")
+    assert backend.rows("logs/b.jsonl") == [row(id="1"), row(id="2")]
+
+
 def test_append_text_loses_no_append_among_16_callers(backend: StateBackend) -> None:
-    if type(backend).__name__ == "FileBackend":  # plain `open("a")`, as before U4: on Windows two
-        pytest.skip("handles can interleave; atomic append is the Memory and Mongo promise")
+    if type(backend).__name__ == "FileBackend" and sys.platform == "win32":
+        pytest.skip("Windows `open('a')` can interleave; atomic append is the Memory/Mongo promise")
     _race(16, lambda i: backend.append_text("logs/race.log", f"line-{i}\n"))
     assert sorted((backend.get("logs/race.log") or "").splitlines()) == sorted(
         f"line-{i}" for i in range(16))
 
 
 WHOLE_SEGMENT_ONLY = ["a/CON", "a/nul.txt", "a/COM1.json", "a/lpt9", "a/x.", "a/x ", "a/aux .x",
-                      "a/CONIN$"]  # as a prefix these may still be the start of a longer name
+                      "a/CONIN$", "a/COM0", "a/lpt0.txt", "a/CLOCK$", "a/com¹", "a/COM²"]
 ALIASED = [*WHOLE_SEGMENT_ONLY, "a/b:c", "a/y\x7f", "a/q?", "a/s*", "a/<x>", 'a/"q"', "a/p|q"]
 UNSAFE = ["../x", "a/../b", "/x", "C:/x", "c:x", "a/C:/y", "a\\b", "a//b", "a/./b", "", "x\x00y",
           "a/", "..", ".", *ALIASED]
