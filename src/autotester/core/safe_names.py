@@ -6,7 +6,8 @@ alternate data stream `ab:stream`), any of `< > " | ? *`, a reserved Windows dev
 (`CON`, `NUL`, `COM1`, `CONIN$`, ... with or without an extension), a trailing dot or space,
 control characters and a name longer than `MAX_NAME_LEN`, with the same answer on Windows and
 Ubuntu. Callers get an `UnsafeName` before any file is touched. Pure string logic: no
-filesystem access, nothing POSIX-only.
+filesystem access, nothing POSIX-only. `safe_key` is the same promise for a whole
+relative POSIX state key (`projects/p/x.json`), the address every state backend uses.
 """
 
 from __future__ import annotations
@@ -70,3 +71,16 @@ def encode_slot_key(key: str) -> str:
     Percent-encodes every character outside `[A-Za-z0-9_.-]` (so the `:` of a time can never
     read as a Windows drive letter), the same encoding `stages/schedule_store.py` uses."""
     return safe_name(quote(_refuse_structure(key), safe=""))
+
+
+def safe_key(key: str, *, prefix: bool = False) -> str:
+    """A state-store key: a relative POSIX path inside the data root, else `UnsafeName` (M17).
+
+    Refused before any I/O: a backslash, NUL, a leading `/`, a drive letter in any segment and a
+    `.`, `..` or empty segment. A `prefix` may be empty or end in `/`; a key may not be empty."""
+    body = key[:-1] if prefix and key.endswith("/") else key
+    segments = body.split("/") if body else []
+    if ("\\" in key or "\x00" in key or (not body and not prefix)
+            or any(seg in {"", ".", ".."} or _DRIVE.match(seg) for seg in segments)):
+        raise UnsafeName(f"unsafe state key {key!r}: not a relative path inside the data root")
+    return key

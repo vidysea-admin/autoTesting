@@ -1,0 +1,53 @@
+{
+ "tests": [
+  "tests/test_mongo_guard_chain.py"
+ ],
+ "mutations": [
+  {
+   "name": "c1: translate raises inside except (driver error chained)",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "verdict = StoreUnavailable(f\"state store unavailable ({type(exc).__name__})\")",
+   "new": "raise StoreUnavailable(f\"state store unavailable ({type(exc).__name__})\")",
+   "kills": [
+    "test_unavailable_errors_from_a_driver_failure_carry_no_chain",
+    "test_translate_maps_each_driver_error_without_chaining"
+   ]
+  },
+  {
+   "name": "c2: duplicate key raised inside except",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "verdict = StoreDuplicateKey(\"duplicate key\")",
+   "new": "raise StoreDuplicateKey(\"duplicate key\")",
+   "kills": [
+    "test_duplicate_key_and_missing_blob_carry_no_chain"
+   ]
+  },
+  {
+   "name": "c3: missing blob mapped to unavailable",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "verdict = StoreNotFound(\"no such blob\")",
+   "new": "verdict = StoreUnavailable(\"no such blob\")",
+   "kills": [
+    "test_duplicate_key_and_missing_blob_carry_no_chain"
+   ]
+  },
+  {
+   "name": "c4: constructor raises inside except",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "            failed = type(exc).__name__\n",
+   "new": "            raise StoreUnavailable(f\"cannot open the state store ({type(exc).__name__})\")\n",
+   "kills": [
+    "test_constructor_error_branch_is_reached_and_clean"
+   ]
+  },
+  {
+   "name": "c5: constructor message carries the URI",
+   "file": "src/autotester/store/mongo_guard.py",
+   "old": "f\"cannot open the state store ({failed})\"",
+   "new": "f\"cannot open the state store ({failed}) {uri}\"",
+   "kills": [
+    "test_constructor_error_branch_is_reached_and_clean"
+   ]
+  }
+ ]
+}
