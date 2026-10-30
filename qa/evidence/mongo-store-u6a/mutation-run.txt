@@ -1,0 +1,15 @@
+S2 src/autotester/auth/store_sqlite.py KILLED | tests/test_auth_store_seam.py last_admin or last_two | ['1 failed, 10 deselected, 1 warning in 1.45s']
+S3 src/autotester/auth/accounts.py KILLED | tests/test_auth_store_seam.py first_signups | ['1 failed, 11 deselected, 1 warning in 1.39s']
+S4 src/autotester/auth/accounts.py KILLED | tests/test_auth_store_seam.py concurrent_claims | ['1 failed, 11 deselected, 1 warning in 5.84s']
+S5 src/autotester/auth/accounts.py KILLED | tests/test_auth_store_seam.py hash_never | ['1 failed, 11 deselected, 1 warning in 1.54s']
+S6 src/autotester/auth/sessions.py KILLED | tests/test_auth_store_seam.py round_trip | ['1 failed, 11 deselected, 1 warning in 1.09s']
+S7 src/autotester/auth/store_sqlite.py KILLED | tests/test_auth_store_seam.py concurrent or last_admin | ['1 failed, 1 passed, 9 deselected, 1 warning in 3.70s']
+S8 src/autotester/auth/access.py KILLED | tests/test_ui_auth_escalation.py  | ['1 failed, 6 passed, 1 warning in 4.44s']
+S9 src/autotester/auth/store_sqlite.py KILLED | tests/test_auth_store_seam.py implements_every | ['1 failed, 10 deselected, 1 warning in 1.42s']
+S10 src/autotester/auth/groups.py KILLED | tests/test_auth_store_seam.py hold_no_sql | ['1 failed, 11 deselected, 1 warning in 1.15s']
+S11 src/autotester/auth/store_sqlite.py KILLED | tests/test_ui_auth_accounts.py  | ['1 failed, 8 passed, 1 warning in 6.06s']
+MUTDONE
+S1 src/autotester/auth/store_sqlite.py KILLED | tests/test_auth_store_seam.py disabled_account | ['1 failed, 12 deselected, 1 warning in 1.47s']
+NOTE: S1 first SURVIVED against the filter "round_trip" (a disable ends the session, so the old test could not reach the mutant);
+test_a_disabled_account_or_expired_session_never_resolves was added in the same cycle and S1 then KILLED (last S1 line above). 11/11 killed.
+Run: python qa/evidence/mongo-store-u6a/mutate.py [ids]  (applies one textual mutant at a time, runs the named test file with -k, restores the source file in a finally block).
