@@ -1,0 +1,29 @@
+=== mutations-a (cycle 1 tree) ===
+MUTATION RUN INVALID: mutation 'a11: an insert-only document may be overwritten with other text': anchor matched 0 times in src/autotester/store/mongo_backend.py (need exactly 1)
+=== mutations-b (cycle 1 tree) ===
+KILLED  b1: the persona is never split  (pytest exit 1)
+KILLED  b2: an overwrite leaves the old generation behind  (pytest exit 1)
+KILLED  b3: delete leaves the graph rows behind  (pytest exit 1)
+3/3 mutations killed
+=== mutations-c (cycle 1 tree) ===
+KILLED  c1: a trailing dot or space is allowed  (pytest exit 1)
+KILLED  c2: a Windows device name is allowed  (pytest exit 1)
+KILLED  c3: a colon is allowed in a key  (pytest exit 1)
+KILLED  c4: a prefix's last segment is judged as a whole one  (pytest exit 1)
+4/4 mutations killed
+=== mutations-d (cycle 1 tree) ===
+KILLED  d1: exists_path ignores directories  (pytest exit 1)
+KILLED  d2: a directory is listed from one backend only  (pytest exit 1)
+KILLED  d3: a path outside the data root is routed as state  (pytest exit 1)
+KILLED  d4: mtime_path is always None  (pytest exit 1)
+KILLED  d5: an unrouted area may be flipped to mongo  (pytest exit 1)
+KILLED  d6: approvals stay in the projects area  (pytest exit 1)
+KILLED  d7: mongo without a URI starts silently  (pytest exit 1)
+7/7 mutations killed
+=== mutations-e (cycle 1 tree) ===
+KILLED  e1: find returns the lazy cursor untranslated  (pytest exit 1)
+KILLED  e2: the invalid-URI error is raised inside the except  (pytest exit 1)
+2/2 mutations killed
+=== mutations-f (cycle 1 tree) ===
+MUTATION RUN INVALID: mutation 'f2: MongoBackend.append_text on a row set keeps only the first line': anchor matched 0 times in src/autotester/store/mongo_backend.py (need exactly 1)
+DONE

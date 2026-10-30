@@ -22,8 +22,8 @@
   {
    "name": "f2: MongoBackend.append_text on a row set keeps only the first line",
    "file": "src/autotester/store/mongo_backend.py",
-   "old": "            for line in filter(str.strip, text.splitlines()):",
-   "new": "            for line in list(filter(str.strip, text.splitlines()))[:1]:",
+   "old": "            lines = list(filter(str.strip, text.splitlines()))",
+   "new": "            lines = list(filter(str.strip, text.splitlines()))[:1]",
    "kills": [
     "test_append_text_to_a_row_set_adds_one_row_per_line[mongo]"
    ]

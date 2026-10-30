@@ -109,8 +109,8 @@
   {
    "name": "a11: an insert-only document may be overwritten with other text",
    "file": "src/autotester/store/mongo_backend.py",
-   "old": "if (coll.find_one({\"_id\": key}) or {}).get(\"text\") != doc[\"text\"]:",
-   "new": "if False:",
+   "old": "(coll.find_one({\"_id\": key}) or {}).get(\"text\") != doc[\"text\"]):  # same text: no-op",
+   "new": "False):  # same text: no-op",
    "kills": [
     "test_an_insert_only_document_is_written_once_and_never_changed[projects/p/bug_events/e1.json]"
    ]

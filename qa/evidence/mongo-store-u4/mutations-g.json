@@ -1,0 +1,105 @@
+{
+ "tests": [
+  "tests/test_state_backend_contract.py::test_a_row_set_in_the_catch_all_collection_deletes_like_any_other",
+  "tests/test_state_backend_contract.py::test_append_text_to_a_row_set_with_blank_lines_adds_only_the_real_rows",
+  "tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io",
+  "tests/test_mongo_backend_fence.py::test_a_known_secret_is_refused_everywhere_and_never_quoted",
+  "tests/test_mongo_backend_fence.py::test_append_text_is_all_or_nothing_when_a_later_line_is_refused",
+  "tests/test_safe_key.py::test_a_windows_aliased_key_is_refused",
+  "tests/test_safe_key.py::test_an_ordinary_key_is_accepted"
+ ],
+ "mutations": [
+  {
+   "name": "g1: MongoBackend.delete on a row set goes back to a bare delete_many on k",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "            return bool([coll.delete_one({\"_id\": hit[\"_id\"]}) for hit in hits])",
+   "new": "            return coll.delete_many({\"k\": key}) > 0",
+   "kills": [
+    "test_a_row_set_in_the_catch_all_collection_deletes_like_any_other[mongo]"
+   ]
+  },
+  {
+   "name": "g2: delete on a row set reports False even when rows were removed",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "            return bool([coll.delete_one({\"_id\": hit[\"_id\"]}) for hit in hits])",
+   "new": "            return bool([coll.delete_one({\"_id\": hit[\"_id\"]}) for hit in hits][:0])",
+   "kills": [
+    "test_a_row_set_in_the_catch_all_collection_deletes_like_any_other[mongo]"
+   ]
+  },
+  {
+   "name": "g3: the secret refusal quotes the key again",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "StoreSecretRefused(\"refusing to store: the key or text carries a secret\")",
+   "new": "StoreSecretRefused(f\"refusing to store {key!r}: the key or text carries a secret\")",
+   "kills": [
+    "test_a_known_secret_is_refused_everywhere_and_never_quoted"
+   ]
+  },
+  {
+   "name": "g4: the secret gate stops scanning the key",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "assert_clean(f\"{key}\\n{text}\")",
+   "new": "assert_clean(text)",
+   "kills": [
+    "test_a_known_secret_is_refused_everywhere_and_never_quoted"
+   ]
+  },
+  {
+   "name": "g5: append_text on a row set stops vetting every line before the first write",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "            for line in lines:\n                self._guard(key, line)\n",
+   "new": "            pass\n",
+   "kills": [
+    "test_append_text_is_all_or_nothing_when_a_later_line_is_refused"
+   ]
+  },
+  {
+   "name": "g6: append_text on a row set keeps blank lines as rows",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "            lines = list(filter(str.strip, text.splitlines()))",
+   "new": "            lines = text.splitlines()",
+   "kills": [
+    "test_append_text_to_a_row_set_with_blank_lines_adds_only_the_real_rows[mongo]"
+   ]
+  },
+  {
+   "name": "g7: safe_key lets COM0 / LPT0 through",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "_DIGITS = (*\"0123456789\",",
+   "new": "_DIGITS = (*\"123456789\",",
+   "kills": [
+    "test_a_windows_aliased_key_is_refused[a/COM0]",
+    "test_a_windows_aliased_key_is_refused[a/LPT0]"
+   ]
+  },
+  {
+   "name": "g8: safe_key lets CLOCK$ through",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "\"conout$\", \"clock$\",",
+   "new": "\"conout$\",",
+   "kills": [
+    "test_a_windows_aliased_key_is_refused[a/CLOCK$]"
+   ]
+  },
+  {
+   "name": "g9: safe_key knows only the superscript one",
+   "file": "src/autotester/core/safe_names.py",
+   "old": ", \"²\", \"³\")",
+   "new": ")",
+   "kills": [
+    "test_a_windows_aliased_key_is_refused[a/COM\\xb2]",
+    "test_a_windows_aliased_key_is_refused[a/com\\xb3.x]"
+   ]
+  },
+  {
+   "name": "g10: safe_key refuses an ordinary name that merely starts like a device (COM10)",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "    return name.split(\".\", 1)[0].rstrip(\" \").lower() in _DEVICES\n\n\ndef _bad_segment",
+   "new": "    return name.split(\".\", 1)[0].rstrip(\" \").lower().startswith(\"com\")\n\n\ndef _bad_segment",
+   "kills": [
+    "test_an_ordinary_key_is_accepted[a/COM10]"
+   ]
+  }
+ ]
+}

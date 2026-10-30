@@ -22,11 +22,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 
-from autotester.core.env import read_dotenv
-from autotester.core.paths import repo_root, work_dir
+from autotester.core.paths import work_dir
 from autotester.core.redact import Redactor
 from autotester.core.safe_names import safe_key
 from autotester.store.filestore import FileBackend
+from autotester.store.mongo_routes import repo_redactor  # the one definition (U4)
 
 if TYPE_CHECKING:
     from autotester.store.mongo_guard import GuardedStore
@@ -92,14 +92,6 @@ class BlobStore(Protocol):
     def materialize(self, key: str) -> Path: ...
 
 
-def repo_redactor() -> Redactor:
-    """A `Redactor` over every repo-root `.env` value (M8). The credential store's values join
-    it when U11 passes its own `redactor` callable."""
-    env = repo_root() / ".env"
-    values = read_dotenv(env) if env.is_file() else {}
-    return Redactor({k: v for k, v in values.items() if v})
-
-
 def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -107,11 +99,12 @@ def _sha(data: bytes) -> str:
 def _vet(key: str, data: object, kind: str, masked: bool, content_type: str,
          redactor: Redactor) -> None:
     """Refuse before any write. Nothing here echoes the key, the body or a secret."""
-    parts = [_folded(p) for p in safe_key(key).split("/")]
+    parts = [_folded(p) for p in key.split("/")]  # before safe_key: "x.xlsx." is a blob refusal
     name = parts[-1]
     if (NOT_BLOB_SEGMENTS.intersection(parts) or name == ".env" or name.startswith(".env.")
             or name.endswith(".xlsx") or kind in NOT_BLOB_KINDS):
         raise BlobRefused("this path or kind is not stored as a blob (M25)")
+    safe_key(key)
     if not isinstance(data, bytes | bytearray) or not KIND.fullmatch(kind):
         raise BlobRefused("a blob is bytes with a plain lower-case kind")
     if kind in UNMASKED_REFUSED and not masked:
