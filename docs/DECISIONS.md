@@ -3024,3 +3024,15 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Links:** D-110, D-066, qa/contracts/auth.md AU18, qa/contracts/auth.md AU20, qa/manifests/d110-allow-all.md
 
 **Changes-authorized:** `.env.example`, `docker/DEPLOY.md`. No code, no ARCHITECTURE.md prose, no enforcement path.
+
+## D-125 | 2026-10-30 | type: decision | status: ACTIVE
+
+**What:** Go live now with Option A: mount a private GCS bucket at `/data` on the Cloud Run service `vidysea-autotesting` (asia-south1), pinned to `--max-instances 1`, instead of waiting for the Mongo state store (D-120..D-123). The Mongo build continues in parallel and replaces this when it lands.
+
+**Why:** Live data is wiped on every master push because `AUTOTESTER_ROOT=/data` is container-ephemeral. Umesh needs the service live today; the full Mongo build is estimated at 1.5-2 more days. Offered A (volume today) or B (wait for Mongo) in chat, Umesh chose "A: live today" (2026-10-30). Accepted limits: single instance (SQLite over a GCS mount), no real file locking, `/data/.env` stored in the bucket (must stay private).
+
+**Result:** Exact DevOps steps written to `.work/golive-option-a.md` (bucket, IAM, `gcloud run services update` with the volume pair, verification, backup). No code change. The existing exact `AUTOTESTER_ALLOWED_ORIGINS` value is kept; `*` only if the URL changes (D-110, D-124).
+
+**Links:** D-120, D-121, D-123, D-110, D-124, docker/DEPLOY.md
+
+**Changes-authorized:** none (operations only).

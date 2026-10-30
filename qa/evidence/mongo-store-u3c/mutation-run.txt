@@ -1,0 +1,109 @@
+KILLED  m1: write_text dropped from the flagged methods  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[write_text]
+    actually failed: tests/test_state_bypass_rule.py::test_a_baseline_row_allows_that_site_wherever_its_line_moves, tests/test_state_bypass_rule.py::test_a_method_and_a_module_level_call_get_their_own_scope_names, tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported, tests/test_state_bypass_rule.py::test_a_row_for_another_function_or_kind_does_not_allow_the_site, tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[write_text], tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / '.work' / 'a.json'-True], tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / 'projects' / 'p'-True], tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[team_path('a.json')-True], tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[auth/audit.py], tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[core/env.py], tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[core/trace.py], tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[delivery/inbox.py], tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[stages/orchestrate_checkpoint.py], tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[stages/schedule_store.py], tests/test_state_bypass_rule.py::test_taint_follows_a_derived_name, tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[helper], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[tuple], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[whole-unpack], tests/test_state_bypass_rule.py::test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m2: mkdir and touch no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[mkdir], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[touch]
+    actually failed: tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[mkdir], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[touch], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[with], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m3: os.makedirs no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.makedirs]
+    actually failed: tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import makedirs as mk], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.makedirs]
+KILLED  m4: os.path.* no longer flagged  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.path.exists]
+    actually failed: tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import path as osp], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.path.exists]
+KILLED  m5: an import alias hides the call (origin name ignored)  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from shutil import copyfile], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[import os as o]
+    actually failed: tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import makedirs as mk], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import path as osp], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import remove], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from shutil import copyfile], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from shutil import rmtree as rt], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[import os as o], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[import shutil as sh]
+KILLED  m6: tuple unpacking taints every element  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[clean-tuple-element]
+    actually failed: tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[clean-tuple-element]
+KILLED  m7: for/comprehension targets are not tainted  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[comprehension], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[for]
+    actually failed: tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[comprehension], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[for], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m8: `with ... as` targets are not tainted  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[with]
+    actually failed: tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[with]
+KILLED  m9: a helper that returns a state path is not followed  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[helper]
+    actually failed: tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[helper], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m10: taint does not propagate  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_taint_follows_a_derived_name
+    actually failed: tests/test_state_bypass_rule.py::test_a_baseline_row_allows_that_site_wherever_its_line_moves, tests/test_state_bypass_rule.py::test_a_permanent_row_allows_a_host_check, tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported, tests/test_state_bypass_rule.py::test_a_row_for_another_function_or_kind_does_not_allow_the_site, tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import makedirs as mk], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import path as osp], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from os import remove], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from shutil import copyfile], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[from shutil import rmtree as rt], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[import os as o], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[import os.path], tests/test_state_bypass_rule.py::test_an_import_alias_does_not_hide_a_raw_call[import shutil as sh], tests/test_state_bypass_rule.py::test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not, tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[exists], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[glob], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[iterdir], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[mkdir], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[open], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.listdir], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.makedirs], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.path.exists], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[os.replace], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[rename], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[rglob], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[rmdir], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[shutil.copyfile], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[shutil.rmtree], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[stat], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[touch], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[unlink], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[write_bytes], tests/test_state_bypass_rule.py::test_every_listed_call_on_a_project_path_in_stages_is_flagged[write_text], tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / '.work' / 'a.json'-True], tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / 'projects' / 'p'-True], tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[team_path('a.json')-True], tests/test_state_bypass_rule.py::test_taint_follows_a_derived_name, tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[comprehension], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[for], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[helper], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[tuple], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[whole-unpack], tests/test_state_bypass_rule.py::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path[with], tests/test_state_bypass_rule.py::test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m11: a non-literal open mode counts as a read  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not
+    actually failed: tests/test_state_bypass_rule.py::test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not
+KILLED  m12: a read mode counts as a write  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not
+    actually failed: tests/test_state_bypass_rule.py::test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m13: browser no longer exempt  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_store_and_browser_are_exempt[browser]
+    actually failed: tests/test_state_bypass_rule.py::test_store_and_browser_are_exempt[browser], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m14: .work is no longer a state part  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / '.work' / 'a.json'-True]
+    actually failed: tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / '.work' / 'a.json'-True], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m15: repo_root alone counts as state  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / 'docs' / 'a.md'-False]
+    actually failed: tests/test_state_bypass_rule.py::test_repo_root_is_state_only_under_work_or_projects[repo_root() / 'docs' / 'a.md'-False], tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m16: core/trace.py no longer a state-persisting module  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[core/trace.py]
+    actually failed: tests/test_state_bypass_rule.py::test_state_persisting_modules_flag_any_path_a_caller_hands_them[core/trace.py]
+KILLED  m17: the key is the line, not the enclosing function  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_a_baseline_row_allows_that_site_wherever_its_line_moves, tests/test_state_bypass_rule.py::test_a_method_and_a_module_level_call_get_their_own_scope_names
+    actually failed: tests/test_state_bypass_rule.py::test_a_baseline_row_allows_that_site_wherever_its_line_moves, tests/test_state_bypass_rule.py::test_a_method_and_a_module_level_call_get_their_own_scope_names, tests/test_state_bypass_rule.py::test_a_permanent_row_allows_a_host_check, tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m18: a repeated row allows every site, not that many  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported
+    actually failed: tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported
+KILLED  m19: the baseline allows nothing  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_a_baseline_row_allows_that_site_wherever_its_line_moves, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+    actually failed: tests/test_state_bypass_rule.py::test_a_baseline_row_allows_that_site_wherever_its_line_moves, tests/test_state_bypass_rule.py::test_a_method_and_a_module_level_call_get_their_own_scope_names, tests/test_state_bypass_rule.py::test_a_permanent_row_allows_a_host_check, tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m20: a stale row is not reported  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported, tests/test_state_bypass_rule.py::test_a_row_for_another_function_or_kind_does_not_allow_the_site
+    actually failed: tests/test_state_bypass_rule.py::test_a_row_counts_sites_and_a_stale_row_is_reported, tests/test_state_bypass_rule.py::test_a_row_for_another_function_or_kind_does_not_allow_the_site
+KILLED  m21: the permanent list allows nothing  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_a_permanent_row_allows_a_host_check
+    actually failed: tests/test_state_bypass_rule.py::test_a_permanent_row_allows_a_host_check, tests/test_state_bypass_rule.py::test_this_repo_is_clean
+KILLED  m22: doctor does not run the rule  (pytest exit 1)
+    claims to kill : tests/test_state_bypass_rule.py::test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red
+    actually failed: tests/test_state_bypass_rule.py::test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red
+KILLED  s1: the checkpoint flush writes the disk directly  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_checkpoint_flush_writes_through_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_checkpoint_flush_writes_through_the_store
+KILLED  s2: a trace line is appended to the disk directly  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+>>> SURVIVED  s3: read_tool_spans asks the disk whether a trace exists  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean
+    SURVIVING      : tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence  <- INCONCLUSIVE: this mutation did not make them fail
+KILLED  s4: read_spans asks the disk whether a trace exists  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_trace_appends_through_the_store_and_asks_it_for_existence
+KILLED  s5: an audit line is appended to the disk directly  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_audit_line_appends_through_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_audit_line_appends_through_the_store
+KILLED  s6: the delivery listing asks the disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_delivery_listing_comes_from_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_delivery_listing_comes_from_the_store
+KILLED  s7: the claim listing asks the disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_claim_listing_comes_from_the_store_and_a_torn_claim_reads_as_none
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_claim_listing_comes_from_the_store_and_a_torn_claim_reads_as_none
+KILLED  s8: a torn claim is no longer tolerated  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_claim_listing_comes_from_the_store_and_a_torn_claim_reads_as_none
+    actually failed: tests/test_state_sweep_u3c.py::test_the_claim_listing_comes_from_the_store_and_a_torn_claim_reads_as_none
+KILLED  s9: a slot record is appended to the disk directly  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_a_slot_record_is_appended_through_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_a_slot_record_is_appended_through_the_store
+>>> SURVIVED  s10: read_all_records asks the disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_every_projects_records_are_listed_from_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean
+    SURVIVING      : tests/test_state_sweep_u3c.py::test_every_projects_records_are_listed_from_the_store  <- INCONCLUSIVE: this mutation did not make them fail
+KILLED  s11: the heartbeat is read from the disk  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_heartbeat_reads_back_from_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_heartbeat_reads_back_from_the_store
+KILLED  s12: the heartbeat writes the disk directly  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_the_heartbeat_writes_through_the_store
+    actually failed: tests/test_state_bypass_rule.py::test_this_repo_is_clean, tests/test_state_sweep_u3c.py::test_the_heartbeat_writes_through_the_store
+KILLED  s13: the heartbeat body key renamed  (pytest exit 1)
+    claims to kill : tests/test_state_sweep_u3c.py::test_with_the_file_backend_the_heartbeat_is_the_same_file_as_before
+    actually failed: tests/test_state_sweep_u3c.py::test_the_heartbeat_writes_through_the_store, tests/test_state_sweep_u3c.py::test_with_the_file_backend_the_heartbeat_is_the_same_file_as_before
+
+33/35 mutations killed

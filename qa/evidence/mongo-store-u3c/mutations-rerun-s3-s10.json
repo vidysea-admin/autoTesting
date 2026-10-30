@@ -1,0 +1,25 @@
+{
+  "tests": [
+    "tests/test_state_sweep_u3c.py"
+  ],
+  "mutations": [
+    {
+      "name": "s3: read_tool_spans asks the disk whether a trace exists",
+      "file": "src/autotester/core/trace.py",
+      "old": "no trace yet returns an empty list.\"\"\"\n    if not exists_path(path):",
+      "new": "no trace yet returns an empty list.\"\"\"\n    if not path.exists():",
+      "kills": [
+        "test_the_trace_appends_through_the_store_and_asks_it_for_existence"
+      ]
+    },
+    {
+      "name": "s10: read_all_records asks the disk",
+      "file": "src/autotester/stages/schedule_store.py",
+      "old": "if not exists_path(records_dir):",
+      "new": "if not records_dir.exists():",
+      "kills": [
+        "test_every_projects_records_are_listed_from_the_store"
+      ]
+    }
+  ]
+}

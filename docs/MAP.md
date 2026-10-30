@@ -840,6 +840,7 @@
 | `ScheduleConfig` (`schema/schedule.py`) |  |
 | `SlotRecord` (`schema/schedule.py`) | One append-only line per slot decision. Holds no secret: ids, instants and a short cause. |
 | `SlotClaim` (`schema/schedule.py`) | The content of a claim marker: what the winning tick decided, so a crash can be re-driven. |
+| `Heartbeat` (`schema/schedule.py`) | The tick heartbeat file: when the scheduler last ran, as ISO text. |
 | `TickReport` (`schema/schedule.py`) | What one `autotester schedule tick` did: the JSON document of `--output json`. |
 | `ElementRef` (`schema/screen_graph.py`) | One interactive element found by `browser/enumerate.js`. |
 | `ApiCall` (`schema/screen_graph.py`) | One successful first-party API request a screen made: method + path pattern + status. |
