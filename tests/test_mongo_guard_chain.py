@@ -12,10 +12,11 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-from fake_mongo import CANARY, FakeMongoServer, open_store
+from fake_mongo import CANARY, FakeMongoServer, assert_no_canary, open_store
 from pymongo.errors import AutoReconnect, DuplicateKeyError
 
 from autotester.store.mongo_guard import (
+    StoreConfigError,
     StoreDuplicateKey,
     StoreNotFound,
     StoreUnavailable,
@@ -99,3 +100,47 @@ def test_translate_maps_each_driver_error_without_chaining() -> None:
         with pytest.raises(expected) as caught:
             _translate(fail(error))
         assert_chain_clean(caught.value)
+
+
+def test_a_lazy_cursor_that_dies_mid_iteration_is_translated_and_clean(
+        capsys: pytest.CaptureFixture[str], caplog: pytest.LogCaptureFixture) -> None:
+    """U2 checker-B W3: `find` iterates the cursor INSIDE `_translate`, so a network error that
+    surfaces mid-iteration is a clean `StoreUnavailable`, not a raw driver error quoting the URI."""
+    server = FakeMongoServer(down_message=f"connect failed for {URI}")
+    store = open_store(URI, server.client())
+    for name in ("projects", "approvals"):  # a guarded and an insert-only collection
+        for i in range(3):
+            store.collection(name).insert_one({"_id": f"d{i}", "p": "x"})
+    server.cursor_error = f"cursor lost on {URI}"
+    for name in ("projects", "approvals"):
+        with pytest.raises(StoreUnavailable) as caught:
+            store.collection(name).find({"p": "x"})
+        assert str(caught.value) == "state store unavailable (AutoReconnect)"
+        assert_chain_clean(caught.value)
+        assert_no_canary(caught.value, capsys, caplog)
+
+
+@pytest.mark.parametrize("uri", [
+    f"notmongo://u:{CANARY}@h/", f"u:{CANARY}@h/", f"mongodb://u:{CANARY}@h:notaport/",
+    f"mongodb://u:{CANARY}@/"])
+def test_the_invalid_uri_branch_raises_one_fixed_error_with_no_chain(
+        uri: str, capsys: pytest.CaptureFixture[str], caplog: pytest.LogCaptureFixture) -> None:
+    """U2 checker-B W4: `_uri_path_database` fails -> `StoreConfigError`, raised outside `except`,
+    so neither the URI nor the parser's own exception is reachable from the chain."""
+    server = FakeMongoServer()
+    with pytest.raises(StoreConfigError) as caught:
+        open_store(uri, server.client())
+    assert str(caught.value) == "the store connection string is not a valid mongodb:// URI"
+    assert_chain_clean(caught.value)
+    assert_no_canary(caught.value, capsys, caplog)
+    assert server.log == [] and server.databases == {}
+
+
+def test_a_fake_bucket_never_reuses_a_file_id_after_a_delete() -> None:
+    """Dispatcher note (U5a): upload, delete, upload must hand out two different ids."""
+    bucket = open_store(client=FakeMongoServer().client()).bucket()
+    first = bucket.upload("a.bin", b"1", metadata={})
+    bucket.delete(first)
+    second = bucket.upload("a.bin", b"2", metadata={})
+    assert first != second
+    assert [r["id"] for r in bucket.revisions("a.bin")] == [second]

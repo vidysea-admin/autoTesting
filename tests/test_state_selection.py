@@ -1,9 +1,11 @@
 """mongo-store M13: the backend is configuration, and a driver is never imported for `file`.
 
 `AUTOTESTER_STORE` unset means `file`. An unknown value, or an unknown area / backend in
-`AUTOTESTER_STORE_AREAS`, stops startup (never a silent default). `mongo` is a recognised name but
-no Mongo backend is wired in this build, so choosing it stops startup too. The cold-start test runs
-a real file-mode workload in a fresh interpreter and asserts no database driver was imported.
+`AUTOTESTER_STORE_AREAS`, stops startup (never a silent default). `mongo` is wired to
+`store/mongo_backend.py` and needs `AUTOTESTER_MONGO_URI`; without it startup stops. An area whose
+data never travels through a state key (auth, credentials, blobs) is refused on `mongo` until its
+unit routes it (U2 checker-B W5). The cold-start test runs a real file-mode workload in a fresh
+interpreter and asserts no database driver was imported.
 """
 
 from __future__ import annotations
@@ -12,27 +14,32 @@ import asyncio
 import os
 import subprocess
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from fake_mongo import FakeMongoServer, seams
 
 import autotester.store.filestore as filestore
 from autotester.core.paths import code_root
-from autotester.store.filestore import (
+from autotester.store.filestore import FileBackend, backend_for, validate_store_env
+from autotester.store.mongo_backend import MongoBackend, reset_default_backend
+from autotester.store.mongo_routes import (
     AREAS,
-    FileBackend,
+    UNROUTED,
     StoreSelectionError,
     area_of,
-    backend_for,
     store_selection,
-    validate_store_env,
 )
 
 
 @pytest.fixture(autouse=True)
-def _clean_selection(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("AUTOTESTER_STORE", raising=False)
-    monkeypatch.delenv("AUTOTESTER_STORE_AREAS", raising=False)
+def _clean_selection(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS", "AUTOTESTER_MONGO_URI"):
+        monkeypatch.delenv(name, raising=False)
+    reset_default_backend()
+    yield
+    reset_default_backend()
 
 
 def test_unset_and_blank_mean_file_for_every_area(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -64,23 +71,51 @@ def test_areas_override_single_areas_and_tolerate_spaces(monkeypatch: pytest.Mon
     assert (chosen["runs"], chosen["settings"], chosen["projects"]) == ("mongo", "file", "file")
 
 
-def test_mongo_is_recognised_but_not_wired_in_this_build(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_mongo_without_a_uri_stops_startup_and_names_the_variable(
+        monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
     assert set(store_selection().values()) == {"mongo"}
-    with pytest.raises(StoreSelectionError, match="not wired"):
+    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
         validate_store_env()
-    with pytest.raises(StoreSelectionError, match="not wired"):
+    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
         backend_for("projects/p/project.json")
+
+
+def test_mongo_with_a_uri_is_wired_to_the_mongo_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
+    monkeypatch.setenv("AUTOTESTER_MONGO_URI", "mongodb://h/")
+    with seams(client_factory=lambda _uri: FakeMongoServer().client()):
+        assert isinstance(backend_for("projects/p/project.json"), MongoBackend)
+        assert validate_store_env()["projects"] == "mongo"
 
 
 def test_one_area_on_mongo_only_fails_the_keys_in_that_area(
         monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "runs=mongo")
     assert isinstance(backend_for("projects/p/project.json"), FileBackend)
-    with pytest.raises(StoreSelectionError, match="not wired"):
+    with pytest.raises(StoreSelectionError, match="AUTOTESTER_MONGO_URI is not set"):
         backend_for("projects/p/runs/r1/result.json")
     with pytest.raises(StoreSelectionError):
         validate_store_env()
+
+
+@pytest.mark.parametrize("area", sorted(UNROUTED))
+def test_an_area_that_routes_nothing_is_refused_on_mongo_but_allowed_on_file(
+        monkeypatch: pytest.MonkeyPatch, area: str) -> None:
+    """W5: `auth=mongo` used to be accepted and silently did nothing."""
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", f"{area}=mongo")
+    with pytest.raises(StoreSelectionError, match="routes nothing yet"):
+        validate_store_env()
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", f"{area}=file")
+    assert store_selection()[area] == "file"
+
+
+def test_the_approvals_and_queue_families_have_an_area_so_they_can_be_flipped() -> None:
+    assert area_of("projects/p/approvals.jsonl") == "approvals"
+    assert area_of("projects/p/approval_revocations.jsonl") == "approvals"
+    assert area_of(".work/run_queue.json") == "queue"
+    assert area_of(".work/team/schedule/claims/a.json") == "queue"
+    assert area_of(".work/team/delivery/d.jsonl") == "queue"
 
 
 def test_a_typo_surfaces_on_first_use_not_only_at_startup(

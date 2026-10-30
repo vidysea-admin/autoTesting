@@ -1,0 +1,35 @@
+{
+ "tests": [
+  "tests/test_mongo_backend_layout.py::test_a_persona_over_4_mb_splits_into_kg_rows_and_reads_back_equal",
+  "tests/test_mongo_backend_layout.py::test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows"
+ ],
+ "mutations": [
+  {
+   "name": "b1: the persona is never split",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "KG_SPLIT_BYTES = 4 * 1024 * 1024",
+   "new": "KG_SPLIT_BYTES = 10**12",
+   "kills": [
+    "test_a_persona_over_4_mb_splits_into_kg_rows_and_reads_back_equal"
+   ]
+  },
+  {
+   "name": "b2: an overwrite leaves the old generation behind",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "if old and old != doc.get(\"split\"):",
+   "new": "if False:",
+   "kills": [
+    "test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows"
+   ]
+  },
+  {
+   "name": "b3: delete leaves the graph rows behind",
+   "file": "src/autotester/store/mongo_backend.py",
+   "old": "        if old:",
+   "new": "        if False:",
+   "kills": [
+    "test_a_rewrite_never_mixes_generations_and_a_shrink_or_delete_drops_the_rows"
+   ]
+  }
+ ]
+}
