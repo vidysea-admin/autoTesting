@@ -1,100 +1,126 @@
 # Manifest - mongo-store-u3c
 
 **Status:** ready-for-check
-**Fix cycle:** 0
+**Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U3c (sweep of trace / orchestrate checkpoint / audit log / delivery inbox / schedule store, plus the M16 doctor rule). **Criticality:** normal.
 **Authority:** D-120, D-121, D-122/D-123 (no new `src/` module; see judgement call 1)
-Round cap: normal unit, D-014 cap of 2 fix cycles applies.
-**Branch:** `feat/mongo-store-u3c` (cut from master `0a2cbe45`). Not merged to master, not pushed.
-**Base SHA:** `0a2cbe45`
-**Code SHA:** `15079067d171f64a6d6c6bf7aeb6fb172b3000fd` (the only code commit; this manifest is a second commit on top of it)
-**Criteria judged by U3c:** M16 (rule + baseline), and the "identical with `AUTOTESTER_STORE` unset" half of M14 for the touched modules. M19/M20 (`create_exclusive`, `put_if`) for the claim and checkpoint-CAS sites are NOT done here: the public store API cannot express them yet (see "Deferred sites").
+Round cap: normal unit, D-014 cap of 2 fix cycles applies (this is cycle 1 of 2).
+**Branch:** `feat/mongo-store-u3c` (master `61691ec7` + U4 merged). Not merged to master, not pushed.
+**Cycle-0 code SHA:** `15079067d171f64a6d6c6bf7aeb6fb172b3000fd` (verdict: FAIL, `qa/verdicts/mongo-store-u3c.md`)
+**Cycle-1 code SHA:** `58d7486df453f168c125234b38cc1609bc91a7d2` (the only cycle-1 code commit; this manifest is a second commit on top of it)
+**Criteria judged by U3c:** M16 (rule + baseline) and the "identical with `AUTOTESTER_STORE` unset" half of M14 for the touched modules. M19/M20 (`create_exclusive`, `put_if`) are NOT done here (U7); see "Blocked on the public API".
 
-## Scope said plainly
+## Cycle-1 answer to each verdict finding
 
-The public `filestore` API today is write_text / write_bytes / write_json / read_json / read_jsonl / append_jsonl / delete_jsonl_row / upsert_jsonl plus `backend_for`. It has no exists-by-path, list-children, mtime, raw append, create-exclusive-by-path or delete-by-path. Per the coordinator's note I added no path-to-key helper of my own and did not import the private `_route` or `_atomic_write`. So the sweep reroutes only what the public wrappers can express (checkpoint flush, heartbeat) and every other raw site is on a baseline row tagged `U3c-deferred, needs <API>`, so it cannot be forgotten and the rule keeps the list from growing.
-
-## What changed
-
-| File | Kind | One job / change |
+| # | Finding | Answer |
 |---|---|---|
-| `src/autotester/ledger/committed_fresh.py` (209 lines) | E in place | hosts the new rule `check_state_bypass(root)` `:186`; constants `STATE_BYPASS` `:99`, `STATE_BYPASS_STALE` `:100`, `_STATE_MODULES` `:102`, `_METHODS` `:108`, `_OS_CALLS` `:110`; helpers `_is_state :118`, `_bindings :126` (module-wide taint fixpoint), `_writes :144`, `_kind :151`, `_sites :167`, `_allowed :177`. Scans `src/autotester/**/*.py` except `store/` and `browser/`. |
-| `src/autotester/doctor.py` (300 lines, cap 300) | E in place | imports `check_state_bypass` (multi-line import) and runs it in `run()` `:298`. |
-| `pyproject.toml` | E in place | `[tool.autotester.doctor.state-bypass]` `:78`: `baseline` (83 rows, each `path:line:kind \| owner or reason`) and `permanent` (4 rows). |
-| `src/autotester/stages/orchestrate_checkpoint.py` | E in place | `flush()` `:248-257` writes through the public `write_text` (`:24` import) instead of the private `_atomic_write`. |
-| `src/autotester/stages/schedule_store.py` | E in place | `write_heartbeat` `:245-247` writes through `write_text` (`:32` import); module docstring heartbeat bullet `:13` updated. |
-| `tests/test_state_bypass_rule.py` | N (test) | 29 tests of the rule. |
-| `tests/test_state_sweep_u3c.py` | N (test) | 3 tests: flush and heartbeat land in the in-memory backend, not on disk; with the file backend the heartbeat is the same file as before. |
+| 1 | Deferred sites not routed through the public API | Routed everything the public API can express (below). What it cannot express stays, tagged U7, 20 rows. **This is a blocker for the contract owner, not something this unit can finish: see "Blocked on the public API".** |
+| 2 | Half-routed reads become incoherent once a non-file backend is wired | Routed the reads the API can do (heartbeat, claim listing, inbox listing, record listing, trace existence). The reads it cannot do are listed under "READ-SIDE" and each sits on a baseline row or is a plain `read_text` the rule does not flag; they are flip blockers for the trace / checkpoint / inbox areas. |
+| 3 | Rule lives in a ledger module | Kept in `ledger/committed_fresh.py` (299 lines, cap 300): doctor.py is at the cap and a new module needs a D-entry. Docstring says so. Needs your ruling, see judgement call 1. |
+| 4 | Baseline rows break on any line shift | Rows are now `path:enclosing-function:kind \| owner`; a repeated row allows that many sites (multiset). A line shift never moves a row; a changed function or kind gives violation + stale. |
+| 5 | Rule recall gaps | Import aliases (`import os as o`, `from shutil import copyfile`, `from os import path as p`), `mkdir`/`touch`/`rename`/`rmdir`/`os.makedirs`/`os.listdir`/`os.path.*`/`shutil.*`, tuple-unpack, `for`/`with`/comprehension targets, helper-returning-path, non-literal open mode (counts as a write). |
+
+## What changed (cycle 1, on top of cycle 0)
+
+| File | Kind | Change |
+|---|---|---|
+| `src/autotester/ledger/committed_fresh.py` (299 lines) | E in place | rule rewritten: constants `:101-115`; `_Taint :124` (fixpoint over assignments, unpack, loops, `with`, comprehension, helper returns); `_bound :156`, `_pairs :164`; `_imports :182`, `_dotted`, `_fs_call :207`; `_writes :216`; `_kind :229`; `_scoped_calls :244`; `_sites :255`; `_allowed :265`; `check_state_bypass :275` (Counter multiset, stale report). |
+| `src/autotester/core/trace.py` | E in place | `TraceWriter._append :70` uses `append_path`; `read_tool_spans :141` and `read_spans :155` ask `exists_path`. |
+| `src/autotester/auth/audit.py` | E in place | `_append :24` uses `append_path` under the lock (mkdir/open removed). |
+| `src/autotester/delivery/inbox.py` | E in place | `DeliveryLog._load :118-123` lists via `exists_path`/`list_children`, reads each record via `read_json(..., DeliveryRecord)`. |
+| `src/autotester/stages/schedule_store.py` | E in place | `list_claims :63-68` (`exists_path`, `list_children`, `read_json(SlotClaim)`); `_append_line :100` (`append_path`); `read_all_records :142-144`; `read_heartbeat :254` (`read_json(Heartbeat)`); docstring bullet. |
+| `src/autotester/schema/schedule.py` | E in place | new model `Heartbeat :220` (`last_tick: str`, `extra="ignore"`, `strict=True`) so the heartbeat read is typed. `docs/MAP.md` regenerated by `autotester map` (one added row). |
+| `pyproject.toml` | E in place | `[tool.autotester.doctor.state-bypass] :78` regenerated in the function-keyed form: 112 baseline rows (owners: U3d 62, U7 20, U3b 14, UNOWNED 10, U11 6) + 4 permanent rows. |
+| `tests/test_state_bypass_rule.py` | E (rewritten) | 57 tests. |
+| `tests/test_state_sweep_u3c.py` | E (rewritten) | 10 tests; fixture swaps `filestore._backend` for an in-memory backend (`_holders()` uses `_backend`, not `backend_for`). |
+| `tests/test_sweep_u3a.py` | E in place | `LEFT["stages/schedule_store.py"]` updated to the new raw-write counts (`write_text` 1, `os.replace` 2, `os.open` 1); U3a's pin is a count of what remains. |
 | `qa/evidence/mongo-store-u3c/` | N | `mutations.json`, `mutation-run.txt`, `regression-pairs.txt`, `doctor.txt` |
 
-No other `src/` module was added or touched. Files owned by siblings (`store/*`, `core/safe_names.py`, `stages/` sweep files other than the two above, `sources/`, `core/env.py`, `ui/*`) are untouched.
+Not touched: `store/*`, `core/env.py`, `ui/*`, `stages/schedule_wiring.py`, other `stages/` and `sources/` files (U3b / U3d own them).
 
 ## Criteria map
 
 | Crit | Code | Test (falsifier it kills) |
 |---|---|---|
-| M16 doctor rule fails a raw write on a state path | `committed_fresh.py:186` (`check_state_bypass`), wired `doctor.py:298` | `test_state_bypass_rule.py::test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red` (runs `doctor.run`), `::test_every_listed_call_on_a_project_path_in_stages_is_flagged` x 11 call kinds (write_text, write_bytes, unlink, glob, rglob, iterdir, exists, stat, open, os.replace, shutil.rmtree) |
-| M16 reads vs writes, exemptions, non-state | `_writes :144`, `_EXEMPT_DIRS`, `_is_state :118` | `::test_a_read_is_not_flagged_a_write_mode_is`, `::test_store_and_browser_are_exempt[store/browser]`, `::test_a_path_that_is_not_state_is_not_flagged`, `::test_repo_root_is_state_only_under_work_or_projects` (4 forms), `::test_taint_follows_a_derived_name` |
-| M16 state-persisting modules (paths come from callers) | `_STATE_MODULES :102` | `::test_state_persisting_modules_flag_any_path_a_caller_hands_them` x 6 modules (and a non-listed module with the same code is not flagged) |
-| M16 explicit baseline allowlist, `file:line`, owner-tagged; list only shrinks | `_allowed :177`, `check_state_bypass :186`, `pyproject.toml:78` | `::test_a_baseline_row_allows_exactly_that_site_and_a_stale_row_is_reported` (a moved line gives violation + stale; an extra row gives stale), `::test_a_permanent_row_allows_a_host_check` |
-| doctor clean on this branch | whole tree | `::test_this_repo_is_clean`; `uv`-free `autotester doctor` exit 0 (below) |
-| Behaviour identical with `AUTOTESTER_STORE` unset | `orchestrate_checkpoint.py:257`, `schedule_store.py:247` | `test_state_sweep_u3c.py::test_with_the_file_backend_the_heartbeat_is_the_same_file_as_before` (same path, same body, no leftover temp), plus the existing tests of every touched module (regression below) |
-| flush / heartbeat go through the store | same | `test_state_sweep_u3c.py::test_the_checkpoint_flush_writes_through_the_store`, `::test_the_heartbeat_writes_through_the_store` (in-memory backend swapped in; a disk write fails the test) |
+| M16 rule fails a raw call on a state path | `committed_fresh.py:275`, wired `doctor.py:298` | `test_state_bypass_rule.py::test_the_falsifier_write_text_on_a_projectpaths_path_turns_doctor_red`; `::test_every_listed_call_on_a_project_path_in_stages_is_flagged` x 19 kinds |
+| M16 recall: aliases | `_imports :182`, `_dotted` | `::test_an_import_alias_does_not_hide_a_raw_call` x 8, `::test_an_import_of_something_else_is_not_mistaken_for_os` |
+| M16 recall: unpack / loop / with / comprehension / helper | `_Taint :124`, `_pairs :164` | `::test_taint_follows_unpacking_loops_with_and_a_helper_that_returns_a_path` x 7 |
+| M16 recall: variable open mode | `_writes :216` | `::test_an_unknown_open_mode_counts_as_a_write_and_a_read_does_not` |
+| M16 exemptions, non-state, state-persisting modules | `_EXEMPT_DIRS`, `_STATE_MODULES` | `::test_store_and_browser_are_exempt`, `::test_a_path_that_is_not_state_is_not_flagged`, `::test_repo_root_is_state_only_under_work_or_projects`, `::test_state_persisting_modules_flag_any_path_a_caller_hands_them` |
+| M16 baseline survives a line shift; only shrinks | `_allowed :265`, `check_state_bypass :275` | `::test_a_baseline_row_allows_that_site_wherever_its_line_moves`, `::test_a_row_for_another_function_or_kind_does_not_allow_the_site`, `::test_a_row_counts_sites_and_a_stale_row_is_reported`, `::test_a_method_and_a_module_level_call_get_their_own_scope_names`, `::test_a_permanent_row_allows_a_host_check` |
+| doctor clean for this rule | whole tree | `::test_this_repo_is_clean`; `doctor.txt` |
+| trace / audit / inbox / schedule sites go through the store | file:lines above | `test_state_sweep_u3c.py::` `test_the_trace_appends_through_the_store_and_asks_it_for_existence`, `test_the_audit_line_appends_through_the_store`, `test_the_delivery_listing_comes_from_the_store`, `test_the_claim_listing_comes_from_the_store_and_a_torn_claim_reads_as_none`, `test_a_slot_record_is_appended_through_the_store`, `test_every_projects_records_are_listed_from_the_store`, `test_the_heartbeat_writes_through_the_store`, `test_the_heartbeat_reads_back_from_the_store`, `test_the_checkpoint_flush_writes_through_the_store` |
+| M14: same behaviour with the store unset | as above | `test_with_the_file_backend_the_heartbeat_is_the_same_file_as_before` + the regression pairs below |
 
-## Baseline allowlist (83 baseline rows, 4 permanent)
+## Blocked on the public API (decision needed from the contract owner)
 
-Tags by owner: U3a (stages/, sources/ sites) 40 rows; U3b 8 rows; U3c-deferred 25 rows; U11 6 rows; UNOWNED 4 rows.
+`store/filestore.py` is at 300 lines and `store/*` is off-limits to this unit. Its public surface has no: raw text/bytes read of a path, `create_exclusive`-by-path, `put_if`-by-path, rename/replace, delete-tree. There is also no public path-to-key function (`_route`, `_rel` are private and I did not import them). Twenty sites need one of those and stay on baseline rows tagged U7:
 
-U3b rows (coordinator's list, with the lines the rule actually flags): `core/env.py:71` glob (`:72-74` are not separate calls), `ui/credential_guard.py:67` iterdir and `:68` exists, `stages/schedule_wiring.py:104` glob, `ui/project_view.py:165` exists and `:167` iterdir, `ui/helpers.py:160` exists and `:162` iterdir (the coordinator quoted `:157-168` / `:158`; the flagged lines are the ones listed).
-
-Permanent rows (never state): `core/env.py:98` and `:197` exists (repo-root `.env` presence; U11 owns credential moves), `core/env.py:119` exists and `:121` stat (host `st_dev` probe). `core/env.py:155` (`/proc/mounts`) is not flagged by the rule, so it needs no row.
-
-### Deferred sites (U3c-deferred, with the API each needs)
-
-| Site | Needs |
+| Rows (path:function:kind) | Missing primitive |
 |---|---|
-| `core/trace.py:70` open | raw append / create_exclusive / delete on the backend (U4/U7) |
-| `core/trace.py:142`, `:156` exists | `exists_path` (U4) |
-| `auth/audit.py:23` open | raw append / create_exclusive / delete (U4/U7) |
-| `delivery/inbox.py:85` write_text, `:87` os.link, `:92` unlink | raw append / create_exclusive / delete (U4/U7) |
-| `delivery/inbox.py:122` iterdir | `list_children` (U4) |
-| `stages/orchestrate_checkpoint.py:173`, `:204` exists | `exists_path` (U4). The `put_if` CAS on `flush` is also not done: `_digest`/`_load` read the path directly. |
-| `stages/schedule_store.py:45`, `:96` os.open (claim O_EXCL, `_append_line`) | `create_exclusive` / raw append (U4/U7) |
-| `stages/schedule_store.py:59`, `:144`, `:195` glob | `list_children` (U4) |
-| `stages/schedule_store.py:171`, `:189`, `:242` shutil.rmtree; `:185`, `:237` os.replace; `:233` write_text; `:235` os.rename; `:238` unlink | raw delete / rename (U4/U7) |
-| `stages/schedule_store.py:180`, `:183` exists | `exists_path` (U4) |
+| `delivery/inbox.py:_create_once` x4 (mkdir, os.link, unlink, write_text) | `create_exclusive` by path (M19) |
+| `stages/schedule_store.py:claim` x2 (mkdir, os.open O_EXCL) | `create_exclusive` by path (M19) |
+| `stages/orchestrate_checkpoint.py:FileCheckpointer._digest` / `._load` exists x2 | raw read + `put_if` by path (M20). I tried `exists_path` here: it makes `_digest` read a disk file the store never wrote and the flush test crashes, so it was reverted. |
+| `stages/schedule_store.py:_purge_locked` x6, `_recover_stages` x1, `_restore_stage` x5 | rename/replace, delete-tree, raw read (the stage-and-restore purge) |
 
-When a sibling lands the API and removes a site, its baseline row turns into `state-bypass-stale` and doctor goes red until the row is deleted, so the list only shrinks.
+To unblock: either a new path-wrapper module (needs a D-entry; the rule host problem in judgement call 1 is the same shape) or a split of `filestore.py`. Either is a decision for Umesh / the contract owner, not for this unit.
+
+### READ-SIDE (unrouted reads of paths whose writes are routed; flip blockers)
+
+Once a non-file backend is wired for an area these read the disk and miss the store, so the area's G1 flip must not happen until they move: `core/trace.py:143` and `:158` (`read_text` of the trace, in `read_tool_spans` / `read_spans`), `stages/orchestrate_checkpoint.py:173` (`_digest` `read_bytes`) and `:206` (`_load` `read_text`), `stages/schedule_store.py:124` (`read_records` `read_text`; `claimed_at` equivalent at `delivery/inbox.py:114`). The rule does not flag plain reads, so these are listed here, not in the baseline.
+
+## What the baseline now says
+
+112 baseline rows: U3d 62 (stages/ and sources/ sites, retagged from U3a), U7 20 (above), U3b 14, UNOWNED 10, U11 6. 4 permanent rows (`core/env.py` `_device:exists`, `_device:stat`, `dollar_value_keys:exists`, `load_repo_env:exists`). Stale U3a rows were dropped (the rule's own stale report found them).
+
+### What changes when U3b merges (for whichever of U3b / U3c merges second)
+
+Verified by running this branch's rule and baseline over U3b's `src/` (`4e296610`). Rows are function-keyed, so U3b's line renumbering (including the `core/env.py` permanent rows 98->104, 119->125, 121->127, 197->203) changes **nothing**; the permanent rows stay valid unchanged. What does change: all 14 rows tagged `| U3b` become `state-bypass-stale` and must be deleted, and nothing is added:
+
+```
+core/env.py:project_credentials:glob
+stages/schedule_wiring.py:scheduled_projects:glob
+stages/schedule_wiring.py:scheduled_projects:stat
+ui/credential_guard.py:refuse_foreign_key:exists   (x2)
+ui/credential_guard.py:refuse_foreign_key:iterdir
+ui/helpers.py:_project_slugs:exists                (x2)
+ui/helpers.py:_project_slugs:iterdir
+ui/project_view.py:_has_corrupt_run:exists         (x2)
+ui/project_view.py:_has_corrupt_run:iterdir
+ui/project_view.py:_last_change:exists
+ui/project_view.py:_last_change:stat
+```
+
+If U3b merges first, U3b's own (line-keyed or old) rows must be re-expressed in this function-keyed form: the rule here reads only `path:function:kind`. I did not edit U3b's files and did not merge its branch. U3d must likewise re-key its rows (62 `| U3d`) in this format as it removes sites.
 
 ## Things the checker should look at (judgement calls)
 
-1. **Rule host module.** D-122/D-123 list no doctor-rule module, `doctor.py` and the other ledger check modules are at the 300-line cap, and a new file is a STOP. I put the rule in the existing `ledger/committed_fresh.py` (209 lines) and said so in its docstring. If you want it in its own module that needs a D-entry first; moving it is mechanical.
-2. **Exact-line baseline.** Rows match on `file:line:kind`, so any edit that shifts a deferred site's line turns doctor red until the row is re-pinned. That is deliberate (contract wants `file:line`) but it costs sibling units a row edit each; U3a/U3b will hit this.
-3. **Heuristic taint, not a type check.** The rule is AST-based: a name is state if assigned from `ProjectPaths` / `team_path` / `paths` or from `repo_root()`/`root`/`base` joined with `.work`, `projects` or `.env`, propagated to a fixpoint (4 passes, `_bindings :126`). It can miss a path built through a call it does not know (e.g. a helper that returns a project path), and it counts every flagged call in the six `_STATE_MODULES` because those take paths from callers. Consequence: false negatives are possible outside those modules; the baseline protects what is known, not what is hidden.
-4. **`core/env.py` is a state-persisting module** (`_STATE_MODULES`), so its `.env` accesses are flagged; hence the four permanent rows. U11 owns moving credentials.
-5. **UNOWNED and U11 tags are mine.** No unit row covers `ui/app.py`, `ui/routes_settings.py`, `ui/intake_upload.py`, `ui/routes_bench_inputs.py` (4 rows tagged `UNOWNED (no unit row covers ui/)`); the 6 `ui/routes_role_accounts.py` / `routes_credentials.py` rows are tagged U11 on the same reasoning. The contract owner should assign them.
-6. **Mode detection** (`_writes :144`): a call counts as a write only if a short string literal (<= 4 chars) in the positional args or `mode=` contains one of `w a x +`. A mode passed as a variable is read as a read. Pinned by `test_a_read_is_not_flagged_a_write_mode_is`.
-7. **Equivalence with the store unset** relies on `write_text` being the same atomic temp+replace the old private `_atomic_write` did (U2 manifest, judgement call 3); I did not diff bytes of an old-vs-new run beyond the heartbeat test.
+1. **Rule host module.** `ledger/committed_fresh.py` is at 299/300. A new module needs a D-entry; `doctor.py` is at the cap. If you want the rule elsewhere that is a D-entry then a mechanical move.
+2. **Windows newline.** `append_path` is a text-mode append, so on Windows a slot record line now ends `\r\n` where `_append_line` used binary `\n` (O_APPEND). Readers use `splitlines`, the schedule tests pass; byte-for-byte identity with the old file is not claimed. Trace/audit appends were already text mode.
+3. **`Heartbeat` is `extra="ignore"`** to be exactly as tolerant as the old reader (`json.loads(...)["last_tick"]`); `strict=True` so a non-string `last_tick` reads as unreadable, same outcome (None) as before. A torn file raises the store's plain `ValueError` (not `ValidationError`), caught with `OSError`.
+4. **Rule limits, stated.** Taint is scope-blind (a name tainted in one function taints the same name elsewhere in the module; it errs towards flagging). `scripts/` is not scanned. A helper imported from another module is not followed (only helpers defined in the same module). Files outside `_STATE_MODULES` that build a path from an argument are invisible to it. The baseline protects what is known, not what is hidden.
+5. **UNOWNED / U11 tags are mine.** No unit row covers `core/image_privacy.py`, `core/paths.py` (x2), `providers/config_migration.py` (x2), `providers/vision_probe.py`, `ui/app.py`, `ui/intake_upload.py`, `ui/routes_bench_inputs.py`, `ui/routes_settings.py` (10 rows UNOWNED); the 6 `ui/routes_credentials.py` / `routes_role_accounts.py` rows are tagged U11. The contract owner should assign them.
+6. **Test fixture.** The sweep tests patch the private `filestore._backend` because `_holders()` (used by `exists_path`/`list_children`) calls it, not `backend_for`. If `_holders` changes, the fixture must follow.
 
 ## Verify (run in `D:/autoTesting/.claude/worktrees/mongo-u3c`, worktree `.venv`, `PYTHONPATH=src`, `-o addopts=`, at most 2 files per call)
 
 ```
-pytest tests/test_state_bypass_rule.py tests/test_state_sweep_u3c.py   -> 33 passed
-pytest tests/test_committed_fresh.py tests/test_doctor.py              -> 48 passed
+pytest tests/test_state_bypass_rule.py tests/test_state_sweep_u3c.py   -> 67 passed
+pytest tests/test_sweep_u3a.py tests/test_state_sweep_u3c.py           -> 19 passed
 ruff check src tests scripts                                           -> All checks passed!
-autotester doctor  (redirected, qa/evidence/mongo-store-u3c/doctor.txt) -> exit 0, "doctor: clean"
-mypy (3 touched src files)                                             -> 2 errors, both pre-existing (below)
-python scripts/mutation_check.py qa/evidence/mongo-store-u3c/mutations.json --repo .  -> 14/14 mutations killed
+autotester doctor  (redirected, qa/evidence/mongo-store-u3c/doctor.txt) -> 1 violation: duplicate-concept repo_redactor (U4 vs U5a); state-bypass, stale-committed and evidence-spec all clean
+mypy (6 touched src files)                                             -> 2 errors, both pre-existing (below)
+python scripts/mutation_check.py qa/evidence/mongo-store-u3c/mutations.json --repo .  -> full run 33/35 (s3, s10 survived: weak tests); both tests hardened, re-run of those two (mutations-rerun-s3-s10.json) 2/2 killed => 35/35
 ```
 
-Mutants: m1-m11 on the rule (flagged-method set, browser exemption, read-as-write, stale reporting, empty baseline, empty permanent list, `.work` state part, bare `repo_root`, `core/trace.py` module list, taint propagation, doctor wiring), s1-s3 on the sweep (flush direct disk write, heartbeat direct disk write, heartbeat key rename). Full output: `qa/evidence/mongo-store-u3c/mutation-run.txt`.
+Regression of the touched modules' existing tests: `qa/evidence/mongo-store-u3c/regression-pairs.txt` (17 pairs, two files per call, all passed; 430 tests). The cycle-0 `test_schedule_tick` pre-existing failure now passes.
 
-**Regression of the touched modules' existing tests** (`qa/evidence/mongo-store-u3c/regression-pairs.txt`, two files per call): schedule_purge_crash+schedule_gaps 26, schedule_failures+schedule_wiring 35, schedule_catchup+schedule_overlap 28, schedule_advisories+schedule_inbox 7, schedule_routes+orchestrate 45, cli_orchestrate+cli_orchestrate_resume 8, orchestrate_downstream+generic_acceptance 17, doctor_oracle_exempt+schedule_tick 34 passed / 1 failed.
+Mutants: m1-m22 on the rule (flagged-method set, mkdir/touch, makedirs, os.path, alias resolution, tuple elementwise, for/comprehension, with, helper return, taint propagation, variable open mode both ways, browser exemption, `.work`, bare `repo_root`, module list, line-vs-function key, multiset, empty baseline, stale report, permanent list, doctor wiring), s1-s13 on the sweep (checkpoint flush, trace append, both trace `exists`, audit append, inbox listing, claim listing, torn-claim tolerance, slot append, record listing, heartbeat read, write, body key). Full output: `qa/evidence/mongo-store-u3c/mutation-run.txt` (35 mutants, 33 killed) and `mutation-run-rerun-s3-s10.txt` (the two survivors after their tests were hardened: s3 now plants a disk-only tool span, s10 stubs `read_records` and lists a store-only dir).
 
-## Pre-existing failures (not caused by U3c)
+## Pre-existing, not caused by U3c
 
-- `tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively` fails with `autotester.auth.access -> autotester.auth.store` and `-> auth.store_sqlite`. It fails on master `0a2cbe45` too: `git show 0a2cbe45:src/autotester/auth/access.py` already imports `autotester.auth.store`, and the test's `ALLOWED_OUTSIDE` lacks `autotester.auth.store` and `autotester.auth.store_sqlite`. Not touched.
-- mypy: `stages/schedule_store.py:31` (`SlotOutcome` not exported by `schema.schedule`) and `stages/orchestrate_checkpoint.py:256` (`SerializerProtocol` has no `redactor`). Both on lines I did not change.
+- mypy: `stages/schedule_store.py:31` (`SlotOutcome` not exported by `schema.schedule`) and `delivery/inbox.py:186` (`DeliveryRecord` missing `error`): both on lines this cycle did not change.
+- doctor `duplicate-concept repo_redactor` (`store/mongo_routes.py:185` vs `store/blobs.py`): U4 vs U5a, U4 is fixing it; told to ignore.
 
 ## Not run
 
