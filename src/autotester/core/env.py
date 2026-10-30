@@ -53,8 +53,10 @@ def key_namespace(slug: str) -> str:
 
 
 def is_server_key(key: str) -> bool:
-    """A key the server reads (provider keys, `AUTOTESTER_*`): always exported, not a project's."""
-    return key in PROVIDER_KEYS or key.startswith(SERVER_PREFIX)
+    """A key the server reads (provider keys, `AUTOTESTER_*`): always exported, not a project's.
+    Any letter case: `autotester_approval_key` is the server's key to a case-blind environment."""
+    upper = key.upper()
+    return upper in PROVIDER_KEYS or upper.startswith(SERVER_PREFIX)
 
 
 def project_credentials(root: Path) -> tuple[tuple[str, ...], frozenset[str]]:

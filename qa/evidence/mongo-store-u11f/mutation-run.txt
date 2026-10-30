@@ -1,0 +1,47 @@
+KILLED  door skips its own shape check (put_credentials)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[bell], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[lowercase-key], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[nul]
+    actually failed: tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[  mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/  ], tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[bell], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[carriage-return], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[dash], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[delete], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[digit-first], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[empty-key], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[empty-value], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[lowercase-key], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[newline], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[nul], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[space], tests/test_credential_store_u11f.py::test_the_door_refuses_a_server_key_in_any_letter_case[Autotester_Approval_Key], tests/test_credential_store_u11f.py::test_the_door_refuses_a_server_key_in_any_letter_case[autotester_approval_key], tests/test_credential_store_u11f.py::test_the_door_refuses_a_server_key_in_any_letter_case[openai_api_key]
+KILLED  control characters allowed in a stored value  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[bell], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[delete], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[nul]
+    actually failed: tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[bell], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[delete], tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[nul], tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door
+KILLED  server-key check is case sensitive again  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[Gemini_Api_Key], tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[autotester_approval_key]
+    actually failed: tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[Autotester_Harness_Password], tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[Gemini_Api_Key], tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[anthropic_api_key], tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[autotester_approval_key]
+KILLED  a value equal to the Mongo URI is storable  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/], tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door
+    actually failed: tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[  mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/  ], tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/], tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door
+KILLED  URI comparison does not strip padding  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[  mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/  ]
+    actually failed: tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[  mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/  ]
+KILLED  empty value accepted by the door  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[empty-value]
+    actually failed: tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[empty-value], tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door
+KILLED  validation-only gate uses the weak shape check  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door
+    actually failed: tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door
+KILLED  undeclare saves the project before touching the store (old order)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_store_outage_on_undeclare_is_a_503_and_nothing_changed
+    actually failed: tests/test_credential_store_u11f.py::test_a_store_outage_on_undeclare_is_a_503_and_nothing_changed
+KILLED  undeclare does not put the stored value back when the save fails  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_failed_project_save_on_undeclare_puts_the_stored_value_back
+    actually failed: tests/test_credential_store_u11f.py::test_a_failed_project_save_on_undeclare_puts_the_stored_value_back
+KILLED  litellm guard ignores store-held values  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_the_litellm_guard_withholds_a_value_held_only_in_the_store
+    actually failed: tests/test_credential_store_u11f.py::test_the_litellm_guard_withholds_a_value_held_only_in_the_store
+KILLED  pdf reading scrub ignores store-held values  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_a_pdf_reading_is_scrubbed_of_a_value_held_only_in_the_store
+    actually failed: tests/test_credential_store_u11f.py::test_a_pdf_reading_is_scrubbed_of_a_value_held_only_in_the_store
+KILLED  credential write drops the whole backend (a client per write again)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_credential_writes_reuse_one_client_and_build_indexes_once
+    actually failed: tests/test_credential_store_u11f.py::test_credential_writes_reuse_one_client_and_build_indexes_once
+KILLED  credential write never re-arms the secret gate  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_the_secret_gate_still_rebuilds_after_each_credential_write
+    actually failed: tests/test_credential_store_u11f.py::test_the_secret_gate_still_rebuilds_after_each_credential_write
+KILLED  blob_store reads a URI name that does not exist (the AttributeError)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_blob_store_builds_on_the_fake_with_blobs_on_mongo
+    actually failed: tests/test_credential_store_u11f.py::test_blob_store_builds_on_the_fake_with_blobs_on_mongo
+KILLED  blob_store builds without a URI  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11f.py::test_blob_store_without_a_uri_is_a_named_selection_error
+    actually failed: tests/test_credential_store_u11f.py::test_blob_store_without_a_uri_is_a_named_selection_error
+
+15/15 mutations killed

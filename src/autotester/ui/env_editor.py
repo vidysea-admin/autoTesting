@@ -16,6 +16,7 @@ import os
 import re
 import tempfile
 import time
+import unicodedata
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,7 @@ from autotester.core.env import (
     MONGO_URI_ENV,
     credential_collection,
     is_server_key,
+    mongo_uri,
     read_dotenv,
 )
 from autotester.core.file_lock import file_lock
@@ -87,6 +89,21 @@ def _check_pair(key: str, value: str) -> None:
         raise InvalidEnvValue("credential value must not contain a newline")
 
 
+def _check_store_pair(key: str, value: str) -> None:
+    """What the credential store accepts, checked before any write (M31, M36): the `.env` shape
+    check plus no control character, a value, no deployment secret (the Mongo URI as a key or as
+    any key's value, `AUTOTESTER_*`, a provider key, in any letter case). Never quotes a value."""
+    _check_pair(key, value)
+    if not value:
+        raise CredentialRefused(f"'{key}' has no value")
+    if any(unicodedata.category(ch) == "Cc" for ch in value):
+        raise InvalidEnvValue("credential value must not contain a control character")
+    if key.upper() == MONGO_URI_ENV or is_server_key(key):
+        raise CredentialRefused(f"'{key}' is a deployment secret and is never stored")
+    if (uri := mongo_uri()) and value.strip() == uri:
+        raise CredentialRefused(f"'{key}' holds the store connection string and is never stored")
+
+
 def _validated_updates(values: dict[str, str]) -> dict[str, str]:
     """Render a whole batch before any write, so one bad row changes nothing."""
     rendered: dict[str, str] = {}
@@ -103,7 +120,7 @@ def validate_env_values(values: dict[str, str]) -> None:
         _validated_updates(values)
         return
     for key, value in values.items():
-        _check_pair(key, value)
+        _check_store_pair(key, value)
 
 
 @contextlib.contextmanager
@@ -199,10 +216,11 @@ def set_env_value(env_path: Path, key: str, value: str) -> None:
 # ---- the secret door (mongo-store M31-M37; D-123: plain documents, no key) ----------------------
 
 def _rearm() -> None:
-    """Drop the cached secret gate so the next store write rebuilds it with the new values (M34)."""
-    from autotester.store.mongo_backend import reset_default_backend
+    """The next store write rebuilds the secret gate with the new values (M34). The backend, its
+    one client and its indexes stay: a credential write never opens another connection."""
+    from autotester.store.mongo_backend import default_backend
 
-    reset_default_backend()
+    default_backend().rearm()
 
 
 def _put_doc(coll: Any, doc: dict[str, Any]) -> None:
@@ -218,10 +236,8 @@ def put_credentials(slug: str, values: Mapping[str, str]) -> None:
     if coll is None or not slug:
         raise CredentialRefused("the credential store is not on, or no project was named")
     for key, value in values.items():
-        if key == MONGO_URI_ENV or is_server_key(key):
-            raise CredentialRefused(f"'{key}' is a deployment secret and is never stored")
-        if not value:
-            raise CredentialRefused(f"'{key}' has no value")
+        _check_store_pair(key, value)
+    for key in values:
         held = coll.find_one({"_id": key})
         if held is not None and held.get("p") != slug:
             raise CredentialRefused(f"'{key}' belongs to another project")
@@ -236,8 +252,6 @@ def save_credentials(slug: str, env_path: Path, values: Mapping[str, str]) -> No
     if credential_collection() is None:
         set_env_values(env_path, dict(values))
         return
-    for key, value in values.items():
-        _check_pair(key, value)
     put_credentials(slug, values)
 
 

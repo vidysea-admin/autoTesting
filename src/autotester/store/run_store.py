@@ -20,6 +20,7 @@ import shutil
 from pathlib import Path
 
 from autotester.browser.secrets import SecretStore
+from autotester.core.env import MONGO_URI_ENV, mongo_uri
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths, repo_root
 from autotester.schema.enums import EvidenceKind
@@ -128,11 +129,11 @@ def blob_store() -> BlobStore | None:
     if store_selection()["blobs"] != "mongo":
         return None
     if "mongo" not in _BLOBS:
-        from autotester.store import mongo_backend, mongo_guard  # lazy: file mode loads no driver
-        uri = os.environ.get(mongo_backend.URI_ENV, "").strip()
+        from autotester.store.mongo_guard import GuardedStore  # lazy: file mode loads no driver
+        uri = mongo_uri()
         if not uri:
-            raise StoreSelectionError(f"{mongo_backend.URI_ENV} is not set; blobs=mongo needs it")
-        _BLOBS["mongo"] = MongoBlobStore(mongo_guard.GuardedStore(uri))
+            raise StoreSelectionError(f"{MONGO_URI_ENV} is not set; blobs=mongo needs it")
+        _BLOBS["mongo"] = MongoBlobStore(GuardedStore(uri))
     return _BLOBS["mongo"]
 
 
