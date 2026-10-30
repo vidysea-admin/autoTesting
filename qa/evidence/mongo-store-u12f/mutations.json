@@ -96,19 +96,10 @@
   {
    "name": "W3 age cap not re-applied on load",
    "file": "src/autotester/browser/profiles.py",
-   "old": "    if min(expires, saved + MAX_AGE_S) <= at:",
-   "new": "    if expires <= at:",
+   "old": "or min(expires, saved + MAX_AGE_S) <= at:",
+   "new": "or expires <= at:",
    "kills": [
     "tests/test_session_store_u12f.py::test_a_tampered_far_future_expiry_is_not_trusted_on_load"
-   ]
-  },
-  {
-   "name": "W3 future save time trusted",
-   "file": "src/autotester/browser/profiles.py",
-   "old": "saved > at + SKEW_S",
-   "new": "False",
-   "kills": [
-    "tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login"
    ]
   },
   {
@@ -163,6 +154,85 @@
    "new": "if True:",
    "kills": [
     "tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login"
+   ]
+  },
+  {
+   "name": "W3 future save time trusted (ahead check off)",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "saved > at + SKEW_S",
+   "new": "False",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login",
+    "tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes"
+   ]
+  },
+  {
+   "name": "C1 non-finite times accepted",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "or isinstance(n, bool) or not math.isfinite(n):",
+   "new": "or isinstance(n, bool):",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields0]",
+    "tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields1]",
+    "tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields2]",
+    "tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields3]"
+   ]
+  },
+  {
+   "name": "C1 only expires_at checked for finiteness",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    for n in (expires, saved):",
+   "new": "    for n in (expires,):",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields1]"
+   ]
+  },
+  {
+   "name": "C3 skew allowance zero",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "SKEW_S = 300",
+   "new": "SKEW_S = 0",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes"
+   ]
+  },
+  {
+   "name": "C3 skew boundary inclusive",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "and saved > at + SKEW_S",
+   "new": "and saved >= at + SKEW_S",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes"
+   ]
+  },
+  {
+   "name": "C3 skew deletes the document",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "    if _ahead(doc, at):\n        return None\n",
+   "new": "    if _ahead(doc, at):\n        coll.delete_one({\"_id\": sid, \"p\": project.slug})\n        return None\n",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login",
+    "tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes"
+   ]
+  },
+  {
+   "name": "C3 non-dict state not checked",
+   "file": "src/autotester/browser/profiles.py",
+   "old": "if not isinstance(state, dict) or min(expires, saved + MAX_AGE_S) <= at:",
+   "new": "if min(expires, saved + MAX_AGE_S) <= at:",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[oops]",
+    "tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[state1]",
+    "tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[7]"
+   ]
+  },
+  {
+   "name": "C2 forget runs after the credential drop, outside the restore",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "    for acct in project.role_accounts or []:\n        if key in (acct.username_key, acct.password_key):\n            forget_session(project, acct.id)\n    held = snapshot_credentials([key])\n    drop_credentials(slug, [key])\n",
+   "new": "    held = snapshot_credentials([key])\n    drop_credentials(slug, [key])\n    for acct in project.role_accounts or []:\n        if key in (acct.username_key, acct.password_key):\n            forget_session(project, acct.id)\n",
+   "kills": [
+    "tests/test_session_store_u12f.py::test_a_failing_forget_leaves_the_credential_and_the_declaration_alone"
    ]
   }
  ]

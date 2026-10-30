@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 from auth_harness import gate_on, team
-from credential_store_support import CredRig, make_rig
+from credential_store_support import VALUE, CredRig, make_rig
 from fake_mongo import seams
 from session_store_support import (
     NOW,
@@ -44,7 +44,8 @@ from autotester.stages.role_session_port import LiveRolePort, RoleLoginFailed
 from autotester.store import mongo_backend
 from autotester.store.mongo_routes import repo_redactor
 from autotester.store.project_store import ProjectStore
-from autotester.ui import run_execution
+from autotester.ui import routes_project_edit, run_execution
+from autotester.ui.env_editor import put_credentials
 
 OLD = "Zk9-previous-good-session-F6"
 
@@ -211,19 +212,76 @@ def test_a_save_time_in_the_future_is_not_a_login(rig: CredRig) -> None:
     save_session(PROJECT, "t1", live, now=NOW)
     docs(rig)[0]["saved_at"] = NOW + 30 * 24 * 3600
     docs(rig)[0]["expires_at"] = NOW + 60 * 24 * 3600
+    assert load_session(PROJECT, "t1", now=NOW) is None
+    assert len(docs(rig)) == 1  # not deleted: a reader whose own clock lags must not erase it
+
+
+def _saved_with(rig: CredRig, **fields: Any) -> None:
+    live = {"cookies": [cookie("sid", SID, expires=-1)], "origins": []}
+    save_session(PROJECT, "t1", live, now=NOW)
+    docs(rig)[0].update(fields)
+
+
+def test_the_skew_boundary_is_exactly_five_minutes(rig: CredRig) -> None:
+    _saved_with(rig, saved_at=NOW + 300, expires_at=NOW + 3600)
+    assert load_session(PROJECT, "t1", now=NOW) is not None  # exactly SKEW_S ahead: still read
+    docs(rig)[0]["saved_at"] = NOW + 301
+    assert load_session(PROJECT, "t1", now=NOW) is None  # one second more: not read
+    assert len(docs(rig)) == 1
+
+
+@pytest.mark.parametrize("fields", [
+    {"expires_at": float("nan")},
+    {"saved_at": float("nan")},
+    {"saved_at": float("nan"), "expires_at": float("inf")},
+    {"saved_at": NOW, "expires_at": float("inf")},
+    {"saved_at": float("-inf"), "expires_at": NOW + 3600},
+])
+def test_a_non_finite_time_cannot_defeat_the_age_cap(rig: CredRig, fields: dict) -> None:
+    _saved_with(rig, **fields)
+    assert load_session(PROJECT, "t1", now=NOW) is None  # first: the call that deletes comes last
+    assert docs(rig) == []  # unreadable, so deleted
+
+
+@pytest.mark.parametrize("state", ["oops", ["a"], 7, None])
+def test_a_stored_state_that_is_not_a_dict_is_deleted(rig: CredRig, state: Any) -> None:
+    _saved_with(rig, state=state)
     assert load_session(PROJECT, "t1", now=NOW) is None and docs(rig) == []
 
 
 # ---- W4: forget_session has a caller: undeclaring a role account's credential key -------------
 
 
+def _declared_roles(rig: CredRig) -> ProjectStore:
+    store = ProjectStore("pl", rig.root)
+    store.save_project(PROJECT.model_copy(update={"secrets": [
+        SecretRef(key=k, domains=["app.pl.test"]) for k in ("T1_U", "T1_P", "T2_U", "T2_P")]}))
+    return store
+
+
 def test_undeclaring_a_role_credential_key_forgets_that_accounts_login(rig: CredRig) -> None:
-    keys = ["T1_U", "T1_P", "T2_U", "T2_P"]
-    ProjectStore("pl", rig.root).save_project(PROJECT.model_copy(update={
-        "secrets": [SecretRef(key=k, domains=["app.pl.test"]) for k in keys]}))
+    _declared_roles(rig)
     save_session(PROJECT, "t1", sample(), now=NOW)
     save_session(PROJECT, "t2", sample(), now=NOW)
     save_session(PROJECT, MAIN_ACCOUNT, sample(), now=NOW)
     resp = team()["admin"].post("/projects/pl/secrets/T1_P/delete", follow_redirects=False)
     assert resp.status_code == 303
     assert sorted(d["_id"] for d in docs(rig)) == ["pl|_project", "pl|t2"]
+
+
+def test_a_failing_forget_leaves_the_credential_and_the_declaration_alone(
+        rig: CredRig, monkeypatch: pytest.MonkeyPatch) -> None:
+    store = _declared_roles(rig)
+    put_credentials("pl", {"T1_P": VALUE})
+    save_session(PROJECT, "t1", sample(), now=NOW)
+
+    def down(project: Any, account_id: str) -> bool:
+        raise OSError("store outage")
+
+    monkeypatch.setattr(routes_project_edit, "forget_session", down)
+    with pytest.raises(OSError):
+        team()["admin"].post("/projects/pl/secrets/T1_P/delete", follow_redirects=False)
+    loaded = store.load_project()
+    assert loaded is not None and "T1_P" in [s.key for s in loaded.secrets]
+    assert [(d["_id"], d["value"]) for d in rig.secrets()] == [("T1_P", VALUE)]
+    assert [d["_id"] for d in docs(rig)] == ["pl|t1"]

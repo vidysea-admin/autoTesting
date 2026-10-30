@@ -11,6 +11,7 @@ every function here is a no-op and nothing is read or written.
 
 import contextlib
 import json
+import math
 import shutil
 import time
 from pathlib import Path
@@ -135,16 +136,22 @@ def save_session(project: Project, account_id: str, state: dict[str, Any], *,
     return kept
 
 
+def _ahead(doc: dict[str, Any], at: float) -> bool:
+    """A save time further than `SKEW_S` ahead of the reader: a lagging clock here or tampering
+    there, which this reader cannot tell apart. Not trusted, but not deleted either."""
+    saved = doc.get("saved_at")
+    return isinstance(saved, (int, float)) and not isinstance(saved, bool) and saved > at + SKEW_S
+
+
 def _readable(doc: dict[str, Any], at: float) -> dict[str, Any] | None:
     """The `state` of a stored document that is well formed and still within `MAX_AGE_S` of when it
     was saved, else `None`. The age cap is re-applied here, not trusted from `expires_at`, so a
-    tampered far-future expiry (or save time) buys nothing."""
+    tampered far-future expiry (or save time) buys nothing; NaN and infinity are not times."""
     expires, saved, state = doc.get("expires_at"), doc.get("saved_at"), doc.get("state")
-    if not all(isinstance(n, (int, float)) and not isinstance(n, bool) for n in (expires, saved)):
-        return None
-    if not isinstance(state, dict) or saved > at + SKEW_S:
-        return None
-    if min(expires, saved + MAX_AGE_S) <= at:
+    for n in (expires, saved):
+        if not isinstance(n, (int, float)) or isinstance(n, bool) or not math.isfinite(n):
+            return None
+    if not isinstance(state, dict) or min(expires, saved + MAX_AGE_S) <= at:
         return None
     parts = (state.get("cookies", []), state.get("origins", []))
     return state if all(isinstance(part, list) for part in parts) else None
@@ -160,6 +167,8 @@ def load_session(project: Project, account_id: str, *, now: float | None = None
     sid, at = session_id(project.slug, account_id), time.time() if now is None else now
     doc = coll.find_one({"_id": sid})
     if doc is None or doc.get("p") != project.slug or doc.get("_id") != sid:
+        return None
+    if _ahead(doc, at):
         return None
     if (state := _readable(doc, at)) is None:
         coll.delete_one({"_id": sid, "p": project.slug})
