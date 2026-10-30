@@ -210,17 +210,31 @@ D-072; they are editable by any admin, and a different answer from Umesh is a ro
   `/auth/logout` and all admin routes are guarded. The guard runs **before** authentication: a cross-origin POST carrying a valid session
   cookie is 403. Two further gaps in the same code are closed because the hosted server exposes them: an `Origin` whose port part is
   not numeric (`http://localhost:8000.evil.com`, AT-760) is refused, and a request with more than one `Origin` header (AT-761) is refused.
-  `*` in `AUTOTESTER_ALLOWED_ORIGINS` is ignored. `serves:` D-066, D-072#12, AT-760, AT-761.
+  **Amended 2026-10-30 (D-110, opt-in escape hatch):** `*` in `AUTOTESTER_ALLOWED_ORIGINS` is no longer ignored. It is an explicit, operator-set
+  allow-all: `_origin_allowed` accepts any Origin (a cross-site state-changing request is no longer refused) and `_host_allowed` accepts any
+  Host. Accepted risk (D-110, Umesh): CSRF on every state-changing route and Host-header spoofing. `*` in `AUTOTESTER_ALLOWED_HOSTS` opens
+  the Host guard **only**: the Origin guard still refuses a request whose `Origin` is not loopback or listed, **including a same-origin POST
+  a browser sends from a non-loopback host** (login, logout, every admin route), so `ALLOWED_HOSTS=*` alone is NOT a working hosted
+  deploy. The setting a working hosted deploy needs is `AUTOTESTER_ALLOWED_ORIGINS=*`. With no `*` in either list every rule above holds
+  unchanged, `*` is the only token with this meaning, and a literal list still matches exactly (`_listed` still drops `*`). The AT-761
+  repeated-`Origin`/`Host` refusal is independent of the allow-lists and still applies under `*`. `serves:` D-066, D-072#12, AT-760,
+  AT-761, D-110. *Re-derive (D-110):* ORIGINS=`*` + a cross-site POST -> not 403; HOSTS=`*` alone + a cross-site `Origin` POST -> 403, and
+  + a same-origin non-loopback `Origin` POST -> 403; unset both -> the existing 403s; mutation: make `_allow_all` always False -> the `*`
+  tests fail, always True -> the no-`*` refusal tests fail.
   *Re-derive:* extend `tests/test_ui_origin_guard.py`; mutation: reorder middleware so auth runs first -> a 403 test fails.
 - **AU19 — Host allow-list (AT-758).** Every request, GET included, has its `Host` header checked: it must be loopback
   (`localhost`, `127.0.0.1`, `::1`, any port), or the host of an origin in `AUTOTESTER_ALLOWED_ORIGINS`, or an exact entry of
-  `AUTOTESTER_ALLOWED_HOSTS` (comma or space separated, no wildcard, case-insensitive, port compared when given). Anything else is refused
+  `AUTOTESTER_ALLOWED_HOSTS` (comma or space separated, case-insensitive, port compared when given; a literal entry never wildcards, but D-110 makes a lone `*` in `ALLOWED_HOSTS` or `ALLOWED_ORIGINS` an opt-in allow-all that answers any Host, see AU18). Without that `*`, anything else is refused
   (400/403) before routing, and in particular `GET /projects/{slug}/env` with `Host: evil.example` returns no body that contains a saved
   value. `serves:` D-072#12, AT-758. *Re-derive:* `Host: evil.example`, `Host: localhost.evil.com`, `Host: 127.0.0.1.evil.io`,
   and a listed host; mutation: skip the check -> the first three fail.
 - **AU20 — Hosted configuration is explicit.** With `AUTOTESTER_HOSTED=1` at least one of `AUTOTESTER_ALLOWED_HOSTS` /
   `AUTOTESTER_ALLOWED_ORIGINS` must be set, and the server's own origin must be an allowed one; otherwise startup raises. Both keys are
-  documented in `.env.example` (`hosting.md` HO9). `serves:` D-072#12.
+  documented in `.env.example` (`hosting.md` HO9). **Amended 2026-10-30 (D-110):** a `*` in either list counts as set and as the allow-list
+  naming the server: `_check_hosted` then returns before the own-origin pin and the `AUTOTESTER_PUBLIC_ORIGIN` check, so a wildcard bind needs no
+  `AUTOTESTER_PUBLIC_ORIGIN` and a set-but-malformed one is no longer validated (it has no product consumer). Startup does **not** tell the
+  two lists apart: `ALLOWED_HOSTS=*` alone starts but then refuses every browser POST (AU18), so a hosted deploy using `*` sets
+  `AUTOTESTER_ALLOWED_ORIGINS=*`. A comma-only list is still not "set"; with no `*` the rule above is unchanged. `serves:` D-072#12, D-110.
 
 ### Secrets display
 

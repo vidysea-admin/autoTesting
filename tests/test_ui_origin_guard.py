@@ -111,9 +111,9 @@ def test_the_allowed_origin_is_configurable_for_the_server_url(
     # configuring a server does not retire the loopback default
     local = {"Origin": "http://localhost:8000"}
     assert client.post("/projects/nope/run", headers=local).status_code == 404
-    # a wildcard is not a thing: it must not open the guard
+    # D-110: `*` is an opt-in allow-all -- it now opens the guard to any origin
     monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", "*")
-    assert client.post("/projects/nope/run", headers={"Origin": EVIL}).status_code == 403
+    assert client.post("/projects/nope/run", headers={"Origin": EVIL}).status_code == 404
 
 
 def test_a_refused_cross_site_credential_edit_changes_nothing(
@@ -188,7 +188,7 @@ def test_hosts_of_the_allowed_origins_and_the_hosts_variable_are_added_exactly(
     assert get("ui.internal") == 200 and get("other.internal:8443") == 200
     assert get("ui.internal:80") == 403 and get("other.internal") == 403
     monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "*")
-    assert get("evil.example") == 403  # no wildcard
+    assert get("evil.example") == 200  # D-110: `*` is an opt-in allow-all
 
 
 @pytest.mark.parametrize("origin", ["http://localhost:8000.evil.com", "http://localhost:80a",
@@ -228,3 +228,27 @@ def test_a_request_with_no_host_header_is_refused() -> None:
     scope = {"type": "http", "method": "GET", "path": "/", "headers": []}
     asyncio.run(_OriginGuard(inner)(scope, None, send))
     assert not reached and sent[0]["status"] == 403
+
+
+# -- D-110: `*` is an opt-in allow-all (D-066 guard off; CSRF + host-spoofing accepted) ------
+
+def test_star_in_allowed_origins_opens_both_the_origin_and_the_host_guard(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """D-110: `AUTOTESTER_ALLOWED_ORIGINS=*` is the single switch that turns the whole guard
+    off -- any cross-site POST is accepted and any Host is answered."""
+    monkeypatch.delenv("AUTOTESTER_ALLOWED_HOSTS", raising=False)
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_ORIGINS", "*")
+    assert client.post("/projects/nope/run", headers={"Origin": EVIL}).status_code == 404
+    assert client.get("/", headers={"Host": "anything.evil.example"}).status_code == 200
+
+
+def test_star_in_allowed_hosts_opens_only_the_host_guard_not_the_origin_guard(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """D-110: `AUTOTESTER_ALLOWED_HOSTS=*` answers any Host, but a cross-site POST is still
+    refused (its Origin is not vouched for) -- so the login POST needs ALLOWED_ORIGINS=*."""
+    monkeypatch.delenv("AUTOTESTER_ALLOWED_ORIGINS", raising=False)
+    monkeypatch.setenv("AUTOTESTER_ALLOWED_HOSTS", "*")
+    assert client.get("/", headers={"Host": "anything.evil.example"}).status_code == 200
+    assert client.post("/projects/nope/run", headers={"Origin": EVIL}).status_code == 403

@@ -193,18 +193,23 @@ _LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
 
 def _listed(name: str) -> set[str]:
-    """Comma/space separated env list, lower-cased, no trailing `/`; `*` is never a wildcard."""
+    """Comma/space separated env list, lower-cased, no trailing `/`; `*` is `_allow_all`'s."""
     raw = os.environ.get(name, "").replace(",", " ").split()
     return {item.rstrip("/").lower() for item in raw if item != "*"}
+
+
+def _allow_all(name: str) -> bool:
+    """D-110 opt-in allow-all: `*` in ORIGINS turns off Origin + Host checks, in HOSTS Host only."""
+    return "*" in os.environ.get(name, "").replace(",", " ").split()
 
 
 def _origin_allowed(origin: str) -> bool:
     """D-066: loopback (the UI's default home) or an origin the operator listed in
     `AUTOTESTER_ALLOWED_ORIGINS` (comma/space separated; the server URL after go-live).
-    Exact match only -- no wildcard. NOT "the Host the request named": a DNS-rebinding
-    page has Origin == Host == attacker, so the request cannot vouch for itself."""
+    Exact match, except a D-110 `*` allows all. NOT "the Host the request named": a
+    DNS-rebinding page has Origin == Host == attacker, so the request cannot vouch for itself."""
     origin = origin.strip().rstrip("/").lower()
-    if origin in _listed("AUTOTESTER_ALLOWED_ORIGINS"):
+    if _allow_all("AUTOTESTER_ALLOWED_ORIGINS") or origin in _listed("AUTOTESTER_ALLOWED_ORIGINS"):
         return True
     try:
         parts = urlparse(origin)
@@ -220,7 +225,9 @@ def _host_allowed(host: str) -> bool:
     `AUTOTESTER_ALLOWED_ORIGINS`, or listed EXACTLY (port included) in `AUTOTESTER_ALLOWED_HOSTS`
     (the hosted server's name). A DNS-rebinding page reaches us under its own Host, so this
     runs on every request: a GET that renders a saved credential is a read the Origin check
-    never sees."""
+    never sees. D-110: a `*` in either list is an opt-in allow-all (host check off)."""
+    if _allow_all("AUTOTESTER_ALLOWED_HOSTS") or _allow_all("AUTOTESTER_ALLOWED_ORIGINS"):
+        return True
     host = host.strip().lower()
     try:
         parts = urlparse("//" + host)
