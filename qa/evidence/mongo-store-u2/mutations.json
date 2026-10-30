@@ -1,0 +1,211 @@
+{
+ "tests": [
+  "tests/test_state_backend_contract.py",
+  "tests/test_state_wrappers.py"
+ ],
+ "mutations": [
+  {
+   "name": "a1: create_exclusive without O_EXCL",
+   "file": "src/autotester/store/filestore.py",
+   "old": "os.O_CREAT | os.O_EXCL | os.O_WRONLY",
+   "new": "os.O_CREAT | os.O_WRONLY",
+   "kills": [
+    "test_create_exclusive_never_overwrites[file]"
+   ]
+  },
+  {
+   "name": "a2: put_if ignores the expected digest",
+   "file": "src/autotester/store/filestore.py",
+   "old": "if (None if current is None else text_sha(current)) != expect_sha:",
+   "new": "if False:",
+   "kills": [
+    "test_put_if_a_stale_sha_loses_and_writes_nothing[file]"
+   ]
+  },
+  {
+   "name": "a3: put_if without the sidecar lock",
+   "file": "src/autotester/store/filestore.py",
+   "old": "with file_lock(path.with_name(f\".{path.name}.lock\"), what=\"state key\"):",
+   "new": "with __import__(\"contextlib\").nullcontext():",
+   "kills": [
+    "test_put_if_has_one_winner_among_16_callers_holding_the_same_sha[file]"
+   ]
+  },
+  {
+   "name": "a4: upsert drops the matched row",
+   "file": "src/autotester/store/filestore.py",
+   "old": "[text if h else row for row, h in zip(rows, hit, strict=True)]",
+   "new": "[row for row, h in zip(rows, hit, strict=True) if not h]",
+   "kills": [
+    "test_upsert_keeps_position_and_adding_twice_is_idempotent[file]"
+   ]
+  },
+  {
+   "name": "a5: delete_row always reports True",
+   "file": "src/autotester/store/filestore.py",
+   "old": "return len(kept) != len(rows)",
+   "new": "return True",
+   "kills": [
+    "test_delete_row_returns_a_bool_and_keeps_the_order[file]"
+   ]
+  },
+  {
+   "name": "a6: keys lists the lock sidecars",
+   "file": "src/autotester/store/filestore.py",
+   "old": " and not p.name.endswith(\".lock\"))",
+   "new": ")",
+   "kills": [
+    "test_keys_never_list_internal_scratch[file]"
+   ]
+  },
+  {
+   "name": "a7: keys ignores the suffix",
+   "file": "src/autotester/store/filestore.py",
+   "old": " and k.endswith(suffix))",
+   "new": ")",
+   "kills": [
+    "test_keys_are_sorted_filtered_by_prefix_and_suffix[file]"
+   ]
+  },
+  {
+   "name": "a8: delete_prefix deletes nothing",
+   "file": "src/autotester/store/filestore.py",
+   "old": "return sum(self.delete(key) for key in self.keys(prefix))",
+   "new": "return len(self.keys(prefix))",
+   "kills": [
+    "test_delete_prefix_counts_and_leaves_the_rest[file]"
+   ]
+  },
+  {
+   "name": "a9: FileBackend._path skips safe_key",
+   "file": "src/autotester/store/filestore.py",
+   "old": "self._root.joinpath(*safe_key(key).split(\"/\"))",
+   "new": "self._root.joinpath(*key.split(\"/\"))",
+   "kills": [
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-../x]",
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/../b]"
+   ]
+  },
+  {
+   "name": "a10: append_row truncates",
+   "file": "src/autotester/store/filestore.py",
+   "old": "path.open(\"a\", encoding=\"utf-8\")",
+   "new": "path.open(\"w\", encoding=\"utf-8\")",
+   "kills": [
+    "test_rows_are_ordered_and_a_missing_key_has_none[file]"
+   ]
+  },
+  {
+   "name": "a11: delete of a missing key reports True",
+   "file": "src/autotester/store/filestore.py",
+   "old": "self._path(key).unlink()\n        except FileNotFoundError:\n            return False",
+   "new": "self._path(key).unlink()\n        except FileNotFoundError:\n            return True",
+   "kills": [
+    "test_put_get_replace_and_delete[file]"
+   ]
+  },
+  {
+   "name": "a12: derived-key upsert never appends",
+   "file": "src/autotester/store/filestore.py",
+   "old": "lines if text in lines else [*lines, text]",
+   "new": "lines",
+   "kills": [
+    "test_upsert_by_a_derived_key_replaces_in_place_and_appends_when_new[file]",
+    "test_upsert_by_a_derived_key_replaces_in_place_and_appends_when_new[memory]"
+   ]
+  },
+  {
+   "name": "a13: delete by a property no longer refused",
+   "file": "src/autotester/store/filestore.py",
+   "old": "if key not in model_cls.model_fields:",
+   "new": "if False:",
+   "kills": [
+    "test_a_delete_by_a_property_is_refused_not_silently_a_no_op[file]"
+   ]
+  },
+  {
+   "name": "a14: malformed row loses its row number",
+   "file": "src/autotester/store/filestore.py",
+   "old": "raise ValueError(f\"{path}:{number}: {exc}\") from None",
+   "new": "raise ValueError(f\"{path}: {exc}\") from None",
+   "kills": [
+    "test_a_malformed_row_raises_naming_the_path_and_row[file]"
+   ]
+  },
+  {
+   "name": "a15: a path outside the data root is stored under it",
+   "file": "src/autotester/store/filestore.py",
+   "old": "return FileBackend(path.parent), path.name",
+   "new": "return FileBackend(repo_root()), path.name",
+   "kills": [
+    "test_a_path_inside_the_data_root_is_a_key_and_one_outside_is_a_plain_file"
+   ]
+  },
+  {
+   "name": "a16: safe_key accepts a drive-letter segment",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "any(seg in {\"\", \".\", \"..\"} or _DRIVE.match(seg) for seg in segments)",
+   "new": "any(seg in {\"\", \".\", \"..\"} for seg in segments)",
+   "kills": [
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-C:/x]",
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-c:x]",
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a/C:/y]"
+   ]
+  },
+  {
+   "name": "a17: safe_key accepts a backslash",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "\"\\\\\" in key or ",
+   "new": "",
+   "kills": [
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a\\\\b]"
+   ]
+  },
+  {
+   "name": "a18: safe_key accepts a NUL byte",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "\"\\x00\" in key or ",
+   "new": "",
+   "kills": [
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-x\\x00y]"
+   ]
+  },
+  {
+   "name": "a19: safe_key accepts an empty segment (leading slash, double slash)",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "seg in {\"\", \".\", \"..\"}",
+   "new": "seg in {\".\", \"..\"}",
+   "kills": [
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-/x]",
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a//b]"
+   ]
+  },
+  {
+   "name": "a20: safe_key does not guard prefixes",
+   "file": "src/autotester/core/safe_names.py",
+   "old": "(not body and not prefix)",
+   "new": "False",
+   "kills": [
+    "test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-]"
+   ]
+  },
+  {
+   "name": "a21: InMemory create_exclusive overwrites",
+   "file": "tests/state_backends.py",
+   "old": "if safe_key(key) in self.docs:\n                return False",
+   "new": "if False:\n                return False",
+   "kills": [
+    "test_create_exclusive_never_overwrites[memory]"
+   ]
+  },
+  {
+   "name": "a22: InMemory put_if ignores the digest",
+   "file": "tests/state_backends.py",
+   "old": "if (None if current is None else text_sha(current)) != expect_sha:",
+   "new": "if False:",
+   "kills": [
+    "test_put_if_a_stale_sha_loses_and_writes_nothing[memory]"
+   ]
+  }
+ ]
+}

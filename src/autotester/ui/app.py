@@ -21,6 +21,7 @@ from autotester.core.env import load_repo_env
 from autotester.core.paths import ProjectPaths
 from autotester.schema.auth import PermissionKey
 from autotester.schema.project import Project, Source
+from autotester.store.filestore import validate_store_env
 from autotester.store.project_store import ProjectStore
 from autotester.ui import (
     error_pages,
@@ -60,6 +61,7 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
     lifespan unless used as a context manager) never leaks real .env values into tests."""
     load_repo_env()          # AT-228: the one loader the CLI also uses
     check_startup()          # T-204 AU17/AU20: refuse an unsafe auth configuration
+    validate_store_env()     # mongo-store M13: a typo in the store selection stops startup
     routes_runs.get_queue()  # T-203/HO18: recover the persisted run queue at boot
     yield
 

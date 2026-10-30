@@ -1,0 +1,101 @@
+{
+ "tests": [
+  "tests/test_state_selection.py",
+  "tests/test_state_signatures.py"
+ ],
+ "mutations": [
+  {
+   "name": "b1: unset store means mongo",
+   "file": "src/autotester/store/filestore.py",
+   "old": ".strip() or \"file\")",
+   "new": ".strip() or \"mongo\")",
+   "kills": [
+    "test_unset_and_blank_mean_file_for_every_area"
+   ]
+  },
+  {
+   "name": "b2: an unknown backend name is accepted",
+   "file": "src/autotester/store/filestore.py",
+   "old": "if name not in BACKENDS:",
+   "new": "if False:",
+   "kills": [
+    "test_an_unknown_store_value_stops_startup[sqlite]",
+    "test_an_unknown_store_value_stops_startup[postgres]",
+    "test_an_unknown_store_value_stops_startup[File]"
+   ]
+  },
+  {
+   "name": "b3: an unknown area name is accepted",
+   "file": "src/autotester/store/filestore.py",
+   "old": "if area not in AREAS:",
+   "new": "if False:",
+   "kills": [
+    "test_a_typo_in_the_areas_stops_startup[settings=file,runz=file]"
+   ]
+  },
+  {
+   "name": "b4: startup does not check the chosen backend is wired",
+   "file": "src/autotester/store/filestore.py",
+   "old": "        _backend(name)\n    return selection",
+   "new": "        pass\n    return selection",
+   "kills": [
+    "test_mongo_is_recognised_but_not_wired_in_this_build",
+    "test_one_area_on_mongo_only_fails_the_keys_in_that_area"
+   ]
+  },
+  {
+   "name": "b5: the server startup skips validate_store_env",
+   "file": "src/autotester/ui/app.py",
+   "old": "    validate_store_env()",
+   "new": "    pass",
+   "kills": [
+    "test_the_server_refuses_to_start_on_a_typo"
+   ]
+  },
+  {
+   "name": "b6: area_of sends run keys elsewhere",
+   "file": "src/autotester/store/filestore.py",
+   "old": ".get(parts[2], \"projects\")",
+   "new": ".get(parts[2], \"runs\")",
+   "kills": [
+    "test_area_of_routes_the_documented_prefixes"
+   ]
+  },
+  {
+   "name": "b7: filestore imports a database driver at load",
+   "file": "src/autotester/store/filestore.py",
+   "old": "import tempfile\n",
+   "new": "import tempfile\nimport gridfs  # noqa\n",
+   "kills": [
+    "test_a_file_mode_workload_never_imports_a_database_driver"
+   ]
+  },
+  {
+   "name": "b8: write_text gains a parameter",
+   "file": "src/autotester/store/filestore.py",
+   "old": "def write_text(path: Path, text: str) -> None:",
+   "new": "def write_text(path: Path, text: str, *, extra: int = 0) -> None:",
+   "kills": [
+    "test_every_filestore_function_keeps_its_signature[write_text]"
+   ]
+  },
+  {
+   "name": "b9: delete_jsonl_row loses its key keyword",
+   "file": "src/autotester/store/filestore.py",
+   "old": "row_id: str, *, key: str = \"id\") -> bool:",
+   "new": "row_id: str) -> bool:",
+   "kills": [
+    "test_every_filestore_function_keeps_its_signature[delete_jsonl_row]"
+   ]
+  },
+  {
+   "name": "b10: read_jsonl renames its model_cls parameter",
+   "file": "src/autotester/store/filestore.py",
+   "old": "def read_jsonl(path: Path, model_cls: type[ModelT])",
+   "new": "def read_jsonl(path: Path, cls: type[ModelT])",
+   "kills": [
+    "test_every_filestore_function_keeps_its_signature[read_jsonl]"
+   ]
+  }
+ ]
+}

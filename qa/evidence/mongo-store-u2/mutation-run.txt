@@ -1,0 +1,120 @@
+== mutations
+KILLED  a1: create_exclusive without O_EXCL  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_create_exclusive_never_overwrites[file]
+    actually failed: tests/test_state_backend_contract.py::test_create_exclusive_has_exactly_one_winner_among_16_callers[file], tests/test_state_backend_contract.py::test_create_exclusive_never_overwr
+KILLED  a2: put_if ignores the expected digest  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing[file]
+    actually failed: tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing[file], tests/test_state_backend_contract.py::test_put_if_has_one_winner_among_16_callers_hol
+KILLED  a3: put_if without the sidecar lock  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_put_if_has_one_winner_among_16_callers_holding_the_same_sha[file]
+    actually failed: tests/test_state_backend_contract.py::test_put_if_has_one_winner_among_16_callers_holding_the_same_sha[file]
+KILLED  a4: upsert drops the matched row  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_upsert_keeps_position_and_adding_twice_is_idempotent[file]
+    actually failed: tests/test_state_backend_contract.py::test_upsert_appends_when_nothing_matches_and_a_missing_field_reads_none[file], tests/test_state_backend_contract.py::test_upsert_keeps_positi
+KILLED  a5: delete_row always reports True  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_delete_row_returns_a_bool_and_keeps_the_order[file]
+    actually failed: tests/test_state_backend_contract.py::test_delete_row_returns_a_bool_and_keeps_the_order[file], tests/test_state_wrappers.py::test_upsert_by_a_stored_field_keeps_position_and_dele
+KILLED  a6: keys lists the lock sidecars  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_keys_never_list_internal_scratch[file]
+    actually failed: tests/test_state_backend_contract.py::test_keys_never_list_internal_scratch[file]
+KILLED  a7: keys ignores the suffix  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_keys_are_sorted_filtered_by_prefix_and_suffix[file]
+    actually failed: tests/test_state_backend_contract.py::test_keys_are_sorted_filtered_by_prefix_and_suffix[file]
+KILLED  a8: delete_prefix deletes nothing  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_delete_prefix_counts_and_leaves_the_rest[file]
+    actually failed: tests/test_state_backend_contract.py::test_delete_prefix_counts_and_leaves_the_rest[file]
+KILLED  a9: FileBackend._path skips safe_key  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-../x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_b
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-../x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_b
+KILLED  a10: append_row truncates  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_rows_are_ordered_and_a_missing_key_has_none[file]
+    actually failed: tests/test_state_backend_contract.py::test_delete_row_returns_a_bool_and_keeps_the_order[file], tests/test_state_backend_contract.py::test_rows_are_ordered_and_a_missing_key_has_n
+KILLED  a11: delete of a missing key reports True  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_put_get_replace_and_delete[file]
+    actually failed: tests/test_state_backend_contract.py::test_put_get_replace_and_delete[file]
+KILLED  a12: derived-key upsert never appends  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_upsert_by_a_derived_key_replaces_in_place_and_appends_when_new[file], tests/test_state_wrappers.py::test_upsert_by_a_derived_key_replaces_in_pla
+    actually failed: tests/test_state_wrappers.py::test_upsert_by_a_derived_key_replaces_in_place_and_appends_when_new[file], tests/test_state_wrappers.py::test_upsert_by_a_derived_key_replaces_in_pla
+KILLED  a13: delete by a property no longer refused  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_a_delete_by_a_property_is_refused_not_silently_a_no_op[file]
+    actually failed: tests/test_state_wrappers.py::test_a_delete_by_a_property_is_refused_not_silently_a_no_op[file], tests/test_state_wrappers.py::test_a_delete_by_a_property_is_refused_not_silently_
+KILLED  a14: malformed row loses its row number  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_a_malformed_row_raises_naming_the_path_and_row[file]
+    actually failed: tests/test_state_wrappers.py::test_a_malformed_row_raises_naming_the_path_and_row[file], tests/test_state_wrappers.py::test_a_malformed_row_raises_naming_the_path_and_row[memory]
+KILLED  a15: a path outside the data root is stored under it  (pytest exit 1)
+    claims to kill : tests/test_state_wrappers.py::test_a_path_inside_the_data_root_is_a_key_and_one_outside_is_a_plain_file
+    actually failed: tests/test_state_wrappers.py::test_a_path_inside_the_data_root_is_a_key_and_one_outside_is_a_plain_file
+KILLED  a16: safe_key accepts a drive-letter segment  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-C:/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_b
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-C:/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_b
+KILLED  a17: safe_key accepts a backslash  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a\\b]
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-a\\b], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_b
+KILLED  a18: safe_key accepts a NUL byte  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-x\x00y]
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-x\x00y], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused
+KILLED  a19: safe_key accepts an empty segment (leading slash, double slash)  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-/x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_
+KILLED  a20: safe_key does not guard prefixes  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-]
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[file-], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_ev
+KILLED  a21: InMemory create_exclusive overwrites  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_create_exclusive_never_overwrites[memory]
+    actually failed: tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused_by_every_method_before_any_io[memory-../x], tests/test_state_backend_contract.py::test_an_unsafe_key_is_refused
+KILLED  a22: InMemory put_if ignores the digest  (pytest exit 1)
+    claims to kill : tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing[memory]
+    actually failed: tests/test_state_backend_contract.py::test_put_if_a_stale_sha_loses_and_writes_nothing[memory], tests/test_state_backend_contract.py::test_put_if_has_one_winner_among_16_callers_h
+
+22/22 mutations killed
+== mutations-b
+KILLED  b1: unset store means mongo  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_unset_and_blank_mean_file_for_every_area
+    actually failed: tests/test_state_selection.py::test_a_file_mode_workload_never_imports_a_database_driver, tests/test_state_selection.py::test_areas_override_single_areas_and_tolerate_spaces, test
+KILLED  b2: an unknown backend name is accepted  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_an_unknown_store_value_stops_startup[File], tests/test_state_selection.py::test_an_unknown_store_value_stops_startup[postgres], tests/test_stat
+    actually failed: tests/test_state_selection.py::test_an_unknown_store_value_stops_startup[1], tests/test_state_selection.py::test_an_unknown_store_value_stops_startup[File], tests/test_state_selec
+KILLED  b3: an unknown area name is accepted  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_a_typo_in_the_areas_stops_startup[settings=file,runz=file]
+    actually failed: tests/test_state_selection.py::test_a_typo_in_the_areas_stops_startup[settings=file,runz=file]
+KILLED  b4: startup does not check the chosen backend is wired  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_mongo_is_recognised_but_not_wired_in_this_build, tests/test_state_selection.py::test_one_area_on_mongo_only_fails_the_keys_in_that_area
+    actually failed: tests/test_state_selection.py::test_mongo_is_recognised_but_not_wired_in_this_build, tests/test_state_selection.py::test_one_area_on_mongo_only_fails_the_keys_in_that_area
+KILLED  b5: the server startup skips validate_store_env  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_the_server_refuses_to_start_on_a_typo
+    actually failed: tests/test_state_selection.py::test_the_server_refuses_to_start_on_a_typo
+KILLED  b6: area_of sends run keys elsewhere  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_area_of_routes_the_documented_prefixes
+    actually failed: tests/test_state_selection.py::test_area_of_routes_the_documented_prefixes, tests/test_state_selection.py::test_one_area_on_mongo_only_fails_the_keys_in_that_area
+KILLED  b7: filestore imports a database driver at load  (pytest exit 1)
+    claims to kill : tests/test_state_selection.py::test_a_file_mode_workload_never_imports_a_database_driver
+    actually failed: tests/test_state_selection.py::test_a_file_mode_workload_never_imports_a_database_driver
+KILLED  b8: write_text gains a parameter  (pytest exit 1)
+    claims to kill : tests/test_state_signatures.py::test_every_filestore_function_keeps_its_signature[write_text]
+    actually failed: tests/test_state_signatures.py::test_every_filestore_function_keeps_its_signature[write_text]
+KILLED  b9: delete_jsonl_row loses its key keyword  (pytest exit 1)
+    claims to kill : tests/test_state_signatures.py::test_every_filestore_function_keeps_its_signature[delete_jsonl_row]
+    actually failed: tests/test_state_signatures.py::test_every_filestore_function_keeps_its_signature[delete_jsonl_row]
+KILLED  b10: read_jsonl renames its model_cls parameter  (pytest exit 1)
+    claims to kill : tests/test_state_signatures.py::test_every_filestore_function_keeps_its_signature[read_jsonl]
+    actually failed: tests/test_state_signatures.py::test_every_filestore_function_keeps_its_signature[read_jsonl]
+
+10/10 mutations killed
+== mutations-c
+KILLED  c1: translate raises inside except (driver error chained)  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_translate_maps_each_driver_error_without_chaining, tests/test_mongo_guard_chain.py::test_unavailable_errors_from_a_driver_failure_carry_no_ch
+    actually failed: tests/test_mongo_guard_chain.py::test_translate_maps_each_driver_error_without_chaining, tests/test_mongo_guard_chain.py::test_unavailable_errors_from_a_driver_failure_carry_no_ch
+KILLED  c2: duplicate key raised inside except  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_duplicate_key_and_missing_blob_carry_no_chain
+    actually failed: tests/test_mongo_guard_chain.py::test_duplicate_key_and_missing_blob_carry_no_chain, tests/test_mongo_guard_chain.py::test_translate_maps_each_driver_error_without_chaining
+KILLED  c3: missing blob mapped to unavailable  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_duplicate_key_and_missing_blob_carry_no_chain
+    actually failed: tests/test_mongo_guard_chain.py::test_duplicate_key_and_missing_blob_carry_no_chain
+KILLED  c4: constructor raises inside except  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_constructor_error_branch_is_reached_and_clean
+    actually failed: tests/test_mongo_guard_chain.py::test_constructor_error_branch_is_reached_and_clean, tests/test_mongo_guard_chain.py::test_constructor_error_when_selecting_the_database_is_clean
+KILLED  c5: constructor message carries the URI  (pytest exit 1)
+    claims to kill : tests/test_mongo_guard_chain.py::test_constructor_error_branch_is_reached_and_clean
+    actually failed: tests/test_mongo_guard_chain.py::test_constructor_error_branch_is_reached_and_clean, tests/test_mongo_guard_chain.py::test_constructor_error_when_selecting_the_database_is_clean
+
+5/5 mutations killed

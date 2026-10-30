@@ -44,8 +44,7 @@ IMMUTABLE_FIELDS = frozenset({"_id", "generation"})
 FORBIDDEN_QUERY_KEYS = frozenset({"$where", "$function", "$accumulator"})
 SMOKE_COLLECTION = re.compile(r"t_[a-z0-9_]{1,30}")
 MARKER_ID, MARKER_COLLECTION, SCHEMA_VERSION, BUCKET_NAME = "marker", "server_state", 1, "blobs"
-# Private seams, set only by tests/fake_mongo.seams; the registry keeps driver objects out of
-# every instance `__dict__` (store -> (db, bucket factory); collection/bucket -> raw object).
+# Test seams (tests/fake_mongo.seams only); _REGISTRY keeps driver objects out of instance dicts.
 _SEAM: dict[str, Any] = {"config_path": None, "client_factory": None, "bucket_factory": None}
 _REGISTRY: weakref.WeakKeyDictionary[Any, Any] = weakref.WeakKeyDictionary()
 
@@ -66,22 +65,21 @@ def _translate(call: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
     try:
         return call(*args, **kwargs)
     except DuplicateKeyError:
-        raise StoreDuplicateKey("duplicate key") from None
+        verdict = StoreDuplicateKey("duplicate key")
     except NoFile:
-        raise StoreNotFound("no such blob") from None
+        verdict = StoreNotFound("no such blob")
     except PyMongoError as exc:
-        raise StoreUnavailable(f"state store unavailable ({type(exc).__name__})") from None
+        verdict = StoreUnavailable(f"state store unavailable ({type(exc).__name__})")
+    raise verdict  # outside `except`: no __context__ keeps the driver exception (or its URI)
 
 
 def _check_query(value: Any) -> None:
-    if isinstance(value, Mapping):
-        for key, inner in value.items():
-            if key in FORBIDDEN_QUERY_KEYS:
-                raise ValueError(f"query operator {key} is not allowed")
-            _check_query(inner)
-    elif isinstance(value, list | tuple):
-        for inner in value:
-            _check_query(inner)
+    kids = value.items() if isinstance(value, Mapping) else enumerate(
+        value if isinstance(value, list | tuple) else ())
+    for key, inner in kids:  # list positions are ints and never an operator name
+        if key in FORBIDDEN_QUERY_KEYS:
+            raise ValueError(f"query operator {key} is not allowed")
+        _check_query(inner)
 
 
 def _require_filter(filter_: Mapping[str, Any]) -> None:
@@ -123,8 +121,7 @@ class InsertOnlyCollection:
     def find(self, filter: Mapping[str, Any] | None = None, *, projection: Any = None,
              sort: Any = None, limit: int = 0) -> list[dict[str, Any]]:
         _check_query([filter or {}, projection or {}])
-        kwargs = {k: v for k, v in (("projection", projection), ("sort", sort), ("limit", limit))
-                  if v}
+        kwargs = {k: v for k, v in dict(projection=projection, sort=sort, limit=limit).items() if v}
         return list(_translate(_REGISTRY[self].find, dict(filter or {}), **kwargs))
 
     def find_one(self, filter: Mapping[str, Any] | None = None) -> dict[str, Any] | None:
@@ -229,10 +226,13 @@ class GuardedStore:
         cfg: StoreConfig = load_store_config(_SEAM["config_path"])
         if _uri_path_database(uri).casefold() == cfg.database.casefold():
             raise StoreConfigError("the connection string path names the store database")
+        failed = ""  # a driver message may quote the URI: keep the class name, raise after `except`
         try:
             database = (_SEAM["client_factory"] or _default_client)(uri)[cfg.database]
-        except Exception as exc:  # a driver message may quote the URI: keep the class name only
-            raise StoreUnavailable(f"cannot open the state store ({type(exc).__name__})") from None
+        except Exception as exc:
+            failed = type(exc).__name__
+        if failed:
+            raise StoreUnavailable(f"cannot open the state store ({failed})")
         _REGISTRY[self] = (database, _SEAM["bucket_factory"] or GridFSBucket)
         self._cfg, self._marked = cfg, False
         self._verify_identity(database)
