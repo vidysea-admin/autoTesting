@@ -1,81 +1,71 @@
-# Verdict - mongo-store-u4 (checker B, fresh, independent)
+# Verdict - mongo-store-u4 (checker B, fix cycle 1 re-check)
 
-**Unit:** mongo-store U4 (dual). **Cycle checked:** 0. **Code SHA:** `05e58c2c`, manifest SHA `1366d1fb`, base `0a2cbe45`.
-**Verdict: PASS** (with 1 defect to fix in place before U7/U9 and 5 warnings; none is a fence or insert-only break). Read-only toward `src/` and `tests/`; I never read another checker's verdict.
+**Verdict:** PASS
+**Cycle checked:** 1
+**Checker:** B (fresh, independent; did not read checker A's verdict)
+**Tree checked:** branch `feat/mongo-store-u4`, head `41400c24` (code `371b8a8d`, manifest on top), base master `0a2cbe45`.
+**Contract:** `qa/contracts/mongo-store.md`, unit U4: M2, M5-M8, M11, M15 (Mongo leg), M17-M19, M21, M22.
+**Dual-check note:** this is one of the two required checkers; this verdict does not close the unit alone.
 
-## Commands I ran (worktree `D:/autoTesting/.claude/worktrees/mongo-u4`, `PYTHONPATH=<worktree>/src`, `-o addopts=`, 2 files per call)
+## Required fixes (answering cycle 0: A FAIL `0264cc38`, B PASS-with-defect `9a2800e6`)
 
-| Command | Result |
-|---|---|
-| `ruff check src tests scripts` | All checks passed! |
-| pytest test_state_backend_contract.py test_state_wrappers.py | 379 passed, 1 skipped |
-| pytest test_mongo_backend_fence.py test_mongo_backend_layout.py | 79 passed |
-| pytest test_safe_key.py test_state_selection.py | 93 passed |
-| pytest test_state_signatures.py test_mongo_guard_chain.py | 25 passed |
-| pytest test_mongo_guard.py test_mongo_guard_surface.py | 40 passed |
-| pytest test_mongo_guard_scan.py test_mongo_guard_spec.py | 35 passed |
-| pytest test_store.py test_store_crawl.py | 28 passed |
-| pytest test_team_store.py test_bug_store.py | 79 passed |
-| `autotester doctor > .work/doctor-b.txt` | exit 0, last line `doctor: clean` |
-| `scripts/mutation_check.py` mutations-e / b / c / d / f / a | 2/2, 3/3, 4/4, 7/7, 8/8, 18/18 killed (42 of 42, all re-run by me on the final tree, so the "a/b/c/e ran on an earlier tree" flag is closed) |
-| `wc -l` | filestore.py 300, mongo_guard.py 300, mongo_backend.py 299, mongo_routes.py 268 (cap 300); doctor enforces function length: clean |
-| `git diff --stat 0a2cbe45..HEAD` | 28 files; the only new `src/` files are `store/mongo_backend.py` and `store/mongo_routes.py` (both on the D-122/D-123 U4 row); other `src/` changes are in-place edits (`core/file_lock.py`, `core/safe_names.py`, `store/filestore.py`, `store/mongo_guard.py` 2 lines, `store/run_store.py`); no contract, CLAUDE.md or DECISIONS change |
+| # | Fix | Result | Evidence |
+|---|---|---|---|
+| 1 | `delete`/`delete_prefix` on a `.jsonl` key in the `server_state` catch-all raised "identity marker is not writable" | FIXED | `mongo_backend.py:143-145` deletes row by row on `_id` (`hits = self._docs(...)`, then `delete_one`); `delete_prefix :176-181` goes through `delete`. Contract case `test_state_backend_contract.py:126` runs on file, memory, mongo (all pass). Mutant g1 (back to bare `delete_many` on `k`) is killed by the `[mongo]` leg. |
+| 2 | `StoreSecretRefused` echoed the key | FIXED | `mongo_backend.py:63-76`: fixed message, scan runs before the size check, raised outside `except` (no `__cause__`/`__context__`). Test `test_mongo_backend_fence.py:160-178` (`_quotes_nothing` over str, repr, args). Mutant g3 (quotes the key again) and g4 (key no longer scanned) killed. |
+| 3 | `append_text` all-or-nothing | FIXED | `mongo_backend.py:189-196` vets every line before the first write. Test `:240`; mutants g5 (no pre-vet) and g6 (blank lines kept as rows) killed. |
+| 4 | File 16-way append skip only on win32; `append_path` docstring | FIXED | `tests/test_state_backend_contract.py:247` (`sys.platform == "win32"`); `filestore.py:233` docstring says atomic on Memory/Mongo, plain `a` on File. |
+| 5 | `safe_key` refuses COM0, LPT0, superscript digits, `clock$` | FIXED | `core/safe_names.py:21-22` (`_DIGITS` starts at `0`, `clock$` added). Mutants g7-g10 killed (g10 pins that COM10 stays accepted). |
+| 6 | master merge: one `repo_redactor`; `blobs._vet` ordering | OK | See "blobs.py change" below. |
 
-Existing-test edits (`git diff ... | grep '^-'`) are deliberate: "mongo not wired" tests replaced by the wired-mongo ones, `StateBackend` import moved, `UNSAFE` list extended. No assertion was weakened; `test_state_signatures.py` is untouched.
+## Commands run (all in `D:/autoTesting/.claude/worktrees/mongo-u4`, `PYTHONPATH=<worktree>/src`, `-o addopts=`, `env -u ANTHROPIC_BASE_URL`, two files per call, one call at a time)
 
-My own adversarial probes (scratch scripts outside the repo, over the in-repo fake):
+```
+tests/test_state_backend_contract.py tests/test_state_wrappers.py   415 passed, 1 skipped (File 16-way append, win32)
+tests/test_mongo_backend_fence.py tests/test_mongo_backend_layout.py   80 passed
+tests/test_safe_key.py tests/test_state_selection.py                106 passed
+tests/test_blobs.py tests/test_blobs_mongo.py                       148 passed
+tests/test_blobs_cache.py tests/test_mongo_guard_scan.py             39 passed
+tests/test_mongo_guard.py tests/test_mongo_guard_surface.py          40 passed
+tests/test_mongo_guard_chain.py tests/test_state_signatures.py       25 passed
+tests/test_mongo_guard_spec.py tests/test_sweep_u3a.py               12 passed
+uv run ruff check src tests scripts                                  All checks passed!
+uv run autotester doctor > .work/doctor-b1.txt                       exit 0, final line "doctor: clean" (only non-blocking D-087 advisories)
+scripts/mutation_check.py on qa/evidence/mongo-store-u4/ specs, final tree:
+  g 10/10, a 18/18, b 3/3, c 4/4, d 7/7, e 2/2, f 8/8 killed (52/52, 0 survived)
+```
 
-- **M2/M5/driver:** no parameter named `db`/`database`/`db_name` on any function or method in `mongo_backend.py`/`mongo_routes.py`; neither file imports `pymongo`/`gridfs`/`bson` (the word appears in prose only); the whole workload touched only `['autotester']` (URIs `h/`, `h/scratch`, `h/?authSource=admin`; `h/autotester` and `h/AutoTester` refuse with `StoreConfigError`, zero client access).
-- **M13:** with `AUTOTESTER_STORE` unset, a file-mode write/exists/list/append workload leaves `pymongo` and `gridfs` out of `sys.modules`. `AUTOTESTER_STORE=redis|Mongo`, `AREAS=typo=mongo|runs=postgres|runs` all raise `StoreSelectionError`; `auth=mongo` is refused by name.
-- **M7:** for `approvals`, `approval_revocations` (rows) and `bug_events`, `delivery_records` (documents): put, put_if, delete, upsert_row, delete_row, replace_rows, append_text-on-document all raise `StoreImmutable`; append and `create_exclusive` work; an equal re-put is a no-op, a different one raises; `delete_prefix("projects/a")` over a mix raises before any delete.
-- **M8:** `Redactor({"K": SECRET})`: put, put with the secret in the key, rows put, put_if, create_exclusive, append_text, append_row, upsert_row, replace_rows (secret in the 2nd row), put(bytes) all raise `StoreSecretRefused`; `__cause__`/`__context__` None; a dump of the whole fake database contains no secret.
-- **M17/W1:** `safe_key` refuses `a/b.`, `a/b `, `a/CON`, `con.txt`, `Nul.json`, `COM1`, `com1.x`, `LPT9.z`, `COM` + superscript 1, `aux `, `CONIN$`, `CON .txt`, `CON.`, `prn.tar.gz`, `a/c:d`, `b:s`, `C:/x`, `/a`, `a//b`, `./`, `../`, backslash, empty; as a prefix `a/CON`, `a/b.`, `a/CONFIG` pass (may be unfinished) and `a/CON/` refuses. Closed.
-- **W2:** `delete_prefix("")` and `("/")` raise `UnsafeName`; `delete_prefix("projects/a")` deleted `projects/a/x.json` and `projects/a/sub/y.json` only and left `projects/a.json` and `projects/ab/x.json`. Closed.
-- **W3:** a fake cursor dying mid-iteration with a canary URI in the driver message: `keys`, `rows` (guarded and insert-only collection), `get`, `mtime`, `append_row`, `children` all raise a bare `StoreUnavailable`, chain `['StoreUnavailable']`, no canary in traceback/str/repr. Closed (`mongo_guard.py:125`).
-- **W4:** `mongodb://u:CANARY@h:notaport/`, `MONGODB://...`, `CANARY` alone: one fixed `StoreConfigError`, chain length 1, no canary, client never touched. Closed.
-- **W5:** `area_of` gives `approvals` for `approvals.jsonl` and `approval_revocations.jsonl`, `queue` for `.work/run_queue.json` and `.work/team/delivery/x`, `runs` for `trace.jsonl`; `auth`/`credentials`/`blobs` per-area flips are refused by name (`mongo_routes.py:25-28,234`). Closed.
-- **M18:** exactly 12 MiB stored (warning logged above 4 MiB); 12 MiB + 1, and 6 Mi + 1 two-byte characters, raise `StoreDocTooLarge`, nothing stored.
+Not run: the full suite in one call, `tests/test_role_port_authz.py` (low-memory rule; not touched by this unit).
+`git status --short` was empty after the mutation runs (the harness is sandboxed).
+
+## Scope check
+
+`git show --stat` of the three non-merge commits since the cycle-0 checkers: `7a835857` touches `core/safe_names.py`, `store/filestore.py` (docstring only), `store/mongo_backend.py`, three test files and `qa/evidence/mongo-store-u4/*`; `371b8a8d` touches `store/blobs.py` and `verify-cycle1.txt`; `41400c24` touches only `qa/manifests/mongo-store-u4.md`. The rest of `git diff 1366d1fb..HEAD` is master's U3a, U5a and ts6 merges (`2f418a68`), not this unit. No `*_v2`-style file. No new `src/` module beyond the two on the D-122/D-123 list. `mongo_backend.py` is 297 lines, `blobs.py` 277, `test_state_backend_contract.py` 300 (cap 300).
+
+## blobs.py change (371b8a8d) - U5a behaviour kept, no import cycle
+
+- `blobs.py:29` imports `repo_redactor` from `mongo_routes`; `grep -rn "def repo_redactor" src` finds exactly one definition (`mongo_routes.py:185`). The body is the same as the removed one (non-empty `.env` values, plus an optional `extra`), so callers passing `repo_redactor` as a zero-argument callable (`blobs.py:142, 200`) behave as before.
+- Fresh-interpreter imports (`python -I -c "import ..."`): `blobs`, `mongo_routes`, `filestore` import clean and `pymongo` is not in `sys.modules` (M13); `mongo_backend` imports clean. No cycle.
+- `_vet` (`blobs.py:99-118`): the never-moves check folds the raw `key.split("/")`, then `safe_key(key)` runs. Since `safe_key` returns an accepted key unchanged, the folded parts are identical for every accepted key; the only difference is that a key which is both unsafe and a never-moves path is now `BlobRefused` rather than `UnsafeName`, which matches master. My own probe of `_vet` (key, kind, content-type and text body carrying a known secret; `.env`, `.env `, `x.xlsx.`, `a/profiles /b`, `a/.work./b`, unmasked screenshot, `../x`, `CON`): every refusal is `BlobRefused` or `UnsafeName`, none quotes the secret, `ok` is accepted.
+- `test_blobs.py` + `test_blobs_mongo.py` (148), `test_blobs_cache.py` + `test_mongo_guard_scan.py` (39) all pass, including the M3 AST scan (still exactly two driver-touching files).
+
+## My own adversarial probes (fake client, `.work/adv_b.py`, outside `src/` and `tests/`)
+
+- Row-set delete in the catch-all: `foo.jsonl` deleted True then False, rows empty, `exists` False; a sibling `zzz.jsonl` survives; `delete_prefix("dir/")` over a mixed directory (rows keys at two depths, `.json`, `.txt`) returns 4 and leaves `other/z.json`; the identity marker document is untouched; `delete("marker")` raises `ValueError`, `delete("marker.jsonl")` returns False.
+- Insert-only: `delete_prefix("projects/p/")` over a directory holding an approvals row set and an ordinary document raises `StoreImmutable` and deletes nothing; `delete` of the approvals key raises `StoreImmutable`.
+- Secrets: `StoreSecretRefused`, with the secret in no rendering (str, repr, args, cause, context), for secret in text, in key, in key plus a 12 MB+1 body, in text plus a 12 MB+1 body, `append_row` key and text, `append_text` key and a later row line, `create_exclusive` key, `put_if` key, `replace_rows`, `upsert_row`. A dump of every fake collection afterwards contains no secret and no partial rows were left (`rows` of the failed-append logs are empty).
+- Partial append: lines `{"a":3}`, a secret line, `{"a":4}` raise `StoreSecretRefused` and none of the three lands; an oversize second line raises `StoreDocTooLarge` and the first line (`{"a":5}`) does not land; CRLF and whitespace-only lines add only the real rows; an empty append adds nothing.
+- `safe_key`: refused COM0, com0.json, LPT0, lpt0.x, COM and LPT with superscript 1/2/3 (with and without extension), CLOCK$, clock$.txt, CONIN$/CONOUT$ forms, `COM0.`, `Com0 .x`; accepted COM10, COM00, clock.json, CLOCK$x, COM with superscript four, LPT.
+
+## Findings (none blocking)
+
+1. WARNING `core/safe_names.py` (`UnsafeName` text) - a key that is BOTH unsafe (`a/../<secret>`, `a/CON/<secret>`, a control character) and contains a known secret is refused with `UnsafeName`, whose message includes the key, so the secret is echoed in that one case. Pre-existing U2 behaviour (not from this cycle's diff), reached before `_guard`; the key is the caller's own input and no store write happens. Suggest `UnsafeName` not quote the key, or `MongoBackend._route` redact it, in a later cycle or U9/U11.
+2. INFO `core/safe_names.py:21` - fullwidth digit forms (`COM` + U+FF11) are accepted. Whether Windows treats them as devices was not verified here; only the superscripts the contract-cycle-0 finding named are refused. Low risk; verify on the Windows host if it matters.
+3. INFO `tests/test_mongo_backend_fence.py:248-250` - three trailing blank lines at end of file (ruff passes). Cosmetic.
+4. INFO - the manifest's "Known follow-ups" (8-writer append retry ceiling, no CAS on a split persona, empty `.jsonl` parity, unbounded route cache, `marker` key reserved, mid-rewrite persona read, `AUTOTESTER_MONGO_URI` provisional, `GuardedBucket.list` F1) are accurate as listed and none is a U4 criterion failure. F1 and the split-persona CAS need a ruling before U7/U5b rely on them.
 
 ## Criteria
 
-| Criterion | Result |
-|---|---|
-| M2 no API takes a db name | PASS (signature scan above + `test_no_public_parameter_of_the_backend_is_a_database_name`) |
-| M5 only the configured database | PASS |
-| M6 closed verb set | PASS (backend uses only `GuardedStore.collection` and `GuardedCollection` verbs; `delete_many` always carries `k`) |
-| M7 insert-only | PASS (probe above; `mongo_backend.py:84-88,139-144,181-186`) |
-| M8 secret refused | PASS, with warnings W1, W2 |
-| M11 identity marker | PASS (`get("marker")` is None; marker never rewritten); see W5 for a key named `marker` |
-| M15 one suite, three backends | PASS for the listed behaviours (379 passed); defect D1 lies outside the suite |
-| M17 safe keys | PASS |
-| M18 encoding, size, seq | PASS (verbatim text, 12 MB cap, `(k,seq)` unique, retry on duplicate) |
-| M19 exactly one winner | PASS (16-caller tests on all three backends; deterministic CAS-interleave test) |
-| M21 collections and indexes | PASS (`ensure_indexes` twice changes nothing; routed set is a subset of `COLLECTIONS`) |
-| M22 KG split | PASS (generation-keyed rows, old generations dropped); see W3 |
-| `AUTOTESTER_STORE` unset stays file | PASS |
+M2, M5, M6, M7, M8, M11, M15 (Mongo leg: all 3 backends pass the one suite), M17, M18, M19, M21, M22: PASS on the cycle-1 tree. No regression of a cycle-0-passing criterion found (all 52 mutants killed, including the older a-f specs re-run on this tree).
 
-## Findings
-
-**D1 (defect; fix in place before U7/U9; not a falsifier of a listed criterion).** `MongoBackend.delete` on a `.jsonl` key that routes to `server_state` raises `ValueError: the store identity marker is not writable` instead of deleting. Cause: `mongo_backend.py:150` calls `delete_many({"k": key})`, and `mongo_guard.py::_before_write` refuses any `server_state` filter that does not name a string `_id`. Reproduced with `append_row(".work/x.jsonl")` then `delete(".work/x.jsonl")`; `delete_prefix("d")` over `d/x.jsonl` fails the same way, while File and Memory succeed. Reachable families: the `**` catch-all (`mongo_routes.py:90`), for example `docs/FEATURES.jsonl`. No `src/` caller deletes such a key today and the contract suite never deletes a row key, so no test sees it. Fix: delete row by row with `delete_one({"_id": ...})` as `replace_rows` does (`:246-247`), and add a contract case "delete a `.jsonl` key, then `delete_prefix` over it" on all three backends.
-
-**W1 (warning, M8).** `mongo_backend.py:76` writes `refusing to store {key!r}`; when the secret is in the key the message quotes it (probe: `put("projects/a/<SECRET>.json")` gives a message containing the secret). `test_mongo_backend_fence.py:171` asserts only that it raises. Do not quote the key in that message.
-
-**W2 (warning, M8 reach).** `append_text` on a row-set key writes line by line (`mongo_backend.py:197-198`): if a later line is refused, the earlier lines stay stored. No secret is stored, so M8 holds, but the refusal is not all-or-nothing.
-
-**W3 (warning, M22).** `_text_of` (`:273-279`) reads the `kg_*` rows after the skeleton, and a concurrent rewrite drops that generation (`:115-116`): a reader can get a skeleton with an empty or short graph (not a mix). The skeleton carries no node/edge counts to detect it. Low reach under `--max-instances 1`; add counts to the skeleton or retry when rows are missing.
-
-**W4 (warning, parity and scale).** (a) `exists_path(repo_root())` and `list_children(repo_root())` raise `UnsafeName` for key `""` because `backend_for` runs `safe_key("")` (`filestore.py:167`), although every backend's `children`/`is_dir` handles `""` (`mongo_backend.py:175,179`, `filestore.py:101`); reproduced in file mode. (b) A `.jsonl` key's `get` on Mongo returns rows joined by `\n` (`'a\n\nb'` becomes `'a\nb\n'`), not the original text. (c) `put(bytes)` with non-UTF-8 content raises a bare `UnicodeDecodeError` on Mongo (the two `write_bytes` callers write UTF-8 JSON or config today). (d) `children`/`is_dir` list every key under the directory (`:169-171`), one document per row, so a large crawl or runs directory scans every row; `@cache` on `route` (`mongo_routes.py:149`) is unbounded.
-
-**W5 (warning, minor).** A state key literally named `marker` cannot be stored in `server_state` (`ValueError` from the guard); File allows it. Add it to the unsafe list or document it.
-
-## Flags the caller asked me to judge
-
-- **F1 `GuardedBucket.list(prefix)` and prefix delete skipped: deferral, not a U4 FAIL.** No U4 criterion needs it (the U4 row is M2, M5-M8, M11, M15, M17-M19, M21, M22); it serves U5a (M23). But `mongo_guard.py` is exactly at the 300-line cap and D-122/D-123 lists no second guard module, so U5a cannot add it without a placement ruling. This needs a human decision (a D-entry from Umesh) before U5a starts: a raised cap for `mongo_guard.py`, or an approved second module that is not a second door (M3 allows exactly two files that touch the client).
-- **Env name `AUTOTESTER_MONGO_URI` vs `PATHLYNKS_MONGO_URI`: warning; U9 must fix.** D-120 (`docs/DECISIONS.md:2926`) and contract M28/M36 name `PATHLYNKS_MONGO_URI` from the repo-root `.env`; `default_backend` (`mongo_backend.py:35,291`) reads `AUTOTESTER_MONGO_URI` from `os.environ` only (not `.env`). It fails closed (a missing value stops startup, `test_state_selection.py:74`), the URI is still redacted (`repo_redactor` reads `.env` and adds the URI), and the manifest marks it provisional. U9's `core/env.py::mongo_uri` must replace it, not add a second name.
-- **auth/credentials/blobs refused on mongo: acceptable.** Per-area flips are refused by name (`mongo_routes.py:234`); `AUTOTESTER_STORE=mongo` alone still labels all nine areas `mongo`, harmless because no key routes to those three, but U6/U11/U5a must check the selection themselves.
-- **2-line `mongo_guard.py` edit: acceptable.** The diff is the `verdict: Exception` annotation and the lazy-cursor `list(...)` moved inside `_translate`; U1 guard tests (40 + 35) and the chain tests pass; W3 is closed by it.
-- **File skip of the 16-way append test: acceptable, with a note.** `FileBackend.append_text` is the same plain `open("a")` that `append_row` was on base (`git show 0a2cbe45:src/autotester/store/filestore.py:146-150`), so there is no regression. I measured it: 16 threads x 50 appends gave 726 lines of 800 on this Windows host. The skip is unconditional (`test_state_backend_contract.py:227-228`); prefer `sys.platform == "win32"`, and callers that need atomic append on File keep their lock.
-- **Mutations a/b/c/e on an earlier tree: closed.** I re-ran all six specs on the final tree, 42/42 killed.
-
-## Dual-check note
-This is checker B only. The unit closes on both verdicts. D1 should be recorded in `qa/issues.jsonl` (maker fixes in place, no new file); W1 to W5 are at the maker's discretion except where they gate U5a, U7 or U9 as stated.
+PASS, subject to the dual-check rule (checker A must also PASS the same cycle).
