@@ -1,0 +1,118 @@
+=== mutations-a.json
+KILLED  a1: unmasked screenshot accepted  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_an_unmasked_screenshot_is_refused_and_nothing_is_written[file], tests/test_blobs.py::test_an_unmasked_screenshot_is_refused_and_nothing_is_written[mongo]
+    actually failed: tests/test_blobs.py::test_an_unmasked_screenshot_is_refused_and_nothing_is_written[file], tests/test_blobs.py::test_an_unmasked_screenshot_is_refused_and_nothing_is_written[mongo]
+KILLED  a2: key not scanned for secrets  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-key], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-key]
+    actually failed: tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-key], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-key]
+KILLED  a3: content_type not scanned  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-content_type], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-content_type]
+    actually failed: tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-content_type], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-content_type]
+KILLED  a4: text body not scanned  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-text body], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-json body]
+    actually failed: tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-json body], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-text body], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-json body], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[mongo-text body], tests/test_blobs.py::test_a_folded_or_encoded_secret_in_a_text_body_is_refused[file], tests/test_blobs.py::test_a_folded_or_encoded_secret_in_a_text_body_is_refused[mongo], tests/test_blobs.py::test_the_default_redactor_reads_the_repo_env, tests/test_blobs.py::test_the_redactor_is_asked_at_every_put_so_a_later_secret_is_seen
+KILLED  a5: .work not a non-blob segment  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.work/ceo-bench/answers.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-.work/ceo-bench/answers.json]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.work/blob-cache/x.png], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.work/ceo-bench/answers.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-.work/blob-cache/x.png], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-.work/ceo-bench/answers.json]
+KILLED  a5: profiles not a non-blob segment  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-profiles/pathlynks/Default/x], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-profiles/pathlynks/Default/x]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-profiles/pathlynks/Default/x], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-profiles/pathlynks/Default/x]
+KILLED  a5: chunks not a non-blob segment  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/sources/s1/chunks/c0.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/sources/s1/chunks/c0.json]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/sources/s1/chunks/c0.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/sources/s1/chunks/c0.json]
+KILLED  a5: crawl_summaries not a non-blob segment  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/crawl_summaries/c1.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/crawl_summaries/c1.json]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/crawl_summaries/c1.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/crawl_summaries/c1.json]
+KILLED  a5: META_DIR not a non-blob segment  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.blobmeta/x.json]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.blobmeta/x.json], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-.blobmeta/x.json]
+KILLED  a6: .env exact name allowed  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.env], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-sub/.env]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-.env], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-sub/.env], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-.env], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-sub/.env]
+KILLED  a6: .env.* allowed  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/.env.local]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/.env.local], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/.env.local]
+KILLED  a7: xlsx export allowed  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/ai-report.xlsx]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/REPORT.XLSX], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/ai-report.xlsx], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/ai/REPORT.XLSX], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/ai/ai-report.xlsx]
+KILLED  a7: xlsx check is case sensitive  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/REPORT.XLSX], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/ai/REPORT.XLSX]
+    actually failed: tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[file-p/ai/REPORT.XLSX], tests/test_blobs.py::test_data_that_never_moves_is_refused_and_nothing_is_written[mongo-p/ai/REPORT.XLSX]
+KILLED  a8: export kind allowed  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_an_export_kind_is_refused[file], tests/test_blobs.py::test_an_export_kind_is_refused[mongo]
+    actually failed: tests/test_blobs.py::test_an_export_kind_is_refused[file], tests/test_blobs.py::test_an_export_kind_is_refused[mongo]
+KILLED  a9: file equal put rewrites  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_an_equal_put_is_a_no_op[file]
+    actually failed: tests/test_blobs.py::test_an_equal_put_is_a_no_op[file]
+KILLED  a9: mongo equal put uploads again  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_an_equal_put_is_a_no_op[mongo]
+    actually failed: tests/test_blobs.py::test_an_equal_put_is_a_no_op[mongo]
+KILLED  a10: same bytes new metadata is a no-op  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_the_same_bytes_with_new_metadata_are_a_change_not_a_no_op[file], tests/test_blobs.py::test_the_same_bytes_with_new_metadata_are_a_change_not_a_no_op[mongo]
+    actually failed: tests/test_blobs.py::test_the_same_bytes_with_new_metadata_are_a_change_not_a_no_op[file], tests/test_blobs.py::test_the_same_bytes_with_new_metadata_are_a_change_not_a_no_op[mongo]
+KILLED  a11: file delete leaves the sidecar  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_delete_removes_the_blob_and_reports_whether_it_existed[file]
+    actually failed: tests/test_blobs.py::test_delete_removes_the_blob_and_reports_whether_it_existed[file]
+KILLED  a12: stale sidecar trusted  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_a_file_store_ignores_a_sidecar_that_no_longer_matches_its_bytes
+    actually failed: tests/test_blobs.py::test_a_file_store_ignores_a_sidecar_that_no_longer_matches_its_bytes
+KILLED  a13: default redactor ignores .env  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_the_default_redactor_reads_the_repo_env
+    actually failed: tests/test_blobs.py::test_the_default_redactor_reads_the_repo_env
+KILLED  a14: non-bytes body not refused  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_a_non_bytes_body_is_refused[file], tests/test_blobs.py::test_a_non_bytes_body_is_refused[mongo]
+    actually failed: tests/test_blobs.py::test_a_non_bytes_body_is_refused[file], tests/test_blobs.py::test_a_non_bytes_body_is_refused[mongo]
+KILLED  a15: kind pattern not enforced  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_a_malformed_kind_is_refused[file-Screenshot], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-screen shot]
+    actually failed: tests/test_blobs.py::test_a_malformed_kind_is_refused[file-1x], tests/test_blobs.py::test_a_malformed_kind_is_refused[file-Screenshot], tests/test_blobs.py::test_a_malformed_kind_is_refused[file-], tests/test_blobs.py::test_a_malformed_kind_is_refused[file-a/b], tests/test_blobs.py::test_a_malformed_kind_is_refused[file-screen shot], tests/test_blobs.py::test_a_malformed_kind_is_refused[file-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-1x], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-Screenshot], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-a/b], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-screen shot], tests/test_blobs.py::test_a_malformed_kind_is_refused[mongo-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]
+KILLED  a16: redactor not re-asked per put  (pytest exit 1)
+    claims to kill : tests/test_blobs.py::test_the_redactor_is_asked_at_every_put_so_a_later_secret_is_seen
+    actually failed: tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-content_type], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-json body], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-key], tests/test_blobs.py::test_a_declared_secret_is_refused_everywhere_it_can_ride[file-text body], tests/test_blobs.py::test_a_folded_or_encoded_secret_in_a_text_body_is_refused[file], tests/test_blobs.py::test_the_default_redactor_reads_the_repo_env, tests/test_blobs.py::test_the_redactor_is_asked_at_every_put_so_a_later_secret_is_seen
+
+23/23 mutations killed
+exit 0
+=== mutations-b.json
+>>> SURVIVED  b1: prune before upload  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_a_changed_put_uploads_the_new_revision_before_it_deletes_the_old, tests/test_blobs_mongo.py::test_an_upload_that_fails_leaves_the_old_revision_readable
+    actually failed: tests/test_blobs_mongo.py::test_a_changed_put_uploads_the_new_revision_before_it_deletes_the_old, tests/test_blobs_mongo.py::test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest
+    SURVIVING      : tests/test_blobs_mongo.py::test_an_upload_that_fails_leaves_the_old_revision_readable  <- INCONCLUSIVE: this mutation did not make them fail
+KILLED  b2: prune what is there now, not what was seen  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions
+    actually failed: tests/test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions
+KILLED  b3: no self-heal on a no-op put  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest
+    actually failed: tests/test_blobs_mongo.py::test_a_put_interrupted_after_the_upload_leaves_both_and_reads_the_newest, tests/test_blobs_mongo.py::test_two_racing_puts_never_leave_zero_revisions
+KILLED  b4: delete only the newest revision  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_delete_removes_every_revision_of_the_key_and_only_that_key
+    actually failed: tests/test_blobs_mongo.py::test_delete_removes_every_revision_of_the_key_and_only_that_key
+KILLED  b5: newest by listing order  (pytest exit 1)
+    claims to kill : tests/test_blobs_mongo.py::test_the_newest_revision_is_the_one_with_the_highest_put_seq_not_the_listing_order
+    actually failed: tests/test_blobs_mongo.py::test_the_newest_revision_is_the_one_with_the_highest_put_seq_not_the_listing_order
+
+4/5 mutations killed
+exit 1
+=== mutations-c.json
+KILLED  c1: get skips the sha check  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_a_blob_whose_bytes_do_not_match_its_recorded_sha_is_corrupt
+    actually failed: tests/test_blobs_cache.py::test_a_blob_whose_bytes_do_not_match_its_recorded_sha_is_corrupt
+KILLED  c2: cache hit not re-hashed  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_a_cache_hit_does_not_download_again_and_a_tampered_copy_is_refetched
+    actually failed: tests/test_blobs_cache.py::test_a_cache_hit_does_not_download_again_and_a_tampered_copy_is_refetched
+KILLED  c3: hit does not refresh recency  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_a_hit_refreshes_recency_so_the_touched_blob_survives
+    actually failed: tests/test_blobs_cache.py::test_a_hit_refreshes_recency_so_the_touched_blob_survives
+KILLED  c4: cache never evicts  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_the_cache_evicts_the_least_recently_used_past_its_cap
+    actually failed: tests/test_blobs_cache.py::test_a_hit_refreshes_recency_so_the_touched_blob_survives, tests/test_blobs_cache.py::test_the_cache_evicts_the_least_recently_used_past_its_cap
+KILLED  c5: evicts most recent first  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_the_cache_evicts_the_least_recently_used_past_its_cap
+    actually failed: tests/test_blobs_cache.py::test_a_hit_refreshes_recency_so_the_touched_blob_survives, tests/test_blobs_cache.py::test_the_cache_evicts_the_least_recently_used_past_its_cap
+KILLED  c6: the served file may be evicted  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_a_blob_bigger_than_the_cap_is_still_served
+    actually failed: tests/test_blobs_cache.py::test_a_blob_bigger_than_the_cap_is_still_served
+KILLED  c7: cache file loses its extension  (pytest exit 1)
+    claims to kill : tests/test_blobs_cache.py::test_materialize_writes_a_verified_copy_that_keeps_the_extension
+    actually failed: tests/test_blobs_cache.py::test_materialize_writes_a_verified_copy_that_keeps_the_extension
+
+7/7 mutations killed
+exit 0
