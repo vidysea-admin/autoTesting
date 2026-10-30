@@ -33,7 +33,7 @@ from autotester.stages.run_launcher import (
     save_tracked_run,
 )
 from autotester.stages.video_retention import prune_old_videos_safely
-from autotester.store.filestore import read_json, write_json
+from autotester.store.filestore import exists_path, read_json, write_json
 from autotester.store.project_store import ProjectStore
 
 
@@ -46,7 +46,7 @@ def _role_model(ctx, project, role, supplied):
 def _generation_reentry(ctx, spec):
     complete = ctx.store.paths.pipeline_artifact(ctx.run_id, "expand")
     fingerprint = PipelineBatch.fingerprint(spec, [])
-    if complete.exists():
+    if exists_path(complete):
         prior = load_pipeline_batch(ctx, str(complete))
         if PipelineBatch.fingerprint(prior.flowspec, []) != fingerprint:
             raise ValueError("completed generation has a different MODEL")
@@ -89,7 +89,7 @@ def make_expand_stage(project: Project, *, generator: Provider | None = None,
                                before_call=lambda: _mark_generation(ctx, spec))
             guard_pipeline_artifacts(ctx, *generated)
         except Exception as exc:
-            if ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt").exists():
+            if exists_path(ctx.store.paths.pipeline_artifact(ctx.run_id, "expansion-attempt")):
                 _mark_generation(ctx, spec, error=ctx.secrets.scrub_optional(
                     f"{type(exc).__name__}: {exc}"))
             raise
@@ -145,7 +145,7 @@ def make_grade_stage(project: Project, *, judge: Provider | None = None):
         batch = load_pipeline_batch(ctx, prev_ref)
         _require_complete_observations(batch)
         progress = ctx.store.paths.pipeline_artifact(ctx.run_id, "grading-progress")
-        if progress.exists():
+        if exists_path(progress):
             prior = load_pipeline_batch(ctx, str(progress))
             if prior.input_fingerprint != batch.input_fingerprint:
                 raise ValueError("interrupted grading has different frozen inputs")

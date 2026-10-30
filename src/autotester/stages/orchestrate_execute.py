@@ -23,7 +23,7 @@ from autotester.stages.run_launcher import (
     require_declared_values,
     require_live_case_approval,
 )
-from autotester.store.filestore import read_json, write_json
+from autotester.store.filestore import exists_path, read_json, write_json
 from autotester.store.project_store import ProjectStore
 
 INTERRUPTION = "execution interrupted; unfinished cases were not repeated; start a new run to retry"
@@ -200,13 +200,13 @@ def execute_pipeline_batch(ctx: StageContext, batch: PipelineBatch, project: Pro
     """Observe once; an interrupted in-flight run never resets its budget or repeats writes."""
     require_pipeline_eligibility(ctx, batch.flowspec)
     complete = ctx.store.paths.pipeline_artifact(ctx.run_id, "execute")
-    if complete.exists():
+    if exists_path(complete):
         prior = load_pipeline_batch(ctx, str(complete))
         if prior.input_fingerprint != batch.input_fingerprint:
             raise ValueError("completed execution has different frozen inputs")
         return str(complete)
     progress = ctx.store.paths.pipeline_artifact(ctx.run_id, "execution-progress")
-    if progress.exists():
+    if exists_path(progress):
         prior = load_pipeline_batch(ctx, str(progress))
         if prior.input_fingerprint != batch.input_fingerprint:
             raise ValueError("interrupted execution has different frozen inputs")

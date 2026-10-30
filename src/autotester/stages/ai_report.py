@@ -24,7 +24,7 @@ from autotester.schema.catalog import TIER_ORDER, AiCheckEntry, Tier
 from autotester.schema.verdict import Verdict
 from autotester.stages.ai_capture import CaptureWithheld
 from autotester.stages.ai_catalog import CHECK_TIER
-from autotester.store.filestore import read_json
+from autotester.store.filestore import exists_path, list_children, read_json
 from autotester.store.project_store import ProjectStore
 
 NO_RESULTS = "No AI results are stored for this project: nothing below has been run or judged."
@@ -53,7 +53,7 @@ def _load(path: Path, model: type[Any]) -> tuple[Any, bool]:
 def _stored_captures(ai_dir: Path) -> list[Stored]:
     found: list[Stored] = []
     root = ai_dir / "behavioural"
-    for folder in sorted(root.iterdir()) if root.is_dir() else []:
+    for folder in (root / name for name in list_children(root)):
         cap, bad = _load(folder / "capture.json", AiCapture)
         if cap is None and not bad:
             continue
@@ -166,7 +166,8 @@ def _adversarial_sheet(entries: list[AiCheckEntry], ai_dir: Path) -> tuple[
         list[list[str]], int]:
     adv = ai_dir / "adversarial"
     runs, rows = [], []
-    for run_json in sorted(adv.glob("*/run.json")) if adv.is_dir() else []:
+    for run_json in (adv / name / "run.json" for name in list_children(adv)
+                     if exists_path(adv / name / "run.json")):
         run, bad = _load(run_json, ProbeRun)
         if run is not None:
             runs.append(run)
