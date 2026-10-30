@@ -137,7 +137,8 @@ class SecretStore:
     # -- construction -------------------------------------------------------
     @classmethod
     def load(cls, project: Project, env_path: Path, *, strict: bool = True) -> SecretStore:
-        """Read `env_path` and keep only the keys `project` declares.
+        """Read `env_path` (and, with the credential store on, the store) and keep only the keys
+        `project` declares.
 
         Raises `MissingSecret` for a declared key with no value. An undeclared
         key present in the file is dropped and reported via `undeclared` rather
@@ -145,17 +146,15 @@ class SecretStore:
         unscoped credential is exactly what this class exists to prevent.
         """
         text = env_path.read_text(encoding="utf-8") if env_path.exists() else ""
-        present = parse_env(text)
         declared = {s.key for s in project.secrets}
+        usable, shadow = core_env.resolve_credentials(parse_env(text), project.slug, declared)
 
-        missing = sorted(k for k in declared if not present.get(k))
+        missing = sorted(k for k in declared if not usable.get(k))
         if missing and strict:
             raise MissingSecret(
                 f"{env_path} is missing value(s) for declared key(s): {', '.join(missing)}"
             )
 
-        usable = {k: v for k, v in present.items() if k in declared and v}
-        shadow = {k: v for k, v in present.items() if k not in declared and v}
         return cls(project, usable, shadow)
 
     # -- the boundary -------------------------------------------------------

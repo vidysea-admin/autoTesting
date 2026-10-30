@@ -288,9 +288,13 @@ def default_backend() -> MongoBackend:
         uri = mongo_uri()
         if not uri:
             raise routes.StoreSelectionError(f"{MONGO_URI_ENV} is not set; the store needs it")
-        _CACHE["backend"] = MongoBackend(GuardedStore(uri), repo_redactor({MONGO_URI_ENV: uri}))
+        _CACHE["backend"] = MongoBackend(GuardedStore(uri))  # gate: repo_redactor() lazily
     return _CACHE["backend"]
 
 
 def reset_default_backend() -> None:
     _CACHE.clear()
+
+
+def default_store() -> GuardedStore:  # the credential door's handle on `secrets` (U11)
+    return default_backend()._store

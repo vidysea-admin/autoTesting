@@ -27,7 +27,7 @@ from autotester.schema.platform import Platform
 from autotester.schema.project import Project, SecretRef
 from autotester.schema.role_account import RoleAccount
 from autotester.ui.credential_guard import refuse_foreign_key
-from autotester.ui.env_editor import InvalidEnvValue, set_env_values, validate_env_values
+from autotester.ui.env_editor import InvalidEnvValue, save_credentials, validate_env_values
 
 T = TypeVar("T", Platform, RoleAccount)
 
@@ -189,7 +189,8 @@ def check_values(values: Mapping[str, str]) -> None:
         raise OnboardingError(str(exc)) from exc
 
 
-def write_values(env_path: Path, values: Mapping[str, str]) -> None:
-    """The one `.env` write: validated as a batch, then atomically merged by the env editor."""
+def write_values(env_path: Path, values: Mapping[str, str], slug: str = "") -> None:
+    """The one credential write: validated as a batch, then merged into `.env` by the env editor,
+    or, with the credentials area on mongo, put in the store for project `slug` (M35)."""
     check_values(values)
-    set_env_values(env_path, dict(values))
+    save_credentials(slug, env_path, values)

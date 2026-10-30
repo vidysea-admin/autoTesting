@@ -1,0 +1,250 @@
+{
+ "tests": [
+  "tests/test_credential_store_u11.py",
+  "tests/test_credential_store_u11_routes.py"
+ ],
+ "mutations": [
+  {
+   "name": "door skips the provider/AUTOTESTER refusal (M36)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        if key == MONGO_URI_ENV or is_server_key(key):",
+   "new": "        if key == MONGO_URI_ENV:",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[ANTHROPIC_API_KEY]",
+    "tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[OPENAI_API_KEY]",
+    "tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[AUTOTESTER_APPROVAL_KEY]",
+    "tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[AUTOTESTER_HARNESS_PASSWORD]"
+   ]
+  },
+  {
+   "name": "door accepts the Mongo URI (M36)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        if key == MONGO_URI_ENV or is_server_key(key):",
+   "new": "        if is_server_key(key):",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[PATHLYNKS_MONGO_URI]"
+   ]
+  },
+  {
+   "name": "door overwrites another project's key (M31d)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        if held is not None and held.get(\"p\") != slug:",
+   "new": "        if False:",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key"
+   ]
+  },
+  {
+   "name": "document written under no project (M31d)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        _put_doc(coll, {\"_id\": key, \"p\": slug, \"value\": value, \"updated_at\": time.time()})",
+   "new": "        _put_doc(coll, {\"_id\": key, \"p\": \"\", \"value\": value, \"updated_at\": time.time()})",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else"
+   ]
+  },
+  {
+   "name": "door writes the .env copy too (M35)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    put_credentials(slug, values)\n",
+   "new": "    put_credentials(slug, values); set_env_values(env_path, dict(values))\n",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else",
+    "tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set"
+   ]
+  },
+  {
+   "name": "file mode stops writing .env",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        set_env_values(env_path, dict(values))\n        return\n",
+   "new": "        return\n",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_with_the_store_off_everything_is_the_env_path"
+   ]
+  },
+  {
+   "name": "no redactor re-arm after a write (M34)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    reset_default_backend()\n",
+   "new": "    pass\n",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document"
+   ]
+  },
+  {
+   "name": "a key drop loses the project filter (M37)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        gone = sum(coll.delete_one({\"_id\": key, \"p\": slug}) for key in keys)",
+   "new": "        gone = sum(coll.delete_one({\"_id\": key}) for key in keys)",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_dropping_a_key_deletes_only_that_projects_document"
+   ]
+  },
+  {
+   "name": "a project drop deletes every project's documents (M37)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        gone = coll.delete_many({\"p\": slug})",
+   "new": "        gone = coll.delete_many({\"p\": {\"$exists\": True}})",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions"
+   ]
+  },
+  {
+   "name": "a project drop leaves its sessions (M37)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "        default_store().collection(\"browser_sessions\").delete_many({\"p\": slug})",
+   "new": "        pass",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions"
+   ]
+  },
+  {
+   "name": "restore leaves a newly added document (M37)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "            coll.delete_one({\"_id\": key})\n",
+   "new": "            pass\n",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged"
+   ]
+  },
+  {
+   "name": "restore does not put the old document back (M37)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "            _put_doc(coll, doc)\n",
+   "new": "            pass\n",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged"
+   ]
+  },
+  {
+   "name": "route never restores the stored documents (M37)",
+   "file": "src/autotester/ui/routes_role_accounts.py",
+   "old": "            restore_credentials(kept_docs)",
+   "new": "            pass",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_a_failed_commit_puts_the_previous_stored_documents_back"
+   ]
+  },
+  {
+   "name": "role-account guard ignores stored keys",
+   "file": "src/autotester/ui/routes_role_accounts.py",
+   "old": "    return {**file_values, **stored_secret_values()}  # store off: the file alone",
+   "new": "    return file_values",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_role_onboarding_refuses_a_key_the_store_already_holds"
+   ]
+  },
+  {
+   "name": "role onboarding writes nothing",
+   "file": "src/autotester/stages/role_onboarding.py",
+   "old": "    save_credentials(slug, env_path, values)",
+   "new": "    pass",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_role_onboarding_puts_every_login_in_the_store_and_none_in_env"
+   ]
+  },
+  {
+   "name": "credential editor save is dropped",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "        save_credentials(slug, repo_root() / \".env\", {key: value})",
+   "new": "        pass",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set"
+   ]
+  },
+  {
+   "name": "custom credential value is dropped",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "        save_credentials(slug, repo_root() / \".env\", {ref.key: value})",
+   "new": "        pass",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_adding_a_custom_credential_declares_it_and_stores_its_value"
+   ]
+  },
+  {
+   "name": "undeclare keeps the stored value (M37)",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "    drop_credentials(slug, [key])  # M37: with the credential store on, the value goes too",
+   "new": "    pass",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_removing_a_declaration_deletes_its_stored_value"
+   ]
+  },
+  {
+   "name": "intake guard ignores stored keys",
+   "file": "src/autotester/ui/app.py",
+   "old": "    present.update(stored_secret_values())  # store off: nothing added",
+   "new": "    pass",
+   "kills": [
+    "tests/test_credential_store_u11_routes.py::test_onboarding_refuses_a_key_the_store_already_holds"
+   ]
+  },
+  {
+   "name": "resolve order flipped: env beats the store (M33)",
+   "file": "src/autotester/core/env.py",
+   "old": "        for layer in ({k: os.environ[k] for k in declared if os.environ.get(k)}, own):",
+   "new": "        for layer in (own, {k: os.environ[k] for k in declared if os.environ.get(k)}):",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file"
+   ]
+  },
+  {
+   "name": "store layer ignores the project (M33)",
+   "file": "src/autotester/core/env.py",
+   "old": "        own = {d[\"_id\"]: d[\"value\"] for d in docs if d.get(\"p\") == slug and d[\"_id\"] in declared}",
+   "new": "        own = {d[\"_id\"]: d[\"value\"] for d in docs if d[\"_id\"] in declared}",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key",
+    "tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares"
+   ]
+  },
+  {
+   "name": "an overridden value is no longer masked (M34)",
+   "file": "src/autotester/core/env.py",
+   "old": "                    extra[f\"{key}@{len(extra)}\"] = values[key]",
+   "new": "                    pass",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file"
+   ]
+  },
+  {
+   "name": "another project's value is no longer masked (M34)",
+   "file": "src/autotester/core/env.py",
+   "old": "        extra.update({f\"{d['_id']}@{d.get('p')}\": d[\"value\"] for d in docs",
+   "new": "        extra.update({f\"{d['_id']}@{d.get('p')}\": d[\"value\"] for d in []",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares"
+   ]
+  },
+  {
+   "name": "redaction_values drops the store (M8/M34)",
+   "file": "src/autotester/core/env.py",
+   "old": "    return {**file_values, **{f\"{k}@store\": v for k, v in stored_secret_values().items()}}",
+   "new": "    return {**file_values}",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write",
+    "tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document"
+   ]
+  },
+  {
+   "name": "the repo redactor ignores the store (M8/M34)",
+   "file": "src/autotester/store/mongo_routes.py",
+   "old": "    return Redactor({**redaction_values(values),",
+   "new": "    return Redactor({**values,",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write",
+    "tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document"
+   ]
+  },
+  {
+   "name": "SecretStore.load ignores the store (M33)",
+   "file": "src/autotester/browser/secrets.py",
+   "old": "        usable, shadow = core_env.resolve_credentials(parse_env(text), project.slug, declared)",
+   "new": "        usable, shadow = ({k: v for k, v in parse_env(text).items() if k in declared and v}, {})",
+   "kills": [
+    "tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares",
+    "tests/test_credential_store_u11.py::test_a_deleted_credential_no_longer_resolves"
+   ]
+  }
+ ]
+}

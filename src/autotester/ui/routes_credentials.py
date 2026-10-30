@@ -16,13 +16,14 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from autotester.auth.access import authorize
 from autotester.auth.context import current_principal
 from autotester.browser.secrets import SecretStore, parse_env
+from autotester.core.env import resolve_credentials
 from autotester.core.paths import ProjectPaths, repo_root
 from autotester.schema.auth import PermissionKey
 from autotester.schema.case import Case
 from autotester.stages.run_gates import derive_live_case_grant, planned_cases
 from autotester.ui import theme
 from autotester.ui.credential_guard import refuse_server_key
-from autotester.ui.env_editor import InvalidEnvValue, set_env_value
+from autotester.ui.env_editor import InvalidEnvValue, save_credentials
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
 from autotester.ui.routes_crawl_approval import _approvals_card, _crawl_approval_form
 from autotester.ui.routes_project_edit import build_secret_ref
@@ -173,7 +174,7 @@ def env_add_credential(
     )
     store.save_project(project.model_copy(update={"secrets": [*project.secrets, ref]}))
     try:
-        set_env_value(repo_root() / ".env", ref.key, value)
+        save_credentials(slug, repo_root() / ".env", {ref.key: value})
     except InvalidEnvValue as exc:
         raise HTTPException(400, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/env", status_code=303)
@@ -209,9 +210,10 @@ def _grant_prefill(cases: list[Case]) -> tuple[str, str]:
 def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
     store, project = _load_project_or_404(slug)
     paths = ProjectPaths(slug)
-    present = (
+    on_disk = (
         parse_env(paths.env_file.read_text(encoding="utf-8")) if paths.env_file.exists() else {}
     )
+    present = resolve_credentials(on_disk, slug, {s.key for s in project.secrets})[0]
     name = escape(project.name)
     safe_slug = escape(slug)
     show = can_view_credentials()
@@ -264,7 +266,7 @@ def env_editor_submit(
         return HTMLResponse(theme.page("Credential not saved", body, active_slug=slug),
                             status_code=400)
     try:
-        set_env_value(repo_root() / ".env", key, value)
+        save_credentials(slug, repo_root() / ".env", {key: value})
     except InvalidEnvValue as exc:
         raise HTTPException(400, str(exc)) from exc
     return RedirectResponse(f"/projects/{slug}/env", status_code=303)

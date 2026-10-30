@@ -1,0 +1,81 @@
+KILLED  door skips the provider/AUTOTESTER refusal (M36)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[ANTHROPIC_API_KEY], tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[AUTOTESTER_APPROVAL_KEY], tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[AUTOTESTER_HARNESS_PASSWORD], tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[OPENAI_API_KEY]
+    actually failed: tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[ANTHROPIC_API_KEY], tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[AUTOTESTER_APPROVAL_KEY], tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[AUTOTESTER_HARNESS_PASSWORD], tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[OPENAI_API_KEY]
+KILLED  door accepts the Mongo URI (M36)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[PATHLYNKS_MONGO_URI]
+    actually failed: tests/test_credential_store_u11.py::test_deployment_secrets_are_refused_and_the_batch_writes_nothing[PATHLYNKS_MONGO_URI]
+KILLED  door overwrites another project's key (M31d)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key
+    actually failed: tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key
+KILLED  document written under no project (M31d)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else
+    actually failed: tests/test_credential_store_u11.py::test_a_deleted_credential_no_longer_resolves, tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares, tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged, tests/test_credential_store_u11.py::test_credentials_do_not_depend_on_the_approval_key[None], tests/test_credential_store_u11.py::test_credentials_do_not_depend_on_the_approval_key[], tests/test_credential_store_u11.py::test_credentials_do_not_depend_on_the_approval_key[rotated-key], tests/test_credential_store_u11.py::test_dropping_a_key_deletes_only_that_projects_document, tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions, tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key, tests/test_credential_store_u11.py::test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else, tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write, tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file, tests/test_credential_store_u11_routes.py::test_adding_a_custom_credential_declares_it_and_stores_its_value, tests/test_credential_store_u11_routes.py::test_onboarding_refuses_a_key_the_store_already_holds, tests/test_credential_store_u11_routes.py::test_onboarding_with_a_credential_row_stores_it_in_the_store, tests/test_credential_store_u11_routes.py::test_removing_a_declaration_deletes_its_stored_value, tests/test_credential_store_u11_routes.py::test_role_onboarding_puts_every_login_in_the_store_and_none_in_env, tests/test_credential_store_u11_routes.py::test_role_onboarding_refuses_a_key_the_store_already_holds, tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set
+KILLED  door writes the .env copy too (M35)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else, tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set
+    actually failed: tests/test_credential_store_u11.py::test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else, tests/test_credential_store_u11_routes.py::test_a_failed_commit_puts_the_previous_stored_documents_back, tests/test_credential_store_u11_routes.py::test_a_store_outage_on_save_is_a_503_and_no_file_is_written, tests/test_credential_store_u11_routes.py::test_adding_a_custom_credential_declares_it_and_stores_its_value, tests/test_credential_store_u11_routes.py::test_onboarding_with_a_credential_row_stores_it_in_the_store, tests/test_credential_store_u11_routes.py::test_role_onboarding_puts_every_login_in_the_store_and_none_in_env, tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set
+KILLED  file mode stops writing .env  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_with_the_store_off_everything_is_the_env_path
+    actually failed: tests/test_credential_store_u11.py::test_with_the_store_off_everything_is_the_env_path
+KILLED  no redactor re-arm after a write (M34)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document
+    actually failed: tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document
+KILLED  a key drop loses the project filter (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_dropping_a_key_deletes_only_that_projects_document
+    actually failed: tests/test_credential_store_u11.py::test_dropping_a_key_deletes_only_that_projects_document
+KILLED  a project drop deletes every project's documents (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions
+    actually failed: tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions
+KILLED  a project drop leaves its sessions (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions
+    actually failed: tests/test_credential_store_u11.py::test_dropping_a_project_deletes_its_secrets_and_sessions
+KILLED  restore leaves a newly added document (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged
+    actually failed: tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged
+KILLED  restore does not put the old document back (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged
+    actually failed: tests/test_credential_store_u11.py::test_a_snapshot_puts_the_previous_document_back_unchanged, tests/test_credential_store_u11_routes.py::test_a_failed_commit_puts_the_previous_stored_documents_back
+KILLED  route never restores the stored documents (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_a_failed_commit_puts_the_previous_stored_documents_back
+    actually failed: tests/test_credential_store_u11_routes.py::test_a_failed_commit_puts_the_previous_stored_documents_back
+KILLED  role-account guard ignores stored keys  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_role_onboarding_refuses_a_key_the_store_already_holds
+    actually failed: tests/test_credential_store_u11_routes.py::test_role_onboarding_refuses_a_key_the_store_already_holds
+KILLED  role onboarding writes nothing  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_role_onboarding_puts_every_login_in_the_store_and_none_in_env
+    actually failed: tests/test_credential_store_u11_routes.py::test_role_onboarding_puts_every_login_in_the_store_and_none_in_env
+KILLED  credential editor save is dropped  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set
+    actually failed: tests/test_credential_store_u11_routes.py::test_a_store_outage_on_save_is_a_503_and_no_file_is_written, tests/test_credential_store_u11_routes.py::test_the_credential_editor_saves_to_the_store_and_the_page_shows_set
+KILLED  custom credential value is dropped  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_adding_a_custom_credential_declares_it_and_stores_its_value
+    actually failed: tests/test_credential_store_u11_routes.py::test_adding_a_custom_credential_declares_it_and_stores_its_value
+KILLED  undeclare keeps the stored value (M37)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_removing_a_declaration_deletes_its_stored_value
+    actually failed: tests/test_credential_store_u11_routes.py::test_removing_a_declaration_deletes_its_stored_value
+KILLED  intake guard ignores stored keys  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11_routes.py::test_onboarding_refuses_a_key_the_store_already_holds
+    actually failed: tests/test_credential_store_u11_routes.py::test_onboarding_refuses_a_key_the_store_already_holds
+KILLED  resolve order flipped: env beats the store (M33)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file
+    actually failed: tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file
+KILLED  store layer ignores the project (M33)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares, tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key
+    actually failed: tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares, tests/test_credential_store_u11.py::test_project_b_cannot_overwrite_or_read_a_key
+KILLED  an overridden value is no longer masked (M34)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file
+    actually failed: tests/test_credential_store_u11.py::test_the_store_beats_the_process_environment_which_beats_the_file
+KILLED  another project's value is no longer masked (M34)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares
+    actually failed: tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares
+KILLED  redaction_values drops the store (M8/M34)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document, tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write
+    actually failed: tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document, tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write
+KILLED  the repo redactor ignores the store (M8/M34)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document, tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write
+    actually failed: tests/test_credential_store_u11.py::test_a_stored_value_is_refused_in_every_other_document, tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write
+KILLED  SecretStore.load ignores the store (M33)  (pytest exit 1)
+    claims to kill : tests/test_credential_store_u11.py::test_a_deleted_credential_no_longer_resolves, tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares
+    actually failed: tests/test_credential_store_u11.py::test_a_deleted_credential_no_longer_resolves, tests/test_credential_store_u11.py::test_a_project_resolves_only_the_keys_it_declares, tests/test_credential_store_u11.py::test_an_unreachable_store_raises_and_falls_back_to_nothing, tests/test_credential_store_u11.py::test_the_redactor_covers_env_and_store_values_and_refreshes_on_a_write
+
+26/26 mutations killed
+exit 0
