@@ -31,6 +31,7 @@ from autotester.schema.observation import (
 from autotester.schema.project import Source
 from autotester.stages.reconcile import verify_narration
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 
 SKILL_NAME = "ingest-video"  # skills/ingest-video/SKILL.md (T-175, was prompts/ingest_video_v1.md)
 UNREADABLE = "unreadable"
@@ -213,7 +214,7 @@ def verify_source_bytes(source: Source) -> None:
     because a human reviewing it has no reason to doubt it."""
     if source.path is None or source.sha256 is None:
         return
-    path = Path(source.path)
+    path = local_blob(Path(source.path))  # M51: GridFS-held recordings are read via the cache
     if not path.is_file():
         raise SourceChanged(
             f"{source.id} points at {path}, which is not a readable file any more — "
@@ -261,10 +262,9 @@ def ingest_video(
     if source.path is None:
         raise ValueError(f"source {source.id} has no path to watch")
     verify_source_bytes(source)
-    docs = docs or RepoDocs()
-    prompt = build_ingest_prompt(source, docs, transcript)
-    observation = provider.see_video(Path(source.path), prompt, VideoObservation, options,
-                                      prompt_file=SKILL_NAME, fed_id=source.id)
+    prompt = build_ingest_prompt(source, docs or RepoDocs(), transcript)
+    observation = provider.see_video(local_blob(Path(source.path)), prompt, VideoObservation,
+                                     options, prompt_file=SKILL_NAME, fed_id=source.id)
     spec = flowspec_from_observation(observation, source.id, project_slug)
     heard = {source.id: transcript} if transcript else {}
     redactor = project_redactor(project_slug) if redactor is None else redactor

@@ -13,7 +13,6 @@ Only portable primitives: an `O_CREAT | O_EXCL` lock file (no `fcntl`, no `flock
 
 from __future__ import annotations
 
-import errno
 import os
 import shutil
 import time
@@ -28,10 +27,10 @@ from autotester.schema.base import utc_now
 from autotester.schema.enums import SourceKind
 from autotester.schema.intake import SourceOrigin
 from autotester.schema.project import Source
-from autotester.sources.bounded_write import copy_bounded, read_chunks
 from autotester.sources.zip_names import ensure_inside
 from autotester.stages.ingest import require_recording_suffix
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import place_media
 
 LOCK_NAME = ".intake.lock"
 LOCK_TIMEOUT_S = 600.0
@@ -117,27 +116,6 @@ def intake_session(store: ProjectStore, **lock_kwargs) -> Iterator[tuple[Path, C
             shutil.rmtree(staging, ignore_errors=True)
 
 
-def _copy_in(staged: Path, target: Path, digest: str) -> None:
-    """Cross-volume fallback: copy beside the target under a temp name, verify, `os.replace`."""
-    temp = target.with_name(f".tmp-{ulid()}{target.suffix}")
-    with staged.open("rb") as handle:
-        result = copy_bounded(read_chunks(handle), temp, staged.stat().st_size)
-    if result.sha256 != digest:
-        temp.unlink(missing_ok=True)
-        raise ValueError("the stored copy does not match its sha256")
-    os.replace(temp, target)
-
-
-def _place(staged: Path, target: Path, digest: str) -> None:
-    target.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        os.replace(staged, target)
-    except OSError as exc:
-        if exc.errno != errno.EXDEV:
-            raise
-        _copy_in(staged, target, digest)
-
-
 def commit_video(store: ProjectStore, staged: Path, *, digest: str, suffix: str,
                  label: str | None, origin: SourceOrigin, uploaded_by: str | None,
                  uploaded_at: datetime | None = None, recorded_on: str | None = None
@@ -159,7 +137,7 @@ def commit_video(store: ProjectStore, staged: Path, *, digest: str, suffix: str,
     if target.exists():
         raise FileExistsError("a recording is already stored at that place")
     try:
-        _place(staged, target, digest)
+        place_media(staged, target, digest)  # M51: GridFS when the blobs area is on mongo
         store.add_source(draft.model_copy(update={"path": str(target)}))
     except BaseException:
         target.unlink(missing_ok=True)

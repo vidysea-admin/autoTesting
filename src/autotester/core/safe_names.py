@@ -25,6 +25,7 @@ _SLUG = re.compile(SLUG_PATTERN)
 _DRIVE = re.compile(r"^[A-Za-z]:")
 _CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 _FORBIDDEN = re.compile(r'[<>:"|?*]')
+_SHORT = re.compile(r"[^.~]{1,6}~[0-9]{1,6}(\.[^.]{0,3})?")  # NTFS 8.3 alias: PROFIL~1, WORK~2.TXT
 
 
 class UnsafeName(ValueError):
@@ -82,7 +83,8 @@ def _bad_segment(segment: str, *, partial: bool) -> bool:
     (`p/CON` as a prefix may be the start of `p/CONFIG.json`)."""
     if segment in {"", ".", ".."}:
         return True
-    return not partial and (segment.endswith((".", " ")) or _device(segment))
+    return not partial and (segment.endswith((".", " ")) or _device(segment)
+                            or bool(_SHORT.fullmatch(segment)))
 
 
 def safe_key(key: str, *, prefix: bool = False) -> str:
@@ -90,8 +92,8 @@ def safe_key(key: str, *, prefix: bool = False) -> str:
 
     Refused before any I/O, with the same answer on Windows and Linux: a backslash, a control
     character (NUL), any of `: < > " | ? *` (drive letter, `nul:`, a stream), a leading `/`, a `.`,
-    `..` or empty segment, and a whole segment that ends in a dot or space or is a reserved
-    device name (`CON`, `nul.txt`, `COM1`).
+    `..` or empty segment, and a whole segment that ends in a dot or space, is a reserved
+    device name (`CON`, `nul.txt`, `COM1`) or is an NTFS 8.3 short name (`PROFIL~1`, M55).
     A `prefix` may be empty or end in `/`, and its last segment may be unfinished; a key may not
     be empty."""
     body = key[:-1] if prefix and key.endswith("/") else key

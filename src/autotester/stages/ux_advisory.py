@@ -39,6 +39,7 @@ from autotester.schema.ux_report import (
     UXReport,
 )
 from autotester.store import ProjectStore
+from autotester.store.run_store import local_blob
 
 SKILL_NAME = "ux_judge"  # src/autotester/skills/ux_judge/SKILL.md
 MAX_IMAGES = 4
@@ -108,8 +109,8 @@ def _screenshots(result: RawResult, run_dir: Path) -> list[Path]:
         if ev.kind is not EvidenceKind.SCREENSHOT:
             continue
         candidate = (run_dir / ev.path).resolve()
-        if candidate.is_file() and candidate.is_relative_to(root):
-            found.append(candidate)
+        if candidate.is_relative_to(root) and (served := local_blob(candidate)).is_file():
+            found.append(served)
     return found[:MAX_IMAGES]
 
 

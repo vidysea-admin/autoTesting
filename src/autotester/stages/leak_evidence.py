@@ -28,7 +28,8 @@ from autotester.core.env import load_repo_env
 from autotester.core.image_privacy import sanitized_images
 from autotester.schema.leak_evidence import MAX_HASHED_IDS, LeakEvidence, segment_is_id_like
 from autotester.schema.multi_role_finding import FINDING_ID_PATTERN, MultiRoleFinding
-from autotester.store.filestore import write_bytes, write_json
+from autotester.store.filestore import write_json
+from autotester.store.run_store import write_blob_file
 
 LEAK_KEY_ENV = "AUTOTESTER_LEAK_EVIDENCE_KEY"
 FINDINGS_DIR = "multi_role_findings"
@@ -96,7 +97,8 @@ def store_masked_screenshot(png: bytes, dest: Path) -> tuple[Path | None, str | 
         with sanitized_images([raw]) as batch:
             if batch.incomplete or not batch.paths:
                 return None, (batch.reasons[0] if batch.reasons else "sanitation_failed")
-            write_bytes(dest, Path(batch.paths[0]).read_bytes())
+            write_blob_file(dest, Path(batch.paths[0]).read_bytes(), kind="screenshot",
+                            masked=True)  # the masked copy only (M23/M24)
     return dest, None
 
 

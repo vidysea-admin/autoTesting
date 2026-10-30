@@ -24,6 +24,7 @@ from autotester.schema.enums import SourceKind
 from autotester.schema.project import Source
 from autotester.schema.video_share import MAX_TOKEN_CHARS, TOKEN_BYTES
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import local_blob
 
 _SLUG = re.compile(SLUG_PATTERN)
 _VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{1,80}$")
@@ -168,6 +169,7 @@ def media_path(slug: str, source: Source) -> Path | None:
         candidate = (root / source.path).resolve()
     except (OSError, ValueError):
         return None
-    if not candidate.is_relative_to(root) or not candidate.is_file():
+    if not candidate.is_relative_to(root):
         return None
-    return candidate
+    candidate = local_blob(candidate)  # M51: a verified cache copy when the bytes are in GridFS
+    return candidate if candidate.is_file() else None

@@ -44,6 +44,7 @@ from autotester.sources.drive import DriveClient, DriveFile
 from autotester.sources.extract import DOC_SUFFIXES
 from autotester.stages.ingest import RECORDING_SUFFIXES, register_source
 from autotester.store.project_store import ProjectStore
+from autotester.store.run_store import store_media
 
 _PROVENANCE_STAGE = "sources.drive"
 
@@ -193,5 +194,4 @@ def _write_bytes(
     if target.exists() and target.read_bytes() != content:
         prefix = hashlib.sha256(content).hexdigest()[:8]
         target = target_dir / f"{prefix}_{safe_name}"
-    target.write_bytes(content)
-    return target
+    return store_media(target, content)  # M51: GridFS when the blobs area is on mongo

@@ -82,7 +82,6 @@ database = "autotester"  # D-121/D-122: the ONLY database the store may write; r
 # row allows that many sites. A row that matches no call is itself an error, so the list only shrinks.
 # `permanent` = never state.
 baseline = [
-  "core/image_privacy.py:_sanitize_one:stat | UNOWNED (no unit row covers this file)",
   "core/paths.py:ProjectPaths.ensure:mkdir | UNOWNED (no unit row covers this file)",
   "core/paths.py:work_dir:mkdir | UNOWNED (no unit row covers this file)",
   "delivery/inbox.py:_create_once:mkdir | U7: needs a create_exclusive-by-path (M19); the public path API has none and store/filestore.py is at its 300-line cap",
@@ -99,15 +98,9 @@ baseline = [
   "sources/drive_intake.py:_sweep_stale:stat | U3d",
   "sources/drive_register.py:_write_bytes:exists | U3d",
   "sources/drive_register.py:_write_bytes:mkdir | U3d",
-  "sources/drive_register.py:_write_bytes:write_bytes | U3d",
   "sources/email_register.py:_write_attachment_to_disk:exists | U3d",
   "sources/email_register.py:_write_attachment_to_disk:mkdir | U3d",
-  "sources/email_register.py:_write_attachment_to_disk:write_bytes | U3d",
-  "sources/intake_commit.py:_copy_in:os.replace | U3d",
-  "sources/intake_commit.py:_copy_in:unlink | U3d",
   "sources/intake_commit.py:_lock_is_stale:stat | U3d",
-  "sources/intake_commit.py:_place:mkdir | U3d",
-  "sources/intake_commit.py:_place:os.replace | U3d",
   "sources/intake_commit.py:commit_video:exists | U3d",
   "sources/intake_commit.py:commit_video:rmdir | U3d",
   "sources/intake_commit.py:commit_video:unlink | U3d",

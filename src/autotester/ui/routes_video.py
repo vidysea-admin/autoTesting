@@ -16,6 +16,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
 from autotester.stages.report_export import valid_runs_newest_first
+from autotester.store.run_store import local_blob
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id
 
 router = APIRouter()
@@ -47,9 +48,7 @@ def _safe_video_path(run_dir: Path, video_path: str) -> Path | None:
     """
     if not video_path or video_path[0] in "\\/" or ":" in video_path:
         return None
-    trusted_root = run_dir.resolve()
-    if not trusted_root.is_dir():
-        return None
+    trusted_root = run_dir.resolve()  # the file may live only in the blob store
     try:
         candidate = (run_dir / video_path).resolve()
     except (OSError, ValueError):
@@ -58,9 +57,8 @@ def _safe_video_path(run_dir: Path, video_path: str) -> Path | None:
         return None
     if candidate.suffix.lower() != ".webm":
         return None
-    if not candidate.is_file():
-        return None
-    return candidate
+    candidate = local_blob(candidate)  # M24: a verified cache copy when the local file is gone
+    return candidate if candidate.is_file() else None
 
 
 @router.get("/projects/{slug}/runs/{run_id}/videos/{video_path:path}")
