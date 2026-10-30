@@ -1,0 +1,149 @@
+{
+ "tests": [
+  "tests/test_credential_store_u11f.py"
+ ],
+ "mutations": [
+  {
+   "name": "door skips its own shape check (put_credentials)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    for key, value in values.items():\n        _check_store_pair(key, value)\n    for key in values:\n",
+   "new": "    for key in values:\n",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[lowercase-key]",
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[bell]",
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[nul]",
+    "tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/]"
+   ]
+  },
+  {
+   "name": "control characters allowed in a stored value",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    if any(unicodedata.category(ch) == \"Cc\" for ch in value):",
+   "new": "    if False:",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[bell]",
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[delete]",
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[nul]"
+   ]
+  },
+  {
+   "name": "server-key check is case sensitive again",
+   "file": "src/autotester/core/env.py",
+   "old": "    upper = key.upper()\n",
+   "new": "    upper = key\n",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[autotester_approval_key]",
+    "tests/test_credential_store_u11f.py::test_a_server_key_is_a_server_key_in_any_letter_case[Gemini_Api_Key]"
+   ]
+  },
+  {
+   "name": "a value equal to the Mongo URI is storable",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    if (uri := mongo_uri()) and value.strip() == uri:",
+   "new": "    if False:",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/]",
+    "tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door"
+   ]
+  },
+  {
+   "name": "URI comparison does not strip padding",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "value.strip() == uri:",
+   "new": "value == uri:",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_a_value_equal_to_the_mongo_uri_is_refused_under_any_key_name[  mongodb://user:CANARY-p4ssw0rd-9f3a@db.example/  ]"
+   ]
+  },
+  {
+   "name": "empty value accepted by the door",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    if not value:\n        raise CredentialRefused(f\"'{key}' has no value\")\n    if any(",
+   "new": "    if any(",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_the_door_itself_refuses_a_malformed_pair_and_writes_nothing[empty-value]"
+   ]
+  },
+  {
+   "name": "validation-only gate uses the weak shape check",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    for key, value in values.items():\n        _check_store_pair(key, value)\n\n\n@contextlib",
+   "new": "    for key, value in values.items():\n        _check_pair(key, value)\n\n\n@contextlib",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_the_validation_only_gate_agrees_with_the_door"
+   ]
+  },
+  {
+   "name": "undeclare saves the project before touching the store (old order)",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "    held = snapshot_credentials([key])\n    drop_credentials(slug, [key])\n    try:\n        store.save_project(project.model_copy(update={\"secrets\": kept}))\n    except Exception:\n        restore_credentials(held)\n        raise\n",
+   "new": "    store.save_project(project.model_copy(update={\"secrets\": kept}))\n    drop_credentials(slug, [key])\n",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_a_store_outage_on_undeclare_is_a_503_and_nothing_changed"
+   ]
+  },
+  {
+   "name": "undeclare does not put the stored value back when the save fails",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "        restore_credentials(held)\n        raise\n",
+   "new": "        raise\n",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_a_failed_project_save_on_undeclare_puts_the_stored_value_back"
+   ]
+  },
+  {
+   "name": "litellm guard ignores store-held values",
+   "file": "src/autotester/providers/litellm_provider.py",
+   "old": "    return [v for k, v in values.items() if k and v and k not in skip] + stored",
+   "new": "    return [v for k, v in values.items() if k and v and k not in skip]",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_the_litellm_guard_withholds_a_value_held_only_in_the_store"
+   ]
+  },
+  {
+   "name": "pdf reading scrub ignores store-held values",
+   "file": "src/autotester/sources/adapters.py",
+   "old": "    redactor = Redactor(redaction_values(\n        parse_env(env.read_text(encoding=\"utf-8\")) if env.exists() else {}))",
+   "new": "    redactor = Redactor(\n        parse_env(env.read_text(encoding=\"utf-8\")) if env.exists() else {})",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_a_pdf_reading_is_scrubbed_of_a_value_held_only_in_the_store"
+   ]
+  },
+  {
+   "name": "credential write drops the whole backend (a client per write again)",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    default_backend().rearm()",
+   "new": "    from autotester.store.mongo_backend import reset_default_backend\n\n    reset_default_backend()",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_credential_writes_reuse_one_client_and_build_indexes_once"
+   ]
+  },
+  {
+   "name": "credential write never re-arms the secret gate",
+   "file": "src/autotester/ui/env_editor.py",
+   "old": "    default_backend().rearm()",
+   "new": "    default_backend()",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_the_secret_gate_still_rebuilds_after_each_credential_write"
+   ]
+  },
+  {
+   "name": "blob_store reads a URI name that does not exist (the AttributeError)",
+   "file": "src/autotester/store/run_store.py",
+   "old": "        uri = mongo_uri()\n",
+   "new": "        uri = os.environ.get(\"AUTOTESTER_NO_SUCH_URI\", \"\").strip()\n",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_blob_store_builds_on_the_fake_with_blobs_on_mongo"
+   ]
+  },
+  {
+   "name": "blob_store builds without a URI",
+   "file": "src/autotester/store/run_store.py",
+   "old": "        if not uri:\n            raise StoreSelectionError(f\"{MONGO_URI_ENV} is not set; blobs=mongo needs it\")\n",
+   "new": "",
+   "kills": [
+    "tests/test_credential_store_u11f.py::test_blob_store_without_a_uri_is_a_named_selection_error"
+   ]
+  }
+ ]
+}

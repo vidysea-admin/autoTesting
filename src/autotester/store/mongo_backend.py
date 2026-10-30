@@ -155,8 +155,7 @@ class MongoBackend:
 
     def mtime(self, key: str) -> float | None:
         coll = self._store.collection(self._route(key).collection)
-        stamps = [d["updated_at"] for d in coll.find({"k": key})]
-        return max(stamps) if stamps else None
+        return max((d["updated_at"] for d in coll.find({"k": key})), default=None)
 
     def keys(self, prefix: str, suffix: str = "") -> list[str]:
         safe_key(prefix, prefix=True)
@@ -225,9 +224,7 @@ class MongoBackend:
         route = self._route(key, rows=True)
         coll = self._mutable(route)
         hits = [d for d in self._docs(route, key) if routes.row_matches(d["text"], field, value)]
-        for hit in hits:
-            coll.delete_one({"_id": hit["_id"]})
-        return bool(hits)
+        return bool([coll.delete_one({"_id": hit["_id"]}) for hit in hits])
 
     def replace_rows(self, key: str, rows: list[str]) -> None:
         """New rows go in after the old ones, then the old ones go: a crash leaves duplicates,
@@ -245,6 +242,9 @@ class MongoBackend:
 
     def ping(self) -> None:
         self._store.ping()
+
+    def rearm(self) -> None:  # a credential changed: the secret gate is rebuilt on the next write
+        self._redactor = None
 
     def _build(self, route: routes.Route, key: str, text: str) -> dict[str, Any]:
         """The document to store; a persona over 4 MB keeps its graph as `kg_*` rows instead."""
