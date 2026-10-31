@@ -1,0 +1,228 @@
+{
+ "tests": [
+  "tests/test_mongo_deploy_u10.py"
+ ],
+ "mutations": [
+  {
+   "name": "E1 global AUTOTESTER_STORE=mongo no longer required",
+   "file": "docker/entrypoint.sh",
+   "old": "  [ \"${AUTOTESTER_STORE:-}\" = \"mongo\" ] || return 1",
+   "new": "  true",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra2]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra7]"
+   ]
+  },
+  {
+   "name": "E2 an area pinned to file no longer defeats the quiet path",
+   "file": "docker/entrypoint.sh",
+   "old": "    [ \"$backend\" = \"mongo\" ] || return 1",
+   "new": "    true",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra3]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra4]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra5]"
+   ]
+  },
+  {
+   "name": "E3 auth own entry no longer required",
+   "file": "docker/entrypoint.sh",
+   "old": "  [ -n \"$auth\" ]",
+   "new": "  true",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra1]"
+   ]
+  },
+  {
+   "name": "E4 the auth entry is looked for under another area name",
+   "file": "docker/entrypoint.sh",
+   "old": "[ \"$area\" = \"auth\" ] && auth=1",
+   "new": "[ \"$area\" = \"queue\" ] && auth=1",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo]"
+   ]
+  },
+  {
+   "name": "E5 blanks inside an entry no longer stripped",
+   "file": "docker/entrypoint.sh",
+   "old": "    item=\"${item// /}\"",
+   "new": "    item=\"$item\"",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ]"
+   ]
+  },
+  {
+   "name": "E6 an empty entry is no longer skipped",
+   "file": "docker/entrypoint.sh",
+   "old": "    [ -n \"$item\" ] || continue\n",
+   "new": "",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo]"
+   ]
+  },
+  {
+   "name": "E7 the quiet path is never taken",
+   "file": "docker/entrypoint.sh",
+   "old": "  if all_state_on_mongo; then",
+   "new": "  if false; then",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo,credentials=mongo,queue=mongo]"
+   ]
+  },
+  {
+   "name": "E8 every entry is read as mongo",
+   "file": "docker/entrypoint.sh",
+   "old": "    backend=\"${item#*=}\"",
+   "new": "    backend=\"mongo\"",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra3]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra4]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra5]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra6]"
+   ]
+  },
+  {
+   "name": "E9 quiet notice stops naming Mongo",
+   "file": "docker/entrypoint.sh",
+   "old": "every state area is on Mongo;",
+   "new": "every state area is quiet;",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo]",
+    "tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo,credentials=mongo,queue=mongo]"
+   ]
+  },
+  {
+   "name": "D1 Cloud Run command loses --max-instances 1",
+   "file": "docker/DEPLOY.md",
+   "old": "--min-instances 1 --max-instances 1 --timeout",
+   "new": "--min-instances 1 --timeout",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when"
+   ]
+  },
+  {
+   "name": "D2 guide stops saying the instance cap stays",
+   "file": "docker/DEPLOY.md",
+   "old": "**`--max-instances 1` stays until Mongo claims",
+   "new": "**Instances are unlimited once Mongo claims",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when"
+   ]
+  },
+  {
+   "name": "D3 guide withdraws the GCS volume",
+   "file": "docker/DEPLOY.md",
+   "old": "**The `/data` GCS volume stays required until G1 is complete (D-125).**",
+   "new": "**The `/data` GCS volume is withdrawn (D-125).**",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_guide_keeps_the_gcs_volume_required_until_g1_and_cites_d125"
+   ]
+  },
+  {
+   "name": "D4 guide drops the own auth entry",
+   "file": "docker/DEPLOY.md",
+   "old": "entry `auth=mongo` to",
+   "new": "entry `auth` to",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_guide_says_auth_moves_only_with_its_own_entry"
+   ]
+  },
+  {
+   "name": "D5 guide stops naming the approval key",
+   "file": "docker/DEPLOY.md",
+   "old": "| `AUTOTESTER_APPROVAL_KEY` | Signs approvals",
+   "new": "| `APPROVAL_KEY` | Signs approvals",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_guide_names_every_switch_the_code_reads"
+   ]
+  },
+  {
+   "name": "D6 guide promises a file fallback",
+   "file": "docker/DEPLOY.md",
+   "old": "There is no file fallback,",
+   "new": "There is a file fallback,",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value"
+   ]
+  },
+  {
+   "name": "D7 guide says encrypted",
+   "file": "docker/DEPLOY.md",
+   "old": "**Credentials and browser sessions are stored plain (D-123).**",
+   "new": "**Credentials and browser sessions are stored encrypted (D-123).**",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value"
+   ]
+  },
+  {
+   "name": "D8 areas row loses queue",
+   "file": "docker/DEPLOY.md",
+   "old": "`blobs`, `queue`. An unknown area",
+   "new": "`blobs`. An unknown area",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_guide_lists_every_store_area_the_code_routes_in_the_areas_row"
+   ]
+  },
+  {
+   "name": "C1 CLAUDE.md goes back to suffix matching",
+   "file": "CLAUDE.md",
+   "old": "is an **exact-host** match (AT-651, D-087;",
+   "new": "is a **suffix** match (AT-651, D-087;",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_claude_md_describes_host_matching_as_exact_not_suffix"
+   ]
+  },
+  {
+   "name": "C2 CLAUDE.md says encrypted",
+   "file": "CLAUDE.md",
+   "old": "**stored plain, no application-level encryption** (D-123)",
+   "new": "**stored encrypted** (D-123)",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_claude_md_credentials_names_the_mongo_store_and_plain_storage"
+   ]
+  },
+  {
+   "name": "C3 CLAUDE.md goes back to values only in .env",
+   "file": "CLAUDE.md",
+   "old": "- Values live in **one gitignored `.env` at the REPO ROOT**",
+   "new": "- Values live only in **one gitignored `.env` at the REPO ROOT**",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_claude_md_credentials_names_the_mongo_store_and_plain_storage"
+   ]
+  },
+  {
+   "name": "A1 ARCHITECTURE security drops D-123",
+   "file": "docs/ARCHITECTURE.md",
+   "old": "stored plain (D-123) behind the IP",
+   "new": "stored plain behind the IP",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget"
+   ]
+  },
+  {
+   "name": "A2 ARCHITECTURE storage drops fail-closed",
+   "file": "docs/ARCHITECTURE.md",
+   "old": "An unreachable store fails closed with no file fallback.",
+   "new": "An unreachable store is retried.",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget"
+   ]
+  },
+  {
+   "name": "A3 ARCHITECTURE storage drops the G1 gate",
+   "file": "docs/ARCHITECTURE.md",
+   "old": "Flipping an area is a human gate (G1).",
+   "new": "Flipping an area is free.",
+   "kills": [
+    "tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget"
+   ]
+  }
+ ]
+}

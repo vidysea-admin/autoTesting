@@ -6070,3 +6070,20 @@ Answers checker verdict `qa/verdicts/g11-multirole-design.md` cycle 0 (F1, A1-A5
 2026-10-26 · Umesh chat ("1 claim"), recorded as D-109 · PATTERN: a hosted server with no shell access and no `.env` admin needs an in-app first-admin path; AU7 hosted+unset currently leaves only the CLI · EVIDENCE: umesh@gmail.com stuck on /auth/waiting at https://34.47.136.12, no shell on the server · APPLIES NEXT: amend AU7 per D-109 — while Admin/CEO has no member, the waiting page shows a "Claim admin" button to a signed-in account; first claim wins in one transaction (re-checks no admin); once an admin exists the button is hidden and the route refuses; success and refusal audited; if AUTOTESTER_FIRST_ADMIN_EMAIL is set only that address may claim; nothing for the claim read from `.env`.
 
 **Status:** folded 2026-10-26 by /checker (6c-1026-d109 contract step) -> `qa/contracts/auth.md` AU7 (Claim admin, D-109) + amendment log.
+
+## 2026-10-31 -- mongo-store U10 maker (branch feat/mongo-store-u10) -- proposed wording for core-invariants.md C5 and C6 (M48; checker amendment, the maker does not edit the contract)
+
+Authority: D-120, D-122, D-123 (storage in Mongo; credentials and sessions stored plain behind the IP allowlist). CLAUDE.md "Credentials" and ARCHITECTURE.md Security/Storage already say this (U10 commit). Additions only; no existing protection weakened.
+
+**C5, replace the second bullet** ("Secret values live only in the **repo-root `.env`** ...") **with:**
+> - Secret values live in the **repo-root `.env`** (one file for the whole repo, keys namespaced per project and declared in each project's `SecretRef[]`); a project can resolve only the keys it declares. Everything in that file is masked from logs, prompts, and artifacts, declared or not. **Amended 2026-10-31 per D-122 and D-123:** with the `credentials` store area on `mongo`, the project and role login values entered through the UI and the Chromium `storage_state` sessions live instead in the `secrets` and `browser_sessions` collections of the configured store database, stored without application-level encryption, with no second copy in `.env`; the file backend and `.env` stay the local and test default. The Mongo URI, `AUTOTESTER_APPROVAL_KEY` and provider API keys stay deployment environment or `.env` and are never put in the store. `Redactor` masking, the `credentials.view` rendering rule, `{{SECRET:KEY}}` substitution scoped to the declared hosts, `assert_no_raw_secrets` and masked screenshots are unchanged and cover store-held values (mongo-store M31-M40).
+
+**C5, third bullet:** also correct the host rule if it is restated anywhere in the contract: `browser/secrets.py::_host_matches` is an exact-host match (AT-651, D-087), not a suffix match.
+
+**C6, add a fourth bullet and amend Verify:**
+> - **Amended 2026-10-31 per D-120 and D-122:** the file backend remains the default and the local and test mode. With `AUTOTESTER_STORE=mongo` (or an area listed in `AUTOTESTER_STORE_AREAS`) that area's artifacts are documents in the single configured MongoDB database, reached only through `store/mongo_guard.py`, with the same shapes and the same models; an unreachable store fails closed with no file fallback. The UI is still a view, never a second source of truth.
+> - **Verify:** artifact roundtrip tests pass on every backend (`tests/test_state_backend_contract.py`); with `AUTOTESTER_STORE` unset no database is the primary store and `pymongo` is not imported.
+
+Note for the amendment: the C6 Verify text "no database is the primary store" is true only for the file backend; the replacement above keeps it for the default.
+
+**Status:** unfolded

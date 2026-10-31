@@ -232,13 +232,13 @@ Cloud Run runs the UI only. Replace `<placeholders>`; rebuild the image from cur
 ```bash
 gcloud run deploy autotester --image <region>-docker.pkg.dev/<project>/<repo>/autotester:<tag> \
   --region <region> --execution-environment gen2 --port 8000 \
-  --no-cpu-throttling --cpu 2 --memory 4Gi --min-instances 1 --timeout 3600 \
+  --no-cpu-throttling --cpu 2 --memory 4Gi --min-instances 1 --max-instances 1 --timeout 3600 \
   --set-env-vars AUTOTESTER_ALLOWED_ORIGINS=https://<service-url>,AUTOTESTER_ALLOWED_HOSTS=<service-host> \
   --add-volume name=data,type=cloud-storage,bucket=<bucket> --add-volume-mount volume=data,mount-path=/data \
   --startup-probe tcpSocket.port=8000,initialDelaySeconds=10,timeoutSeconds=5,periodSeconds=10,failureThreshold=18
 ```
 
-**Persistent storage:** without the `--add-volume`/`--add-volume-mount` pair above, auth, `projects/`, approvals and `.work` live on the container filesystem and every deploy wipes them. The entrypoint logs `WARNING: storage is not persistent` (and `/admin/users` and `/admin/groups` show a banner on a hosted server) when the data root is not a mounted volume; it never blocks start-up. `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately throwaway local container.
+**Persistent storage:** without the `--add-volume`/`--add-volume-mount` pair above, auth, `projects/`, approvals and `.work` live on the container filesystem and every deploy wipes them. The entrypoint logs `WARNING: storage is not persistent` (and `/admin/users` and `/admin/groups` show a banner on a hosted server) when the data root is not a mounted volume; it never blocks start-up. `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately throwaway local container. The volume stays required until every state area is on MongoDB (next section, G1); the entrypoint stops warning only then.
 
 The container binds `$PORT` (default 8000): `--port` must match, or drop the flag and let Cloud
 Run inject `PORT=8080`. CPU must stay always allocated (`--no-cpu-throttling`); the app runs
@@ -250,6 +250,44 @@ background work between requests. Start-up runs Xvfb and the VNC sidecars before
 2. Rebuild from current master with `--no-cache` and redeploy by digest. Images built before
    f572a4b5 keep python under `/root`, which uid 10001 cannot enter. The build now fails if it is so.
 3. Still failing: `docker run --rm --user 10001 --entrypoint /opt/venv/bin/python <image> -c "print(1)"`.
+
+## State store on MongoDB (D-120 to D-123)
+
+State can live in one MongoDB database (`autotester`, named in `pyproject.toml` `[tool.autotester.store]`, D-121) instead of the
+data folder. It is configuration, one area at a time; with none of the names below set the app uses files exactly as before.
+
+| Name | What it does |
+|---|---|
+| `PATHLYNKS_MONGO_URI` | The Mongo connection URI. Give it to Cloud Run as a secret (or `<data>/.env` on a VM); never in git, an image or a log. Cloud Run also needs network access to the Mongo server, which is IP allow-listed. |
+| `AUTOTESTER_STORE` | `file` (default) or `mongo`: the backend for every area. Any other value stops start-up. |
+| `AUTOTESTER_STORE_AREAS` | Per-area override, `area=backend,...`. Areas: `settings`, `projects`, `runs`, `crawls`, `approvals`, `auth`, `credentials`, `blobs`, `queue`. An unknown area or backend stops start-up. `credentials` covers the login values and the saved browser sessions. |
+| `AUTOTESTER_APPROVAL_KEY` | Signs approvals (D-018). It encrypts nothing and is never stored in Mongo. Keep it in `<data>/.env` or the service environment. |
+
+**`auth` moves only with its own entry.** The global `AUTOTESTER_STORE=mongo` leaves sign-in on SQLite; add the
+entry `auth=mongo` to `AUTOTESTER_STORE_AREAS` to move it, and only after its users are migrated. A fully flipped service sets both:
+`AUTOTESTER_STORE=mongo` and `AUTOTESTER_STORE_AREAS=auth=mongo`.
+
+**Flipping is a human gate (G1).** Setting a name does not copy data: migrate first (`autotester store migrate`, a dry run
+unless `--apply`), then flip one area at a time in this order, each reversible until the data diverges: `settings`, `projects`,
+`runs` with `crawls`, `approvals`, `auth`, `credentials`, `blobs`, `queue`. The first `--apply` and every flip are Umesh's call.
+
+**`--max-instances 1` stays until Mongo claims and compare-and-set (CAS) are switched on**, that is until `queue` (run queue,
+schedule claims, the orchestrator checkpoint) is on `mongo`. SQLite sign-in on a bucket mount and file locks are single-instance
+only, so lift the limit only when every area, `auth` included, is on Mongo.
+
+**The `/data` GCS volume stays required until G1 is complete (D-125).** D-120 had withdrawn the volume request; D-125 (2026-10-30)
+mounts the bucket now and keeps it until the Mongo build replaces it. While any area is on files, that area's state lives on the
+volume. Once every area is on Mongo the data root holds scratch only (logs, the blob cache, `profiles/`), the volume is no longer
+needed and the entrypoint's "storage is not persistent" warning is replaced by a one-line notice.
+
+**It fails closed.** If Mongo is unreachable, start-up refuses and names the area and the error class (never the URI), and a
+running service answers 503 "State store unavailable, nothing was changed". There is no file fallback, nothing is written to
+disk, and `/healthz` stays 200.
+
+**Credentials and browser sessions are stored plain (D-123).** There is no application-level encryption: the protection is the
+server IP allow-list, the write fence (the app writes only inside the `autotester` database), the refusal to read that database
+from a test case, and redaction. Anyone who can read the database or its backups can read the stored logins. The URI, the approval
+key and provider API keys are never put in the store.
 
 ## Debugging a failing container
 
