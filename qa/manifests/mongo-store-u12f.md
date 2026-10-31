@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u12f
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, dual: A 66d9d187, B feecbe13)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE), unit U12 follow-up; criteria M38, M39, M40, M34, M8. **Criticality:** CRITICAL, dual check (D-100).
 **Authority:** D-120..D-123 (plain storage, no crypto). Fixes the warnings of the U12 dual check (`qa/verdicts/` A 764ff1e2, B 52d15363). No new `src/` module.
