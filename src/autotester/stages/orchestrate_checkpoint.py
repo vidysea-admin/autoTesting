@@ -10,7 +10,6 @@ The caller must hold its same-project run reservation across processes.
 from __future__ import annotations
 
 import base64
-import hashlib
 import json
 import math
 import threading
@@ -21,9 +20,11 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Interrupt
 
 from autotester.core.redact import Redactor
-from autotester.store.filestore import write_text
+from autotester.store.filestore_paths import digest_path, put_if_path, read_text_path
+from autotester.store.mongo_routes import text_sha
 
 _FORMAT = "autotester.checkpoint.v1"
+_CHANGED = "Checkpoint changed outside this instance; reconstruct to resume"
 _MUTATORS = ("put", "put_writes", "delete_thread")
 _READERS = ("get_tuple", "list", "get_delta_channel_history")
 _LOCKS: dict[Path, Any] = {}
@@ -170,11 +171,11 @@ class FileCheckpointer(InMemorySaver):
             self._load()
 
     def _digest(self) -> str | None:
-        return hashlib.sha256(self.path.read_bytes()).hexdigest() if self.path.exists() else None
+        return digest_path(self.path)
 
     def _check_disk(self) -> None:
         if self._digest() != self._disk_hash:
-            raise RuntimeError("Checkpoint changed outside this instance; reconstruct to resume")
+            raise RuntimeError(_CHANGED)
 
     def _check_thread(self, args: tuple[Any, ...], kwargs: dict[str, Any]) -> None:
         config = args[0] if args else kwargs.get("config", kwargs.get("thread_id"))
@@ -201,9 +202,10 @@ class FileCheckpointer(InMemorySaver):
         self.blobs.update(data["blobs"])
 
     def _load(self) -> None:
-        if not self.path.exists():
+        text = read_text_path(self.path)
+        if text is None:
             return
-        raw = json.loads(self.path.read_text(encoding="utf-8"), object_pairs_hook=_pairs)
+        raw = json.loads(text, object_pairs_hook=_pairs)
         if type(raw) is not dict or set(raw) != {"format", "thread_id", "tables"}:
             raise ValueError("Malformed checkpoint envelope")
         if raw["format"] != _FORMAT or raw["thread_id"] != self.thread_id:
@@ -254,8 +256,9 @@ class FileCheckpointer(InMemorySaver):
             payload = {"format": _FORMAT, "thread_id": self.thread_id, "tables": _enc(tables)}
             text = json.dumps(payload, allow_nan=False)
             self.serde.redactor.assert_clean(text)
-            write_text(self.path, text)
-            self._disk_hash = self._digest()
+            if not put_if_path(self.path, text, self._disk_hash):  # compare-and-set (M20)
+                raise RuntimeError(_CHANGED)
+            self._disk_hash = text_sha(text)
 
 
 for _name in _MUTATORS:

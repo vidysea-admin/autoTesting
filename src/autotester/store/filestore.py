@@ -10,14 +10,13 @@ File writes are atomic (temp file + `os.replace`): a crash never leaves a half-w
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import TypeVar
 
 from pydantic import BaseModel
 
 from autotester.core.file_lock import atomic_write as _atomic_write
-from autotester.core.file_lock import file_lock
+from autotester.core.file_lock import create_new, file_lock
 from autotester.core.paths import repo_root
 from autotester.core.safe_names import safe_key
 from autotester.store.mongo_routes import (
@@ -51,6 +50,12 @@ class FileBackend:
         except FileNotFoundError:
             return None
 
+    def get_bytes(self, key: str) -> bytes | None:
+        try:
+            return self._path(key).read_bytes()
+        except FileNotFoundError:
+            return None
+
     def put(self, key: str, data: str | bytes) -> None:
         _atomic_write(self._path(key), data)
 
@@ -64,19 +69,7 @@ class FileBackend:
         return True
 
     def create_exclusive(self, key: str, text: str) -> bool:
-        path = self._path(key)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        except FileExistsError:
-            return False
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                handle.write(text)
-        except BaseException:
-            path.unlink(missing_ok=True)  # never leave an empty claim behind
-            raise
-        return True
+        return create_new(self._path(key), text)  # whole text or nothing; one winner
 
     def delete(self, key: str) -> bool:
         try:

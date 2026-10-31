@@ -1,0 +1,120 @@
+{
+ "tests": [
+  "tests/test_filestore_paths_u7.py",
+  "tests/test_coordination_u7.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: create_new overwrites instead of linking",
+   "file": "src/autotester/core/file_lock.py",
+   "old": "            os.link(tmp, path)",
+   "new": "            os.replace(tmp, path)",
+   "kills": [
+    "test_create_exclusive_has_one_winner_and_keeps_the_winners_text[file]",
+    "test_sixteen_racers_for_one_exclusive_create_yield_exactly_one_winner[file]"
+   ]
+  },
+  {
+   "name": "m2: create_exclusive_path always writes and says True",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "    return backend.create_exclusive(key, text)",
+   "new": "    backend.put(key, text)\n    return True",
+   "kills": [
+    "test_sixteen_racers_for_one_exclusive_create_yield_exactly_one_winner[memory]",
+    "test_sixteen_racers_for_one_exclusive_create_yield_exactly_one_winner[mongo]",
+    "test_create_exclusive_has_one_winner_and_keeps_the_winners_text[mongo]"
+   ]
+  },
+  {
+   "name": "m3: put_if_path ignores the expected digest",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "    return backend.put_if(key, text, expect_sha)",
+   "new": "    backend.put(key, text)\n    return True",
+   "kills": [
+    "test_put_if_a_stale_digest_writes_nothing_and_the_current_one_lands[file]",
+    "test_put_if_a_stale_digest_writes_nothing_and_the_current_one_lands[memory]",
+    "test_put_if_a_stale_digest_writes_nothing_and_the_current_one_lands[mongo]",
+    "test_sixteen_racers_with_the_same_digest_yield_exactly_one_compare_and_set[mongo]"
+   ]
+  },
+  {
+   "name": "m4: checkpoint flush compares against a fresh read (check-then-write)",
+   "file": "src/autotester/stages/orchestrate_checkpoint.py",
+   "old": "put_if_path(self.path, text, self._disk_hash)",
+   "new": "put_if_path(self.path, text, digest_path(self.path))",
+   "kills": [
+    "test_the_checkpoint_write_is_a_compare_and_set_not_a_check_then_write[memory]",
+    "test_the_checkpoint_write_is_a_compare_and_set_not_a_check_then_write[mongo]"
+   ]
+  },
+  {
+   "name": "m5: RevisionedFile always compares against a fresh read",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "self._sha if self._known else digest_path(path)",
+   "new": "digest_path(path)",
+   "kills": [
+    "test_a_run_queue_save_that_lost_the_race_writes_nothing_and_says_so[memory]",
+    "test_a_run_queue_save_that_lost_the_race_writes_nothing_and_says_so[mongo]"
+   ]
+  },
+  {
+   "name": "m6: RevisionedFile does not remember the rev it wrote",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "self._known, self._rev, self._sha = True, self._rev + 1, text_sha(text)",
+   "new": "self._known, self._rev, self._sha = True, self._rev, text_sha(text)",
+   "kills": [
+    "test_the_run_queue_file_carries_a_rev_that_grows_with_every_save[memory]",
+    "test_the_run_queue_file_carries_a_rev_that_grows_with_every_save[mongo]"
+   ]
+  },
+  {
+   "name": "m7: slot claim overwrites",
+   "file": "src/autotester/stages/schedule_store.py",
+   "old": "    return create_exclusive_path(claim_path(claim_dir, key), body.model_dump_json())",
+   "new": "    write_text(claim_path(claim_dir, key), body.model_dump_json())\n    return True",
+   "kills": [
+    "test_a_slot_claim_has_one_winner_among_sixteen_and_lists_back[memory]",
+    "test_a_slot_claim_has_one_winner_among_sixteen_and_lists_back[mongo]"
+   ]
+  },
+  {
+   "name": "m8: intake lock never waits",
+   "file": "src/autotester/sources/intake_commit.py",
+   "old": "    while not create_exclusive_path(path, \"\"):",
+   "new": "    while not (create_exclusive_path(path, \"\") or True):",
+   "kills": [
+    "test_the_intake_lock_is_a_store_key_with_one_holder_and_a_stale_takeover[memory]",
+    "test_the_intake_lock_is_a_store_key_with_one_holder_and_a_stale_takeover[mongo]"
+   ]
+  },
+  {
+   "name": "m9: an interrupted purge does not roll back",
+   "file": "src/autotester/stages/schedule_store.py",
+   "old": "        _restore_stage(stage)\n",
+   "new": "        pass\n",
+   "kills": [
+    "test_an_interrupted_purge_puts_every_file_back[memory]",
+    "test_an_interrupted_purge_puts_every_file_back[mongo]"
+   ]
+  },
+  {
+   "name": "m11: a team marker is not exclusive",
+   "file": "src/autotester/store/team_store.py",
+   "old": "    return create_exclusive_path(team_path(*parts, root=root), body)",
+   "new": "    return create_exclusive_path(team_path(*parts, root=root), body) or bool(body)",
+   "kills": [
+    "test_a_team_marker_has_one_winner_in_the_store[memory]",
+    "test_a_team_marker_has_one_winner_in_the_store[mongo]"
+   ]
+  },
+  {
+   "name": "m16: an exclusive create writes in place (O_EXCL then write)",
+   "file": "src/autotester/core/file_lock.py",
+   "old": "            os.link(tmp, path)",
+   "new": "            return _create_excl(path, text)",
+   "kills": [
+    "test_an_exclusive_create_is_invisible_to_a_reader_until_the_whole_text_is_written"
+   ]
+  }
+ ]
+}

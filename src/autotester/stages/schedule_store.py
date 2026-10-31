@@ -17,8 +17,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import shutil
 import threading
 import uuid
 from datetime import datetime
@@ -31,10 +29,19 @@ from autotester.core.file_lock import file_lock
 from autotester.schema.schedule import Heartbeat, SlotClaim, SlotOutcome, SlotRecord
 from autotester.store.filestore import (
     append_path,
+    delete_path,
     exists_path,
     list_children,
     read_json,
     write_text,
+)
+from autotester.store.filestore_paths import (
+    create_exclusive_path,
+    delete_tree,
+    digest_path,
+    is_dir_path,
+    read_text_path,
+    rename_path,
 )
 
 _CLAIM_SUFFIX = ".claim"
@@ -46,14 +53,7 @@ def claim_path(claim_dir: Path, key: str) -> Path:
 
 def claim(claim_dir: Path, key: str, body: SlotClaim) -> bool:
     """Atomically claim a slot. True for the one caller that created the marker, else False."""
-    claim_dir.mkdir(parents=True, exist_ok=True)
-    try:
-        fd = os.open(claim_path(claim_dir, key), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    except FileExistsError:
-        return False
-    with os.fdopen(fd, "w", encoding="utf-8") as fh:
-        fh.write(body.model_dump_json())
-    return True
+    return create_exclusive_path(claim_path(claim_dir, key), body.model_dump_json())
 
 
 def list_claims(claim_dir: Path) -> dict[str, SlotClaim | None]:
@@ -116,12 +116,13 @@ def read_records(path: Path) -> list[SlotRecord]:
     """One record per slot, oldest first. A torn line (power cut mid-append) is skipped, not
     fatal; a second plain line for the same slot (a re-drive race) is ignored, while an
     `amended` line replaces it in place (latest amendment wins)."""
-    if not path.is_file():
-        return []
     out: list[SlotRecord] = []
     seen: dict[str, int] = {}
     with _APPEND_LOCK:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        text = read_text_path(path)
+    if text is None:
+        return []
+    lines = text.splitlines()
     for line in lines:
         if not line.strip():
             continue
@@ -166,35 +167,43 @@ def _restore_stage(stage: Path) -> bool:
     The manifest is written before the first move and deleted at the commit point, so: no
     manifest means nothing to put back (never started, or committed and only the delete was
     interrupted); a manifest means the purge did not finish. Every file is tried (one stuck
-    file never strands the rest), and a file is never put over one that is already there."""
-    manifest = stage / _MANIFEST
-    if not manifest.is_file():
-        shutil.rmtree(stage, ignore_errors=True)
+    file never strands the rest), and a file is never put over one that is already there. When
+    both copies exist and are identical, a kill landed between a document backend's put and
+    delete (`rename_path` is not atomic there): the move is finished by dropping the stage copy,
+    so a later recovery cannot put a purged file back. A different file is kept (stage stays)."""
+    text = read_text_path(stage / _MANIFEST)
+    if text is None:
+        delete_tree(stage)
         return True
     try:
-        sources = json.loads(manifest.read_text(encoding="utf-8"))["sources"]
+        sources = json.loads(text)["sources"]
     except (OSError, ValueError, KeyError, TypeError):
         return False
     clean = True
     for n, src in enumerate(sources):
         held, dest = stage / str(n), Path(src)
-        if not held.exists():
+        if not exists_path(held):
             continue
         try:
-            if dest.exists():
-                raise FileExistsError(dest)
-            os.replace(held, dest)
+            if not exists_path(dest):
+                rename_path(held, dest)
+            elif digest_path(held) == digest_path(dest):
+                delete_path(held)  # the move's delete never landed: dest is whole, held a copy
+            else:
+                raise FileExistsError(dest)  # a different file came back: keep both
         except OSError:
             clean = False
     if clean:
-        shutil.rmtree(stage, ignore_errors=True)
+        delete_tree(stage)
     return clean
 
 
 def _recover_stages(claim_dir: Path, project: str) -> int:
     done = 0
-    for stage in sorted(claim_dir.parent.glob(_stage_prefix(project) + "*")):
-        done += stage.is_dir() and _restore_stage(stage)
+    prefix = _stage_prefix(project)
+    for name in sorted(n for n in list_children(claim_dir.parent) if n.startswith(prefix)):
+        stage = claim_dir.parent / name
+        done += is_dir_path(stage) and _restore_stage(stage)
     return done
 
 
@@ -220,27 +229,26 @@ def purge_project(claim_dir: Path, records_path: Path, project: str) -> None:
 
 
 def _purge_locked(claim_dir: Path, records_path: Path, project: str) -> None:
-    if records_path.is_file() and any(r.project != project for r in read_records(records_path)):
+    has_records = exists_path(records_path)
+    if has_records and any(r.project != project for r in read_records(records_path)):
         raise ValueError(f"{records_path.name} is shared with another project; "
                          "records are kept one file per project (project_records_path)")
     files = [claim_path(claim_dir, k) for k in list_claims(claim_dir)
              if k.startswith(f"{project}:")]
-    files += [records_path] if records_path.is_file() else []
+    files += [records_path] if has_records else []
     if not files:
         return
     stage = claim_dir.parent / f"{_stage_prefix(project)}{uuid.uuid4().hex}"
-    stage.mkdir(parents=True)
     try:
-        (stage / (_MANIFEST + ".tmp")).write_text(
-            json.dumps({"sources": [str(f) for f in files]}), encoding="utf-8")
-        os.rename(stage / (_MANIFEST + ".tmp"), stage / _MANIFEST)  # all of it, or none
+        create_exclusive_path(stage / _MANIFEST,  # atomic content: all of it, or none
+                              json.dumps({"sources": [str(f) for f in files]}))
         for n, src in enumerate(files):
-            os.replace(src, stage / str(n))
-        (stage / _MANIFEST).unlink()  # the commit point: from here recovery deletes, not restores
+            rename_path(src, stage / str(n))
+        delete_path(stage / _MANIFEST)  # the commit point: from here recovery deletes, not restores
     except BaseException:
         _restore_stage(stage)
         raise
-    shutil.rmtree(stage, ignore_errors=True)
+    delete_tree(stage)
 
 
 def write_heartbeat(path: Path, now: datetime) -> None:

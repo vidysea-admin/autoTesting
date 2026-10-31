@@ -58,4 +58,5 @@ class RunQueueFile(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    rev: int = Field(0, ge=0, description="M20: grows by one with every save (compare-and-set)")
     entries: list[QueueEntry] = Field(default_factory=list)

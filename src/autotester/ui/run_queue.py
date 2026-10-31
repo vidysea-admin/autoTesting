@@ -27,16 +27,14 @@ from autotester.schema.team_enums import RunVia
 from autotester.stages.report_delivery import record_inbox_delivery
 from autotester.stages.schedule_store import QueueUnreadable
 from autotester.stages.schedule_sweep import record_interrupted
-from autotester.store.filestore import read_json, write_json
+from autotester.store.filestore import read_json
+from autotester.store.filestore_paths import RevisionedFile
 from autotester.store.server_settings import effective_max_concurrent_runs
 
 __all__ = ["QueueFull", "RunQueue", "RunRefused", "get_queue", "persisted_entries", "set_queue",
            "set_runner"]
 
-MAX_WAITING_PER_PROJECT = 3
-"""A project may have this many presses waiting behind its running one; the next is refused
-with 429 (a person mashing the button, or a schedule that outpaces its runs) -- never dropped
-silently."""
+MAX_WAITING_PER_PROJECT = 3  # presses waiting behind a running one; the next is refused (429)
 KEEP_FINISHED = 20
 log = logging.getLogger(__name__)
 Runner = Callable[[QueueEntry], None]
@@ -83,7 +81,8 @@ class RunQueue:
                  delivery: Callable[[], Path] | None = None,
                  max_waiting: int = MAX_WAITING_PER_PROJECT) -> None:
         self._limit, self._spawn, self._runner = limit, spawn, runner
-        self._path, self._max_waiting = path, max_waiting
+        self._file = RevisionedFile(path, RunQueueFile) if path is not None else None
+        self._max_waiting = max_waiting
         self._delivery = delivery
         self._lock = threading.Lock()
         self._plan_lock = threading.Lock()
@@ -238,10 +237,10 @@ class RunQueue:
             log.exception("inbox delivery record for %s could not be written", entry.id)
 
     def _load(self) -> list[QueueEntry]:
-        if self._path is None:
+        if self._file is None:
             return list(self._entries)
         try:
-            stored = read_json(self._path(), RunQueueFile)
+            stored = self._file.load()
         except ValueError as exc:
             log.warning("run queue file unreadable, starting empty: %s", exc)
             return []
@@ -257,8 +256,11 @@ class RunQueue:
             log.exception("run queue file could not be written; scheduling continues in memory")
 
     def _save(self) -> None:
-        if self._path is not None:
-            write_json(self._path(), RunQueueFile(entries=self._entries))
+        """Compare-and-set (M20): a save that lost to another writer lands nothing, is logged, and
+        the next save is made against what is stored now."""
+        if self._file is not None and not self._file.save(
+                lambda rev: RunQueueFile(rev=rev, entries=self._entries)):
+            log.warning("run queue file changed under this instance; this save was not written")
 
 
 _QUEUE: RunQueue | None = None

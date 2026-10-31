@@ -47,6 +47,7 @@ from autotester.sources.zip_names import (
     vet_member_name,
 )
 from autotester.stages.ingest import NotARecording, require_recording_suffix
+from autotester.store.filestore_paths import scratch_unlink
 from autotester.store.project_store import ProjectStore
 
 _F, _S = IntakeOutcome.FAILED, IntakeOutcome.SKIPPED
@@ -214,7 +215,7 @@ def _extract_one(ctx: _Ctx, zf: zipfile.ZipFile, plan: _Plan, staging: Path, ind
             return _fail(plan, "empty file"), 0
         return _store_member(ctx, plan, dest, result), result.size
     finally:
-        dest.unlink(missing_ok=True)
+        scratch_unlink(dest, base=ctx.store.paths.root)
 
 
 def _run_plans(ctx: _Ctx, zf: zipfile.ZipFile, plans: list[_Plan]) -> list[MemberResult]:

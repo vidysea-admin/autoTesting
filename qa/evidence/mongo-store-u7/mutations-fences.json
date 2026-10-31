@@ -1,0 +1,59 @@
+{
+ "tests": [
+  "tests/test_scratch_fences_u7.py"
+ ],
+ "mutations": [
+  {
+   "name": "m10: scratch fence removed",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "    if not parts or parts[0] not in SCRATCH_DIRS:",
+   "new": "    if False:",
+   "kills": [
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-projects/p/x]",
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-state.json]"
+   ]
+  },
+  {
+   "name": "m12: scratch check drops the normalisation (raw string, no realpath)",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "    parts = _under(real, Path(os.path.realpath(repo_root() if base is None else base)) / \".work\")",
+   "new": "    real = Path(path)\n    parts = _under(real, Path(os.path.realpath(repo_root() if base is None else base)) / \".work\")",
+   "kills": [
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-.work/intake/../../projects/p]",
+    "test_scratch_verbs_refuse_a_link_inside_work_that_points_at_state[file]"
+   ]
+  },
+  {
+   "name": "m13: scratch allows every .work subtree (Mongo-routed state included)",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "or parts[0] not in SCRATCH_DIRS:",
+   "new": "or False:",
+   "kills": [
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-.work/team/x]",
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-.work/run_queue.json]",
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-.work/drive-jobs/j.json]",
+    "test_scratch_verbs_refuse_anything_that_does_not_resolve_into_a_scratch_subtree[file-.work/intakeX/y]"
+   ]
+  },
+  {
+   "name": "m14: evidence check drops the normalisation",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "    if _under(real, anchor) is None:",
+   "new": "    real = Path(path)\n    if _under(real, anchor) is None:",
+   "kills": [
+    "test_evidence_mkdir_refuses_a_path_that_does_not_resolve_below_qa_evidence[file-qa/evidence/../../projects/e]",
+    "test_evidence_mkdir_refuses_a_link_under_qa_evidence_that_points_at_state[file]"
+   ]
+  },
+  {
+   "name": "m15: evidence check is the old substring match",
+   "file": "src/autotester/store/filestore_paths.py",
+   "old": "    if _under(real, anchor) is None:",
+   "new": "    if \"qa/evidence/\" not in real.as_posix() + \"/\":",
+   "kills": [
+    "test_evidence_mkdir_refuses_a_path_that_does_not_resolve_below_qa_evidence[file-projects/p/qa/evidence/z]",
+    "test_evidence_mkdir_refuses_a_path_outside_the_repo_and_follows_a_declared_base[file]"
+   ]
+  }
+ ]
+}

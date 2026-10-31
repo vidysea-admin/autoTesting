@@ -21,6 +21,7 @@ from autotester.core.safe_names import safe_name
 from autotester.schema.base import utc_now
 from autotester.schema.ceo_inputs import AtomicList, AtomicListPin
 from autotester.store.filestore import read_json, write_bytes, write_json
+from autotester.store.filestore_paths import read_bytes_path
 
 LIST_NAME = "atomic-list.json"
 PIN_NAME = "atomic-list.pin.json"
@@ -58,7 +59,6 @@ def save_atomic_list(slug: str, raw: bytes, who: str, root: Path | None = None) 
         raise ListRefused(_reason(exc)) from None
     digest = hashlib.sha256(raw).hexdigest()
     folder = input_dir(slug, root)
-    folder.mkdir(parents=True, exist_ok=True)
     with file_lock(folder / "atomic-list.lock", timeout_s=30.0, what="atomic list"):
         before = load_pin(slug, root)  # read under the lock: two editors never lose a hash
         replaced = list(before.replaced_sha256) if before else []
@@ -76,9 +76,9 @@ def load_pinned_list(slug: str, root: Path | None = None) -> tuple[AtomicList, s
     no longer matches its pin."""
     pin = load_pin(slug, root)
     path = input_dir(slug, root) / LIST_NAME
-    if pin is None or not path.exists():
+    raw = None if pin is None else read_bytes_path(path)
+    if pin is None or raw is None:
         raise ListRefused("no atomic list is pinned for this project")
-    raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != pin.sha256:
         raise ListRefused("the stored list no longer matches its pinned sha256")
     return AtomicList.model_validate_json(raw), pin.sha256

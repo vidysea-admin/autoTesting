@@ -190,7 +190,6 @@ def _write_bytes(
     addressed on a name collision, mirroring EMAIL's attachment writer."""
     safe_name = re.sub(r"[^\w.\-]", "_", drive_file.name) or "file"
     target_dir = store.paths.source_dir(parent_id) / "files"
-    target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / safe_name
     if exists_path(target) and target.read_bytes() != content:
         prefix = hashlib.sha256(content).hexdigest()[:8]

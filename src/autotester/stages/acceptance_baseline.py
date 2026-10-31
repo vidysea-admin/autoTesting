@@ -12,6 +12,7 @@ from autotester.schema.acceptance_baseline import BaselinePlan, BaselineReceipt
 from autotester.schema.base import Provenance
 from autotester.schema.project import Project, Source
 from autotester.store.filestore import write_bytes, write_json
+from autotester.store.filestore_paths import evidence_mkdir, read_bytes_path
 from autotester.store.project_store import ProjectStore
 
 
@@ -88,7 +89,9 @@ def prepare_baselines(source_root: Path, input_root: Path, destination: Path,
         raise ValueError("baseline destination overlaps the source project")
     if not plan.target_build.strip():
         raise ValueError("target build identity must be explicitly declared")
-    config = config_path.read_bytes()
+    config = read_bytes_path(config_path)
+    if config is None:
+        raise FileNotFoundError(config_path)
     if _digest(config) != plan.source_config_sha256:
         raise ValueError("source configuration changed since the plan was prepared")
     source = Project.model_validate_json(config)
@@ -118,7 +121,7 @@ def _write_pair(destination: Path, projects: list[Project], plan: BaselinePlan,
         root = destination / mode
         store = ProjectStore(project.slug, root)
         store.save_project(project)
-        (root / "qa" / "evidence" / "t169-real" / mode).mkdir(parents=True)
+        evidence_mkdir(root / "qa" / "evidence" / "t169-real" / mode, base=root)
         if mode != "teaching":
             continue
         for index, (row, blob) in enumerate(zip(plan.teaching_inputs, blobs, strict=True)):

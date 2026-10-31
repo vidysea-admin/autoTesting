@@ -30,6 +30,43 @@ def atomic_write(path: Path, text: str | bytes) -> None:
         raise
 
 
+def create_new(path: Path, text: str) -> bool:
+    """Create `path` holding `text` only if it does not exist: True for the one caller that did.
+
+    The text is written to a temp file and hard-linked into place, so a reader sees nothing or
+    all of it (never a half-written claim) and `os.link` refuses an existing name, which makes
+    the first caller the only winner. A volume without hard links falls back to `O_EXCL`."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=".tmp-", suffix=path.suffix)
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+        try:
+            os.link(tmp, path)
+        except FileExistsError:
+            return False
+        except OSError:  # no hard links here: the claim is then `O_EXCL`, written in place
+            return _create_excl(path, text)
+        return True
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def _create_excl(path: Path, text: str) -> bool:
+    try:
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        return False
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+    except BaseException:
+        path.unlink(missing_ok=True)  # never leave an empty claim behind
+        raise
+    return True
+
+
 @contextlib.contextmanager
 def file_lock(lock_path: Path, timeout_s: float = 5.0, *, what: str = "file") -> Iterator[None]:
     """Hold an exclusive advisory lock on `lock_path` (created if absent). TimeoutError on wait."""
