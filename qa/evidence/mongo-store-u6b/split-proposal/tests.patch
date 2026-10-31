@@ -1,0 +1,53 @@
+diff --git a/tests/test_auth_store_mongo.py b/tests/test_auth_store_mongo.py
+index f0248dd0..be8b9607 100644
+--- a/tests/test_auth_store_mongo.py
++++ b/tests/test_auth_store_mongo.py
+@@ -23,6 +23,7 @@ from fake_mongo import CANARY, assert_no_canary
+ from autotester.auth import accounts, groups, sessions
+ from autotester.auth import store as store_mod
+ from autotester.auth import store_mongo as sm
++from autotester.auth import store_mongo_tx as tx_mod
+ from autotester.auth.store import auth_store
+ from autotester.auth.store_sqlite import SqliteAuthStore
+ from autotester.store.mongo_guard import StoreDuplicateKey, StoreUnavailable
+@@ -53,8 +54,9 @@ def test_mongo_store_implements_every_protocol_method(proto: type, impl: type) -
+ 
+ 
+ def test_the_module_holds_no_sql_no_driver_and_names_no_database() -> None:
+-    tree = ast.parse(Path(sm.__file__).read_text(encoding="utf-8"))
+-    for node in ast.walk(tree):
++    nodes = [n for m in (sm, tx_mod)
++             for n in ast.walk(ast.parse(Path(m.__file__).read_text(encoding="utf-8")))]
++    for node in nodes:
+         if isinstance(node, ast.Import | ast.ImportFrom):
+             names = [a.name for a in node.names] + [getattr(node, "module", None) or ""]
+             assert not any(n.split(".")[0] in {"sqlite3", "pymongo", "gridfs"} for n in names)
+@@ -148,7 +150,7 @@ def test_a_file_mode_process_never_imports_the_driver(tmp_path: Path) -> None:
+ 
+ # -- the lease and the undo log -------------------------------------------------------------
+ def _lock_doc(env: AuthEnv) -> dict | None:
+-    return next((d for d in env._coll("auth_meta").docs if d["_id"] == sm.LOCK_ID), None)
++    return next((d for d in env._coll("auth_meta").docs if d["_id"] == tx_mod.LOCK_ID), None)
+ 
+ 
+ def test_the_lease_is_released_after_success_and_after_failure(env: AuthEnv) -> None:
+@@ -187,7 +189,7 @@ def test_an_exception_rolls_every_write_back(env: AuthEnv) -> None:
+ 
+ def test_an_expired_lease_is_taken_over_by_compare_and_set(env: AuthEnv) -> None:
+     accounts.signup(ADMIN, PASSWORD)
+-    env._coll("auth_meta").docs.append({"_id": sm.LOCK_ID, "owner": "dead", "expires": 1.0})
++    env._coll("auth_meta").docs.append({"_id": tx_mod.LOCK_ID, "owner": "dead", "expires": 1.0})
+     accounts.signup(OTHER, PASSWORD)
+     assert accounts.find_user(OTHER) is not None and _lock_doc(env) is None
+ 
+@@ -195,8 +197,8 @@ def test_an_expired_lease_is_taken_over_by_compare_and_set(env: AuthEnv) -> None
+ def test_a_live_lease_held_elsewhere_refuses_with_no_write(
+         env: AuthEnv, monkeypatch: pytest.MonkeyPatch) -> None:
+     accounts.signup(ADMIN, PASSWORD)
+-    monkeypatch.setattr(sm, "WAIT_SECONDS", 0.1)
+-    env._coll("auth_meta").docs.append({"_id": sm.LOCK_ID, "owner": "busy", "expires": 9e12})
++    monkeypatch.setattr(tx_mod, "WAIT_SECONDS", 0.1)
++    env._coll("auth_meta").docs.append({"_id": tx_mod.LOCK_ID, "owner": "busy", "expires": 9e12})
+     with pytest.raises(sm.AuthStoreBusy, match="busy; try again"):
+         accounts.signup(OTHER, PASSWORD)
+     assert _lock_doc(env)["owner"] == "busy"  # never released by a stranger

@@ -1,0 +1,22 @@
+file-too-long: src\autotester\auth\store_mongo.py — 404 lines > 300; split by responsibility
+duplicate-concept: src\autotester\store\mongo_routes.py:184 — 'repo_redactor' also defined in src\autotester\store\blobs.py
+stale-committed: docs/MAP.md — committed blob (HEAD) differs from a fresh regeneration; commit the regenerated file
+warning: decision-citation-coverage: 3908 advisory finding(s) (D-087, non-blocking)
+  decision-citation-coverage: qa/gates/at113-cycle3-recovery.md:40 — D-070 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at638-four-contract-files-authorization.md:122 — D-054 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at654-d029-dev-only-vs-production-pathlynks.md:4 — D-053 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at654-d029-dev-only-vs-production-pathlynks.md:18 — D-053 occurrence 1 needs one current review
+  decision-citation-coverage: qa/gates/at654-d029-dev-only-vs-production-pathlynks.md:28 — D-053 occurrence 1 needs one current review
+  ... and 3903 more
+warning: decision-citation-declaration: 368 advisory finding(s) (D-087, non-blocking)
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-008 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-010 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-011 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:14 — D-019 mutable authorization requires canonical visible claim
+  decision-citation-declaration: qa/gates/at106-hook-architecture-path.md:52 — D-020 mutable authorization requires canonical visible claim
+  ... and 363 more
+warning: decision-citation-known-disputed: 2 advisory finding(s) (D-087, non-blocking)
+  decision-citation-known-disputed: docs/DECISIONS.md:80 — D-000 K1: recorded known-disputed historical claim (D-069), non-blocking
+  decision-citation-known-disputed: docs/DECISIONS.md:209 — D-005 K2: recorded known-disputed historical claim (D-069), non-blocking
+
+3 violation(s)

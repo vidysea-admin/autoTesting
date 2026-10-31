@@ -12,6 +12,7 @@ contract without assuming multi-document transactions.
 
 from __future__ import annotations
 
+import os
 from contextlib import AbstractContextManager
 from typing import Protocol
 
@@ -88,7 +89,22 @@ class AuthStore(Protocol):
         """One write transaction; rolled back whole on any exception."""
 
 
+def _auth_on_mongo() -> bool:
+    """Auth moves to Mongo only through its OWN area entry (`AUTOTESTER_STORE_AREAS=auth=mongo`,
+    the G1 flip): a global `AUTOTESTER_STORE=mongo` must not point auth at an empty collection
+    set before its users are migrated (A-W1)."""
+    from autotester.store.mongo_routes import store_selection
+    own = {k.strip(): v.strip() for k, _, v in
+           (i.partition("=") for i in os.environ.get("AUTOTESTER_STORE_AREAS", "").split(","))}
+    return store_selection()["auth"] == "mongo" and own.get("auth") == "mongo"
+
+
 def auth_store() -> AuthStore:
-    """The active auth store. SQLite today; U6b adds the Mongo implementation."""
+    """The active auth store: SQLite unless the `auth` area is selected as `mongo` by its own
+    `AUTOTESTER_STORE_AREAS` entry. The Mongo module (and its driver) loads only then, so a
+    file-mode process never imports `pymongo` (M13)."""
+    if _auth_on_mongo():
+        from autotester.auth.store_mongo import mongo_auth_store
+        return mongo_auth_store()
     from autotester.auth.store_sqlite import SqliteAuthStore
     return SqliteAuthStore()

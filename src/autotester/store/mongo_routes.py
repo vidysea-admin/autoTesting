@@ -25,7 +25,7 @@ from autotester.core.safe_names import UnsafeName
 AREAS = ("settings", "projects", "runs", "crawls", "approvals", "auth", "credentials", "blobs",
          "queue")
 BACKENDS = ("file", "mongo")
-UNROUTED = {"auth": "the auth store (U6)"}
+UNROUTED: dict[str, str] = {}
 """Areas whose data never travels through a state key: flipping one would route nothing."""
 RUN_AUX_FILES = frozenset({
     "run.json", "ux_report.json", "state.json", "checkpoint.json", "scope.json", "release.json",
