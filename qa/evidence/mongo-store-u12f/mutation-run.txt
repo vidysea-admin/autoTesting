@@ -1,0 +1,77 @@
+KILLED  A-W1 save resets the backend again (new client per save)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_session_saves_reuse_one_client_and_the_gate_still_rebuilds
+    actually failed: tests/test_session_store_u12f.py::test_session_saves_reuse_one_client_and_the_gate_still_rebuilds
+KILLED  A-W1 save no longer rearms the gate  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_session_saves_reuse_one_client_and_the_gate_still_rebuilds
+    actually failed: tests/test_session_store_u12f.py::test_session_saves_reuse_one_client_and_the_gate_still_rebuilds
+KILLED  B-W1 manual login no longer saves  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_manual_login_is_saved_under_the_project_account
+    actually failed: tests/test_session_store_u12f.py::test_a_manual_login_is_saved_under_the_project_account
+KILLED  B-W1 manual login saves under the wrong account  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_manual_login_is_saved_under_the_project_account
+    actually failed: tests/test_session_store_u12f.py::test_a_manual_login_is_saved_under_the_project_account
+KILLED  B-W1 normal run no longer restores  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_normal_run_restores_the_project_account_login
+    actually failed: tests/test_session_store_u12f.py::test_a_normal_run_restores_the_project_account_login
+KILLED  B-W1 normal run restores the wrong account  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_normal_run_restores_the_project_account_login
+    actually failed: tests/test_session_store_u12f.py::test_a_normal_run_restores_the_project_account_login
+KILLED  W2 sign-in saves before the proof  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_failed_login_never_replaces_a_good_stored_session
+    actually failed: tests/test_session_store_u12f.py::test_a_failed_login_never_replaces_a_good_stored_session
+KILLED  W2 saved even when the proof fails  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_failed_login_never_replaces_a_good_stored_session
+    actually failed: tests/test_session_store_u12f.py::test_a_failed_login_never_replaces_a_good_stored_session
+KILLED  W2 proven login not saved  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_proven_login_is_saved
+    actually failed: tests/test_session_store_u12f.py::test_a_proven_login_is_saved
+KILLED  W3 malformed state kept (cookies=5)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_malformed_stored_state_is_deleted_not_raised
+    actually failed: tests/test_session_store_u12f.py::test_a_malformed_stored_state_is_deleted_not_raised
+KILLED  W3 age cap not re-applied on load  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_tampered_far_future_expiry_is_not_trusted_on_load
+    actually failed: tests/test_session_store_u12f.py::test_a_tampered_far_future_expiry_is_not_trusted_on_load
+KILLED  W3 redactor trusts cookie shape  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_bad_stored_item_never_breaks_the_run_wide_redactor
+    actually failed: tests/test_session_store_u12f.py::test_a_bad_stored_item_never_breaks_the_run_wide_redactor
+KILLED  W3 redactor trusts localStorage shape  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_bad_stored_item_never_breaks_the_run_wide_redactor
+    actually failed: tests/test_session_store_u12f.py::test_a_bad_stored_item_never_breaks_the_run_wide_redactor
+KILLED  W3 scope trusts localStorage shape  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_stored_localstorage_shape_error_does_not_stop_a_restore
+    actually failed: tests/test_session_store_u12f.py::test_a_stored_localstorage_shape_error_does_not_stop_a_restore
+KILLED  W4 undeclare forgets nothing  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login
+    actually failed: tests/test_session_store_u12f.py::test_a_failing_forget_leaves_the_credential_and_the_declaration_alone, tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login
+KILLED  W4 undeclare matches only the username key  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login
+    actually failed: tests/test_session_store_u12f.py::test_a_failing_forget_leaves_the_credential_and_the_declaration_alone, tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login
+KILLED  W4 undeclare forgets every account  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login
+    actually failed: tests/test_session_store_u12f.py::test_undeclaring_a_role_credential_key_forgets_that_accounts_login
+KILLED  W3 future save time trusted (ahead check off)  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login, tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+    actually failed: tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login, tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+KILLED  C1 non-finite times accepted  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields0], tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields1], tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields2], tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields3]
+    actually failed: tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields0], tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields1], tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields2], tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields3]
+KILLED  C1 only expires_at checked for finiteness  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields1]
+    actually failed: tests/test_session_store_u12f.py::test_a_non_finite_time_cannot_defeat_the_age_cap[fields1]
+KILLED  C3 skew allowance zero  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+    actually failed: tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+KILLED  C3 skew boundary inclusive  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+    actually failed: tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+KILLED  C3 skew deletes the document  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login, tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+    actually failed: tests/test_session_store_u12f.py::test_a_save_time_in_the_future_is_not_a_login, tests/test_session_store_u12f.py::test_the_skew_boundary_is_exactly_five_minutes
+KILLED  C3 non-dict state not checked  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[7], tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[oops], tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[state1]
+    actually failed: tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[7], tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[None], tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[oops], tests/test_session_store_u12f.py::test_a_stored_state_that_is_not_a_dict_is_deleted[state1]
+KILLED  C2 forget runs after the credential drop, outside the restore  (pytest exit 1)
+    claims to kill : tests/test_session_store_u12f.py::test_a_failing_forget_leaves_the_credential_and_the_declaration_alone
+    actually failed: tests/test_session_store_u12f.py::test_a_failing_forget_leaves_the_credential_and_the_declaration_alone
+
+25/25 mutations killed

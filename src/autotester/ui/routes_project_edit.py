@@ -28,6 +28,7 @@ from fastapi import APIRouter, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import ValidationError
 
+from autotester.browser.profiles import forget_session
 from autotester.browser.secrets import SecretStore
 from autotester.core.paths import ProjectPaths
 from autotester.schema.project import Project, SecretRef
@@ -262,6 +263,11 @@ def undeclare_secret(slug: str, key: str) -> RedirectResponse:
     # M37: with the credential store on, the value goes FIRST. An outage then raises before anything
     # changed (the 503 is true, no value is orphaned under a key nobody declares), and a failed
     # project save puts the stored document back, so a re-declaration never revives a stale value.
+    # U12 (W4): a login built on this key is stale now. It goes before the credential, so an outage
+    # here raises with nothing else changed; a lost session only logs the account out.
+    for acct in project.role_accounts or []:
+        if key in (acct.username_key, acct.password_key):
+            forget_session(project, acct.id)
     held = snapshot_credentials([key])
     drop_credentials(slug, [key])
     try:

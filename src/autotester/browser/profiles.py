@@ -11,6 +11,7 @@ every function here is a no-op and nothing is read or written.
 
 import contextlib
 import json
+import math
 import shutil
 import time
 from pathlib import Path
@@ -21,6 +22,7 @@ from autotester.schema.project import Project
 
 SESSION_COLLECTION = "browser_sessions"
 MAX_AGE_S = 24 * 3600  # a saved login is never replayed older than this, whatever its cookies say
+SKEW_S = 300  # a save time further ahead than this is a clock lie or tampering, not a login
 MIN_VALUE_LEN = 8  # shorter values ("1", "en") would corrupt every trace if masked everywhere
 MAX_MASKED = 200
 ENTRY_SUFFIX = "-entry-test"
@@ -71,22 +73,31 @@ def _collection() -> Any:
 def _put_session(coll: Any, doc: dict[str, Any]) -> None:
     """The ONLY write of a session document (M38): by `_id`, replacing in place."""
     coll.replace_one({"_id": doc["_id"]}, doc, upsert=True)
-    from autotester.store.mongo_backend import reset_default_backend
+    from autotester.store.mongo_backend import default_backend
 
-    reset_default_backend()  # the write gate rebuilds with the new values (M34)
+    default_backend().rearm()  # the write gate takes the new values (M34), on one client
 
 
 def _in_scope(project: Project, host: str) -> bool:
     return any(_host_matches(host, d) for d in project.allowed_domains)
 
 
+def _dicts(value: Any) -> list[dict[str, Any]]:
+    """The dict members of a list; anything else (a number, a string, a bad member) is nothing."""
+    return [x for x in value if isinstance(x, dict)] if isinstance(value, list) else []
+
+
 def scope_state(state: dict[str, Any], project: Project) -> dict[str, Any]:
     """`state` with every cookie and origin outside the project's `allowed_domains` dropped (M38).
-    Fails closed: a malformed entry or an unparseable host is dropped, never kept."""
-    cookies = [c for c in state.get("cookies") or [] if isinstance(c, dict)
-               and _in_scope(project, str(c.get("domain") or "").lstrip("."))]
-    origins = [o for o in state.get("origins") or []
-               if isinstance(o, dict) and _in_scope(project, host_of(str(o.get("origin") or "")))]
+    Fails closed: a malformed entry or an unparseable host is dropped, never kept; an origin keeps
+    only well-formed `localStorage` items, so nothing downstream meets a bad one."""
+    cookies = [c for c in _dicts(state.get("cookies"))
+               if _in_scope(project, str(c.get("domain") or "").lstrip("."))]
+    origins = [{"origin": str(o["origin"]),
+                "localStorage": [i for i in _dicts(o.get("localStorage"))
+                                 if isinstance(i.get("name"), str) and "value" in i]}
+               for o in _dicts(state.get("origins"))
+               if _in_scope(project, host_of(str(o.get("origin") or "")))]
     return {"cookies": cookies, "origins": origins}
 
 
@@ -125,6 +136,27 @@ def save_session(project: Project, account_id: str, state: dict[str, Any], *,
     return kept
 
 
+def _ahead(doc: dict[str, Any], at: float) -> bool:
+    """A save time further than `SKEW_S` ahead of the reader: a lagging clock here or tampering
+    there, which this reader cannot tell apart. Not trusted, but not deleted either."""
+    saved = doc.get("saved_at")
+    return isinstance(saved, (int, float)) and not isinstance(saved, bool) and saved > at + SKEW_S
+
+
+def _readable(doc: dict[str, Any], at: float) -> dict[str, Any] | None:
+    """The `state` of a stored document that is well formed and still within `MAX_AGE_S` of when it
+    was saved, else `None`. The age cap is re-applied here, not trusted from `expires_at`, so a
+    tampered far-future expiry (or save time) buys nothing; NaN and infinity are not times."""
+    expires, saved, state = doc.get("expires_at"), doc.get("saved_at"), doc.get("state")
+    for n in (expires, saved):
+        if not isinstance(n, (int, float)) or isinstance(n, bool) or not math.isfinite(n):
+            return None
+    if not isinstance(state, dict) or min(expires, saved + MAX_AGE_S) <= at:
+        return None
+    parts = (state.get("cookies", []), state.get("origins", []))
+    return state if all(isinstance(part, list) for part in parts) else None
+
+
 def load_session(project: Project, account_id: str, *, now: float | None = None
                  ) -> dict[str, Any] | None:
     """The stored state of one account, re-scoped to the project's CURRENT domains, or `None`.
@@ -136,8 +168,9 @@ def load_session(project: Project, account_id: str, *, now: float | None = None
     doc = coll.find_one({"_id": sid})
     if doc is None or doc.get("p") != project.slug or doc.get("_id") != sid:
         return None
-    expires, state = doc.get("expires_at"), doc.get("state")
-    if not isinstance(expires, (int, float)) or expires <= at or not isinstance(state, dict):
+    if _ahead(doc, at):
+        return None
+    if (state := _readable(doc, at)) is None:
         coll.delete_one({"_id": sid, "p": project.slug})
         return None
     kept = scope_state(state, project)
@@ -167,9 +200,9 @@ def _leaves(value: Any, depth: int = 0) -> list[str]:
 def session_values(state: dict[str, Any], label: str = "session") -> dict[str, str]:
     """Every cookie and `localStorage` value of `state` worth masking, longest first, capped.
     A value that parses as JSON also contributes its string leaves (a token inside a blob)."""
-    raw = [str(c.get("value") or "") for c in state.get("cookies") or []]
-    for origin in state.get("origins") or []:
-        raw += [str(i.get("value") or "") for i in origin.get("localStorage") or []]
+    raw = [str(c.get("value") or "") for c in _dicts(state.get("cookies"))]
+    for origin in _dicts(state.get("origins")):
+        raw += [str(i.get("value") or "") for i in _dicts(origin.get("localStorage"))]
     found: dict[str, None] = {}
     for text in raw:
         found[text] = None
