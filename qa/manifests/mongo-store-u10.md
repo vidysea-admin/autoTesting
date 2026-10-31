@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u10
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, checker A 815d93f1; config audit A 100)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE), unit U10 (docs and deploy). **Criticality:** normal (U10 row has no dual mark). No `src/` code, no new `src/` module, no dependency.
 **Authority:** D-120 and D-122 (`docs/DECISIONS.md:2939`, `:2986`: "ARCHITECTURE.md storage and security prose" and "CLAUDE.md Credentials" may change in the docs unit), D-123 (plain storage), D-125 (GCS `/data` volume stays until Mongo replaces it). See "Authority checks and judgement calls".
