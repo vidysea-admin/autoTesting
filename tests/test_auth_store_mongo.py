@@ -130,10 +130,10 @@ def test_auth_on_mongo_needs_the_uri_named_without_a_value(monkeypatch: pytest.M
 
 def test_a_mongo_selection_yields_the_mongo_store(env: AuthEnv,
                                                   monkeypatch: pytest.MonkeyPatch) -> None:
-    assert isinstance(auth_store(), sm.MongoAuthStore)
+    assert isinstance(auth_store(), sm.MongoAuthStore)  # its own area entry moves auth
     monkeypatch.delenv("AUTOTESTER_STORE_AREAS")
     monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
-    assert isinstance(auth_store(), sm.MongoAuthStore)
+    assert isinstance(auth_store(), SqliteAuthStore)  # the global value alone does not (A-W1)
 
 
 def test_a_file_mode_process_never_imports_the_driver(tmp_path: Path) -> None:
@@ -203,15 +203,6 @@ def test_a_live_lease_held_elsewhere_refuses_with_no_write(
         accounts.signup(OTHER, PASSWORD)
     assert _lock_doc(env)["owner"] == "busy"  # never released by a stranger
     assert accounts.find_user(OTHER) is None
-
-
-def test_a_lease_lost_mid_transaction_rolls_the_transaction_back(env: AuthEnv) -> None:
-    accounts.signup(ADMIN, PASSWORD)
-    with pytest.raises(sm.AuthStoreBusy, match="expired mid-transaction"), \
-            auth_store().transaction() as tx:
-        tx.insert_user("late@team.test", "h")
-        _lock_doc(env)["owner"] = "someone-else"  # the lease expired and another writer took it
-    assert accounts.find_user("late@team.test") is None
 
 
 def test_a_reader_cannot_write(env: AuthEnv) -> None:

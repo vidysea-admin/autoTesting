@@ -1,169 +1,314 @@
 {
- "tests": [
-  "tests/test_auth_store_mongo.py",
-  "tests/test_auth_store_contract.py"
- ],
- "timeout_s": 900,
- "mutations": [
-  {
-   "name": "m1: last-admin guard is a no-op",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "        if not users and not after_delete:\n            return\n",
-   "new": "        return\n",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
-    "tests/test_auth_store_contract.py::test_last_admin_guard_survives_delete_and_regroup[mongo]",
-    "tests/test_auth_store_contract.py::test_disabling_the_last_two_admins_leaves_one_enabled[mongo]"
-   ]
-  },
-  {
-   "name": "m2: writers take no lease (first-admin / claim serialisation gone)",
-   "file": "src/autotester/auth/store_mongo_tx.py",
-   "old": "    _acquire(meta, owner)\n    try:\n        yield lambda: meta.find_one({\"_id\": LOCK_ID, \"owner\": owner}) is not None",
-   "new": "    try:\n        yield lambda: True",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_a_live_lease_held_elsewhere_refuses_with_no_write",
-    "tests/test_auth_store_contract.py::test_concurrent_first_signups_yield_exactly_one_admin[mongo]",
-    "tests/test_auth_store_contract.py::test_concurrent_claims_yield_exactly_one_admin[mongo]"
-   ]
-  },
-  {
-   "name": "m3: rollback is skipped on failure",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "            except BaseException:\n                tx.rollback()\n                raise",
-   "new": "            except BaseException:\n                raise",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
-    "tests/test_auth_store_mongo.py::test_an_exception_rolls_every_write_back",
-    "tests/test_auth_store_mongo.py::test_a_lease_lost_mid_transaction_rolls_the_transaction_back"
-   ]
-  },
-  {
-   "name": "m4: sessions stored without the purge namespace",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "{\"_id\": digest, \"p\": NAMESPACE, \"user_id\": user_id,",
-   "new": "{\"_id\": digest, \"user_id\": user_id,",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_a_disabled_account_or_expired_session_never_resolves[mongo]"
-   ]
-  },
-  {
-   "name": "m5: every inserted document is logged (hash leak)",
-   "file": "src/autotester/auth/store_mongo_tx.py",
-   "old": "        coll.insert_one(doc)\n        self._undo.append(lambda: coll.delete_one(",
-   "new": "        LOG.debug(\"insert %r\", doc)\n        coll.insert_one(doc)\n        self._undo.append(lambda: coll.delete_one(",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_nothing_secret_reaches_a_log"
-   ]
-  },
-  {
-   "name": "m6: the id counter does not advance",
-   "file": "src/autotester/auth/store_mongo_tx.py",
-   "old": "{\"$set\": {\"next\": taken + 1}}",
-   "new": "{\"$set\": {\"next\": taken}}",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_ids_are_never_reused_after_a_delete",
-    "tests/test_auth_store_mongo.py::test_concurrent_allocation_hands_out_distinct_ids"
-   ]
-  },
-  {
-   "name": "m7: exists() prepares (writes) the store",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "no write happens here.\"\"\"\n        return coll_of",
-   "new": "no write happens here.\"\"\"\n        self._prepare()\n        return coll_of",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_reading_a_missing_store_creates_nothing[mongo]"
-   ]
-  },
-  {
-   "name": "m8: seed does not skip a group that exists",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "                        if tx._one(GROUPS, {\"seed\": seed}) is None:",
-   "new": "                        if True:",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_a_second_pass_creates_the_same_indexes_and_a_crashed_seed_resumes"
-   ]
-  },
-  {
-   "name": "m9: seed marker not checked (seed runs on every process start)",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "                if meta.find_one({\"_id\": SEEDED_ID}) is None:",
-   "new": "                if True:",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_the_group_seed_runs_once[mongo]"
-   ]
-  },
-  {
-   "name": "m10: selection ignored (auth always sqlite)",
-   "file": "src/autotester/auth/store.py",
-   "old": "if store_selection()[\"auth\"] == \"mongo\":",
-   "new": "if False:",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_a_mongo_selection_yields_the_mongo_store"
-   ]
-  },
-  {
-   "name": "m11: mongo chosen by default",
-   "file": "src/autotester/auth/store.py",
-   "old": "if store_selection()[\"auth\"] == \"mongo\":",
-   "new": "if True:",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_sqlite_is_the_default_and_mongo_only_by_selection"
-   ]
-  },
-  {
-   "name": "m12: a reader may write",
-   "file": "src/autotester/auth/store_mongo_tx.py",
-   "old": "        if not self._writable:\n            raise RuntimeError(\"the auth store was opened for reading\")\n",
-   "new": "",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_a_reader_cannot_write"
-   ]
-  },
-  {
-   "name": "m13: the lost-lease check at commit is removed",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "                if not holds():\n                    raise AuthStoreBusy(\"the auth store lease expired mid-transaction\")",
-   "new": "                pass",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_a_lease_lost_mid_transaction_rolls_the_transaction_back"
-   ]
-  },
-  {
-   "name": "m14: an expired lease is never taken over",
-   "file": "src/autotester/auth/store_mongo_tx.py",
-   "old": "held[\"expires\"] < now and meta.update_one(",
-   "new": "False and meta.update_one(",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_an_expired_lease_is_taken_over_by_compare_and_set"
-   ]
-  },
-  {
-   "name": "m15: the account email is not unique",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "(USERS, \"email\", True)",
-   "new": "(USERS, \"email\", False)",
-   "kills": [
-    "tests/test_auth_store_mongo.py::test_unique_indexes_are_the_second_line"
-   ]
-  },
-  {
-   "name": "m16: deleting an account leaves its grants",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "            self._drop_where(GRANTS, {\"user_id\": user_id})",
-   "new": "            pass",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_delete_user_takes_sessions_and_grants_with_it[mongo]"
-   ]
-  },
-  {
-   "name": "m17: the session expiry check is removed",
-   "file": "src/autotester/auth/store_mongo.py",
-   "old": "if session is None or not session[\"expires_at\"] > now or user is None",
-   "new": "if session is None or user is None",
-   "kills": [
-    "tests/test_auth_store_contract.py::test_a_disabled_account_or_expired_session_never_resolves[mongo]"
-   ]
-  }
- ]
+  "tests": [
+    "tests/test_auth_store_mongo.py",
+    "tests/test_auth_store_contract.py",
+    "tests/test_auth_store_recovery.py"
+  ],
+  "timeout_s": 900,
+  "mutations": [
+    {
+      "name": "m1: last-admin guard is a no-op",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "        if not users and not after_delete:\n            return\n",
+      "new": "        return\n",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
+        "tests/test_auth_store_contract.py::test_last_admin_guard_survives_delete_and_regroup[mongo]",
+        "tests/test_auth_store_contract.py::test_disabling_the_last_two_admins_leaves_one_enabled[mongo]"
+      ]
+    },
+    {
+      "name": "m2: writers take no lease (first-admin / claim serialisation gone)",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    _acquire(meta, owner)\n    try:\n        recover(store)",
+      "new": "    try:\n        recover(store)",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_live_lease_held_elsewhere_refuses_with_no_write",
+        "tests/test_auth_store_contract.py::test_concurrent_first_signups_yield_exactly_one_admin[mongo]",
+        "tests/test_auth_store_contract.py::test_concurrent_claims_yield_exactly_one_admin[mongo]"
+      ]
+    },
+    {
+      "name": "m3: rollback is skipped on failure",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "            except BaseException:\n                tx.rollback()\n                raise",
+      "new": "            except BaseException:\n                raise",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
+        "tests/test_auth_store_mongo.py::test_an_exception_rolls_every_write_back"
+      ]
+    },
+    {
+      "name": "m4: sessions stored without the purge namespace",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "{\"_id\": digest, \"p\": NAMESPACE, \"user_id\": user_id,",
+      "new": "{\"_id\": digest, \"user_id\": user_id,",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_disabled_account_or_expired_session_never_resolves[mongo]"
+      ]
+    },
+    {
+      "name": "m5: every inserted document is logged (hash leak)",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        self._log({\"op\": \"ins\", \"coll\": name, \"doc_id\": doc[\"_id\"]})\n        coll.insert_one(doc)",
+      "new": "        self._log({\"op\": \"ins\", \"coll\": name, \"doc_id\": doc[\"_id\"]})\n        LOG.debug(\"insert %r\", doc)\n        coll.insert_one(doc)",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_nothing_secret_reaches_a_log"
+      ]
+    },
+    {
+      "name": "m6: the id counter does not advance",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "{\"$set\": {\"next\": taken + 1}}",
+      "new": "{\"$set\": {\"next\": taken}}",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_ids_are_never_reused_after_a_delete",
+        "tests/test_auth_store_mongo.py::test_concurrent_allocation_hands_out_distinct_ids"
+      ]
+    },
+    {
+      "name": "m7: exists() prepares (writes) the store",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "no write happens here.\"\"\"\n        return coll_of",
+      "new": "no write happens here.\"\"\"\n        self._prepare()\n        return coll_of",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_reading_a_missing_store_creates_nothing[mongo]"
+      ]
+    },
+    {
+      "name": "m8: seed does not skip a group that exists",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                        if tx._one(GROUPS, {\"seed\": seed}) is None:",
+      "new": "                        if True:",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_second_pass_creates_the_same_indexes_and_a_crashed_seed_resumes"
+      ]
+    },
+    {
+      "name": "m9: seed marker not checked (seed runs on every process start)",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                if meta.find_one({\"_id\": SEEDED_ID}) is None:",
+      "new": "                if True:",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_the_group_seed_runs_once[mongo]"
+      ]
+    },
+    {
+      "name": "m10: selection ignored (auth always sqlite)",
+      "file": "src/autotester/auth/store.py",
+      "old": "return store_selection()[\"auth\"] == \"mongo\" and own.get(\"auth\") == \"mongo\"",
+      "new": "return False",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_mongo_selection_yields_the_mongo_store"
+      ]
+    },
+    {
+      "name": "m11: mongo chosen by default",
+      "file": "src/autotester/auth/store.py",
+      "old": "return store_selection()[\"auth\"] == \"mongo\" and own.get(\"auth\") == \"mongo\"",
+      "new": "return True",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_sqlite_is_the_default_and_mongo_only_by_selection",
+        "tests/test_auth_store_recovery.py::test_a_global_mongo_selection_does_not_move_auth"
+      ]
+    },
+    {
+      "name": "m12: a reader may write",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        if not self._writable:\n            raise RuntimeError(\"the auth store was opened for reading\")\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_reader_cannot_write"
+      ]
+    },
+    {
+      "name": "m13: the lost-lease check at commit is removed",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                if not held():\n                    raise AuthStoreBusy(\"the auth store lease expired mid-transaction\")",
+      "new": "                pass",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holder_never_undoes_a_successors_commit",
+        "tests/test_auth_store_recovery.py::test_a_lease_lost_mid_transaction_is_undone_by_the_next_holder"
+      ]
+    },
+    {
+      "name": "m14: an expired lease is never taken over",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "held[\"expires\"] < now and meta.update_one(",
+      "new": "False and meta.update_one(",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_an_expired_lease_is_taken_over_by_compare_and_set"
+      ]
+    },
+    {
+      "name": "m15: the account email is not unique",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "(USERS, \"email\", True)",
+      "new": "(USERS, \"email\", False)",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_unique_indexes_are_the_second_line"
+      ]
+    },
+    {
+      "name": "m16: deleting an account leaves its grants",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "            self._drop_where(GRANTS, {\"user_id\": user_id})",
+      "new": "            pass",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_delete_user_takes_sessions_and_grants_with_it[mongo]"
+      ]
+    },
+    {
+      "name": "m17: the session expiry check is removed",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "if session is None or not session[\"expires_at\"] > now or user is None",
+      "new": "if session is None or user is None",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_disabled_account_or_expired_session_never_resolves[mongo]"
+      ]
+    },
+    {
+      "name": "m18: a global store selection moves auth",
+      "file": "src/autotester/auth/store.py",
+      "old": "return store_selection()[\"auth\"] == \"mongo\" and own.get(\"auth\") == \"mongo\"",
+      "new": "return store_selection()[\"auth\"] == \"mongo\"",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_global_mongo_selection_does_not_move_auth"
+      ]
+    },
+    {
+      "name": "r1: a new holder does not recover the dead one's journal",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        recover(store)  # whatever a holder that died mid-transaction left behind\n",
+      "new": "        pass\n",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[set_user_groups]",
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[delete_user]",
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[update_group]",
+        "tests/test_auth_store_recovery.py::test_a_lease_lost_mid_transaction_is_undone_by_the_next_holder"
+      ]
+    },
+    {
+      "name": "r2: the write happens before its undo entry",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            self._log({\"op\": \"set\", \"coll\": name, \"doc_id\": doc_id, \"after\": fields,\n                       \"prior\": {key: old.get(key) for key in fields}})\n            coll.update_one({\"_id\": doc_id}, {\"$set\": fields})",
+      "new": "            coll.update_one({\"_id\": doc_id}, {\"$set\": fields})\n            self._log({\"op\": \"set\", \"coll\": name, \"doc_id\": doc_id, \"after\": fields,\n                       \"prior\": {key: old.get(key) for key in fields}})",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[set_user_groups]",
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[set_disabled]",
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[update_group]"
+      ]
+    },
+    {
+      "name": "r3: recovery leaves the journal marker behind",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    meta.delete_one({\"_id\": JOURNAL_ID})\n\n\nclass MongoTxBase",
+      "new": "    pass\n\n\nclass MongoTxBase",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holder_never_undoes_a_successors_commit",
+        "tests/test_auth_store_recovery.py::test_a_lease_lost_mid_transaction_is_undone_by_the_next_holder"
+      ]
+    },
+    {
+      "name": "r4: a patch is undone without the compare-and-set",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "coll.update_one({\"_id\": doc_id, **entry[\"after\"]}, {\"$set\": entry[\"prior\"]})",
+      "new": "coll.update_one({\"_id\": doc_id}, {\"$set\": entry[\"prior\"]})",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_an_undo_never_overwrites_a_newer_value"
+      ]
+    },
+    {
+      "name": "r5: commit ignores a lost journal marker",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "if held is None or not coll_of(self._s, META).delete_one(\n                {\"_id\": JOURNAL_ID, \"owner\": held.owner}):",
+      "new": "if held is None or not (coll_of(self._s, META).delete_one(\n                {\"_id\": JOURNAL_ID, \"owner\": held.owner}) or True):",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_commit_whose_journal_was_undone_underneath_it_fails"
+      ]
+    },
+    {
+      "name": "r6: a rollback replays whatever journal is open",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            if self._held is not None and self._held():\n                recover(self._s, only=self._held.owner)",
+      "new": "            recover(self._s)",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holders_rollback_leaves_a_live_successor_alone"
+      ]
+    },
+    {
+      "name": "r7: a write is not fenced by the lease",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        if held is None or not held():\n            raise AuthStoreBusy(\"the auth store lease was lost\")",
+      "new": "        if held is None:\n            raise AuthStoreBusy(\"the auth store lease was lost\")",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holder_writes_nothing_once_the_lease_is_gone"
+      ]
+    },
+    {
+      "name": "r9: reset_password purges sessions after the new hash",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "        self.delete_user_sessions(user_id)  # revoke first: a stop between the two steps never\n        return self._patch(USERS, user_id, password_hash=password_hash)  # leaves old sessions",
+      "new": "        done = self._patch(USERS, user_id, password_hash=password_hash)\n        self.delete_user_sessions(user_id)\n        return done",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_sessions_are_revoked_before_the_new_hash_is_written[reset_password]"
+      ]
+    },
+    {
+      "name": "r10: bootstrap_admin purges sessions after the new hash",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "        self.delete_user_sessions(user_id)\n        self._patch(USERS, user_id, password_hash=password_hash, disabled=False)",
+      "new": "        self._patch(USERS, user_id, password_hash=password_hash, disabled=False)\n        self.delete_user_sessions(user_id)",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_sessions_are_revoked_before_the_new_hash_is_written[bootstrap_admin]"
+      ]
+    },
+    {
+      "name": "r11: journal entries are read as accounts",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "if d.get(\"kind\") != UNDO]",
+      "new": "]",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
+        "tests/test_auth_store_mongo.py::test_an_exception_rolls_every_write_back",
+        "tests/test_auth_store_recovery.py::test_a_claim_killed_anywhere_leaves_exactly_one_admin"
+      ]
+    },
+    {
+      "name": "r13: the journal is replayed oldest first",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "key=lambda d: str(d[\"_id\"]), reverse=True)",
+      "new": "key=lambda d: str(d[\"_id\"]), reverse=False)",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_several_writes_to_one_document_are_undone_newest_first"
+      ]
+    },
+    {
+      "name": "r16: recovery does not put a deleted document back",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            coll.insert_one(entry[\"doc\"])",
+      "new": "            pass",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[delete_user]"
+      ]
+    },
+    {
+      "name": "r17: recovery does not remove an inserted document",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        coll.delete_one({\"_id\": doc_id})\n    elif entry[\"op\"] == \"set\":",
+      "new": "        pass\n    elif entry[\"op\"] == \"set\":",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_an_exception_rolls_every_write_back"
+      ]
+    },
+    {
+      "name": "r19: the seed transaction is never committed",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                    tx.commit()  # then the marker: a stop in between just reseeds nothing\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_the_group_seed_runs_once[mongo]"
+      ]
+    }
+  ]
 }

@@ -47,7 +47,7 @@ class MongoAuthTx(MongoTxBase):
             created_at=datetime.fromisoformat(doc["created_at"]),
             groups=sorted(names[g] for g in doc["group_ids"] if g in names))
 
-    def count_users(self) -> int: return coll_of(self._s, USERS).count_documents({})
+    def count_users(self) -> int: return len(self._docs(USERS))
     def get_user(self, user_id: int) -> User | None: return self._user(self._get(USERS, user_id))
     def find_user(self, email: str) -> User | None:
         return self._user(self._one(USERS, {"email": email}))
@@ -78,9 +78,11 @@ class MongoAuthTx(MongoTxBase):
         return user_id
 
     def set_password_hash(self, user_id: int, password_hash: str) -> bool:
-        return self._patch(USERS, user_id, password_hash=password_hash)
+        self.delete_user_sessions(user_id)  # revoke first: a stop between the two steps never
+        return self._patch(USERS, user_id, password_hash=password_hash)  # leaves old sessions
 
     def enable_with_password_hash(self, user_id: int, password_hash: str) -> None:
+        self.delete_user_sessions(user_id)
         self._patch(USERS, user_id, password_hash=password_hash, disabled=False)
 
     def set_disabled(self, user_id: int, disabled: bool) -> bool:
@@ -249,13 +251,14 @@ class MongoAuthStore:
             for name, field, unique in INDEXES:
                 coll_of(self._s, name).create_index([(field, 1)], unique=unique, name=field)
             meta = coll_of(self._s, META)
-            with lease(self._s):
+            with lease(self._s) as held:
                 if meta.find_one({"_id": SEEDED_ID}) is None:
-                    tx = MongoAuthTx(self._s, True)
+                    tx = MongoAuthTx(self._s, True, held)
                     for seed, (name, permissions) in DEFAULT_GROUPS.items():
                         if tx._one(GROUPS, {"seed": seed}) is None:
                             tx._insert(GROUPS, {"_id": tx._allocate(GROUPS), "name": name,
                                                 "seed": seed, "permissions": sorted(permissions)})
+                    tx.commit()  # then the marker: a stop in between just reseeds nothing
                     meta.insert_one({"_id": SEEDED_ID, "at": db.now_iso()})
             self._prepared = True
 
@@ -267,12 +270,13 @@ class MongoAuthStore:
     @contextmanager
     def transaction(self) -> Iterator[MongoAuthTx]:
         self._prepare()
-        with lease(self._s) as holds:
-            tx = MongoAuthTx(self._s, True)
+        with lease(self._s) as held:
+            tx = MongoAuthTx(self._s, True, held)
             try:
                 yield tx
-                if not holds():
+                if not held():
                     raise AuthStoreBusy("the auth store lease expired mid-transaction")
+                tx.commit()
             except BaseException:
                 tx.rollback()
                 raise
