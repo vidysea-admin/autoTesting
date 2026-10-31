@@ -1,0 +1,19 @@
+{
+ "tests": [
+  "tests/test_purge_recovery_u7.py"
+ ],
+ "mutations": [
+  {
+   "name": "m17: a stage copy beside a live file is refused, so it is stranded",
+   "file": "src/autotester/stages/schedule_store.py",
+   "old": "            elif digest_path(held) == digest_path(dest):",
+   "new": "            elif False:",
+   "kills": [
+    "test_a_kill_between_a_moves_put_and_delete_never_resurrects_a_purged_file[memory-0]",
+    "test_a_kill_between_a_moves_put_and_delete_never_resurrects_a_purged_file[mongo-0]",
+    "test_a_kill_between_a_moves_put_and_delete_never_resurrects_a_purged_file[memory-2]",
+    "test_a_kill_between_a_moves_put_and_delete_never_resurrects_a_purged_file[mongo-2]"
+   ]
+  }
+ ]
+}
