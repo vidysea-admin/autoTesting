@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u7
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, dual: A 90f4371f, B a9153652)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U7. **Criticality:** dual (U7 row is marked dual; M19, M20, M52, M53 are CRITICAL). Two independent checkers.
 **Authority:** D-126 (hosts the path-level primitives in the new module `src/autotester/store/filestore_paths.py`; `store/mongo_bucket.py` only if GridFS code moved, and none moved); D-122/D-123 untouched.
