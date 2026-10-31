@@ -3048,3 +3048,17 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Links:** D-122, D-123, qa/contracts/mongo-store.md (M16, M29, M50, M53), U6b, U7
 
 **Changes-authorized:** new files `src/autotester/auth/store_mongo_tx.py`, `src/autotester/store/filestore_paths.py`, `src/autotester/store/mongo_bucket.py`, `src/autotester/ledger/state_bypass.py`; generated sections of `docs/ARCHITECTURE.md` and `docs/MAP.md` via `autotester map`.
+
+## D-127 | 2026-10-31 | type: decision | status: ACTIVE
+
+**What:** Approve three new modules for mongo-store unit U8 (migrate and verify), beyond `cli_store.py` (D-122/D-123): `src/autotester/store/migrate_state.py` (file-tree scan/compare/copy, M25 exclusions, approvals copied byte-identical), `src/autotester/auth/migrate_auth.py` (read-only SQLite reader and importer through the U6b `MongoAuthStore` transaction API), and `src/autotester/store/migrate_creds.py` (repo-root `.env` to the U11 credential door, filtered to each project's declared SecretRef keys, never printing a value). `cli_store.py` keeps the typer commands, report rendering and exit codes only.
+
+**Why:** The U8 maker measured the approved single module at about 450-500 lines against the 300-line file cap; the three importer halves alone came to 351. Fitting one file would mean dropping M43 (auth verify) or M45 (credential filtering), or exempting the file from an enforcement rule. Each new module has one job and duplicates no concept. Proposal: `qa/evidence/mongo-store-u8/split-proposal/PROPOSAL.md` on `feat/mongo-store-u8` (b7d48544). Umesh approved in chat on 2026-10-31 ("Yes, approve all 3").
+
+**Result:** U8 resumes and builds on this split. `migrate --apply` against a real database stays the G1 human gate; U8 tests run on the fake Mongo and temp dirs only.
+
+**Links:** D-122, D-123, D-126, qa/contracts/mongo-store.md (M9, M25, M36, M41-M46), U8
+
+**Changes-authorized:** new files `src/autotester/store/migrate_state.py`, `src/autotester/auth/migrate_auth.py`, `src/autotester/store/migrate_creds.py`; the `("store", cli_store.app)` registration in `src/autotester/cli_subapps.py`; generated sections of `docs/ARCHITECTURE.md` and `docs/MAP.md` via `autotester map`.
+
+**Approved-by:** Umesh
