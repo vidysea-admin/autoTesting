@@ -215,7 +215,7 @@ def _extract_one(ctx: _Ctx, zf: zipfile.ZipFile, plan: _Plan, staging: Path, ind
             return _fail(plan, "empty file"), 0
         return _store_member(ctx, plan, dest, result), result.size
     finally:
-        scratch_unlink(dest)
+        scratch_unlink(dest, base=ctx.store.paths.root)
 
 
 def _run_plans(ctx: _Ctx, zf: zipfile.ZipFile, plans: list[_Plan]) -> list[MemberResult]:

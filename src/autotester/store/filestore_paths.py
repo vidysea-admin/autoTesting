@@ -12,8 +12,9 @@ path on a Mongo area reaches the Mongo backend and a path on a file area reaches
 - `remove_stray_temps`, `remove_empty_dir`: file-backend housekeeping, a no-op elsewhere.
 
 `scratch_*` are the opposite kind: they act on the LOCAL disk only, never on a backend, and refuse
-any in-root path outside `.work/`. Download staging and unzip folders hold video bytes that must
-never become state documents (M25: `.work/` scratch does not move), so they are not routed.
+any path that does not resolve into `<root>/.work/{intake,drive-fetch,gws}`. Download staging and
+unzip folders hold video bytes that must never become state documents (M25: `.work/` scratch does
+not move), so they are not routed.
 """
 
 from __future__ import annotations
@@ -27,8 +28,9 @@ from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
+from autotester.core.paths import repo_root
 from autotester.core.safe_names import UnsafeName
-from autotester.store.filestore import FileBackend, _holders, _rel, _route
+from autotester.store.filestore import FileBackend, _holders, _route
 from autotester.store.mongo_routes import text_sha
 
 __all__ = [
@@ -142,45 +144,67 @@ def remove_empty_dir(folder: Path) -> None:
             Path(folder).rmdir()
 
 
-def _scratch(path: Path) -> Path:
-    """`path` if it is scratch (outside the data root or under its `.work/`), else `UnsafeName`."""
-    key = _rel(path)
-    if key is not None and not key.startswith(".work/"):
-        raise UnsafeName(f"{key!r} is state, not scratch: use the store verbs")
-    return Path(path)
+SCRATCH_DIRS = ("intake", "drive-fetch", "gws")  # the `.work/` subtrees a caller really stages in
 
 
-def scratch_mkdir(path: Path, *, exist_ok: bool = False) -> None:
-    _scratch(path).mkdir(parents=True, exist_ok=exist_ok)
+def _scratch(path: Path, base: Path | None) -> Path:
+    """The resolved `path` if it lies in a scratch subtree of root `base`, else `UnsafeName`.
+
+    `base` is the root of the store being worked on (the repo root when `None`). The check is on
+    the RESOLVED path (`..`, symlinks and junctions followed), so a name cannot claim to be
+    scratch: only `<base>/.work/<SCRATCH_DIRS>/...` qualifies. Mongo-routed `.work` state
+    (`team/`, `run_queue.json`, `audit.jsonl`, `drive-jobs/`) and every state path are refused:
+    use the store verbs for those."""
+    real = Path(os.path.realpath(path))
+    parts = _under(real, Path(os.path.realpath(repo_root() if base is None else base)) / ".work")
+    if not parts or parts[0] not in SCRATCH_DIRS:
+        raise UnsafeName(f"{Path(path).name!r} is not under .work/{{{','.join(SCRATCH_DIRS)}}}")
+    return real
 
 
-def scratch_children(path: Path) -> list[Path]:
-    """The entries directly in the scratch directory, sorted; `[]` when it does not exist."""
-    base = _scratch(path)
-    return sorted(base.iterdir()) if base.is_dir() else []
-
-
-def scratch_mtime(path: Path) -> float | None:
+def _under(real: Path, base: Path) -> tuple[str, ...] | None:
+    """`real` relative to `base` as parts, `None` when it is not below it."""
     try:
-        return _scratch(path).stat().st_mtime
+        return real.relative_to(base).parts
+    except ValueError:
+        return None
+
+
+def scratch_mkdir(path: Path, *, exist_ok: bool = False, base: Path | None = None) -> None:
+    _scratch(path, base).mkdir(parents=True, exist_ok=exist_ok)
+
+
+def scratch_children(path: Path, *, base: Path | None = None) -> list[Path]:
+    """The entries directly in the scratch directory, sorted; `[]` when it does not exist."""
+    real = _scratch(path, base)
+    return [Path(path) / p.name for p in sorted(real.iterdir())] if real.is_dir() else []
+
+
+def scratch_mtime(path: Path, *, base: Path | None = None) -> float | None:
+    try:
+        return _scratch(path, base).stat().st_mtime
     except OSError:
         return None
 
 
-def scratch_rmtree(path: Path) -> None:
-    shutil.rmtree(_scratch(path), ignore_errors=True)
+def scratch_rmtree(path: Path, *, base: Path | None = None) -> None:
+    shutil.rmtree(_scratch(path, base), ignore_errors=True)
 
 
-def scratch_unlink(path: Path) -> None:
-    _scratch(path).unlink(missing_ok=True)
+def scratch_unlink(path: Path, *, base: Path | None = None) -> None:
+    _scratch(path, base).unlink(missing_ok=True)
 
 
-def evidence_mkdir(path: Path) -> None:
-    """Create a checked-in evidence directory (`qa/evidence/...`; M49: evidence is not state, so it
-    stays on the local disk). Any other path is refused: a state folder is made by writing to it."""
-    if "qa/evidence/" not in Path(path).as_posix() + "/":
+def evidence_mkdir(path: Path, *, base: Path | None = None) -> None:
+    """Create a checked-in evidence directory (`<base>/qa/evidence/...`, `base` the repo root by
+    default; M49: evidence is not state, so it stays on the local disk). The resolved path must sit
+    below the resolved anchor, so `..`, a link, a nested `qa/evidence` or a look-alike name is
+    refused: a state folder is made by writing to it."""
+    anchor = Path(os.path.realpath(repo_root() if base is None else base)) / "qa" / "evidence"
+    real = Path(os.path.realpath(path))
+    if _under(real, anchor) is None:
         raise UnsafeName(f"{Path(path).name!r} is not under qa/evidence/")
-    Path(path).mkdir(parents=True, exist_ok=True)
+    real.mkdir(parents=True, exist_ok=True)
 
 
 M = TypeVar("M", bound=BaseModel)

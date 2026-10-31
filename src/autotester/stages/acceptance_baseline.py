@@ -121,7 +121,7 @@ def _write_pair(destination: Path, projects: list[Project], plan: BaselinePlan,
         root = destination / mode
         store = ProjectStore(project.slug, root)
         store.save_project(project)
-        evidence_mkdir(root / "qa" / "evidence" / "t169-real" / mode)
+        evidence_mkdir(root / "qa" / "evidence" / "t169-real" / mode, base=root)
         if mode != "teaching":
             continue
         for index, (row, blob) in enumerate(zip(plan.teaching_inputs, blobs, strict=True)):

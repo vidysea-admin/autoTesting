@@ -79,13 +79,13 @@ def _refusal(ref: DriveRef, member: str, reason: str) -> IntakeReport:
     return IntakeReport(archive=f"drive:{ref.id}", status=IntakeStatus.FAILED, members=[row])
 
 
-def _sweep_stale(*roots: Path) -> None:
+def _sweep_stale(base: Path, *roots: Path) -> None:
     """Remove fetch folders a killed run left behind (older than a day, so never a live one)."""
     for root in roots:
-        for folder in scratch_children(root):
-            stamp = scratch_mtime(folder)
+        for folder in scratch_children(root, base=base):
+            stamp = scratch_mtime(folder, base=base)
             if stamp is not None and time.time() - stamp > STALE_FETCH_S:
-                scratch_rmtree(folder)
+                scratch_rmtree(folder, base=base)
 
 
 class _Intake:
@@ -126,7 +126,7 @@ class _Intake:
             return MemberResult(member=member, outcome=_F,
                                 reason="could not be stored (the destination write failed)")
         finally:
-            scratch_rmtree(folder)
+            scratch_rmtree(folder, base=self.store.paths.root)
         if created:
             return MemberResult(member=member, outcome=IntakeOutcome.REGISTERED,
                                 source_id=source.id)
@@ -143,7 +143,7 @@ class _Intake:
         except (DriveError, DriveVerifyError) as exc:
             return _refusal(ref, _label(item, self.scrub), str(exc))
         finally:
-            scratch_rmtree(folder)
+            scratch_rmtree(folder, base=self.store.paths.root)
         return report.model_copy(update={"notes": [*self.notes, *report.notes]})
 
     def folder(self, ref: DriveRef) -> IntakeReport:
@@ -179,7 +179,8 @@ def intake_drive(store: ProjectStore, ref: DriveRef, drive: DriveFetcher | None 
     `uploaded_by` is the signed-in member the caller resolved, never a request field."""
     drive = drive or default_drive(store)
     run = _Intake(store, drive, uploaded_by, scrub, now, limits or ZipLimits())
-    _sweep_stale(run.fetch_root, work_dir(store.paths.root) / "gws" / store.paths.slug)
+    _sweep_stale(store.paths.root, run.fetch_root,
+                 work_dir(store.paths.root) / "gws" / store.paths.slug)
     try:
         if ref.kind == "folder":
             return run.folder(ref)

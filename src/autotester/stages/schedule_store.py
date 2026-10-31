@@ -38,6 +38,7 @@ from autotester.store.filestore import (
 from autotester.store.filestore_paths import (
     create_exclusive_path,
     delete_tree,
+    digest_path,
     is_dir_path,
     read_text_path,
     rename_path,
@@ -166,7 +167,10 @@ def _restore_stage(stage: Path) -> bool:
     The manifest is written before the first move and deleted at the commit point, so: no
     manifest means nothing to put back (never started, or committed and only the delete was
     interrupted); a manifest means the purge did not finish. Every file is tried (one stuck
-    file never strands the rest), and a file is never put over one that is already there."""
+    file never strands the rest), and a file is never put over one that is already there. When
+    both copies exist and are identical, a kill landed between a document backend's put and
+    delete (`rename_path` is not atomic there): the move is finished by dropping the stage copy,
+    so a later recovery cannot put a purged file back. A different file is kept (stage stays)."""
     text = read_text_path(stage / _MANIFEST)
     if text is None:
         delete_tree(stage)
@@ -181,9 +185,12 @@ def _restore_stage(stage: Path) -> bool:
         if not exists_path(held):
             continue
         try:
-            if exists_path(dest):
-                raise FileExistsError(dest)
-            rename_path(held, dest)
+            if not exists_path(dest):
+                rename_path(held, dest)
+            elif digest_path(held) == digest_path(dest):
+                delete_path(held)  # the move's delete never landed: dest is whole, held a copy
+            else:
+                raise FileExistsError(dest)  # a different file came back: keep both
         except OSError:
             clean = False
     if clean:

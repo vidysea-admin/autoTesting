@@ -1,13 +1,15 @@
 """mongo-store U7 (M19, M20, M53): the path-level coordination verbs, one contract per backend.
 
 `store/filestore_paths.py` hosts what `filestore` (at its line cap) cannot: exclusive create,
-compare-and-set, raw reads, rename, delete-tree, and the local-scratch verbs. Every state verb is
+compare-and-set, raw reads, rename, delete-tree. The local-scratch fences are in
+`test_scratch_fences_u7.py`. Every state verb is
 run on the real file backend, the in-memory double and `MongoBackend` over the hand-written fake.
 Races use 16 threads released together, so a second winner would show.
 """
 
 from __future__ import annotations
 
+import os
 import threading
 from collections.abc import Callable
 from pathlib import Path
@@ -30,11 +32,6 @@ from autotester.store.filestore_paths import (
     remove_empty_dir,
     remove_stray_temps,
     rename_path,
-    scratch_children,
-    scratch_mkdir,
-    scratch_mtime,
-    scratch_rmtree,
-    scratch_unlink,
     touch_path,
 )
 from autotester.store.mongo_routes import text_sha
@@ -82,21 +79,77 @@ def test_sixteen_racers_for_one_exclusive_create_yield_exactly_one_winner(root: 
 
 
 def test_an_exclusive_create_never_shows_a_reader_a_half_written_file(root: Path) -> None:
+    """A 6 MB body takes milliseconds to write, so an in-place create (O_EXCL, then write) is
+    seen empty or partial by at least one of three readers that never stop reading."""
     path = root / "projects" / "p" / "big.json"
-    body = "x" * 200_000
+    body = "x" * 6_000_000
     seen: list[str | None] = []
-    stop = threading.Event()
+    errors: list[BaseException] = []
+    stop, started = threading.Event(), threading.Barrier(4)
 
     def reader() -> None:
+        started.wait()
         while not stop.is_set():
-            seen.append(read_text_path(path))
+            try:
+                seen.append(read_text_path(path))
+            except OSError as exc:
+                errors.append(exc)
 
-    thread = threading.Thread(target=reader)
-    thread.start()
+    threads = [threading.Thread(target=reader) for _ in range(3)]
+    [t.start() for t in threads]
+    started.wait()
     assert create_exclusive_path(path, body) is True
     stop.set()
-    thread.join()
+    [t.join() for t in threads]
+    assert not errors
     assert all(text in (None, body) for text in seen)
+    assert read_text_path(path) == body
+
+
+class _MidWriteReader:
+    """Wraps a write handle: after half of the text is written it reads the claim's path, as a
+    reader arriving at that instant would, and records what it saw."""
+
+    def __init__(self, handle, probe: Callable[[], None]) -> None:
+        self._handle, self._probe = handle, probe
+
+    def __enter__(self) -> _MidWriteReader:
+        self._handle.__enter__()
+        return self
+
+    def __exit__(self, *exc: object) -> object:
+        return self._handle.__exit__(*exc)
+
+    def write(self, text: str) -> int:
+        half = len(text) // 2
+        self._handle.write(text[:half])
+        self._handle.flush()
+        self._probe()
+        return self._handle.write(text[half:])
+
+
+def test_an_exclusive_create_is_invisible_to_a_reader_until_the_whole_text_is_written(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Deterministic: a reader arriving half way through the write sees no file (never a partial
+    one). A create written in place (O_EXCL, then write) shows the first half and fails here."""
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS"):
+        monkeypatch.delenv(name, raising=False)
+    path, body, seen = tmp_path / "projects" / "p" / "mid.json", "y" * 4000, []
+    real = os.fdopen
+
+    def spy(fd: int, mode: str = "r", *args: object, **kwargs: object) -> object:
+        handle = real(fd, mode, *args, **kwargs)
+        if "w" not in mode:
+            return handle
+        return _MidWriteReader(handle, lambda: seen.append(read_text_path(path)))
+
+    with monkeypatch.context() as patched:
+        patched.setattr(os, "fdopen", spy)
+        assert create_exclusive_path(path, body) is True
+    assert seen, "the spy never ran: the create no longer writes through os.fdopen"
+    assert all(text in (None, body) for text in seen)
+    assert read_text_path(path) == body
 
 
 def test_put_if_a_stale_digest_writes_nothing_and_the_current_one_lands(root: Path) -> None:
@@ -193,34 +246,3 @@ def test_list_children_still_sees_a_created_key(root: Path) -> None:
 
 class _Any(BaseModel):
     model_config = ConfigDict(extra="allow")
-
-
-# ---- scratch verbs: local only, fenced to `.work/` ---------------------------------------------
-
-
-def test_scratch_verbs_work_on_the_local_disk_under_work_and_touch_no_backend(
-        root: Path, tmp_path: Path) -> None:
-    stage = root / ".work" / "intake" / "p" / "one"
-    scratch_mkdir(stage)
-    (stage / "f.bin").write_bytes(b"x")
-    assert scratch_children(stage.parent) == [stage]
-    assert scratch_mtime(stage) is not None and scratch_mtime(stage / "nope") is None
-    scratch_unlink(stage / "f.bin")
-    scratch_unlink(stage / "f.bin")  # missing_ok
-    scratch_rmtree(stage)
-    assert not stage.exists() and scratch_children(stage) == []
-    outside = tmp_path / "elsewhere" / "x"
-    scratch_mkdir(outside)  # outside the data root: always allowed
-    assert outside.is_dir()
-
-
-@pytest.mark.parametrize("where", ["projects/p/x", "state.json", ".env"])
-def test_scratch_verbs_refuse_a_state_path_inside_the_data_root(root: Path, where: str) -> None:
-    target = root / where
-    for verb in (scratch_mkdir, scratch_rmtree, scratch_unlink):
-        with pytest.raises(UnsafeName):
-            verb(target)
-    with pytest.raises(UnsafeName):
-        scratch_children(target)
-    with pytest.raises(UnsafeName):
-        scratch_mtime(target)

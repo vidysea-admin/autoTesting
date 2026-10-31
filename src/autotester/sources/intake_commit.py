@@ -91,8 +91,9 @@ def sweep_orphans(store: ProjectStore) -> int:
     (media, transcripts) in a row-less folder is left alone. Returns the number removed."""
     removed = 0
     root = staging_root(store)
-    for leftover in scratch_children(root):  # local scratch: video bytes, never state (M25)
-        scratch_rmtree(leftover)
+    base = store.paths.root
+    for leftover in scratch_children(root, base=base):  # video bytes, never state (M25)
+        scratch_rmtree(leftover, base=base)
         removed += 1
     known = {s.id for s in store.list_sources()}
     base = store.paths.sources_dir
@@ -112,11 +113,11 @@ def intake_session(store: ProjectStore, **lock_kwargs) -> Iterator[tuple[Path, C
     with intake_lock(store, **lock_kwargs) as beat:
         sweep_orphans(store)
         staging = staging_root(store) / ulid()
-        scratch_mkdir(staging)
+        scratch_mkdir(staging, base=store.paths.root)
         try:
             yield staging, beat
         finally:
-            scratch_rmtree(staging)
+            scratch_rmtree(staging, base=store.paths.root)
 
 
 def commit_video(store: ProjectStore, staged: Path, *, digest: str, suffix: str,
