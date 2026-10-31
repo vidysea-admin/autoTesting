@@ -3062,3 +3062,17 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Changes-authorized:** new files `src/autotester/store/migrate_state.py`, `src/autotester/auth/migrate_auth.py`, `src/autotester/store/migrate_creds.py`; the `("store", cli_store.app)` registration in `src/autotester/cli_subapps.py`; generated sections of `docs/ARCHITECTURE.md` and `docs/MAP.md` via `autotester map`.
 
 **Approved-by:** Umesh
+
+## D-128 | 2026-10-31 | type: decision | status: ACTIVE
+
+**What:** The CEO-benchmark private answer list (`.work/ceo-bench/`, `schema/ceo_inputs.py` `AtomicList`) moves to the Mongo state store with the rest of `.work` state. This reverses the "file-only" clause of qa/contracts/mongo-store.md M25 for that list; the rest of M25 (teaching-video chunks, exports, `profiles/`, `.env`, `.work/` scratch, `crawl_summaries/` in git) is unchanged. The list stays private exactly as before: only its count and hash leave the store into reports, run inputs, logs or any model call.
+
+**Why:** On a Cloud Run deployment a file-only list is lost on every deploy unless the GCS volume stays mounted, which the Mongo store exists to remove (D-120, D-125). The code already routes `.work/ceo-bench` to Mongo and the U7 checkers found the M25 clause unowned. Privacy was the reason for file-only; the count-and-hash-only rule carries it, independent of the backend. Umesh decided in chat on 2026-10-31 ("Move it to Mongo").
+
+**Result:** U8 `migrate` copies the list into Mongo instead of skipping it, and `verify` checks it like any other routed area. The checker amends M25 in qa/contracts/mongo-store.md to match.
+
+**Links:** D-120, D-123, D-125, D-127, qa/contracts/mongo-store.md M25, U7, U8
+
+**Changes-authorized:** qa/contracts/mongo-store.md M25 (checker amendment, CEO-bench clause only); U8 migrate/verify handling of `.work/ceo-bench/`.
+
+**Approved-by:** Umesh
