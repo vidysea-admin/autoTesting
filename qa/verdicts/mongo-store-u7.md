@@ -1,82 +1,102 @@
 # Verdict - mongo-store-u7 (checker A)
 
-**Verdict: FAIL** (one blocking finding, F1; every other claim verified)
-**Cycle checked: 0**
-**Checked head:** `876e553e` on `feat/mongo-store-u7` (code commit `13b79315`, base `fe1ac6c8`). Worktree `D:/autoTesting/.claude/worktrees/mongo-u7`.
+**Verdict: PASS** (cycle 1; the cycle-0 block F1 is closed; two non-blocking warnings and four info items)
+**Cycle checked: 1**
+**Checked head:** `51fccd44` on `feat/mongo-store-u7` (code commit `67f08f54`, base `fe1ac6c8`). Worktree `D:/autoTesting/.claude/worktrees/mongo-u7`.
 **Contract:** `qa/contracts/mongo-store.md` U7 row (dual): M19, M20, M52, M53. D-126 authorizes `store/filestore_paths.py`.
-**Method:** fresh checker, own probes and mutants, nothing from another checker read. No `.env` value read or printed. Probes live in `.work/` (gitignored).
+**Method:** fresh checker, own probes and own mutants, no other checker's verdict read. No `.env` value read or printed. Probes live in `.work/` (gitignored). Cycle 0 of this seat: FAIL (F1 escapable fences); W1-W3 and I1-I4 of that verdict are re-judged below.
 
-## Summary
+## Cycle-0 findings, status
 
-M19, M20, M52 and M53 hold on file, memory and fake-Mongo. The one thing that does not hold is the maker's own stated fence on the new `scratch_*` / `evidence_mkdir` verbs (judgement call 2): `..` traversal, a symlink and a substring match all escape it, and `scratch_rmtree` / `scratch_unlink` then delete state. The 14 `M53-gated` scratch rows were removed on the strength of that fence, so the removal route is not yet honest. The fix is about five lines plus tests; a cycle-1 re-check is narrow.
+| Cycle-0 item | Status at `51fccd44` |
+|---|---|
+| F1 BLOCK, `scratch_*` / `evidence_mkdir` fences escapable (`..`, symlink, substring) | CLOSED. See "F1 re-attack" below: 0 escapes across `..`, symlink, junction (inside `.work/intake`, as `.work/gws`, as `.work/drive-fetch`, and under `qa/evidence`), look-alikes, `base` widening. |
+| W1 half-written test does not bite | CLOSED. Mutant m16 (`os.link` replaced by in-place O_EXCL-then-write) is KILLED by the deterministic twin `test_an_exclusive_create_is_invisible_to_a_reader_until_the_whole_text_is_written` (named as sole killer in the spec, and it is the test that failed). The threaded test remains but is correctly not claimed as the kill. |
+| W2 M25 gap lost its baseline marker | STILL OPEN, unchanged, not U7's to close (manifest judgement call 4 says so plainly). Goes to the contract owner. |
+| W3 `.lock` sidecars under the data root in Mongo mode | STILL OPEN, unchanged, manifest routes it to the inbox. Not blocking. |
+| I1 purge as staged move, not literal `delete_many` | Ruling stands: acceptable. |
+| I2 heartbeat without CAS | Ruling stands: acceptable. |
 
-## Findings
+## F1 re-attack (all against `store/filestore_paths.py:150-207`)
 
-**F1 (BLOCK) - the scratch and evidence fences are escapable.** `store/filestore_paths.py:145-150` (`_scratch`) tests `_rel(path).startswith(".work/")` on the un-normalised path; `:181` (`evidence_mkdir`) tests the substring `"qa/evidence/" in path`. Probe `.work/probe_fence.py`, data root = a temp dir, `AUTOTESTER_ROOT` set:
-- `scratch_rmtree(root/".work"/".."/"projects"/"p")` ALLOWED, `projects/p/state.json` gone.
-- `scratch_unlink(root/".work"/".."/"projects"/"p"/"state.json")` ALLOWED, file gone.
-- `scratch_mkdir(root/".work"/".."/"projects"/"q")` ALLOWED, `projects/q` created. `scratch_children(root/".work/../projects")` ALLOWED and lists state.
-- A symlink `root/.work/lnk -> root/projects`: `scratch_rmtree(lnk/"p")` ALLOWED, state gone.
-- `scratch_rmtree(root/".work"/"team"/"schedule"/"claims")` ALLOWED. `.work/team/**`, `.work/run_queue.json`, `.work/audit.jsonl`, `.work/drive-jobs/**`, `.work/notification_prefs/**` are Mongo-routed STATE in `mongo_routes.py:81-88`, so "under `.work/`" is not "scratch".
-- `evidence_mkdir(root/"qa/evidence/../../projects/e")` ALLOWED (created `projects/e`); `root/projects/p/qa/evidence/z` ALLOWED; `root/xqa/evidence/y` ALLOWED; `<outside root>/qa/evidence/o` ALLOWED.
-- Refused as intended: direct `projects/p`, `.WORK/x`, `.work` itself, `QA/EVIDENCE/x` (these refusals are by string compare only).
-Why it blocks: these verbs live in `store/`, which the state-bypass rule exempts, and 14 baseline rows (drive_intake x4, intake_commit x9 including `commit_video:rmdir`, zip_intake x1) were removed by pointing the calls at them. The module docstring (`:14-16`) and the manifest promise that any in-root path outside `.work/` is refused; a `..` defeats it. The current callers (`intake_commit.py:94-119`, `drive_intake.py:85-146`, `zip_intake.py:218`) build paths from `ulid()` and vetted member names, so it is latent, not exploitable today; but a delete-capable verb whose only guard is a prefix string is the shape the contract's M53 "nothing invented" and the whole M16 rule exist to prevent.
-Required fix (cycle 1): normalise before comparing (`os.path.normpath` or `Path.resolve()` of both the path and `repo_root()`; reject if the resolved path leaves `root/.work/<allowed subtree>`), narrow the allow-list to the real scratch subtrees (`.work/intake`, `.work/drive-fetch`, `.work/gws`) instead of all of `.work/`, anchor `evidence_mkdir` on `repo_root()/"qa"/"evidence"` after resolving, and add tests for `..`, symlink and the `xqa/evidence` form. The existing fence test (`tests/test_filestore_paths_u7.py:218`) only uses three plain state paths; the mutation m10 only removes the fence entirely, so a normalisation mutant would survive.
+Code read: `_scratch` (`:150-162`) takes `os.path.realpath(path)`, requires it below `realpath(base or repo_root())/.work` and its first part in `SCRATCH_DIRS = ("intake","drive-fetch","gws")` (`:147`); every `scratch_*` verb then acts on the RESOLVED path (`:174-195`); `evidence_mkdir` (`:198-207`) requires the resolved path below `realpath(base or repo_root())/qa/evidence`. Python 3.11.15, Windows 11.
 
-**W1 (WARN) - the half-written-claim property is not pinned by a test that bites.** `FileBackend.create_exclusive` -> `core/file_lock.py:33 create_new` (temp file + `os.link`) is correct: I read a 500 KB body with 3 concurrent readers over 40 files, zero partial reads, zero `.tmp-*` leftovers, on all three backends. But `tests/test_filestore_paths_u7.py::test_an_exclusive_create_never_shows_a_reader_a_half_written_file` (one reader, 200 KB) does not kill the mutant "write in place under `O_EXCL`" (`_create_excl` called directly): 0 partial reads in 5 of 5 runs of that shape (`.work/probe_mut.py`), while 5 MB with 3 readers sees partial reads 4 times. The 11 mutants in `qa/evidence/mongo-store-u7/mutations.json` have no such mutant (m1 is "overwrites instead of linking"). The property is real in the code but only weakly guarded.
+Probe `.work/probe_fence_c1.py` and `.work/probe_fence_c1b.py` (fresh temp repo per case, `AUTOTESTER_ROOT` set, state files planted under `projects/p`, `.work/team/schedule`, and an outside dir):
 
-**W2 (WARN) - the M25 gap lost its only marker.** The three `bench_inputs` baseline rows (`load_pinned_list:exists`, `:read_bytes`, `save_atomic_list:mkdir`) were not M53 primitive gaps; their text said "M25 wants this list file-only but no route implements that ... no unit owns the M25 file-only routing yet". U7 routed read, write and mkdir through the store (`stages/bench_inputs.py:62,79`), which makes the CEO-bench private answer list consistently stored in Mongo (`server_state`/`settings`), the opposite of M25 ("`.work/ceo-bench/` file-only, private by design"). The write side already went to Mongo on `fe1ac6c8`, so U7 did not worsen the stored data, and it fixed a real read/write split in Mongo mode; but deleting the rows removes the only baseline reminder. The maker says so (manifest note 4). It needs an owner and an `qa/issues.jsonl` row before this unit closes, or a D-entry amending M25. Not a U7 criterion; not blocking.
+- Refused (`UnsafeName`) for all five scratch verbs, with `base=root` and with the default base: `.work/intake/../../projects/p`, `.work/../projects/p`, `.work/intakeX/y`, `.work/team/schedule`, `.work` itself, `projects/p`, a path outside the repo, `.WORK/INTAKE/../.../p`, `.work/intake/x::$INDEX_ALLOCATION`, `.work/INTAKE~1/x`.
+- Links, 2 kinds x 2 targets x 5 verbs x 3 locations x 3 victim shapes, rebuilt per case: a symlink and a `mklink /J` junction at `.work/intake/lnk`, at `.work/gws` and at `.work/drive-fetch`, each pointing at `projects/` and at a directory outside the repo; victim = a child, `state.json`, the link itself. Result: `link failures: 0`, state files intact in every case. (My first run of this probe showed FAIL lines; they were a probe ordering bug, `scratch_rmtree(.work/intake)` removed my own links before the link cases ran. The rewritten per-case probe is the evidence.)
+- `evidence_mkdir`, `base=root` and default base: refused for `qa/evidence/../../projects/e`, `projects/p/qa/evidence/z`, `xqa/evidence/y`, `qa/evidence_extra/y`, `<outside>/qa/evidence/o`; refused when `qa/evidence` itself is a symlink or junction to `projects/` or an outside dir (12 of 12).
+- `base` keyword: `base=Path("/")` with a `projects/p` path, `base=<root>/projects` with `projects/p`, `base=<root>/projects/p` with `state.json`, `base=<root>/.work/..` with `projects/p`, `base=<root>/.work` with `.work/team`: all refused. A caller-supplied `base` can only RELOCATE the `<base>/.work/{intake,drive-fetch,gws}` subtree (and `<base>/qa/evidence`); it can never widen the fence onto `projects/`, `.work/team/**` or the repo root. Its remaining risk is a caller passing a base whose own `.work/intake` is somewhere harmful, so callers were checked:
+  - `grep -rn "scratch_\|evidence_mkdir" src`: callers are `drive_intake.py:85-88,129,146`, `intake_commit.py:95-96,116,120`, `zip_intake.py:218`, `acceptance_baseline.py:124`. Every call passes `base=`: `store.paths.root` (a `ProjectPaths` root), `base` from `_sweep_stale(store.paths.root, ...)` (`drive_intake.py:182`), or `base=root` where `root = destination / mode` in `acceptance_baseline._write_pair` (`destination` is created `exist_ok=False` in `prepare_baselines`, `:100`; the only effect of `evidence_mkdir` is a `mkdir` under `<root>/qa/evidence`). None relies on the default base, none takes `base` from a request body.
+- Allowed by design, observed: `.work/intake` itself (needed for `scratch_children(root)`), `.work/intake./x` (Windows strips the trailing dot, so it is `.work/intake/x`), `qa/evidence` itself.
+- A junction and a symlink planted INSIDE a staging folder (`.work/intake/slug/jn -> projects`): `scratch_rmtree(.work/intake/slug)` removed the folder and the links and left `projects/p/state.json` (`.work/probe_fence_c1c.py`; Python 3.11 `shutil.rmtree` does not follow them).
 
-**W3 (WARN) - local lock sidecars stay under the data root in Mongo mode.** `.work/probe_m52.py`: with the fake Mongo backend on every area, one claim plus `purge_project` leaves `.work/team/schedule/.p.jsonl.lock` on disk (`stages/schedule_store.py` `file_lock(_lock_path(records_path))`, `_APPEND_LOCK`); `bench_inputs.save_atomic_list` and `FileBackend.put_if` likewise create `.lock` files. `tests/test_coordination_u7.py:63-66` (`_files`) exempts every `*.lock`. M52 falsifier (a) says "creates ... a file under the data root state paths". These are advisory empty files, not state, and the purge lock is a process-local mutex, so cross-instance purge exclusion is not provided (consistent with M28 `--max-instances 1`). The contract needs one sentence ruling that sidecar locks are exempt, otherwise M52(a) is literally unmet.
+Own mutants of the fences (`.work/mut-own-a.json`, run with `scripts/mutation_check.py`):
 
-**I1 (INFO) - purge is a staged move on store verbs, not a literal `delete_many`.** Ruling: acceptable. The U7 row text ("purge as `delete_many`") cannot give the property `test_schedule_purge_crash.py` pins (claims and records go together or not at all across two collections) because there are no multi-document transactions (contract, "Amendments applied"). `purge_project` (`schedule_store.py:228-244`) creates a manifest (`create_exclusive_path`), moves each file (`rename_path`), commits by `delete_path(manifest)`, then `delete_tree(stage)` -> per-key `delete_prefix`. Tests cover interrupt and hard-kill recovery on memory and Mongo (`test_an_interrupted_purge_puts_every_file_back`, `test_a_purge_killed_mid_way_is_put_back_by_the_next_recovery`; mutant m9 killed). The contract row should be amended to "purge on store verbs".
+```
+KILLED   own1 SCRATCH_DIRS adds "team"
+KILLED   own2 allow-list dropped (anything under .work)
+KILLED   own3 evidence check never refuses
+KILLED   own4 anchor moved to base.parent (widened)
+KILLED   own5 evidence anchor widened to qa/   (killed by the qa/evidence_extra look-alike case; my named kill id was the wrong one, the mutant did fail the suite)
+SURVIVED own6 scratch_rmtree acts on the unresolved path after the resolved check (pytest exit 0)
+4 killed outright + own5 killed under another id; 1 survivor (see I1)
+```
 
-**I2 (INFO) - heartbeat without CAS.** Ruling: acceptable. `write_heartbeat` (`schedule_store.py:249`) stays one atomic `write_text`; the tick is the single writer and nothing in M20's falsifier names the heartbeat (the falsifier is a stale write landing, or the checkpoint identity check skipped; both verified below). M20's parenthetical "(... heartbeat)" should be reworded, or a CAS added when a second writer exists.
+Maker's spec: `mutations-fences.json` 5/5 KILLED (m10, m12-m15).
 
-**I3 (INFO) - `put_if` cannot match text containing a raw `\r`.** `FileBackend.get` reads text mode (universal newlines), so `put_if_path(p, "a\r\nb", None)` followed by `put_if_path(p, ..., text_sha("a\r\nb"))` loses on the file backend, and `create_exclusive` round-trip is unequal (`.work/probe_nl.py`). Pre-existing property of `get`; every U7 caller writes JSON (no raw CR), an empty lock body or a manifest, so none is affected.
+## Purge recovery (item 2)
 
-**I4 (INFO) - not touched.** `delivery/email.py:104-110` raw `os.link` into an outbox directory (not a baseline row; the directory is injected) and `_lock_is_stale` double-takeover race (pre-existing, manifest note 9) are unchanged. `docs/SNAPSHOT.md` is stale (see doctor below).
+`schedule_store._restore_stage` (`stages/schedule_store.py:163-195`): when stage copy and original both exist and `digest_path` is equal it calls `delete_path(held)` (`:187`), so the stage clears; when they differ it raises `FileExistsError` into the `except OSError` and keeps both (`:190`).
+
+Own probe `.work/test_probe_purge_c1.py` (pytest, memory and fake-Mongo legs): the backend's mutating methods (`put`, `delete`, `delete_prefix`, `create_exclusive`, `put_if`) are wrapped; a hard kill (`BaseException`, `_restore_stage` disabled so no rollback) is injected BEFORE and AFTER every mutating backend call of one `purge_project` (13 calls on memory, 12 on Mongo, so 26 and 24 kill points). After each kill: `recover_stale_purges`; the state must be wholly intact or wholly gone (never partial), no `.purge-*` stage may remain, then a real `purge_project`, then a further `recover_stale_purges` must return 0 and no claim or record may return. Result: 2 passed, every kill point, both legs (end state rolled back 16 / committed 10 on memory, 15 / 9 on Mongo; in 2 of the 50 cases the injected kill was swallowed by the code under test and the purge ran on, still ending whole).
+
+Maker's `test_purge_recovery_u7.py` (84 passed with the fences file). Mutant m17 (identical-branch disabled) KILLED. My own7 (`elif True`, recovery overwrites a differing file) KILLED by the unchanged AT-943 test `test_adopting_a_stale_stage_never_overwrites_a_file_that_came_back_in_its_place`. My own8 (identical branch does `rename_path(held, dest)` instead of delete) survives, but it is an equivalent mutant: the text is identical, so put-then-delete leaves the same store.
 
 ## Criteria
 
-- **M19 (one winner), PASS.** My own race `.work/probe_race.py`, 16 threads released at one barrier, 200 repetitions each, on file, memory and fake-Mongo: `create_exclusive_path` bad rounds 0/0/0; `put_if_path` (16 racers, same digest) bad rounds 0/0/0, and a CAS loser never left the old value; `RevisionedFile` with 8 loaded copies, 50 rounds: exactly one save lands per round, final `rev == 2`, 0/0/0 bad. The maker's 25x16 is therefore supplemented to the contract's 200 reps; real-server behaviour (unique `_id` -> `StoreDuplicateKey`) stays SERVER-GATED and was not claimed. Consumers confirmed routed through `create_exclusive_path`: `delivery/inbox.py:89,93`, `schedule_store.py:55,236`, `team_store.py:39`, `intake_commit.py:70`.
-- **M20 (compare-and-set), PASS.** `put_if_path` with a stale digest writes nothing (probe above; `test_put_if_a_stale_digest_writes_nothing...`). `orchestrate_checkpoint.py:259` flush is now `put_if_path(path, text, self._disk_hash)` and raises the same "Checkpoint changed outside this instance" error; `test_the_checkpoint_write_is_a_compare_and_set_not_a_check_then_write` switches the pre-check off so only the CAS can refuse. `RunQueue` saves via `RevisionedFile` (`ui/run_queue.py:84,261`); a lost save writes nothing, warns, and the next lands (`test_a_run_queue_save_that_lost_the_race_writes_nothing_and_says_so`). Legacy queue files without `rev` load (default 0).
-- **M52 (READ-SIDE), PASS with W3.** Every listed site is routed: `core/trace.py:142,156`, `orchestrate_checkpoint.py:174,205`, `schedule_store.py:121,170-199`, `delivery/inbox.py:99`, plus `config_migration.py`, `bench_inputs.py`, `acceptance_baseline.py`. The heartbeat read was already `read_json`. `tests/test_coordination_u7.py` write-then-read workloads on the memory and fake-Mongo backends find no state file on disk (lock sidecars excepted, W3).
-- **M53 (rows removed, nothing invented), PASS with F1.** `git diff fe1ac6c8..HEAD -- pyproject.toml`: 65 `-` lines, 0 `+` lines; grepping the file at HEAD: 0 rows tagged `| U7`, 0 `M53-gated`; the `permanent` list is unchanged (no `permanent` line in the diff). Only `store/filestore_paths.py` was added under `src/` (D-126; `git diff --stat` lists no other new module; `mongo_bucket.py` and `state_bypass.py` are absent). I re-derived the removals row by row (grouped by file:kind) against the HEAD sources and `autotester doctor`: no stale row, no un-baselined violation, so no raw call survives and none was hidden in a rule-exempt place other than the `store/` verbs judged in F1. Line caps: `filestore_paths.py` 218, `filestore.py` 291, `ui/run_queue.py` 297, all <=300; doctor reports no function-length finding.
+- **M19, PASS.** `core/file_lock.py`, `store/filestore.py`, `store/mongo_backend.py` are byte-identical between the cycle-0 code `13b79315` and `HEAD` (`git diff --stat 13b79315 HEAD -- <those>` empty), so my cycle-0 race evidence stands: 16 threads at one barrier, 200 repetitions per backend, `create_exclusive_path` 0 bad rounds on file, memory, fake-Mongo. Deterministic half-write twin kills the in-place mutant (m16 KILLED).
+- **M20, PASS.** `put_if_path` CAS, the checkpoint `flush` CAS (`stages/orchestrate_checkpoint.py`) and `RevisionedFile` / `ui/run_queue.py` are unchanged since cycle 0 (same diff, empty); their tests pass (70 passed on `test_filestore_paths_u7.py` + `test_coordination_u7.py`); mutants m3-m9 KILLED (11/11).
+- **M52, PASS.** READ-SIDE sites unchanged apart from `_restore_stage`, which now reads and lists through the store (`schedule_store.py:163-199`); the `test_coordination_u7.py` workloads end on an empty data root (except the known `.lock` sidecars, W2).
+- **M53, PASS.** `git diff fe1ac6c8..HEAD -- pyproject.toml`: 65 `-` rows, 0 `+` rows, 0 changed lines outside rows tagged `U7` or `M53-gated`; `grep -c "| U7\|M53-gated" pyproject.toml` = 0; the `permanent` list (`pyproject.toml:119`) is untouched. `git diff fe1ac6c8..HEAD --name-status -- src | grep ^A` lists one new module, `store/filestore_paths.py` (D-126). No `mongo_bucket.py`, no `state_bypass.py`. The two new files under `tests/` are tests, not modules.
+- **Fence stored-claim boundary (judgement calls 1-2):** accepted; staging stays local-disk and now truly cannot reach state.
 
-## Existing-test edits (item 5): no weakening
+## Findings
 
-`tests/test_schedule_marker.py`, `test_schedule_purge_crash.py` change `monkeypatch.setattr(schedule_store.os, "replace", ...)` to `os, "replace"` (and `schedule_store.shutil.rmtree` to `shutil.rmtree`): `schedule_store.os` was the global `os` module object, so the patched attribute is identical; assertions and call counts unchanged (18 passed). `test_zip_intake_atomic.py` likewise (`intake_commit.os` -> `os`, unused import dropped). `test_sweep_u3a.py` removes three `LEFT` entries (`schedule_store`, `drive_intake`, `intake_commit`); the test is a pin that must equal the raw calls left, so removing entries whose last raw call is gone is required, not a loosening (14 passed with the pin active).
+**W1 (WARN, non-blocking) - a stale stage can still put back a purged claim in the "different file came back" case.** `schedule_store.py:188-190` keeps both and leaves the stage (the AT-943 contract, and the right call for not overwriting). The stage's manifest then stays live. Probe `.work/test_probe_differ_c1.py` (memory and Mongo): hard kill after the first move of a purge; a NEW claim with different content is created at the freed key; `recover_stale_purges` returns 0 (stage kept); a later `purge_project` deletes the new claim; the NEXT `recover_stale_purges` returns 1 and `p:fixed:s1` is back. This is the same shape as cycle-0 B-class W3 but with a narrower trigger (a newer claim for the same key between a hard kill and the next purge of a project being deleted); it is the AT-943 tradeoff and is identical on the file backend, so it is not a document-backend regression. The cycle-0 trigger (identical copies from the non-atomic put-then-delete) is fixed and covered. Suggestion for a later unit: when a differing file is kept, also drop the manifest entry for it so a later recovery does not restore it.
 
-## Commands run (worktree, `env -u ANTHROPIC_BASE_URL uv run pytest <2 files> -o addopts= -q`)
+**W2 (WARN, carried) - M25 CEO-bench list is not file-only; no row marks the gap** (manifest call 4). Not U7's; needs an owner in the contract or a baseline marker.
+
+**I1 (INFO) - own6 survivor.** `scratch_rmtree` (`filestore_paths.py:191`) and its siblings act on the resolved path; a variant acting on the original path survives the suite because resolve-then-act versus act-on-original differ only in a check-then-use race window. Not exploitable here (callers are single-process under the intake lock) and the shipped code is the safer one; a test that swaps a link in between check and use would pin it.
+
+**I2 (INFO) - `scratch_children` returns `Path(path)/name` (unresolved)** (`:180`); the follow-up verbs re-check each entry, so no escape (verified in the link matrix above).
+
+**I3 (INFO) - `_lock_is_stale` double-takeover race and `delivery/email.py` raw `os.link`** unchanged from cycle 0 (pre-existing, outside the rule).
+
+**I4 (INFO) - `docs/SNAPSHOT.md` stale** (doctor, below). Expected; generated, not a U7 input.
+
+## Commands run (worktree `D:/autoTesting/.claude/worktrees/mongo-u7`; every pytest as `env -u ANTHROPIC_BASE_URL uv run pytest <2 files> -o addopts= -q`)
 
 ```
-tests/test_filestore_paths_u7.py tests/test_coordination_u7.py          -> 81 passed
-tests/test_schedule_marker.py tests/test_schedule_purge_crash.py        -> 18 passed
-tests/test_sweep_u3a.py tests/test_zip_intake_atomic.py                 -> 14 passed
-tests/test_state_bypass_rule.py tests/test_state_sweep_u3d.py           -> 81 passed
-tests/test_run_queue.py tests/test_run_queue_resilience.py              -> 24 passed
-tests/test_inbox_delivery.py tests/test_delivery_failure.py             -> 24 passed
-tests/test_schedule_tick.py tests/test_schedule_catchup.py              -> 43 passed
-tests/test_team_store.py tests/test_acceptance_baseline.py              -> 74 passed
-tests/test_drive_intake.py tests/test_ui_intake.py                       -> 45 passed
-tests/test_provider_migration.py tests/test_bench_inputs_stage.py       -> 8 passed
-tests/test_state_backend_contract.py tests/test_run_trace.py            -> 342 passed, 1 skipped
-uv run ruff check src tests scripts                                     -> All checks passed!
-uv run autotester doctor > .work/doctor-checkerA.txt                    -> exit 1, 2 violations: stale-generated and stale-committed docs/SNAPSHOT.md only; MAP.md clean; no state-bypass, line-cap, function-length or design-rule finding; only the D-087 advisories
-python scripts/mutation_check.py qa/evidence/mongo-store-u7/mutations.json --repo .  -> 11/11 mutations killed (m1..m11, claimed and actual failing tests identical)
-.work/probe_race.py  (200 reps x 16 threads x file|memory|mongo)        -> create bad 0, cas bad 0, half-written 0, RevisionedFile bad 0, tmp leftovers 0 on all three
-.work/probe_fence.py                                                    -> F1 (see above)
-.work/probe_mut.py   (in-place O_EXCL mutant, 200 KB, 1 reader)         -> 0 partial reads x5 (W1); 5 MB, 3 readers -> 4
-.work/probe_m52.py                                                      -> files: ['.work/team/schedule/.p.jsonl.lock'] (W3)
+tests/test_scratch_fences_u7.py tests/test_purge_recovery_u7.py          -> 84 passed
+tests/test_filestore_paths_u7.py tests/test_coordination_u7.py           -> 70 passed
+tests/test_state_backend_contract.py tests/test_sweep_u3a.py             -> 341 passed, 1 skipped
+tests/test_state_sweep_u3d.py tests/test_state_bypass_rule.py            -> 81 passed
+tests/test_schedule_purge_crash.py tests/test_schedule_marker.py         -> 18 passed
+tests/test_zip_intake_atomic.py tests/test_drive_intake.py               -> 26 passed
+tests/test_acceptance_baseline.py tests/test_run_queue.py                -> 44 passed
+ruff check src tests scripts                                             -> All checks passed!
+autotester doctor (redirected to .work/doctor-c1-a.txt)                  -> exit 1, "2 violation(s)": stale-generated and stale-committed, both docs/SNAPSHOT.md (expected); no line-cap, design-rule or state-bypass finding. src files: filestore_paths.py 242, schedule_store.py 266, ui/run_queue.py 297 lines.
+scripts/mutation_check.py qa/evidence/mongo-store-u7/mutations.json --repo .         -> 11/11 mutations killed (incl. m16)
+scripts/mutation_check.py qa/evidence/mongo-store-u7/mutations-fences.json --repo .  -> 5/5 mutations killed
+scripts/mutation_check.py qa/evidence/mongo-store-u7/mutations-purge.json --repo .   -> 1/1 mutations killed
+own fence probes (.work/probe_fence_c1*.py)                              -> link failures: 0; state intact
+own purge kill-point probe (.work/test_probe_purge_c1.py)                -> 2 passed (26 and 24 kill points)
+own mutants .work/mut-own-a.json / mut-own-b.json                        -> own1-4 and own7 killed, own5 killed (other id), own6 survives (I1), own8 equivalent
 ```
 
-The SNAPSHOT staleness is the generated-doc drift the maker reported (D-126 was appended after the last snapshot; master's later commit `54db88c6` regenerates it); it is not a code finding. `tests/test_role_port_authz.py` was not run (not touched by this unit).
+Not run: the full suite in one invocation (low-memory rule). The 5 known environmental failures of `tests/test_role_port_authz.py` were not in scope of this unit and not run. M19 200x16 races were not repeated this cycle because the racing code is unchanged since the cycle-0 run (diff empty).
 
-## Not verified
+## Close-out
 
-The full suite in one invocation (memory rule); real-server Mongo behaviour (SERVER-GATED); the second dual checker's view.
-
-## What cycle 1 needs
-
-Fix F1 with tests (`..`, symlink, `xqa/evidence`, state-routed `.work/team`, plus a normalisation mutant in the spec). Ideally add the W1 mutant, and give W2 and W3 an owner or a one-line contract ruling. Nothing else needs to change; M19, M20, M52, M53 evidence above stands for the unchanged code.
+Everything this seat required in cycle 0 is met: the fences resolve before anchoring and cannot be widened by `base`, the half-write mutant is killed, the purge crash window between put and delete is closed, and M19/M20/M52/M53 hold with 65 rows gone and none moved to `permanent`. W1 and W2 are routed to the maker through the inbox; they do not block this unit. PASS from checker A; the dual PASS also needs checker B.
