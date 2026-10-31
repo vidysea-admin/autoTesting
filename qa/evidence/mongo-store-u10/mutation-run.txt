@@ -1,0 +1,71 @@
+KILLED  E1 global AUTOTESTER_STORE=mongo no longer required  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra2], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra7]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra2], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra7], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra8]
+KILLED  E2 an area pinned to file no longer defeats the quiet path  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra3], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra4], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra5]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra3], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra4], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra5], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra6]
+KILLED  E3 auth own entry no longer required  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra1]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra1]
+KILLED  E4 the auth entry is looked for under another area name  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]
+KILLED  E5 blanks inside an entry no longer stripped  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ]
+KILLED  E6 an empty entry is no longer skipped  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]
+KILLED  E7 the quiet path is never taken  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo,credentials=mongo,queue=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo,credentials=mongo,queue=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]
+KILLED  E8 every entry is read as mongo  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra3], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra4], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra5], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra6]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra3], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra4], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra5], tests/test_mongo_deploy_u10.py::test_entrypoint_still_warns_while_any_area_is_on_files[extra6]
+KILLED  E9 quiet notice stops naming Mongo  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo,credentials=mongo,queue=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]
+    actually failed: tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[ auth = mongo ], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo,credentials=mongo,queue=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,,auth=mongo], tests/test_mongo_deploy_u10.py::test_entrypoint_is_quiet_once_every_area_is_on_mongo[runs=mongo,auth=mongo,,]
+KILLED  D1 Cloud Run command loses --max-instances 1  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when
+    actually failed: tests/test_mongo_deploy_u10.py::test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when
+KILLED  D2 guide stops saying the instance cap stays  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when
+    actually failed: tests/test_mongo_deploy_u10.py::test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when
+KILLED  D3 guide withdraws the GCS volume  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_guide_keeps_the_gcs_volume_required_until_g1_and_cites_d125
+    actually failed: tests/test_mongo_deploy_u10.py::test_guide_keeps_the_gcs_volume_required_until_g1_and_cites_d125
+KILLED  D4 guide drops the own auth entry  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_guide_says_auth_moves_only_with_its_own_entry
+    actually failed: tests/test_mongo_deploy_u10.py::test_guide_says_auth_moves_only_with_its_own_entry
+KILLED  D5 guide stops naming the approval key  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_guide_names_every_switch_the_code_reads
+    actually failed: tests/test_mongo_deploy_u10.py::test_guide_names_every_switch_the_code_reads
+KILLED  D6 guide promises a file fallback  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value
+    actually failed: tests/test_mongo_deploy_u10.py::test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value
+KILLED  D7 guide says encrypted  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value
+    actually failed: tests/test_mongo_deploy_u10.py::test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value
+KILLED  D8 areas row loses queue  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_guide_lists_every_store_area_the_code_routes_in_the_areas_row
+    actually failed: tests/test_mongo_deploy_u10.py::test_guide_lists_every_store_area_the_code_routes_in_the_areas_row
+KILLED  C1 CLAUDE.md goes back to suffix matching  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_claude_md_describes_host_matching_as_exact_not_suffix
+    actually failed: tests/test_mongo_deploy_u10.py::test_claude_md_describes_host_matching_as_exact_not_suffix
+KILLED  C2 CLAUDE.md says encrypted  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_claude_md_credentials_names_the_mongo_store_and_plain_storage
+    actually failed: tests/test_mongo_deploy_u10.py::test_claude_md_credentials_names_the_mongo_store_and_plain_storage
+KILLED  C3 CLAUDE.md goes back to values only in .env  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_claude_md_credentials_names_the_mongo_store_and_plain_storage
+    actually failed: tests/test_mongo_deploy_u10.py::test_claude_md_credentials_names_the_mongo_store_and_plain_storage
+KILLED  A1 ARCHITECTURE security drops D-123  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget
+    actually failed: tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget
+KILLED  A2 ARCHITECTURE storage drops fail-closed  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget
+    actually failed: tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget
+KILLED  A3 ARCHITECTURE storage drops the G1 gate  (pytest exit 1)
+    claims to kill : tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget
+    actually failed: tests/test_mongo_deploy_u10.py::test_architecture_security_and_storage_name_the_mongo_backend_and_stay_in_budget
+
+23/23 mutations killed
