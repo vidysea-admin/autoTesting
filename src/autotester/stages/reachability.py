@@ -21,6 +21,7 @@ the run proceed with a warning rather than skip it.
 from __future__ import annotations
 
 import dataclasses
+import errno
 import http.client
 import socket
 import ssl
@@ -130,19 +131,33 @@ def _attempt(opener: urllib.request.OpenerDirector, url: str,
     return outcome[0]
 
 
+_UNREACHABLE_ERRNOS = frozenset(
+    getattr(errno, name) for name in ("ENETUNREACH", "EHOSTUNREACH", "WSAENETUNREACH",
+                                      "WSAEHOSTUNREACH") if hasattr(errno, name))
+"""A network or host that cannot be routed to: a TCP-stage failure with no `ConnectionError`."""
+
+
 def _failure_message(host: str, exc: BaseException) -> str:
+    """Host + failure class + one `[stage=...]` token (AT-1420), never the path, the resolved
+    address or the exception text. `dns` / `tcp` / `tls` / `http` / `timeout` / `unknown`."""
     cause = exc.reason if isinstance(exc, urllib.error.URLError) else exc
     if isinstance(cause, TimeoutError):
-        return f"target {host} did not answer within {PROBE_TOTAL_S:g} s from this server"
-    if isinstance(cause, socket.gaierror):
-        return f"target {host} could not be resolved (DNS) from this server"
-    if isinstance(cause, ssl.SSLError):
-        return f"target {host} failed the TLS handshake from this server"
-    if isinstance(cause, ConnectionRefusedError):
-        return f"target {host} refused the connection from this server"
-    if isinstance(cause, http.client.HTTPException | ConnectionError):
-        return f"target {host} closed the connection without an HTTP answer from this server"
-    return f"target {host} could not be reached from this server"
+        text, stage = f"did not answer within {PROBE_TOTAL_S:g} s", "timeout"
+    elif isinstance(cause, socket.gaierror):
+        text, stage = "could not be resolved (DNS)", "dns"
+    elif isinstance(cause, ssl.SSLError):
+        text, stage = "failed the TLS handshake", "tls"
+    elif isinstance(cause, http.client.HTTPException):  # (also a ConnectionError)
+        text, stage = "closed the connection without an HTTP answer", "http"
+    elif isinstance(cause, ConnectionRefusedError):
+        text, stage = "refused the connection", "tcp"
+    elif isinstance(cause, ConnectionError):
+        text, stage = "closed the connection without an HTTP answer", "tcp"
+    elif isinstance(cause, OSError) and cause.errno in _UNREACHABLE_ERRNOS:
+        text, stage = "could not be reached", "tcp"
+    else:
+        text, stage = "could not be reached", "unknown"
+    return f"target {host} {text} from this server [stage={stage}]"
 
 
 def _build_opener(project: Project, deadline: float) -> urllib.request.OpenerDirector:

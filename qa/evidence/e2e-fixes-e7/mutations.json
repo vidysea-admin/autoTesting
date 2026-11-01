@@ -1,0 +1,139 @@
+{
+ "tests": [
+  "tests/test_credential_guard_server_key.py",
+  "tests/test_reachability_stage.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: exemption filter reverted (every held variable counts)",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "held = (k for k in os.environ if k.upper() != MONGO_URI_ENV)",
+   "new": "held = (k for k in os.environ)",
+   "kills": [
+    "test_the_server_mongo_uri_does_not_block_the_slug_pathlynks"
+   ]
+  },
+  {
+   "name": "m2: the whole PATHLYNKS_ prefix is filtered, not the one key",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "held = (k for k in os.environ if k.upper() != MONGO_URI_ENV)",
+   "new": "held = (k for k in os.environ if not k.upper().startswith(ns))",
+   "kills": [
+    "test_a_project_shaped_variable_still_blocks_the_slug"
+   ]
+  },
+  {
+   "name": "m4: refuse_foreign_key no longer refuses the store URI",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "    if name.upper() == MONGO_URI_ENV:  # E7.2c",
+   "new": "    if False and name.upper() == MONGO_URI_ENV:  # E7.2c",
+   "kills": [
+    "test_a_project_cannot_declare_the_store_uri_as_its_credential[PATHLYNKS_MONGO_URI]",
+    "test_env_add_refuses_the_store_uri_with_no_write_and_no_declaration[PATHLYNKS_MONGO_URI-403]"
+   ]
+  },
+  {
+   "name": "m5: the store-URI refusal is case-sensitive",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "    if name.upper() == MONGO_URI_ENV:  # E7.2c",
+   "new": "    if name == MONGO_URI_ENV:  # E7.2c",
+   "kills": [
+    "test_a_project_cannot_declare_the_store_uri_as_its_credential[pathlynks_mongo_uri]"
+   ]
+  },
+  {
+   "name": "m6: the store-URI refusal answers 400",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "        raise HTTPException(403, \"the store connection is set by the deployment",
+   "new": "        raise HTTPException(400, \"the store connection is set by the deployment",
+   "kills": [
+    "test_a_project_cannot_declare_the_store_uri_as_its_credential[PATHLYNKS_MONGO_URI]"
+   ]
+  },
+  {
+   "name": "m7: the provider-key scan of the slug is dropped",
+   "file": "src/autotester/ui/credential_guard.py",
+   "old": "for k in (*PROVIDER_KEYS, *held))",
+   "new": "for k in (*held,))",
+   "kills": [
+    "tests/test_credential_guard_server_key.py::test_a_slug_covering_a_server_key_is_still_refused_with_the_uri_set[gemini]",
+    "tests/test_credential_guard_server_key.py::test_a_slug_covering_a_server_key_is_still_refused_with_the_uri_set[ollama]",
+    "tests/test_credential_guard_server_key.py::test_a_slug_covering_a_server_key_is_still_refused_with_the_uri_set[openai]"
+   ]
+  },
+  {
+   "name": "m8: TLS failure classed as tcp",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "\"failed the TLS handshake\", \"tls\"",
+   "new": "\"failed the TLS handshake\", \"tcp\"",
+   "kills": [
+    "test_each_failure_class_carries_its_stage_token_and_keeps_its_wording[exc5-tls-TLS handshake]"
+   ]
+  },
+  {
+   "name": "m9: DNS failure classed as tcp",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "\"could not be resolved (DNS)\", \"dns\"",
+   "new": "\"could not be resolved (DNS)\", \"tcp\"",
+   "kills": [
+    "test_each_failure_class_carries_its_stage_token_and_keeps_its_wording[exc0-dns-could not be resolved (DNS)]",
+    "test_an_unresolvable_name_is_stage_dns"
+   ]
+  },
+  {
+   "name": "m10: timeout classed as unknown",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "f\"did not answer within {PROBE_TOTAL_S:g} s\", \"timeout\"",
+   "new": "f\"did not answer within {PROBE_TOTAL_S:g} s\", \"unknown\"",
+   "kills": [
+    "test_each_failure_class_carries_its_stage_token_and_keeps_its_wording[exc9-timeout-did not answer within 10 s]",
+    "test_the_token_reaches_the_run_every_case_and_the_page_message"
+   ]
+  },
+  {
+   "name": "m11: HTTPException checked after ConnectionError (RemoteDisconnected becomes tcp)",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "elif isinstance(cause, http.client.HTTPException):",
+   "new": "elif isinstance(cause, http.client.HTTPException) and not isinstance(cause, ConnectionError):",
+   "kills": [
+    "test_each_failure_class_carries_its_stage_token_and_keeps_its_wording[exc7-http-without an HTTP answer]"
+   ]
+  },
+  {
+   "name": "m12: unreachable-network errnos not recognised",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "elif isinstance(cause, OSError) and cause.errno in _UNREACHABLE_ERRNOS:",
+   "new": "elif False:",
+   "kills": [
+    "test_each_failure_class_carries_its_stage_token_and_keeps_its_wording[exc3-tcp-could not be reached]"
+   ]
+  },
+  {
+   "name": "m13: fallthrough classed as tcp",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "text, stage = \"could not be reached\", \"unknown\"",
+   "new": "text, stage = \"could not be reached\", \"tcp\"",
+   "kills": [
+    "test_each_failure_class_carries_its_stage_token_and_keeps_its_wording[exc11-unknown-could not be reached]"
+   ]
+  },
+  {
+   "name": "m14: the exception text is put in the message",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "return f\"target {host} {text} from this server [stage={stage}]\"",
+   "new": "return f\"target {host} {text} from this server [stage={stage}] {exc}\"",
+   "kills": [
+    "test_the_message_names_only_the_host[exc0-dns-could not be resolved (DNS)]"
+   ]
+  },
+  {
+   "name": "m15: the stage token is dropped",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "return f\"target {host} {text} from this server [stage={stage}]\"",
+   "new": "return f\"target {host} {text} from this server\"",
+   "kills": [
+    "test_a_closed_local_port_is_stage_tcp"
+   ]
+  }
+ ]
+}
