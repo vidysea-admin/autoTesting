@@ -23,6 +23,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, str | None]] = {
     ("POST", "/onboard/roles"): ("key", "project.create"),   # T-208 MP6
     ("GET", "/inbox"): ("key", "report.view"),
     ("GET", "/live"): ("key", "live.view"), ("GET", "/auth/check"): ("key", "live.view"),
+    **{("GET", f"/{p}/{{path:path}}"): ("key", "live.view") for p in ("novnc", "novnc-view")},
     ("GET", "/settings/server"): ("key", "settings.manage"),
     ("POST", "/settings/server"): ("key", "settings.manage"),
     **{("GET", p): ("key", "settings.manage") for p in (

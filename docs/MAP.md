@@ -476,7 +476,7 @@
 | `ui/routes_intake.py` | The Google Drive door of Add-videos: paste a link, get a background job and its result page. |
 | `ui/routes_issues.py` | Operator-facing video issue ledger and its human-compatible workbook. |
 | `ui/routes_learn.py` | The learning loop on screen — review the FlowSpec, generate cases, see the asks. |
-| `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, plus |
+| `ui/routes_live.py` | Presentation-only noVNC page for watching the container's real browser, the auth-gated |
 | `ui/routes_product_map.py` | Product-map cards, recorded journeys, and guarded learned-frame serving. |
 | `ui/routes_profile.py` | The signed-in user's own report-email checkbox; this page never sends mail. |
 | `ui/routes_project_access.py` | Who can reach one project: owner, assignees (project.assign) and shared-with |

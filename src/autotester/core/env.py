@@ -1,25 +1,20 @@
 """Load the repo-root `.env` — one definition, used by every entry point.
 
-AT-228. `ui/app.py` loaded the repo-root `.env`; **no CLI entry point did**. So
-`autotester providers` answered `mock` while a working `GEMINI_API_KEY` sat on
-disk, and a HUMAN_GATE was filed against a blocker that did not exist. The user
-had already supplied the credential and was told the system was waiting on him.
+AT-228. `ui/app.py` loaded the repo-root `.env`; **no CLI entry point did**. So `autotester
+providers` answered `mock` while a working `GEMINI_API_KEY` sat on disk, and a HUMAN_GATE was
+filed against a blocker that did not exist.
 
-The lesson is not "the CLI forgot a line". It is that *whether this machine has
-credentials* was answered differently by two entry points reading the same disk,
-and the disagreement was invisible because each was internally consistent. So
-this lives in one place (C3) and both callers use it. Parsing is delegated to
-`python-dotenv` rather than hand-rolled: the UI already depended on it, and two
-parsers for one file format is the same duplication in a smaller costume.
+The lesson: *whether this machine has credentials* was answered differently by two entry
+points reading the same disk, invisibly. So this lives in one place (C3) and both callers use
+it; parsing is delegated to `python-dotenv` (two parsers for one format is duplication).
 
-Secrets never pass through here as values — this only populates `os.environ`
-from a gitignored file, and `core.redact` remains the gate before any model call.
+Secrets never pass through here as values: this only populates `os.environ` from a gitignored
+file; `core.redact` remains the gate before any model call.
 
 **It refuses to run inside a test process, and that is load-bearing.** The first version did
-not: every `CliRunner` invocation ran the CLI callback, which loaded the real `.env` into the
-shared test process for good, and provider tests asserting "no key present" started passing a
-real key. A repo whose premise is that a secret never reaches a model, a log or an artifact
-cannot put real credentials into every test process as a side effect of testing a CLI.
+not: every `CliRunner` call loaded the real `.env` into the shared test process for good, and
+provider tests asserting "no key present" started passing a real key. A secret must never reach
+a model, a log or an artifact as a side effect of testing a CLI.
 """
 
 from __future__ import annotations
@@ -110,6 +105,11 @@ def dollar_warning(keys: list[str]) -> str:
         return ""
     return (f"{len(keys)} value(s) in the repo-root .env contain \"${{\" and are kept literally "
             f"(no expansion): {', '.join(keys)}. Re-enter them if a ${{VAR}} was meant.")
+
+
+def on_cloud_run() -> bool:
+    """True when `K_SERVICE` is set and non-blank (Cloud Run): the one place that asks."""
+    return bool(os.environ.get("K_SERVICE", "").strip())
 
 
 EPHEMERAL_OK_ENV = "AUTOTESTER_EPHEMERAL_OK"

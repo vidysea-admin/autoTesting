@@ -28,7 +28,7 @@ from autotester.auth.db import LastAdmin
 from autotester.auth.passwords import WeakPassword
 from autotester.auth.ratelimit import login_limiter, signup_limiter
 from autotester.auth.sessions import create_session, end_session, session_hours
-from autotester.schema.auth import PermissionKey
+from autotester.schema.auth import PermissionKey, Principal
 from autotester.stages.video_requests import notify_approvers
 from autotester.ui import auth_view
 from autotester.ui.auth_middleware import SESSION_COOKIES, safe_next, session_token
@@ -145,19 +145,35 @@ def auth_claim_admin() -> Response:
     return RedirectResponse("/", status_code=303)
 
 
+def live_access_refusal(who: Principal | None, need: str) -> tuple[int, str] | None:
+    """The ONE decision behind the live viewer (HO12, E6.3): `(status, detail)` refusing `need`
+    (`view` or `control`) for this account, or None when it may proceed. `/auth/check` answers
+    it for the reverse proxy; the in-app noVNC relay (`routes_live`) calls it for HTTP and for
+    the websocket handshake, which the login gate never sees. 401 without a session; 400 on a
+    mistyped `need` (fail closed); 403 without `live.view`, or without `live.control` when
+    `need=control`."""
+    if who is None or not who.authenticated:
+        return 401, "authentication required"
+    if need not in ("view", "control"):
+        return 400, "unknown need"
+    if not authorize(who, PermissionKey.LIVE_VIEW):
+        return 403, "you do not have permission (live.view)"
+    if need == "control" and not authorize(who, PermissionKey.LIVE_CONTROL):
+        return 403, "live.control is required to send input"
+    return None
+
+
 @router.get("/auth/check")
 def auth_check(need: str = "view") -> Response:
     """HO12: what the reverse proxy asks (`forward_auth`) before `/novnc-view/*` (need=view) or
-    `/novnc/*` (need=control), so the
-    proxy keeps no list of its own. The login gate has already turned a missing or expired
-    session into 401/302 and a signed-in account without `live.view` into 403 (policy row);
-    here `need=control` additionally wants `live.control`. 200 carries the identity."""
+    `/novnc/*` (need=control), so the proxy keeps no list of its own. The login gate has already
+    turned a missing or expired session into 401/302 and a signed-in account without `live.view`
+    into 403 (policy row); `live_access_refusal` is the shared decision, and `need=control`
+    additionally wants `live.control`. 200 carries the identity."""
     who = current_principal()
-    if who is None or not who.authenticated:
-        return JSONResponse({"detail": "authentication required"}, status_code=401)
-    if need not in ("view", "control"):       # fail closed on a mistyped proxy rule
-        return JSONResponse({"detail": "unknown need"}, status_code=400)
-    if need == "control" and not authorize(who, PermissionKey.LIVE_CONTROL):
-        return JSONResponse({"detail": "live.control is required to send input"}, status_code=403)
+    refusal = live_access_refusal(who, need)
+    if refusal is not None:
+        return JSONResponse({"detail": refusal[1]}, status_code=refusal[0])
+    assert who is not None
     return JSONResponse({"email": who.email,
                          "can_control": authorize(who, PermissionKey.LIVE_CONTROL)})

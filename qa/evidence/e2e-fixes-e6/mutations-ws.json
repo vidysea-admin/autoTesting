@@ -1,0 +1,80 @@
+{
+ "tests": [
+  "tests/test_live_proxy_ws.py"
+ ],
+ "mutations": [
+  {
+   "name": "b1 websocket auth check skipped",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "    refusal = live_access_refusal(_principal(conn), _NEED[prefix])   # type: ignore[arg-type]",
+   "new": "    refusal = None",
+   "kills": [
+    "test_auth_matrix_websocket[None-allowed0-/novnc]",
+    "test_auth_matrix_websocket[tester@team.test-allowed1-/novnc-view]"
+   ]
+  },
+  {
+   "name": "b2 websocket control need weakened to view",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "_NEED = {\"/novnc\": \"control\",",
+   "new": "_NEED = {\"/novnc\": \"view\",",
+   "kills": [
+    "test_auth_matrix_websocket[dev@team.test-allowed2-/novnc]"
+   ]
+  },
+  {
+   "name": "b3 cross-site Origin not checked",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "if not _host_allowed(headers.get(\"host\", \"\")) or not _own_origin(headers, secure):",
+   "new": "if not _host_allowed(headers.get(\"host\", \"\")):",
+   "kills": [
+    "test_foreign_origin_is_refused_even_with_a_valid_session"
+   ]
+  },
+  {
+   "name": "b4 upstream not closed when the client leaves",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "            await up.close()\n",
+   "new": "            pass\n",
+   "kills": [
+    "test_frames_relay_both_ways_and_close_propagates"
+   ]
+  },
+  {
+   "name": "b5 absent upstream closes 1000 not 1011",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "    except Exception:\n        await ws.close(code=1011)",
+   "new": "    except Exception:\n        await ws.close(code=1000)",
+   "kills": [
+    "test_absent_upstream_closes_1011_quickly"
+   ]
+  },
+  {
+   "name": "b6 binary frames forwarded as text",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "await (ws.send_bytes(frame) if isinstance(frame, bytes) else ws.send_text(frame))",
+   "new": "await ws.send_text(frame.decode(\"latin-1\") if isinstance(frame, bytes) else frame)",
+   "kills": [
+    "test_frames_relay_both_ways_and_close_propagates"
+   ]
+  },
+  {
+   "name": "b7 binary subprotocol not negotiated",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "chosen = \"binary\" if \"binary\" in (ws.scope.get(\"subprotocols\") or []) else None",
+   "new": "chosen = None",
+   "kills": [
+    "test_frames_relay_both_ways_and_close_propagates"
+   ]
+  },
+  {
+   "name": "b8 oversize guard disabled",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "if len(payload) > _MAX_FRAME:",
+   "new": "if False:",
+   "kills": [
+    "test_oversize_frame_closes_1009"
+   ]
+  }
+ ]
+}
