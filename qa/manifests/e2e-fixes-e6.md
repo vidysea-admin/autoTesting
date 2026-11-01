@@ -36,7 +36,7 @@
 | E6.6 Cloud Run default is the same-origin path; localhost stays | `routes_live.py:54,57-68`; `core/env.py:110` | `test_live_default_url.py::test_default_is_unchanged_off_cloud_run` (byte-for-byte string), `::test_cloud_run_default_is_the_same_origin_path` (`novnc_url`, `viewer_url(True)`, `viewer_url(False)` starts `/novnc-view/`, contains `path=novnc-view/websockify`, ends `view_only=1`), `::test_blank_override_counts_as_unset`, `::test_explicit_override_still_wins_and_hostile_falls_back`, `::test_hosted_alone_does_not_switch_the_default`, `::test_live_page_on_cloud_run_never_mentions_localhost` (GET `/live` body has no `localhost`), `::test_on_cloud_run_reads_k_service_and_blank_is_unset[4]`. The existing `/live` tests pass unmodified |
 | E6.7 absent upstream is legible: 502 / 1011 within 4 s, event loop not blocked | `routes_live.py:129-148` (`httpx.AsyncClient`, connect 3 s, read 15 s), `:209-225` (`websockets` async connect, `open_timeout=3`) | `test_live_proxy_http.py::test_closed_upstream_is_502_without_the_address` (no `127.0.0.1`, no port in the body, < 4 s), `::test_a_hung_upstream_does_not_block_other_routes` (a listening socket that never answers; `/healthz` answers < 1 s on the SAME event loop while the relay waits; the relay then answers 502), `test_live_proxy_ws.py::test_absent_upstream_closes_1011_quickly` |
 | E6.8 one test seam, loopback only, entrypoint untouched | `routes_live.py:118-119`; `git diff 70a7a486 -- docker/` is empty | `test_live_default_url.py::test_production_upstreams_are_the_two_loopback_ports` (exact equality with the contract's mapping) |
-| E6.9 D-entry | drafted: `.work/e6-decision-draft.md` (D-131, ASCII, no `Approved-by`, for Umesh) | the checker's `grep -n "AT-1419" docs/DECISIONS.md`; until Umesh appends it the verdict on E6 is HELD by the contract's own words |
+| E6.9 D-entry | drafted: `.work/e6-decision-draft.md` (next free id, ASCII, no `Approved-by`, for Umesh) | the checker's `grep -n "AT-1419" docs/DECISIONS.md`; until Umesh appends it the verdict on E6 is HELD by the contract's own words |
 
 ## Things the checker should look at (judgement calls)
 
@@ -64,7 +64,7 @@ pytest tests/test_hosting_config.py tests/test_ui_sidebar.py             -> 14 p
 pytest tests/test_ui.py tests/test_ui_dashboard.py                       -> 29 passed
 ruff check src tests scripts                                             -> All checks passed!
 autotester map / snapshot                                                -> regenerated
-autotester doctor (> .work/doctor-e6.txt)                                -> see the final line of this section
+autotester doctor (> .work/doctor-e6.txt)                                -> 0 violations (advisory D-087 warnings only, pre-existing)
 uv lock --check --offline                                                -> Resolved 335 packages
 ```
 
