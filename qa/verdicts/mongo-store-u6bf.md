@@ -1,0 +1,54 @@
+# Verdict - mongo-store-u6bf (checker A)
+
+**Cycle checked:** 0
+**Verdict:** FAIL
+**Checked head:** a254af9c (maker's code and tests are unchanged by 4b12585b, which adds only `qa/evidence/mongo-store-u6bf/mutation-run.txt` and a manifest line; both read).
+**Contract:** `qa/contracts/mongo-store.md` M29, M30 (U6b rows) and the two U6b cycle-2 residuals. Independent: I did not read any other checker's verdict on this unit.
+
+The fencing design is sound on every interleaving I could build, and the mechanism the maker describes is what the code does. The FAIL is for three narrower reasons, all fixable without touching the design: the unit breaks U8's test on merge, two fencing/recovery mutants that I reproduced as real misbehaviour have no test that kills them (the manifest's kill claims are false), and a real-server-only hole in the tombstone (a fence the in-repo fake cannot show).
+
+## Findings (blocking first)
+
+1. **BLOCK - merging breaks U8's `tests/test_cli_store_auth_creds.py` at collection.** Master's test line 26 imports `JOURNAL_ID` from `autotester.auth.store_mongo_tx`; U6bf removed it (`store_mongo_tx.py:32-37` now has `META, LOCK_ID, EPOCH_ID`, `TX`, `UNDO`, `FENCE`). Reproduced in the worktree: `uv run python -c "from autotester.auth.store_mongo_tx import JOURNAL_COLL, JOURNAL_ID, META"` -> `ImportError: cannot import name 'JOURNAL_ID'`. The same test (master line 89) asserts `not any(d["_id"] == JOURNAL_ID ...)`, which would be vacuous if the name were merely aliased: the journal is now `auth_meta` docs with `kind == "tx"` (`store_mongo_tx.py:156`). The branch (base 717aa180) does not contain the U8 test, so the maker could not see it; `src/autotester/auth/migrate_auth.py` on master uses only helpers that still exist (`_docs`, `_get`, `_one`, `_insert`, `_patch`, `_drop`, `_writer`, `_allocate`, `_grant`, `known_user_ids`, `has_session`, `insert_session`), so only the test needs the change (`kind == tx` in place of `_id == JOURNAL_ID`). Fix: update that assertion (same edit the maker made in `tests/test_auth_store_recovery.py::_journal_left`) as part of the merge, and re-run it.
+2. **BLOCK (test evidence, C7) - mutants f10 and f12 are real gaps, and the manifest claims they are killed.** I reran them (`scripts/mutation_check.py`, subset specs in `.work/`, two test files per call) and emulated each in my own probe on the real call sequence:
+   - **f12** (`store_mongo_tx.py:72`, undo ignores the fence stamp): exit 0, nothing fails. Behaviour: Z does two writes to one document and is paused after its second journal entry but before the second write; the successor recovers; with f12 Z's refused write LANDS (Z raised `AuthStoreBusy` yet the document changed) at 5 of 25 pause points (17-21). The real code: 0 of 25. The named test `..[before-its-second-entry]` pauses before the second ENTRY, not before the second WRITE, so it cannot see this. Needs a test pausing before the second patch.
+   - **f10** (`store_mongo_tx.py:96-97`, oldest first): killed only by `test_auth_store_mongo.py::test_an_exception_rolls_every_write_back` (live rollback path). In the RECOVERY path (dead or stalled holder) nothing detects it: `bootstrap_admin` of a new account (insert, then patch the same document) killed at each of 32 call points, recovered by a reader: real code 0 half-states; f10 leaves a half-built account at points 25-28 (the insert is skipped because the later patch re-stamped the document). The named test `test_several_writes_to_one_document_are_undone_newest_first` passes under oldest-first because patches chain through restored stamps; only insert-then-patch is order-sensitive, and it is not tested on the recovery path.
+   Both must be killed before PASS: add a recovery-path test for insert-then-patch (kill at every call, reader first) and a stalled-holder test pausing before the second patch.
+3. **WARNING (server-gated, not shown by the fake) - a second fenced group insert lands on a real server.** The tombstone `{_id, kind:fence, f, email, generation}` (`store_mongo_tx.py:76`) has no `name`, and `auth_groups` has a non-sparse unique index on `name` (`store_mongo.py:251`, INDEXES). On a real server a missing field indexes as null, so the second tombstone in `auth_groups` raises a duplicate key, which `_replay` suppresses (`:75`), so there is no tombstone and the stalled holder's late group insert is accepted. `tests/fake_mongo.py::_unique_clash` only trips when the field is present (a sparse index), which hides it. With the fake patched to real unique-null semantics, two stalled `groups.create_group` calls: Z raised `AuthStoreBusy` both times, yet group `zombie2` exists afterwards (with the fake as shipped: no zombie). Impact is bounded (an uncommitted, member-less group with whatever permissions Z gave it; Z cannot commit). Fix: give the tombstone a unique `name` key (as it already does for `email`/`generation`), and add a strict-null case to the fake. The 300-line cap leaves no room (finding 6).
+4. **WARNING - mutants m3, f23, f25, f28 are wrong kill lists, not test gaps.** Reran all four. m3 (no rollback): killed by `test_an_exception_rolls_every_write_back`; the named contract test passes because the next reader recovers the journal. f23 (rollback without owning the lease, `:234`) and f25 (no lease check before the entry, `:153`): I swept both across a two-write operation with the stall at every call point (25 and 22 points): no write ever lands after a refusal; the only difference is a straggler journal left until the next writer (f25) or less left (f23). They are defence in depth (the stamp conditions and the C2 check at `:166` carry the safety). f28 (insert entry also carries the document): the hash stays in `auth_users` (M30 holds), the entry is swept. None needs to be killed; the kill lists and the manifest line "45 mutants" should say so. The named tests for f23 and f25 do not detect what they claim; either delete the claim or assert the leftover journal / the DB call count.
+
+   Survivor summary for the coordinator: **must kill before PASS: f10, f12.** Wrong kill list only: m3, f23, f25, f28.
+5. **PASS items verified (the five questions).**
+   - (1) Stalled holder, own interleavings: `.work/chk_a_probe.py` pauses the holder before EVERY fake-Mongo call (find, find_one, insert, update, delete, delete_many, count) and runs a successor in the gap, for 8 pairings (two admins: disable/disable both ways, delete/delete, regroup/regroup, regroup/disable, strip admin permissions vs disable, disable vs strip, delete admin group vs disable). 21-44 pause points each, 0 failures: an enabled Admin/CEO with `users.manage` always remains; after one more writer no `tx` or `undo` doc is left. The acquire-then-stall case (stalled before the epoch bump) is inside this sweep. A holder with an older epoch cannot overwrite a newer one: every write is conditional on the stamp it read (`:194`, `:203`) and a tombstone is cleared only by a later epoch (`:183-184`).
+   - (2) Reader recovery: `.work/chk_a_probe4.py` kills the holder at every call of four refused sole-admin operations (24-41 points), then kills a reader at each of ITS calls (recovery interrupted, 265-457 nested points), then a healthy reader: the shape equals the pre-state at every point, no journal left. `reading()` (`store_mongo.py:265-269`) calls `dead_marker` (`store_mongo_tx.py:113-120`, `state != committed` includes half-aborted).
+   - (3) Rehash parity: `store_mongo.py:79` writes the hash only; revoke-first lives in `accounts.reset_password` and `bootstrap_admin`; the parity tests pass on both backends (in the 32 passed below).
+   - (4) Committed leftovers are swept never replayed (`_resolve`, `:95-100`); `..._swept_by_the_next_holder[reset|delete]` pass; mutant f15 was killed by the maker's run.
+   - (5) A refused change leaves no trace: covered by the sweeps above and `test_a_refused_change_survives_a_kill_at_every_call_point`.
+6. **A-W3 judged: accept.** `WAIT_SECONDS` is 15 s, `LEASE_SECONDS` 30 s (`store_mongo_tx.py:38`), so a writer behind a stalled holder fails with `AuthStoreBusy("try again")` after at most 15 s (not 30 s), fail-closed, no data effect; auth writes are rare. A reader is blocked only when a dead holder's journal exists and a different live holder has the lease. No change required; document the 15 s in the manifest.
+7. **Cap: `store_mongo_tx.py` is 300 lines (the cap is 300): compliant but with zero headroom**, reached by flattening constants and one-line defs. Findings 2 and 3 add lines, so the recovery half (`_replay`, `_resolve`, `recover`, `dead_marker`) will need to move. D-126 authorizes only the one second module, so that needs a new authorizing D-entry first (M53 rule). Functions are within 50 lines (doctor clean).
+8. **Note, not a defect:** the stray `tests/test_cli_advice_resolves.py` failure the maker reports at `store/mongo_backend.py:73` is outside this unit.
+
+## Commands run (worktree `D:/autoTesting/.claude/worktrees/mongo-u6bf`, `env -u ANTHROPIC_BASE_URL`, `-o addopts=`, two files per call)
+
+```
+pytest tests/test_auth_store_fencing.py tests/test_auth_store_recovery.py -> 32 passed
+pytest tests/test_auth_store_mongo.py tests/test_auth_store_contract.py   -> 58 passed
+pytest tests/test_cli_store_auth_creds.py                                 -> file not on this branch (U8 is on master); see finding 1
+ruff check --no-cache src tests scripts                                   -> All checks passed!
+autotester doctor > .work/chk-a-doctor.txt                                -> "doctor: clean" (advisory D-087 warnings only)
+wc -l store_mongo.py 299, store_mongo_tx.py 300, tests/test_auth_store_fencing.py 254
+scripts/mutation_check.py .work/chk_a_specA.json (recovery+fencing: f10 f12 f23 f25 f28) -> 0/5 killed, all exit 0
+scripts/mutation_check.py .work/chk_a_specB.json (contract+mongo: m3)                    -> 0/1 killed (exit 1: killed by another test)
+.work/chk_a_probe.py   8 pairings, pause before every call: 0 bad (21,21,21,22,22,35,44,22 points)
+.work/chk_a_probe2.py  ins+patch kill sweep: real 0 leaks / 32 points; f10 and f12 leak at 25-28; two-write stall: real 0/25, f12 lands at 17-21
+.work/chk_a_probe3.py  two-write stall, real/f23/f25: refused-but-landed [] in all three
+.work/chk_a_probe4.py  nested reader death: 4 ops, 0 bad
+.work/chk_a_probe5.py  strict-null unique index: group 'zombie2' persists (shipped fake: none)
+```
+The probes are scratch under `.work/` (gitignored) and are not committed. The full 45-mutant run was not repeated by me: the maker's result file (39/45, six survivors) was read and every one of the six reproduced.
+
+## To reach PASS (cycle 1)
+- Fix the U8 test import and assertion (finding 1).
+- Add the two tests of finding 2 and show f10 and f12 killed.
+- Close finding 3 (tombstone `name`), with a strict-null fake case; this needs line room (finding 7).
+- Correct the kill lists of m3, f23, f25, f28 (finding 4).
