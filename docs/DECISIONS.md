@@ -3117,3 +3117,17 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 
 
 **Approved-by:** Umesh (chat 2026-11-01: "D-131 मंज़ूर")
+
+## D-132 | 2026-11-01 | type: decision | status: ACTIVE
+
+**What:** Lift the D-130 push hold. All checker-PASS work merged on local `master` (E1-E10, U6c, D-129..D-132) is pushed to `origin/master` in one push, once the first admin has been seeded in the Mongo `autotester` database.
+
+**Why:** D-130 held pushes because live kept accounts, projects and credentials on the container's throwaway disk (AT-1433). Since D-130 the persistence fix is code, not DevOps: E5 makes `docker/entrypoint.sh` select the Mongo store (`AUTOTESTER_STORE=mongo` plus all nine areas) on a fresh Cloud Run data root when `PATHLYNKS_MONGO_URI` is present, E8 makes it yield to an existing local data root, and U1-U12f, U6c and E10 carry auth, credentials, video shares and the migration on Mongo with a write fence (D-122). After this push the live data lives in Mongo and survives later deploys. Umesh in chat 2026-11-01: push everything that is held and validated, remove the DevOps dependency, then run.
+
+**Result:** Supersedes D-130. One last wipe of the file-based live accounts is accepted at this push (the live accounts already wiped on each earlier deploy). The first admin is created directly in the `autotester` database with `autotester auth bootstrap-admin` (password typed by Umesh, never in chat), so no `AUTOTESTER_FIRST_ADMIN_EMAIL` setting is needed and nobody can claim admin on an empty auth store. Verification after the push: first deploy comes up (a bad URI stops start-up and Cloud Run keeps the previous revision), sign-in with the seeded admin, and one more deploy to prove persistence. Still outside code: AT-1420 (Cloud Run egress to pathlynks.vidysea.com needs a static egress IP or an allowlist).
+
+**Supersedes:** D-130 -- the hold existed only until live storage was persistent; E5, E8 and the Mongo auth store make it persistent, and Umesh asked for the push.
+
+**Links:** D-130, D-122, AT-1433, AT-1420, AT-1419, qa/contracts/e2e-fixes.md (E5, E8)
+
+**Approved-by:** Umesh (chat 2026-11-01: push everything held and validated, then run)
