@@ -3090,3 +3090,15 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Approved-by:** Umesh
 
 **Changes-authorized:** new files `src/autotester/auth/store_mongo_video.py`, `src/autotester/auth/store_mongo_fence.py`; generated sections of `docs/ARCHITECTURE.md` and `docs/MAP.md` via `autotester map`.
+
+## D-130 | 2026-11-01 | type: decision | status: ACTIVE
+
+**What:** Suspend the D-007 push-on-PASS rule. Checker-PASS work is still merged to local `master` but is NOT pushed to `origin` until live storage is persistent, i.e. the GCS volume is mounted at the data root (Option A) or G1 moves the auth/credentials areas to Mongo.
+
+**Why:** Live (Cloud Run) auto-deploys from `origin/master` and keeps its accounts, projects and saved credentials on the container's throwaway disk (AT-1433). Each push redeploys and wipes them: the four pushes on 2026-11-01 (E1, E2, E3, U6bf) wiped live four times. Umesh chose "Yes, hold pushes" in chat on 2026-11-01.
+
+**Result:** Merges continue locally and the local `master` runs ahead of `origin`. The held commits are pushed in one go after storage is persistent. This entry is superseded when that happens.
+
+**Links:** D-007, AT-1433, D-129
+
+**Approved-by:** Umesh
