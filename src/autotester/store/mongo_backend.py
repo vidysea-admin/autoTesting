@@ -70,7 +70,7 @@ class MongoBackend:
             raise routes.StoreSecretRefused("refusing to store: the key or text carries a secret")
         size = len(text.encode("utf-8"))
         if size > MAX_DOC_BYTES:
-            raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; the limit is {MAX_DOC_BYTES}")
+            raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; limit {int(MAX_DOC_BYTES)}")
         if size > WARN_DOC_BYTES:
             LOG.warning("state document %s is %d bytes", key, size)
 
