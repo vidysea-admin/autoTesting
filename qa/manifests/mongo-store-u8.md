@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u8
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A 9cb37094, B 1d175892)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md` (ACTIVE 2026-10-29), unit U8: `autotester store migrate` (dry run by default, `--apply`) and `autotester store verify`. **Criticality:** DUAL check (U8 row).
 **Authority:** D-127 (the three migrate modules and the `("store", cli_store.app)` registration, Approved-by Umesh), D-128 (the CEO-benchmark answer list moves to Mongo; M25's file-only clause is reversed for that list only), D-122/D-123/D-126 (earlier file list).
