@@ -71,3 +71,28 @@ uv lock --check --offline                                                -> Reso
 ## Mutation evidence (C7)
 
 `scripts/mutation_check.py` on two specs (`qa/evidence/e2e-fixes-e6/mutations-http.json`: 18 mutants over `tests/test_live_proxy_http.py` + `tests/test_live_default_url.py`; `mutations-ws.json`: 8 mutants over `tests/test_live_proxy_ws.py`), outputs `mutation-run-http.txt` and `mutation-run-ws.txt`: **26/26 killed**, no rerun needed. Mutants: upstream built from the request Host (SSRF); `..`, leading `//`, scheme and backslash each allowed; Cookie/Authorization forwarded; `/novnc` needing only view; `/novnc-view` needing control; the shared decision dropping the `live.control` check; production control upstream not loopback; `/vnc.html` and `/websockify` look-alikes unguarded; `/novnc` bare unguarded; 502 naming the upstream; a blocking client on the event loop; the policy rows removed; the default keyed on `AUTOTESTER_HOSTED`; the view-only URL not rewritten; websocket auth skipped; websocket control need weakened; Origin check skipped; upstream not closed when the client leaves; 1011 -> 1000; binary frames forwarded as text; `binary` subprotocol not negotiated; the oversize guard disabled.
+
+## Cycle 1 (master merged: E5 `58e8cf15`, D-131 ACTIVE) - results
+
+Merge `0d69b1ce` (only conflict `core/env.py`, resolved to master's version); SNAPSHOT regenerated and committed. Re-run on the merged tree, `-o addopts=`, two files per call:
+
+```
+test_live_proxy_http + test_live_default_url          -> 39 passed
+test_live_proxy_ws + test_ui_auth_policy_table        -> 15 passed
+test_hosting_gaps + test_ui_healthz                   -> 42 passed
+test_routers_list + test_ui_auth_surface              -> 27 passed
+test_ta02 + test_ta03 (acceptance)                    -> 11 passed
+test_ui_auth_escalation + test_ui_auth_host_and_consent -> 34 passed
+test_hosting_config + test_ui_sidebar                 -> 14 passed
+test_ui + test_ui_dashboard                           -> 29 passed
+test_storage_warning + test_container_entrypoint_behaviour (E5, merged in) -> 49 passed, 1 skipped (run alone, 6.5 s)
+ruff check src tests scripts                          -> All checks passed!
+autotester doctor (> .work/doctor-e6.txt)             -> exit 0, "doctor: clean" (HEAD ce5eb3d2)
+mutations http: qa/evidence/e2e-fixes-e6/mutation-run-http-cycle1.txt -> 17/18 killed, a17 recorded SURVIVED
+mutation a17 rerun alone: mutation-run-a17-rerun-cycle1.txt          -> 1/1 killed
+mutations ws: mutation-run-ws-cycle1.txt                              -> 8/8 killed
+```
+
+Honest notes on the cycle-1 run: (1) the machine was heavily loaded by sibling worktrees (fork failures in bash at 16:30); the a17 pytest run hung with no child process and I killed that one process, which the tool recorded as SURVIVED (exit 4294967295). The same mutant rerun alone is KILLED by the test it claims, so the total is 26/26 with that one rerun. (2) An earlier, concurrent run of the E5 pair `test_storage_warning` + `test_container_entrypoint_behaviour` showed 3 failed, 46 passed, 1 skipped in 280 s while two other test loops were running; alone the same pair passes (49 passed, 1 skipped). Not caused by E6 (no E6 file touches the entrypoint), but it is E5-owned and timing sensitive under load.
+
+The anonymous look-alike answer (judgement call 3) is as D-131 describes: the gate's 401/302 for an anonymous caller, 403 for a signed-in one, never relayed.

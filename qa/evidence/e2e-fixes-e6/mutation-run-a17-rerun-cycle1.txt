@@ -1,0 +1,6 @@
+KILLED  a17 view-only url not rewritten on Cloud Run (always control path)  (pytest exit 1)
+    claims to kill : tests/test_live_default_url.py::test_cloud_run_default_is_the_same_origin_path
+    actually failed: tests/test_live_default_url.py::test_cloud_run_default_is_the_same_origin_path
+
+1/1 mutations killed
+exit=0
