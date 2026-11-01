@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e7
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A ea2cfb1b, B 3007a583)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E7 (AT-1416, AT-1420 diagnostic). **Criticality:** MEDIUM (credential guard is a C5 surface).
 **Authority:** no new `src/` module, no `qa/contracts/` edit, `core/env.py` NOT edited (see judgement call 1).
