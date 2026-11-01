@@ -24,6 +24,9 @@ checker judges against; the maker never edits it.
 | E2 | AT-1413, AT-1414 | `providers/langchain_fallback.py`, `providers/ollama_cloud.py`, `schema/verdict.py`, `skills/grade/SKILL.md`, `providers/litellm_schema.py`, `stages/grade.py`, `stages/grade_note_guard.py` (read-only here) |
 | E3 | AT-1417, AT-1418 | `ui/routes_credentials.py`, `ui/routes_project_edit.py`, `ui/app.py`, `ui/project_view.py`, `ui/credential_guard.py` (rules unchanged), `ui/routes_role_accounts.py` (pairing to reuse) |
 | E4 | AT-1421, AT-1415 | `stages/run_budget.py`, `stages/run_launcher.py`, `stages/execute.py`, `browser/video.py`, `stages/run_case_pipeline.py`, `schema/run.py` |
+| E5 | AT-1433 | `docker/entrypoint.sh`, `core/env.py`, `ui/admin_view.py`, `store/mongo_routes.py` (read-only), `auth/store.py` (read-only) |
+| E6 | AT-1419 | `ui/routes_live.py`, `ui/routes_auth.py`, `ui/app.py`, `auth/policy.py`, `core/env.py` (`on_cloud_run`) |
+| E7 | AT-1416, AT-1420 | `ui/credential_guard.py`, `core/env.py`, `stages/reachability.py`, `store/migrate_creds.py` (`:60` only) |
 
 ## Out of scope (do not build, do not raise as findings against these units)
 
@@ -34,6 +37,10 @@ checker judges against; the maker never edits it.
   new websocket proxy route in the app, a new network surface. Needs a D-entry. HUMAN_GATE.
 - **AT-1420** (Cloud Run cannot reach pathlynks.vidysea.com): infrastructure (static egress IP,
   allowlist). DevOps. E4's fast-fail makes the symptom legible; it does not fix the cause.
+- **Superseded 2026-11-01 for AT-1416 and AT-1419:** Umesh said the Mongo URI is already in the live
+  environment and live must persist and work without DevOps, so AT-1416 is now **E7.1-E7.3** and AT-1419 is
+  now **E6** (E6.9 keeps the D-entry gate on the new surface). AT-1420 stays infrastructure; only its
+  diagnostic is in scope (**E7.4-E7.5**). The three bullets above are kept as the history of why they were held.
 - Any change that lifts the ban on reading or printing `.env` values, or that edits
   `stages/grade_note_guard.py` so a currently-held note becomes a PASS (see E2.5).
 
@@ -317,6 +324,306 @@ event with a reason string in the case's evidence, shown on the page; a non-PASS
 kept video still links it (V8 unchanged); the V2 prune test passes unmodified.
 *serves:* intent#O3, intent#O4. *judges:* E4.
 
+### E5 — Live persists without DevOps: the entrypoint selects the Mongo store when its URI is present (AT-1433)
+
+**Premise (Umesh, 2026-11-01).** The Mongo URI is already in the live server's environment, and the
+live site must keep accounts, projects and credentials across deploys without a DevOps step. Today
+the store stays on `file` unless an operator sets `AUTOTESTER_STORE` / `AUTOTESTER_STORE_AREAS` by
+hand (`store/mongo_routes.py:236-237`; `auth/store.py:93-100` flips auth only through its own area
+entry), and `docker/entrypoint.sh` only *describes* storage (`all_state_on_mongo` `:42`,
+`warn_if_ephemeral` `:63`), it never selects it. The store areas are `settings, projects, runs,
+crawls, approvals, auth, credentials, blobs, queue` (`store/mongo_routes.py:25-26`; `UNROUTED` is
+empty). The URI variable is `PATHLYNKS_MONGO_URI` (`core/env.py:216`, `MONGO_URI_ENV`). This unit
+does not re-open D-122/D-123 (credentials stored plain, in Mongo) or the write fence.
+
+**E5.1 The entrypoint selects Mongo for every area, only when the URI is present and the operator
+chose nothing.** `docker/entrypoint.sh`, before `warn_if_ephemeral || true` (`:87`) runs, exports
+`AUTOTESTER_STORE=mongo` and `AUTOTESTER_STORE_AREAS=<every area in AREAS>=mongo` (all nine,
+explicitly, `auth` and `credentials` included, so the result does not depend on the global default)
+exactly when (i) `PATHLYNKS_MONGO_URI` is set and non-blank (whitespace-only counts as absent,
+matching the `.strip()` at `core/env.py:227`), (ii) `AUTOTESTER_STORE` is unset, and (iii)
+`AUTOTESTER_STORE_AREAS` is unset. If either (ii) or (iii) is set, even to `file`, the script
+exports neither (the operator's choice wins whole; no half-merge) and prints one line saying the
+operator's selection was kept. After the selection, `all_state_on_mongo` (`:42`) returns 0, so the
+existing "every state area is on Mongo" line replaces the ephemeral warning.
+*Test seam:* extend `tests/test_container_entrypoint_behaviour.py` / `tests/test_storage_warning.py`,
+which already run the real script in a bash sandbox (`_run_fn`, `sandbox`): run the selection step
+as a function (name chosen by the maker) with a fake URI value and print the two variables
+afterwards. Cases: URI set, nothing else -> both exported, the AREAS value contains all nine
+`<area>=mongo` items (assert against `store.mongo_routes.AREAS` read from the module, so an area
+added later fails this test instead of silently staying on file); URI set + `AUTOTESTER_STORE=file`
+-> neither exported; URI set + only `AUTOTESTER_STORE_AREAS=blobs=mongo` -> neither exported; URI
+whitespace-only -> neither.
+*Mutation hint:* drop `auth=mongo` from the generated list -> the per-area assertion fails; delete
+the "operator has not set" guard -> the `AUTOTESTER_STORE=file` case fails.
+*serves:* intent#O1, intent#O7, intent#O13. *judges:* E5.
+
+**E5.2 No URI, no selection, no brick.** With `PATHLYNKS_MONGO_URI` unset or blank, the entrypoint
+exports neither variable and takes exactly the path it takes today (file store, the existing
+ephemeral warning, function returns 0, `|| true`). This is the 503-brick guard: an area routed to
+Mongo with no URI makes `store/mongo_backend.py:290` raise, and the store-outage 503
+(`ui/app.py:71`) then answers every request, so the selection is never made on a guess.
+*Test seam:* same sandbox, no URI -> `AUTOTESTER_STORE` and `AUTOTESTER_STORE_AREAS` still unset;
+the existing warn cases in `tests/test_storage_warning.py:150-170` pass unmodified.
+*Mutation hint:* make the guard test "set" instead of "non-blank" -> the blank-URI case fails.
+*serves:* intent#O4, intent#O7. *judges:* E5.
+
+**E5.3 The URI value is never printed, echoed, or placed on a command line.** The selection step
+tests presence only: no echo of the value, no `set -x`, no value in the "kept operator selection"
+line, no value in an `exec` argument.
+*Test seam:* run the sandbox with a canary URI (`mongodb://canary-user:canary-pass@h/`) and assert
+the canary is absent from stdout, stderr and the stub-recorded `exec` argv (`PY_STUB` in
+`tests/test_container_entrypoint_behaviour.py` echoes its args).
+*Mutation hint:* add an echo of the variable -> the canary assertion fails.
+*serves:* intent#O7 (C5). *judges:* E5.
+
+**E5.4 `storage_warning` warns on Cloud Run instead of going quiet.** `core/env.py::storage_warning`
+(`:146`) returns None for every case it cannot determine: no `/proc/mounts`, no `/` entry, any
+exception (`:157-165`). On Cloud Run that silence is the failure (the live site wiped itself with no
+sign). New rule, with ONE helper `core/env.py::on_cloud_run()` (true when `K_SERVICE` is set and
+non-blank; `K_SERVICE` appears nowhere in `src/` today; reused by E6.6, C3): when `on_cloud_run()`,
+`AUTOTESTER_EPHEMERAL_OK` is not `1`, and not every store area is `mongo`
+(`store.mongo_routes.store_selection()` imported lazily, as `credential_collection` does at
+`core/env.py:240`, because that module imports this one), `storage_warning` returns a warning when
+the root is ephemeral (the existing "not persistent" sentence) OR when persistence cannot be
+verified (the unknowable branches, worded "cannot verify that ... is a persistent volume"). When every
+area is `mongo` it returns None (the data root holds scratch only, as `warn_if_ephemeral` already
+says). Off Cloud Run every current behaviour and test stays: unknowable -> None.
+`store_selection()` raising `StoreSelectionError` must not raise out of `storage_warning` (a
+diagnostic never breaks startup): it counts as "not mongo". `ui/admin_view.py::storage_banner`
+(`:22`, gated on `hosted()`) shows the banner when `hosted()` OR `on_cloud_run()`.
+*Test seam:* `tests/test_storage_warning.py` already drives `storage_warning(root, mounts_path)` with
+a fake mounts file and monkeypatched env. Add: `K_SERVICE=x` + mounts file missing -> warning (today
+None); `K_SERVICE=x` + root on a verified non-`/` volume -> None; `K_SERVICE=x` + all nine areas
+`=mongo` + mounts missing -> None; `K_SERVICE=x` + `AUTOTESTER_EPHEMERAL_OK=1` -> None; `K_SERVICE`
+unset + mounts missing -> None (unchanged); `K_SERVICE=x` + an invalid `AUTOTESTER_STORE_AREAS` -> a
+warning, no exception. Banner: `K_SERVICE=x`, `AUTOTESTER_HOSTED` unset, ephemeral -> the banner HTML
+contains the sentence.
+*Mutation hint:* leave the `except Exception: return None` as it is -> the K_SERVICE-with-unreadable
+-mounts case fails; ignore `store_selection()` -> the all-mongo case fails.
+*serves:* intent#O3, intent#O7, intent#O13. *judges:* E5.
+
+**E5.5 The auth flip is honest about existing accounts (A-W1).** `auth/store.py:93-96` documents why
+auth never follows the global flag: pointing it at an empty Mongo collection before its users are
+migrated locks everyone out. E5.1 does flip auth, so the maker states in the manifest, with a command
+and its output, what happens to a container that already holds SQLite users and then starts with the
+URI present (migrated; or first-admin bootstrap works on the empty Mongo; or the selection is skipped
+when an existing SQLite user store is detected). A silent lockout of an existing deployment is the
+defect. "Cloud Run wipes SQLite on deploy anyway" is true of the live site only, not of a compose
+deployment with a volume. If the maker cannot show a safe path, it files a HUMAN_GATE with the
+evidence and the checker holds E5 (not FAIL).
+*Test seam:* create a SQLite auth store with one user, run the selection, then the auth-store factory
+(`auth/store.py:122-126`): assert the user is reachable, or the selection did not flip `auth`.
+*Mutation hint:* remove the detection/migration -> the test fails.
+*serves:* intent#O7, intent#O13. *judges:* E5.
+
+### E6 — The /live viewer works behind Cloud Run: an auth-gated same-origin proxy (AT-1419)
+
+**Premise.** On Cloud Run only the app port is reachable, so an iframe at `http://localhost:6080`
+(`ui/routes_live.py:41`, `_DEFAULT_NOVNC`) shows the viewer's own computer and, as http inside an
+https page, is blocked. The Caddy front (`docker/Caddyfile`) solves this for compose by path:
+`/novnc/*` -> websockify 6080 behind `/auth/check?need=control`, `/novnc-view/*` -> 6081 behind
+`need=view`, look-alike VNC paths 403. Cloud Run has no Caddy. This unit reproduces that contract
+inside the app. It adds a network surface (HTTP and websocket relay) and therefore needs the D-entry
+of E6.9.
+
+**E6.1 Same-origin HTTP proxy for both viewers.** The app serves `GET /novnc/{path}` and
+`GET /novnc-view/{path}`, relaying to the in-container websockify HTTP side (noVNC static files) with
+the prefix stripped, as Caddy does (`uri strip_prefix`). `/novnc/` relays only to `127.0.0.1:6080`,
+`/novnc-view/` only to `127.0.0.1:6081`. The upstream host and port are module constants (one
+test-only override, E6.8), never derived from the request: no request value reaches the host, port
+or scheme of the upstream (no SSRF). `path` is normalised, and a path containing `..`, a backslash,
+a NUL, a scheme, or a leading `//` is refused 400 before any connection. Hop-by-hop headers are
+dropped, and `Cookie` and `Authorization` are not forwarded upstream.
+*Test seam:* a stub upstream (asyncio server on an ephemeral port, or `httpx.MockTransport` if the
+maker injects the client; `httpx` is a declared dependency, `pyproject.toml:14`) wired through the E6.8
+mapping; `TestClient` GET `/novnc/vnc.html` as a `live.control` user -> 200 with the stub's body, the
+stub saw path `/vnc.html` and no `Cookie` header; `/novnc-view/vnc.html` reaches the second stub only;
+path `//evil.example/x` and `..%2f..` -> 400, stub saw nothing; a request with `Host: evil.example`
+still reaches only the configured stub.
+*Mutation hint:* build the upstream URL from `request.headers["host"]` or the raw path -> the SSRF
+and traversal cases fail.
+*serves:* intent#O4, intent#O13. *judges:* E6.
+
+**E6.2 Same-origin websocket proxy for both viewers.** `WebSocket /novnc/websockify` and
+`/novnc-view/websockify` (the path noVNC dials: `path=novnc/websockify` / `path=novnc-view/websockify`,
+as rewritten by `view_only_url`, `ui/routes_live.py:56-65`) relay frames in both directions, bytes and
+text unchanged, to the matching upstream, offering the `binary` subprotocol the client offered. A
+close or error on either side closes the other; nothing is left open after the client disconnects
+(no leaked task or socket). Frame size is bounded by a stated cap large enough for a full-screen noVNC
+update; a larger frame closes the socket 1009.
+*Test seam:* stub upstream websocket echo; `TestClient.websocket_connect` as an authorised user, send
+bytes, receive the same bytes; close the client and assert the stub saw the close within 2 s.
+*Mutation hint:* drop the close propagation -> the stub-saw-close assertion times out.
+*serves:* intent#O4, intent#O13. *judges:* E6.
+
+**E6.3 Auth uses the SAME logic as `/auth/check`, on every request, including the websocket
+handshake.** The decision at `ui/routes_auth.py:148-163` (401 unauthenticated; 400 unknown need; 403
+for `need=control` without `live.control`; 200 otherwise) moves into ONE function that both
+`/auth/check` and the proxies call (C3: a second copy is the bug). `/novnc/*` needs `control`,
+`/novnc-view/*` needs `view` (`live.view`, through the existing policy row in `auth/policy.py`). The
+websocket check happens BEFORE `accept()`: an unauthenticated or unauthorised handshake is rejected
+(HTTP 403 on the upgrade, or close 1008) without ever dialling the upstream; the session is read from
+the handshake cookie. The HTTP login gate (T-204 AU18) is request middleware and does not see
+websocket scopes, so this check is not optional. An unauthenticated HTTP request gets 401 (or the
+gate's existing redirect), never the viewer HTML, and the upstream is never contacted.
+*Test seam:* parametrised over {no session, session without `live.view`, `live.view` only,
+`live.control`} x {`/novnc/`, `/novnc-view/`} x {HTTP, websocket}: no session -> 401/403/1008 on all
+four combinations; view-only -> `/novnc-view/` allowed, `/novnc/` 403; control -> both allowed. In
+every denied case the stub upstream records ZERO connections. Static check: `grep` finds one function
+holding the `need not in ("view", "control")` decision. Reuse the fixtures of the existing tests of
+`/auth/check`.
+*Mutation hint:* move the websocket auth check after `accept()` or delete it -> the unauthenticated
+websocket case connects and the zero-connection assertion fails; flip `need` for `/novnc/` to `view`
+-> the view-only-on-`/novnc/` case fails.
+*serves:* intent#O7, intent#O13 (HO12). *judges:* E6.
+
+**E6.4 Cross-site websocket is refused.** The handshake `Origin`, when present, must be the app's own
+origin (scheme and host as the request saw them; the D-066 Origin rule applied to this socket). A
+foreign `Origin` is rejected before the upstream is dialled even with a valid session cookie. A
+missing `Origin` (a non-browser client) is judged by cookie and permission alone.
+*Test seam:* `websocket_connect` with `Origin: https://evil.example` and a control-user cookie ->
+rejected, stub upstream sees zero connections.
+*Mutation hint:* skip the origin check -> that case connects.
+*serves:* intent#O7. *judges:* E6.
+
+**E6.5 Bare and look-alike VNC paths are never the app and never the viewer.** `/novnc`, `/novnc-view`,
+`/websockify*`, `/vnc.html`, `/vnc_lite.html` answer 403 (the Caddy `@vnc_other` rule), authenticated
+or not, and never relay.
+*Test seam:* GET each as `live.control` -> 403, stub saw nothing.
+*Mutation hint:* remove the guard -> `/vnc.html` falls through to the catch-all or the relay.
+*serves:* intent#O7. *judges:* E6.
+
+**E6.6 The default viewer URL on Cloud Run is the same-origin path; localhost stays for compose.**
+`ui/routes_live.py::novnc_url` (`:44`): when `AUTOTESTER_NOVNC_URL` is unset or blank AND
+`core/env.py::on_cloud_run()` (E5.4's helper) is true, the default is
+`/novnc/vnc.html?autoconnect=true&resize=scale&path=novnc/websockify`; `viewer_url(False)` then maps it
+to `/novnc-view/...` with `path=novnc-view/websockify` and `view_only=1` through the existing
+`view_only_url` (no second rewrite function). When `K_SERVICE` is unset the default is byte-for-byte
+today's `http://localhost:6080/vnc.html?autoconnect=true&resize=scale`, and an explicit
+`AUTOTESTER_NOVNC_URL` still wins with its existing validation (same-origin path or localhost only;
+hostile characters fall back). The `/live` iframe `src` therefore never contains `localhost` on Cloud
+Run.
+*Test seam:* `monkeypatch` env. (`K_SERVICE=x`, no override) -> `novnc_url()` starts with `/novnc/`;
+`viewer_url(True)` starts with `/novnc/`; `viewer_url(False)` starts with `/novnc-view/` and ends
+`view_only=1`; GET `/live` body contains no `localhost`. (`K_SERVICE` unset) -> the exact current
+string. (`K_SERVICE=x`, `AUTOTESTER_NOVNC_URL=http://localhost:6080/x`) -> that value. The existing
+`/live` tests pass unmodified.
+*Mutation hint:* test `hosted()` instead of `on_cloud_run()` -> the `K_SERVICE`-only case fails.
+*serves:* intent#O4, intent#O13. *judges:* E6.
+
+**E6.7 An absent upstream is legible, not a hang.** If the upstream does not accept within 3 s, HTTP
+answers 502 with a plain sentence (no upstream address) and the websocket closes 1011; the app's
+other routes are unaffected, and a dead viewer never blocks the event loop (upstream I/O is async or
+off-thread).
+*Test seam:* point the E6.8 mapping at a closed port -> 502 / close 1011 within 4 s; a concurrent GET
+`/healthz` answers during the wait.
+*Mutation hint:* a blocking `socket.connect` in the handler -> the concurrent healthz assertion fails.
+*serves:* intent#O4. *judges:* E6.
+
+**E6.8 The seam and the scope.** The only test-time override is ONE module-level mapping of prefix ->
+(host, port) that tests patch; production values are the two loopback ports above. The relay speaks
+only to loopback; no environment variable can point it elsewhere. The service table in
+`docker/entrypoint.sh:94-100` is not edited by this unit: 6080/6081 stay container-internal and
+`x11vnc` stays `-localhost`.
+*Test seam:* assert the production mapping equals `{"/novnc": ("127.0.0.1", 6080), "/novnc-view":
+("127.0.0.1", 6081)}`; `git diff` shows no change to the `exec ... supervise.py` service lines in
+this unit's commits (E5 adds its own selection lines above them).
+*Mutation hint:* read the host from an env var -> the mapping assertion fails.
+*serves:* intent#O7. *judges:* E6.
+
+**E6.9 The new surface has its D-entry.** `docs/DECISIONS.md` carries an ACTIVE entry (appended with
+`scripts/append_decision.ps1`) authorizing the in-app VNC relay, citing AT-1419 and this contract,
+before the checker PASSes E6. Absent, the verdict on E6 is HELD (not FAIL, not PASS): the code may
+exist, the surface is not authorized. The maker drafts the entry for Umesh and does not write an
+approval itself.
+*Test seam:* `grep -n "AT-1419" docs/DECISIONS.md` finds the entry; the checker reads it.
+*serves:* intent#O13. *judges:* E6.
+
+### E7 — The credential guard stops refusing the project name over a server-owned key; reachability names the stage that failed (AT-1416, AT-1420 diagnostic)
+
+**Premise.** `ui/credential_guard.py::refuse_reserved_slug` (`:38-48`) refuses a new project whose key
+prefix covers any variable the process holds (`os.environ`, `:44`). On the live server
+`PATHLYNKS_MONGO_URI` (`core/env.py:216`) is in the environment, so the slug `pathlynks` (namespace
+`PATHLYNKS_`) is refused with "the key prefix PATHLYNKS_ ... is used by a setting on this server"
+(callers `ui/app.py:193`, `ui/routes_role_accounts.py:175`). The name is in the environment because
+the server owns it, not because a project's credential was shadowed. `is_server_key`
+(`core/env.py:55-59`) knows only `PROVIDER_KEYS` and `AUTOTESTER_*`, so the Mongo URI is not
+recognised as server-owned (`store/migrate_creds.py:60` special-cases it by hand).
+
+**E7.1 A server-owned key no longer blocks the slug.** The set of server-owned names that are neither
+`AUTOTESTER_*` nor provider keys (today exactly `core/env.py::MONGO_URI_ENV`) is defined ONCE in
+`core/env.py`, and `refuse_reserved_slug` ignores those names when scanning `os.environ`
+(case-insensitively, as `is_server_key` is). With `PATHLYNKS_MONGO_URI` set and no other
+`PATHLYNKS_*` variable, onboarding slug `pathlynks` succeeds.
+*Test seam:* `monkeypatch.setenv("PATHLYNKS_MONGO_URI", "x")` then `refuse_reserved_slug("pathlynks")`
+does not raise (today: 400). Through the app: POST the onboarding form for `pathlynks` -> redirect,
+not 400. Static: the server-owned set has one definition (`grep` finds it once; `migrate_creds.py:60`
+either uses it or is behaviourally unchanged, and the maker states which).
+*Mutation hint:* revert the filter -> the first assertion raises 400.
+*serves:* intent#O1, intent#O7. *judges:* E7.
+
+**E7.2 Real collisions are still refused, and the exempted key is not claimable by a project.**
+(a) With `PATHLYNKS_MONGO_URI` AND `PATHLYNKS_E2E_USER_PASSWORD` in the environment, `pathlynks` is
+still refused (a project-shaped key the process holds). (b) The existing AU21 cases in the guard tests
+pass unchanged (provider-key prefix such as `ANTHROPIC_`, `AUTOTESTER_` prefix and its reverse, a slug
+whose namespace covers any other held variable). (c) Because the exemption puts `PATHLYNKS_MONGO_URI`
+inside the `pathlynks` project's own namespace, `refuse_foreign_key` (`credential_guard.py:51`) must
+refuse that exact name with the same 403 as `refuse_server_key` (case-insensitive), so a
+`credentials.edit` holder cannot declare the store URI as a project secret and read or overwrite it
+through `/env/add`, `/secrets` or an onboarding row. (d) `mongo_uri()` (`core/env.py:220`) keeps
+returning the URI after a `pathlynks` project exists, from the process variable and from the
+repo-root `.env` (`load_repo_env` skips project-namespace `.env` keys when exporting, but `mongo_uri`
+reads `.env` directly at `:233`).
+*Test seam:* (a) two `setenv` calls; (b) the existing tests; (c) project `pathlynks` on disk, POST
+`/projects/pathlynks/env/add` with key `PATHLYNKS_MONGO_URI` and `pathlynks_mongo_uri` -> 403, no
+`.env` write, no declaration; (d) `mongo_uri()` with a `pathlynks` project directory present.
+*Mutation hint:* filter the whole `PATHLYNKS_` prefix out of the scan instead of the one key -> (a)
+fails; omit (c) -> the 403 case returns a redirect.
+*serves:* intent#O7 (C5). *judges:* E7.
+
+**E7.3 The secret-paste rules of `ui/credential_guard.py` are untouched.**
+`_refuse_unsafe_submission`, `refuse_server_key`, the namespace and other-project checks of
+`refuse_foreign_key`, and the pasted-secret detectors change in no way beyond E7.1-E7.2(c); E3.5's
+"guard tests pass unchanged" still holds. The diff for this unit touches only `refuse_reserved_slug`,
+`refuse_foreign_key` (one added check) and the `core/env.py` constant.
+*Test seam:* run the guard suites unmodified; `git diff --stat` on `ui/credential_guard.py` shows
+hunks only in those two functions.
+*Mutation hint:* none beyond E7.1/E7.2.
+*serves:* intent#O7. *judges:* E7.
+
+**E7.4 The unreachable-target message names the failing stage (AT-1420 diagnostic).**
+`stages/reachability.py::_failure_message` (`:133-146`) already distinguishes timeout, DNS, TLS,
+refused and closed-connection in prose. Each message additionally carries one stable token naming the
+stage that failed, from exactly this set: `dns` (`socket.gaierror`), `tcp` (`ConnectionRefusedError`
+and other `ConnectionError`, network or host unreachable `OSError`), `tls` (`ssl.SSLError`,
+certificate verification included), `http` (`http.client.HTTPException`: the connection closed or
+spoke garbage before an HTTP answer), `timeout` (`TimeoutError`, `_NO_ANSWER`, a stuck attempt), and
+`unknown` for the fallthrough (`:146`). The token is a suffix, e.g. `... from this server
+[stage=dns]`, so the wording asserted by `tests/test_reachability_warning.py` and
+`tests/test_run_unreachable_target.py` (including "did not answer within 10 s from this server", E4.2)
+still matches as a substring and those tests pass unmodified. The message still names only the host:
+never the path, query, resolved IP, proxy, or exception text. The token reaches
+`Run.preflight_warnings`, each case's `not run:` error, the EXECUTE span `error` and the run page,
+because `skip_run` (`stages/reachability.py` `skip_run`) already carries the one message to all of
+them.
+*Test seam:* call `_failure_message("h.example", exc)` for `URLError(gaierror)`,
+`URLError(ConnectionRefusedError)`, `URLError(ssl.SSLCertVerificationError)`, `URLError(TimeoutError)`,
+`http.client.RemoteDisconnected` and `ValueError`; assert the stage token per class, and that the
+host is the only host-like string even when the exception text carries a canary IP. End to end:
+base_url on a closed local port with `allowed_domains` set -> run page text contains `[stage=tcp]`;
+the existing blackhole test shows `[stage=timeout]`.
+*Mutation hint:* map `ssl.SSLError` to `tcp` -> the TLS case fails; put `str(exc)` in the message ->
+the canary assertion fails.
+*serves:* intent#O3, intent#O4, intent#O13. *judges:* E7.
+
+**E7.5 AT-1420 stays an infrastructure issue and is not closed by E7.** E7.4 makes the live failure
+diagnosable (the first live run after this lands names `dns`, `tcp`, `tls`, `http` or `timeout`); the
+egress IP / allowlist remains DevOps. The maker's manifest says so and does not mark AT-1420 fixed;
+the checker leaves the row `open` with a note pointing at the stage token.
+*Test seam:* the `qa/issues.jsonl` row AT-1420 is not `closed` by this unit's commits.
+*serves:* intent#O13. *judges:* E7.
+
 ## Verification the checker runs itself (never the maker's word)
 
 ```
@@ -368,3 +675,25 @@ checker-taken screenshot. Evidence of a model answering (E2.1-E2.3) uses fakes o
   `run_case_pipeline.py::run_and_grade_case_resilient` (`:271-276`), which converts a
   `ProviderError` raised inside `grade()`; `grade()` itself propagates by design. (3) The
   `langchain-fallback.md` LC2 amendment owed above is made (sections LC2a/LC2b there).
+
+- 2026-11-01 · amendment E5-E7 · /checker, contract-authoring mode, at Umesh's 2026-11-01 instruction
+  (Mongo URI already in the live server env; live must persist without DevOps), relayed by the
+  orchestrator. Added E5 (AT-1433: entrypoint selects the Mongo store only when the URI is present and the
+  operator set neither store variable; `storage_warning` warns on Cloud Run, `K_SERVICE`, instead of
+  returning None), E6 (AT-1419: auth-gated same-origin HTTP+websocket noVNC relay, default viewer URL on
+  Cloud Run), E7 (AT-1416: guard stops counting the server-owned Mongo URI; AT-1420: stage token in the
+  unreachable message). Every file:line read against master 3fba855f. Findings recorded so they are not
+  rediscovered: (1) E5.5: the generated `auth=mongo` flip reaches an existing SQLite user store empty
+  (`auth/store.py:93-100`, A-W1); the live site loses nothing it had not already lost to Cloud Run's
+  ephemeral disk, but a compose deployment with a volume would lock out, so the maker must show a safe
+  path or file a HUMAN_GATE. (2) E6.3: the HTTP login gate does not see websocket scopes, so the proxy
+  checks auth itself before `accept()`, and the decision at `routes_auth.py:148-163` moves into one
+  function, not a copy. (3) E7.2(c): exempting `PATHLYNKS_MONGO_URI` from the slug scan puts it inside
+  the `pathlynks` project's own namespace, so `refuse_foreign_key` must then refuse it explicitly, or a
+  `credentials.edit` holder could declare and overwrite the store URI. (4) E7.4: the existing messages
+  already separate dns/tls/refused/timeout in prose; the new token only makes it machine-checkable. (5)
+  `K_SERVICE` appears nowhere in `src/` today; `on_cloud_run()` is introduced once (E5.4) and reused (E6.6).
+  The D-130 push hold is unchanged: it lifts only when Umesh says live storage is persistent, which E5 makes
+  possible but does not itself declare. The AT-1416/AT-1419 "needs a D-entry" gate is carried by E6.9; E7 is
+  not an enforcement path. **Links:** AT-1416, AT-1419, AT-1420, AT-1433; D-122/D-123; D-130; HO12;
+  core-invariants C3/C5/C12.
