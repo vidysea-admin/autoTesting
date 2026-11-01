@@ -1,0 +1,172 @@
+{
+ "tests": [
+  "tests/test_live_proxy_http.py",
+  "tests/test_live_default_url.py"
+ ],
+ "mutations": [
+  {
+   "name": "a1 upstream built from the request Host",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "url = f\"http://{host}:{port}/{quote(path, safe='/')}\"",
+   "new": "url = f\"http://{request.headers['host']}/{quote(path, safe='/')}\"",
+   "kills": [
+    "test_request_host_never_picks_the_upstream"
+   ]
+  },
+  {
+   "name": "a2 dot-dot allowed",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "r\"[\\x00-\\x1f\\\\]|\\.\\.|^/|",
+   "new": "r\"[\\x00-\\x1f\\\\]|^/|",
+   "kills": [
+    "test_hostile_paths_are_refused_before_any_connection[/novnc/%2e%2e/%2e%2e/etc]",
+    "test_hostile_paths_are_refused_before_any_connection[/novnc/a%2f..%2fb]"
+   ]
+  },
+  {
+   "name": "a3 leading slash (//host) allowed",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "|\\.\\.|^/|^[A-Za-z]",
+   "new": "|\\.\\.|^[A-Za-z]",
+   "kills": [
+    "test_hostile_paths_are_refused_before_any_connection[/novnc//evil.example/x]"
+   ]
+  },
+  {
+   "name": "a4 scheme in path allowed",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "|^[A-Za-z][A-Za-z0-9+.-]*:\")",
+   "new": "\")",
+   "kills": [
+    "test_hostile_paths_are_refused_before_any_connection[/novnc/http://evil.example/x]"
+   ]
+  },
+  {
+   "name": "a5 backslash allowed",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "[\\x00-\\x1f\\\\]|\\.\\.",
+   "new": "[\\x00-\\x1f]|\\.\\.",
+   "kills": [
+    "test_hostile_paths_are_refused_before_any_connection[/novnc/a%5cb]"
+   ]
+  },
+  {
+   "name": "a6 Cookie forwarded upstream",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "(\"accept\", \"range\", \"if-none-match\",",
+   "new": "(\"cookie\", \"authorization\", \"accept\", \"range\", \"if-none-match\",",
+   "kills": [
+    "test_relay_strips_prefix_and_drops_cookie_and_authorization"
+   ]
+  },
+  {
+   "name": "a7 control prefix needs only view",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "_NEED = {\"/novnc\": \"control\",",
+   "new": "_NEED = {\"/novnc\": \"view\",",
+   "kills": [
+    "test_auth_matrix_http[dev@team.test-allowed2-/novnc]"
+   ]
+  },
+  {
+   "name": "a8 view prefix needs control",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "\"/novnc-view\": \"view\"}",
+   "new": "\"/novnc-view\": \"control\"}",
+   "kills": [
+    "test_auth_matrix_http[dev@team.test-allowed2-/novnc-view]"
+   ]
+  },
+  {
+   "name": "a9 shared decision drops the live.control check",
+   "file": "src/autotester/ui/routes_auth.py",
+   "old": "if need == \"control\" and not authorize(who, PermissionKey.LIVE_CONTROL):",
+   "new": "if False and not authorize(who, PermissionKey.LIVE_CONTROL):",
+   "kills": [
+    "test_auth_matrix_http[dev@team.test-allowed2-/novnc]"
+   ]
+  },
+  {
+   "name": "a10 production control upstream not loopback",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "{\"/novnc\": (\"127.0.0.1\", 6080),",
+   "new": "{\"/novnc\": (\"0.0.0.0\", 6080),",
+   "kills": [
+    "test_production_upstreams_are_the_two_loopback_ports"
+   ]
+  },
+  {
+   "name": "a11 vnc.html look-alike not guarded",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "\"/vnc.html\", \"/vnc_lite.html\"):",
+   "new": "\"/vnc_lite.html\"):",
+   "kills": [
+    "test_look_alike_vnc_paths_are_403_and_never_relay[/vnc.html]"
+   ]
+  },
+  {
+   "name": "a12 websockify look-alike not guarded",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "\"/websockify\", \"/websockify/{rest:path}\",",
+   "new": "\"/websockify/{rest:path}\",",
+   "kills": [
+    "test_look_alike_vnc_paths_are_403_and_never_relay[/websockify]"
+   ]
+  },
+  {
+   "name": "a13 502 names the upstream address",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "return PlainTextResponse(\"The live browser view is not running right now.\", 502)",
+   "new": "return PlainTextResponse(f\"cannot reach {host}:{port}\", 502)",
+   "kills": [
+    "test_closed_upstream_is_502_without_the_address"
+   ]
+  },
+  {
+   "name": "a14 blocking upstream call on the event loop",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "        async with httpx.AsyncClient(trust_env=False, timeout=timeout) as upstream:\n            got = await upstream.get(url, headers=headers)",
+   "new": "        with httpx.Client(trust_env=False, timeout=timeout) as upstream:\n            got = upstream.get(url, headers=headers)",
+   "kills": [
+    "test_a_hung_upstream_does_not_block_other_routes"
+   ]
+  },
+  {
+   "name": "a15 policy rows for the relay removed",
+   "file": "src/autotester/auth/policy.py",
+   "old": "    **{(\"GET\", f\"/{p}/{{path:path}}\"): _key(K.LIVE_VIEW) for p in (\"novnc\", \"novnc-view\")},\n",
+   "new": "",
+   "kills": [
+    "test_auth_matrix_http[admin@team.test-allowed3-/novnc]"
+   ]
+  },
+  {
+   "name": "a16 Cloud Run default keyed on hosted(), not K_SERVICE",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "default = _CLOUD_RUN_NOVNC if on_cloud_run() else _DEFAULT_NOVNC",
+   "new": "default = _CLOUD_RUN_NOVNC if os.environ.get(\"AUTOTESTER_HOSTED\") else _DEFAULT_NOVNC",
+   "kills": [
+    "test_cloud_run_default_is_the_same_origin_path",
+    "test_hosted_alone_does_not_switch_the_default"
+   ]
+  },
+  {
+   "name": "a17 view-only url not rewritten on Cloud Run (always control path)",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "    url = view_only_url(url)\n",
+   "new": "    url = url\n",
+   "kills": [
+    "test_cloud_run_default_is_the_same_origin_path"
+   ]
+  },
+  {
+   "name": "a18 look-alike names allowed through (policy-less /novnc bare)",
+   "file": "src/autotester/ui/routes_live.py",
+   "old": "for _lookalike in (\"/novnc\", \"/novnc-view\",",
+   "new": "for _lookalike in (\"/novnc-view\",",
+   "kills": [
+    "test_look_alike_vnc_paths_are_403_and_never_relay[/novnc]"
+   ]
+  }
+ ]
+}

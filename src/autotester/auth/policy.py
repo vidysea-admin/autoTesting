@@ -79,6 +79,8 @@ ROUTE_POLICY: dict[tuple[str, str], RouteRule] = {
     ("GET", "/onboard/roles"): _key(K.PROJECT_CREATE),   # T-208 MP6: same key as /onboard
     ("POST", "/onboard/roles"): _key(K.PROJECT_CREATE),
     ("GET", "/live"): _key(K.LIVE_VIEW),
+    # AT-1419 (E6): the in-app noVNC relay; the handler adds need=control / need=view (E6.3)
+    **{("GET", f"/{p}/{{path:path}}"): _key(K.LIVE_VIEW) for p in ("novnc", "novnc-view")},
     ("GET", "/inbox"): _key(K.REPORT_VIEW),   # T-201c/TT7; rows are filtered per project
     ("GET", "/auth/check"): _key(K.LIVE_VIEW),   # HO12: the proxy's forward_auth target
     ("GET", "/settings/server"): _SETTINGS, ("POST", "/settings/server"): _SETTINGS,   # HO15

@@ -1,0 +1,27 @@
+KILLED  b1 websocket auth check skipped  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_auth_matrix_websocket[None-allowed0-/novnc], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[tester@team.test-allowed1-/novnc-view]
+    actually failed: tests/test_live_proxy_ws.py::test_auth_matrix_websocket[None-allowed0-/novnc-view], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[None-allowed0-/novnc], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[dev@team.test-allowed2-/novnc], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[tester@team.test-allowed1-/novnc-view], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[tester@team.test-allowed1-/novnc]
+KILLED  b2 websocket control need weakened to view  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_auth_matrix_websocket[dev@team.test-allowed2-/novnc]
+    actually failed: tests/test_live_proxy_ws.py::test_auth_matrix_websocket[dev@team.test-allowed2-/novnc]
+KILLED  b3 cross-site Origin not checked  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_foreign_origin_is_refused_even_with_a_valid_session
+    actually failed: tests/test_live_proxy_ws.py::test_foreign_origin_is_refused_even_with_a_valid_session
+KILLED  b4 upstream not closed when the client leaves  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_frames_relay_both_ways_and_close_propagates
+    actually failed: tests/test_live_proxy_ws.py::test_frames_relay_both_ways_and_close_propagates, tests/test_live_proxy_ws.py::test_own_origin_and_no_origin_are_accepted
+KILLED  b5 absent upstream closes 1000 not 1011  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_absent_upstream_closes_1011_quickly
+    actually failed: tests/test_live_proxy_ws.py::test_absent_upstream_closes_1011_quickly, tests/test_live_proxy_ws.py::test_own_origin_and_no_origin_are_accepted
+KILLED  b6 binary frames forwarded as text  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_frames_relay_both_ways_and_close_propagates
+    actually failed: tests/test_live_proxy_ws.py::test_auth_matrix_websocket[admin@team.test-allowed3-/novnc-view], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[admin@team.test-allowed3-/novnc], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[dev@team.test-allowed2-/novnc-view], tests/test_live_proxy_ws.py::test_frames_relay_both_ways_and_close_propagates, tests/test_live_proxy_ws.py::test_own_origin_and_no_origin_are_accepted
+KILLED  b7 binary subprotocol not negotiated  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_frames_relay_both_ways_and_close_propagates
+    actually failed: tests/test_live_proxy_ws.py::test_auth_matrix_websocket[admin@team.test-allowed3-/novnc-view], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[admin@team.test-allowed3-/novnc], tests/test_live_proxy_ws.py::test_auth_matrix_websocket[dev@team.test-allowed2-/novnc-view], tests/test_live_proxy_ws.py::test_frames_relay_both_ways_and_close_propagates, tests/test_live_proxy_ws.py::test_oversize_frame_closes_1009, tests/test_live_proxy_ws.py::test_own_origin_and_no_origin_are_accepted
+KILLED  b8 oversize guard disabled  (pytest exit 1)
+    claims to kill : tests/test_live_proxy_ws.py::test_oversize_frame_closes_1009
+    actually failed: tests/test_live_proxy_ws.py::test_oversize_frame_closes_1009
+
+8/8 mutations killed
+exit=0
