@@ -1,0 +1,430 @@
+{
+  "tests": [
+    "tests/test_auth_store_mongo.py",
+    "tests/test_auth_store_contract.py",
+    "tests/test_auth_store_recovery.py",
+    "tests/test_auth_store_fencing.py"
+  ],
+  "timeout_s": 900,
+  "mutations": [
+    {
+      "name": "m1: last-admin guard is a no-op",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "        if not users and not after_delete:\n            return\n",
+      "new": "        return\n",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
+        "tests/test_auth_store_contract.py::test_last_admin_guard_survives_delete_and_regroup[mongo]",
+        "tests/test_auth_store_contract.py::test_disabling_the_last_two_admins_leaves_one_enabled[mongo]"
+      ]
+    },
+    {
+      "name": "m3: rollback is skipped on failure",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "            except BaseException:\n                tx.rollback()\n                raise",
+      "new": "            except BaseException:\n                raise",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
+        "tests/test_auth_store_mongo.py::test_an_exception_rolls_every_write_back"
+      ]
+    },
+    {
+      "name": "m4: sessions stored without the purge namespace",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "{\"_id\": digest, \"p\": NAMESPACE, \"user_id\": user_id,",
+      "new": "{\"_id\": digest, \"user_id\": user_id,",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_disabled_account_or_expired_session_never_resolves[mongo]"
+      ]
+    },
+    {
+      "name": "m6: the id counter does not advance",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "{\"$set\": {\"next\": taken + 1}}",
+      "new": "{\"$set\": {\"next\": taken}}",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_ids_are_never_reused_after_a_delete",
+        "tests/test_auth_store_mongo.py::test_concurrent_allocation_hands_out_distinct_ids"
+      ]
+    },
+    {
+      "name": "m7: exists() prepares (writes) the store",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "no write happens here.\"\"\"\n        return coll_of",
+      "new": "no write happens here.\"\"\"\n        self._prepare()\n        return coll_of",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_reading_a_missing_store_creates_nothing[mongo]"
+      ]
+    },
+    {
+      "name": "m8: seed does not skip a group that exists",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                        if tx._one(GROUPS, {\"seed\": seed}) is None:",
+      "new": "                        if True:",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_second_pass_creates_the_same_indexes_and_a_crashed_seed_resumes"
+      ]
+    },
+    {
+      "name": "m9: seed marker not checked (seed runs on every process start)",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                if meta.find_one({\"_id\": SEEDED_ID}) is None:",
+      "new": "                if True:",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_the_group_seed_runs_once[mongo]"
+      ]
+    },
+    {
+      "name": "m10: selection ignored (auth always sqlite)",
+      "file": "src/autotester/auth/store.py",
+      "old": "return store_selection()[\"auth\"] == \"mongo\" and own.get(\"auth\") == \"mongo\"",
+      "new": "return False",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_mongo_selection_yields_the_mongo_store"
+      ]
+    },
+    {
+      "name": "m11: mongo chosen by default",
+      "file": "src/autotester/auth/store.py",
+      "old": "return store_selection()[\"auth\"] == \"mongo\" and own.get(\"auth\") == \"mongo\"",
+      "new": "return True",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_sqlite_is_the_default_and_mongo_only_by_selection",
+        "tests/test_auth_store_recovery.py::test_a_global_mongo_selection_does_not_move_auth"
+      ]
+    },
+    {
+      "name": "m12: a reader may write",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        if not self._writable:\n            raise RuntimeError(\"the auth store was opened for reading\")\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_reader_cannot_write"
+      ]
+    },
+    {
+      "name": "m13: the lost-lease check at commit is removed",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                if not held():\n                    raise AuthStoreBusy(\"the auth store lease expired mid-transaction\")",
+      "new": "                pass",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holder_never_undoes_a_successors_commit",
+        "tests/test_auth_store_recovery.py::test_a_lease_lost_mid_transaction_is_undone_by_the_next_holder"
+      ]
+    },
+    {
+      "name": "m14: an expired lease is never taken over",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "held[\"expires\"] < now and meta.update_one(",
+      "new": "False and meta.update_one(",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_an_expired_lease_is_taken_over_by_compare_and_set"
+      ]
+    },
+    {
+      "name": "m15: the account email is not unique",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "(USERS, \"email\", True)",
+      "new": "(USERS, \"email\", False)",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_unique_indexes_are_the_second_line"
+      ]
+    },
+    {
+      "name": "m16: deleting an account leaves its grants",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "            self._drop_where(GRANTS, {\"user_id\": user_id})",
+      "new": "            pass",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_delete_user_takes_sessions_and_grants_with_it[mongo]"
+      ]
+    },
+    {
+      "name": "m17: the session expiry check is removed",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "if session is None or not session[\"expires_at\"] > now or user is None",
+      "new": "if session is None or user is None",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_a_disabled_account_or_expired_session_never_resolves[mongo]"
+      ]
+    },
+    {
+      "name": "m18: a global store selection moves auth",
+      "file": "src/autotester/auth/store.py",
+      "old": "return store_selection()[\"auth\"] == \"mongo\" and own.get(\"auth\") == \"mongo\"",
+      "new": "return store_selection()[\"auth\"] == \"mongo\"",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_global_mongo_selection_does_not_move_auth"
+      ]
+    },
+    {
+      "name": "r19: the seed transaction is never committed",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "                    tx.commit()  # then the marker: a stop in between just reseeds nothing\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_contract.py::test_the_group_seed_runs_once[mongo]"
+      ]
+    },
+    {
+      "name": "f1: writers take no lease",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    _acquire(meta, owner)\n    try:\n        epoch = _next_epoch(meta)",
+      "new": "    try:\n        epoch = _next_epoch(meta)",
+      "kills": [
+        "tests/test_auth_store_mongo.py::test_a_live_lease_held_elsewhere_refuses_with_no_write",
+        "tests/test_auth_store_contract.py::test_concurrent_first_signups_yield_exactly_one_admin[mongo]",
+        "tests/test_auth_store_contract.py::test_concurrent_claims_yield_exactly_one_admin[mongo]"
+      ]
+    },
+    {
+      "name": "f2: the epoch never advances",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "{\"$set\": {\"n\": counter[\"n\"] + 1}}",
+      "new": "{\"$set\": {\"n\": counter[\"n\"]}}",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_the_epoch_only_grows_and_every_write_carries_it"
+      ]
+    },
+    {
+      "name": "f3: a new holder recovers nobody",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        recover(store, epoch)  # whatever a holder that died or stalled left behind\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[set_user_groups]",
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-patch]"
+      ]
+    },
+    {
+      "name": "f4: no lease re-check after the entry (C2)",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        self._keys.append(key)\n        if not self._alive():\n            raise AuthStoreBusy(\"the auth store lease was lost\")\n",
+      "new": "        self._keys.append(key)\n",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-entry]",
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-marker]"
+      ]
+    },
+    {
+      "name": "f5: a patch is not conditional on its stamp",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            self._landed(coll.update_one({\"_id\": doc_id, \"_e\": old.get(\"_e\")},\n                                         {\"$set\": {**fields, \"_e\": stamp}}))",
+      "new": "            self._landed(coll.update_one({\"_id\": doc_id}, {\"$set\": {**fields, \"_e\": stamp}}))",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-patch]"
+      ]
+    },
+    {
+      "name": "f6: a delete is not conditional on its stamp",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "self._landed(coll.delete_one({\"_id\": doc_id, \"_e\": old.get(\"_e\")}))",
+      "new": "self._landed(coll.delete_one({\"_id\": doc_id}))",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-delete]"
+      ]
+    },
+    {
+      "name": "f7: an undone insert leaves no tombstone",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    if fence and op == \"ins\":",
+      "new": "    if False and op == \"ins\":",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear",
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-an-insert]"
+      ]
+    },
+    {
+      "name": "f8: commit ignores a lost marker",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            raise AuthStoreBusy(\"the auth store lease was lost; the change was undone\")",
+      "new": "            pass",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_commit_whose_journal_was_undone_underneath_it_fails"
+      ]
+    },
+    {
+      "name": "f9: recovery does not abort the marker first",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    meta.update_one({\"_id\": tx_id(epoch), \"state\": \"open\"}, {\"$set\": {\"state\": \"aborted\"}})\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_cannot_commit_while_its_journal_is_being_undone"
+      ]
+    },
+    {
+      "name": "f10: the journal is replayed oldest first",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "key=lambda d: str(d[\"_id\"]),\n                        reverse=True)",
+      "new": "key=lambda d: str(d[\"_id\"]),\n                        reverse=False)",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_several_writes_to_one_document_are_undone_newest_first"
+      ]
+    },
+    {
+      "name": "f11: a dead holder's document is not fenced",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    elif fence:\n        coll.update_one({\"_id\": i, \"_e\": entry[\"pre\"]}, {\"$set\": {\"_e\": fence}})",
+      "new": "    elif fence:\n        pass",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-patch]",
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-delete]"
+      ]
+    },
+    {
+      "name": "f12: the undo ignores the fence stamp",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    mine = {\"$in\": [entry[\"me\"], *([fence] if fence else [])]}",
+      "new": "    mine = entry[\"me\"]",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-second-entry]"
+      ]
+    },
+    {
+      "name": "f13: a stale epoch may clear a tombstone",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "{\"_id\": doc[\"_id\"], \"kind\": FENCE, \"f\": {\"$lt\": held.epoch}}",
+      "new": "{\"_id\": doc[\"_id\"], \"kind\": FENCE}",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear"
+      ]
+    },
+    {
+      "name": "f14: a tombstone hit is a plain duplicate",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "_landed(coll.find_one({\"_id\": doc[\"_id\"], \"kind\": FENCE}) is None)",
+      "new": "_landed(True)",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear"
+      ]
+    },
+    {
+      "name": "f15: a committed journal is replayed, not swept",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    committed = marker is not None and marker[\"state\"] == \"committed\"",
+      "new": "    committed = False",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_committed_journal_whose_sweep_failed_is_swept_by_the_next_holder[reset]",
+        "tests/test_auth_store_fencing.py::test_a_committed_journal_whose_sweep_failed_is_swept_by_the_next_holder[delete]"
+      ]
+    },
+    {
+      "name": "f16: stray entries without a marker are never swept",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    seen |= {e[\"epoch\"] for e in coll_of(store, JOURNAL_COLL).find({\"kind\": UNDO})}\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-entry]"
+      ]
+    },
+    {
+      "name": "f17: aborted markers do not make a reader recover",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "{\"kind\": TX, \"state\": {\"$ne\": \"committed\"}}",
+      "new": "{\"kind\": TX, \"state\": \"open\"}",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_reader_undoes_a_dead_holders_journal_before_any_session_resolves"
+      ]
+    },
+    {
+      "name": "f18: a reader never recovers",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "if txm.dead_marker(self._s):",
+      "new": "if False:",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_reader_undoes_a_dead_holders_journal_before_any_session_resolves"
+      ]
+    },
+    {
+      "name": "f19: a rehash revokes sessions again",
+      "file": "src/autotester/auth/store_mongo.py",
+      "old": "    def set_password_hash(self, user_id: int, password_hash: str) -> bool:\n        return self._patch(USERS, user_id, password_hash=password_hash)\n",
+      "new": "    def set_password_hash(self, user_id: int, password_hash: str) -> bool:\n        self.delete_user_sessions(user_id)\n        return self._patch(USERS, user_id, password_hash=password_hash)\n",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_login_time_rehash_keeps_sessions_but_a_reset_revokes_them[mongo]"
+      ]
+    },
+    {
+      "name": "f20: a reset no longer revokes sessions",
+      "file": "src/autotester/auth/accounts.py",
+      "old": "        tx.delete_user_sessions(user_id)  # revoke FIRST: a stop between the two steps never\n",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_login_time_rehash_keeps_sessions_but_a_reset_revokes_them[mongo]",
+        "tests/test_auth_store_fencing.py::test_a_login_time_rehash_keeps_sessions_but_a_reset_revokes_them[sqlite]"
+      ]
+    },
+    {
+      "name": "f21: reset_password writes the hash before revoking",
+      "file": "src/autotester/auth/accounts.py",
+      "old": "        tx.delete_user_sessions(user_id)  # revoke FIRST: a stop between the two steps never\n        return tx.set_password_hash(user_id, new_hash)  # leaves an old session beside a new hash",
+      "new": "        done = tx.set_password_hash(user_id, new_hash)\n        tx.delete_user_sessions(user_id)\n        return done",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_sessions_are_revoked_before_the_new_hash_is_written[reset_password]"
+      ]
+    },
+    {
+      "name": "f22: bootstrap_admin writes the hash before revoking",
+      "file": "src/autotester/auth/accounts.py",
+      "old": "            tx.delete_user_sessions(user_id)  # revoke first, then write the hash\n            tx.enable_with_password_hash(user_id, password_hash)",
+      "new": "            tx.enable_with_password_hash(user_id, password_hash)\n            tx.delete_user_sessions(user_id)",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_sessions_are_revoked_before_the_new_hash_is_written[bootstrap_admin]"
+      ]
+    },
+    {
+      "name": "f23: a rollback runs without owning the lease",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            if self._held is not None and self._held():\n                _resolve(self._s, self._held.epoch, None)",
+      "new": "            if self._held is not None:\n                _resolve(self._s, self._held.epoch, None)",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holders_rollback_leaves_a_live_successor_alone"
+      ]
+    },
+    {
+      "name": "f24: journal entries and tombstones are read as accounts",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "HIDDEN = (UNDO, FENCE)",
+      "new": "HIDDEN = ()",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-an-insert]"
+      ]
+    },
+    {
+      "name": "f25: a write is not fenced by the lease",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        if held is None or not self._alive():\n            raise AuthStoreBusy(\"the auth store lease was lost\")\n        if not self._open:",
+      "new": "        if held is None:\n            raise AuthStoreBusy(\"the auth store lease was lost\")\n        if not self._open:",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_stalled_holder_writes_nothing_once_the_lease_is_gone"
+      ]
+    },
+    {
+      "name": "f26: a patch is undone without the stamp condition",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        coll.update_one({\"_id\": i, \"_e\": mine}, {\"$set\": {**entry[\"prior\"], \"_e\": stamp}})",
+      "new": "        coll.update_one({\"_id\": i}, {\"$set\": {**entry[\"prior\"], \"_e\": stamp}})",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_an_undo_never_overwrites_a_newer_value"
+      ]
+    },
+    {
+      "name": "f27: recovery does not put a deleted document back",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "            coll.insert_one({**entry[\"doc\"], \"_e\": stamp})",
+      "new": "            pass",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[delete_user]"
+      ]
+    },
+    {
+      "name": "f28: every inserted document is journalled with its hash",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        doc = {**doc, \"_e\": self._log({\"op\": \"ins\", \"coll\": name, \"doc_id\": doc[\"_id\"],\n                                       \"pre\": None})}",
+      "new": "        doc = {**doc, \"_e\": self._log({\"op\": \"ins\", \"coll\": name, \"doc_id\": doc[\"_id\"],\n                                       \"pre\": None, \"doc\": doc})}",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_the_journal_holds_hashes_only_beside_the_users"
+      ]
+    }
+  ]
+}

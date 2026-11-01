@@ -2,9 +2,9 @@
 
 The `AuthTx` contract of `store_sqlite.py` over `store.mongo_guard.GuardedStore` only (no database
 name here, M2/M5). Writers are serialised by the lease and a refused change is rolled back whole
-by the undo log (`store_mongo_tx.py`); unique indexes are the second line. Readers take no lease,
-so one may see a write just before its rollback; every rollback follows a refused change, which
-only lowers privilege. A membership is an entry in the account's `group_ids`; a session is stored
+by the journal (`store_mongo_tx.py`); unique indexes are the second line. Readers take no lease
+but undo a dead holder's open journal first (`reading`); one may still see a live holder's write
+just before its rollback. A membership is an entry in the account's `group_ids`; a session is stored
 by the sha256 of its token only.
 """
 
@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import Any
 
 from autotester.auth import db
+from autotester.auth import store_mongo_tx as txm
 from autotester.auth.defaults import ADMIN_SEED, DEFAULT_GROUPS
 from autotester.auth.store_mongo_tx import META, AuthStoreBusy, Doc, MongoTxBase, coll_of, lease
 from autotester.schema.auth import Group, PermissionKey, Principal, User
@@ -78,11 +79,9 @@ class MongoAuthTx(MongoTxBase):
         return user_id
 
     def set_password_hash(self, user_id: int, password_hash: str) -> bool:
-        self.delete_user_sessions(user_id)  # revoke first: a stop between the two steps never
-        return self._patch(USERS, user_id, password_hash=password_hash)  # leaves old sessions
+        return self._patch(USERS, user_id, password_hash=password_hash)
 
     def enable_with_password_hash(self, user_id: int, password_hash: str) -> None:
-        self.delete_user_sessions(user_id)
         self._patch(USERS, user_id, password_hash=password_hash, disabled=False)
 
     def set_disabled(self, user_id: int, disabled: bool) -> bool:
@@ -265,6 +264,9 @@ class MongoAuthStore:
     @contextmanager
     def reading(self) -> Iterator[MongoAuthTx]:
         self._prepare()
+        if txm.dead_marker(self._s):  # a holder died mid-transaction: undo it before anyone reads
+            with lease(self._s):
+                pass
         yield MongoAuthTx(self._s, False)
 
     @contextmanager

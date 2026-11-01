@@ -99,13 +99,17 @@ def _refused(build: Callable[[int, int], Callable[[], object]]) -> Scenario:
     differs from before, and a claim by another account is refused."""
     def scenario(env: AuthEnv) -> tuple[Callable[[], object], Callable[[], None]]:
         a, b, c = _seed()
-        before = _shape()
+        before, token = _shape(), sessions.create_session(b)
 
         def check() -> None:
+            # READS ONLY, before any writer or claim: an open session never sees the refused change
+            assert _shape() == before and token is not None
+            assert any(not u.disabled for u in _admins())  # type: ignore[attr-defined]
+            seen = sessions.resolve_session(token)
+            assert seen is not None and "users.manage" not in seen.permissions
             with pytest.raises(accounts.AccountError):
                 accounts.claim_admin(c)
             assert _shape() == before
-            assert any(not u.disabled for u in _admins())  # type: ignore[attr-defined]
         return build(a, b), check
     return scenario
 
@@ -191,7 +195,7 @@ def test_sessions_are_revoked_before_the_new_hash_is_written(env: AuthEnv,
 
 # -- a holder that stalls past its lease (A-W2) -----------------------------------------------
 def _journal_left(env: AuthEnv) -> bool:
-    return any(d["_id"] == tx_mod.JOURNAL_ID for d in env._coll("auth_meta").docs) or any(
+    return any(d.get("kind") == tx_mod.TX for d in env._coll("auth_meta").docs) or any(
         d.get("kind") == tx_mod.UNDO for d in env._coll("auth_users").docs)
 
 
@@ -264,8 +268,9 @@ def test_an_undo_never_overwrites_a_newer_value(env: AuthEnv) -> None:
     _a, b, _c = _seed()
     with pytest.raises(RuntimeError, match="boom"), auth_store().transaction() as tx:
         tx.set_display_name(b, "mine")
-        next(d for d in env._coll("auth_users").docs if d.get("_id") == b)["display_name"] = "newer"
-        raise RuntimeError("boom")  # the compare-and-set sees a value it did not write: leaves it
+        newer = next(d for d in env._coll("auth_users").docs if d.get("_id") == b)
+        newer.update(display_name="newer", _e="99999999.000001")  # a later write, with its stamp
+        raise RuntimeError("boom")  # the compare-and-set sees a foreign write: leaves it
     assert accounts.get_user(b).display_name == "newer"
 
 
@@ -275,7 +280,7 @@ def test_a_commit_whose_journal_was_undone_underneath_it_fails(env: AuthEnv) -> 
             auth_store().transaction() as tx:
         tx.set_display_name(b, "mine")
         env._coll("auth_meta").docs[:] = [d for d in env._coll("auth_meta").docs
-                                          if d["_id"] != tx_mod.JOURNAL_ID]
+                                          if d.get("kind") != tx_mod.TX]
 
 
 def test_the_journal_holds_hashes_only_beside_the_users(env: AuthEnv) -> None:
