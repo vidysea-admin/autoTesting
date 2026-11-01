@@ -35,6 +35,33 @@ if [ -n "${AUTOTESTER_ROOT:-}" ]; then
   [ -w "$AUTOTESTER_ROOT" ] || echo "WARNING: AUTOTESTER_ROOT=$AUTOTESTER_ROOT is not writable by uid $(id -u); runs and queue state will fail" >&2
 fi
 
+# E5 (AT-1433): pick the Mongo store for EVERY area when a connection URI is present and the operator
+# chose nothing, so live keeps accounts, projects and credentials across deploys without DevOps.
+# Never on a guess: no URI -> no selection (an area on Mongo with no URI makes every request 503).
+# The operator's AUTOTESTER_STORE / AUTOTESTER_STORE_AREAS win whole, even `file`; no half-merge.
+# An existing SQLite auth store also wins (A-W1): flipping `auth` onto an empty Mongo collection
+# would lock its users out, so migrate first (`autotester store migrate`, docker/DEPLOY.md).
+# Presence is tested without echoing the URI; it appears in no message and on no command line.
+# The area list must equal store/mongo_routes.py::AREAS (a test pins it). Never exits.
+select_mongo_store() {
+  local uri="${PATHLYNKS_MONGO_URI:-}" store="${AUTOTESTER_STORE:-}" areas="${AUTOTESTER_STORE_AREAS:-}"
+  [ -n "${uri//[[:space:]]/}" ] || return 0
+  if [ -n "${store//[[:space:]]/}" ] || [ -n "${areas//[[:space:]]/}" ]; then
+    echo "entrypoint: operator store selection kept (AUTOTESTER_STORE / AUTOTESTER_STORE_AREAS set); Mongo not auto-selected"
+    return 0
+  fi
+  local auth_db="${AUTOTESTER_AUTH_DIR:-${AUTOTESTER_ROOT:-/app}/.auth}/auth.sqlite3"
+  if [ -s "$auth_db" ]; then
+    echo "entrypoint: existing SQLite auth store at $auth_db; Mongo not auto-selected (migrate it first, docker/DEPLOY.md)"
+    return 0
+  fi
+  export AUTOTESTER_STORE=mongo
+  export AUTOTESTER_STORE_AREAS="settings=mongo,projects=mongo,runs=mongo,crawls=mongo,approvals=mongo,auth=mongo,credentials=mongo,blobs=mongo,queue=mongo"
+  echo "entrypoint: Mongo URI present and no store selection set; every state area selected on Mongo"
+  return 0
+}
+select_mongo_store || true
+
 # True only when EVERY state area is on Mongo, so no state needs the /data volume (mongo-store M28):
 # the global AUTOTESTER_STORE=mongo, no AUTOTESTER_STORE_AREAS entry sending an area back to file,
 # and auth flipped by its OWN entry (auth/store.py::_auth_on_mongo ignores the global value).

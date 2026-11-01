@@ -1,0 +1,50 @@
+KILLED  m1: on_cloud_run ignores a blank K_SERVICE  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_on_cloud_run_is_one_non_blank_variable
+    actually failed: tests/test_storage_warning.py::test_on_cloud_run_is_one_non_blank_variable
+KILLED  m2: every-area-on-mongo test ignores store_selection (always true)  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[auth=file], tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[queue=file,auth=mongo], tests/test_storage_warning.py::test_cloud_run_with_one_area_on_mongo_and_the_rest_on_files_warns
+    actually failed: tests/test_storage_warning.py::test_an_invalid_store_selection_warns_and_never_raises, tests/test_storage_warning.py::test_cloud_run_ephemeral_root_keeps_the_existing_sentence, tests/test_storage_warning.py::test_cloud_run_with_an_unreadable_mount_table_warns, tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[], tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[auth=file], tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[queue=file,auth=mongo], tests/test_storage_warning.py::test_cloud_run_with_no_mount_table_warns_instead_of_going_quiet, tests/test_storage_warning.py::test_cloud_run_with_one_area_on_mongo_and_the_rest_on_files_warns
+KILLED  m3: auth needs no entry of its own (global mongo alone counts as all-mongo)  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[]
+    actually failed: tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[]
+KILLED  m4: the all-mongo exemption is removed  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_cloud_run_with_every_area_on_mongo_is_quiet_even_without_mounts
+    actually failed: tests/test_storage_warning.py::test_cloud_run_with_every_area_on_mongo_is_quiet_even_without_mounts
+KILLED  m5: an unreadable mount table stays silent on Cloud Run (the pre-E5 behaviour)  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_an_invalid_store_selection_warns_and_never_raises, tests/test_storage_warning.py::test_cloud_run_with_an_unreadable_mount_table_warns, tests/test_storage_warning.py::test_cloud_run_with_no_mount_table_warns_instead_of_going_quiet
+    actually failed: tests/test_storage_warning.py::test_an_invalid_store_selection_warns_and_never_raises, tests/test_storage_warning.py::test_cloud_run_with_an_unreadable_mount_table_warns, tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[], tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[auth=file], tests/test_storage_warning.py::test_cloud_run_with_any_area_on_files_still_warns[queue=file,auth=mongo], tests/test_storage_warning.py::test_cloud_run_with_no_mount_table_warns_instead_of_going_quiet, tests/test_storage_warning.py::test_cloud_run_with_one_area_on_mongo_and_the_rest_on_files_warns
+KILLED  m6: a mount table with no / entry is silent on Cloud Run  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_cloud_run_with_an_unreadable_mount_table_warns
+    actually failed: tests/test_storage_warning.py::test_cloud_run_with_an_unreadable_mount_table_warns
+KILLED  m7: off Cloud Run an unverifiable root now warns  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_off_cloud_run_an_unknowable_root_stays_quiet
+    actually failed: tests/test_storage_warning.py::test_device_error_never_raises, tests/test_storage_warning.py::test_off_cloud_run_an_unknowable_root_stays_quiet, tests/test_storage_warning.py::test_unknowable_never_raises[<lambda>0], tests/test_storage_warning.py::test_unknowable_never_raises[<lambda>1]
+KILLED  m8: the banner ignores Cloud Run  (pytest exit 1)
+    claims to kill : tests/test_storage_warning.py::test_banner_shows_on_cloud_run_without_the_hosted_flag
+    actually failed: tests/test_storage_warning.py::test_banner_shows_on_cloud_run_without_the_hosted_flag
+KILLED  e1: auth=mongo dropped from the generated list  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_the_generated_selection_is_one_the_store_accepts, tests/test_container_entrypoint_behaviour.py::test_e5_uri_alone_selects_mongo_for_every_area
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_the_generated_selection_is_one_the_store_accepts, tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri, tests/test_container_entrypoint_behaviour.py::test_e5_uri_alone_selects_mongo_for_every_area
+KILLED  e2: the 'operator has not set' guard is deleted  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra0], tests/test_container_entrypoint_behaviour.py::test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra1]
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra0], tests/test_container_entrypoint_behaviour.py::test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra1], tests/test_container_entrypoint_behaviour.py::test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra2], tests/test_container_entrypoint_behaviour.py::test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra3]
+KILLED  e3: the guard tests 'set' instead of 'non-blank'  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_no_uri_or_a_blank_one_selects_nothing[uri2]
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_no_uri_or_a_blank_one_selects_nothing[uri2]
+KILLED  e4: the URI is echoed  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri, tests/test_container_entrypoint_behaviour.py::test_e5_the_uri_value_is_never_printed
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri, tests/test_container_entrypoint_behaviour.py::test_e5_the_uri_value_is_never_printed
+KILLED  e5: the existing-SQLite-store detection is removed (A-W1)  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_an_existing_sqlite_user_store_is_not_locked_out
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_an_existing_sqlite_user_store_is_not_locked_out
+KILLED  e6: the selection is never called  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_selection_function_cannot_exit_and_is_called_with_or_true, tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_selection_function_cannot_exit_and_is_called_with_or_true, tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri
+KILLED  e7: AUTOTESTER_STORE is not exported (half selection)  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri, tests/test_container_entrypoint_behaviour.py::test_e5_uri_alone_selects_mongo_for_every_area
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_exports_the_selection_and_leaks_no_uri, tests/test_container_entrypoint_behaviour.py::test_e5_uri_alone_selects_mongo_for_every_area
+KILLED  e8: the selection is made without any URI  (pytest exit 1)
+    claims to kill : tests/test_container_entrypoint_behaviour.py::test_e5_no_uri_or_a_blank_one_selects_nothing[uri0], tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_without_a_uri_selects_nothing
+    actually failed: tests/test_container_entrypoint_behaviour.py::test_e5_no_uri_or_a_blank_one_selects_nothing[uri0], tests/test_container_entrypoint_behaviour.py::test_e5_no_uri_or_a_blank_one_selects_nothing[uri1], tests/test_container_entrypoint_behaviour.py::test_e5_no_uri_or_a_blank_one_selects_nothing[uri2], tests/test_container_entrypoint_behaviour.py::test_e5_the_real_script_without_a_uri_selects_nothing
+
+16/16 mutations killed
