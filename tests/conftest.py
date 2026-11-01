@@ -56,6 +56,17 @@ def pytest_configure(config: pytest.Config) -> None:
                 pass  # pruning is best-effort; never fail a run over it
 
 
+@pytest.fixture(autouse=True)
+def _no_target_probe(monkeypatch: pytest.MonkeyPatch) -> None:
+    """E4.2 (AT-1421): a launched run GETs its project's base_url once before any browser starts.
+    The suite's projects point at made-up hosts (`demo.test`), so the default probe is switched
+    off for every test; the probe's own tests (`test_target_probe.py`,
+    `test_run_unreachable_target.py`) inject the real `probe_target` against local stubs."""
+    from autotester.stages import reachability
+
+    monkeypatch.setattr(reachability, "probe_target", lambda _project: None)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _approval_signing_key() -> Iterator[None]:
     """AT-110: every `RunApproval` is now signed with an HMAC keyed from

@@ -69,7 +69,7 @@ def test_a_refused_spend_is_not_counted_and_the_clock_rule_is_unchanged(monkeypa
         assert budget.try_consume(actions=1000) is False  # over max_actions: refused
         clock.now += 20
     assert budget.excluded_report() == {"judging": 0.0, "housekeeping": 20.0, "total": 20.0,
-                                        "acted_during_exclusion": 0.0}
+                                        "acted_during_exclusion": 0.0, "acting": 0.0}
     clock.now += 99  # 99 s acting + 20 s housekeeping (excluded) against wall_clock_s=100
     assert budget.try_consume(actions=1) is True
     clock.now += 2

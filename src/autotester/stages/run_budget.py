@@ -148,6 +148,7 @@ class RunBudget:
             return {"judging": self._judge.spent(now),
                     "housekeeping": self._housekeeping.spent(now),
                     "total": self._excluded.excluded(now),
+                    "acting": max(0.0, self._browser_elapsed_locked()),
                     "acted_during_exclusion": float(self._overlapped)}
 
     @property

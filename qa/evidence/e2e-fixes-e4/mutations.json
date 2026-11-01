@@ -1,0 +1,266 @@
+{
+ "tests": [
+  "tests/test_target_probe.py",
+  "tests/test_run_unreachable_target.py",
+  "tests/test_run_bounds_stop.py",
+  "tests/test_video_fate.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: an HTTP error status counted as unreachable",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "            exc.close()\n            outcome[0] = None",
+   "new": "            exc.close()\n            outcome[0] = exc",
+   "kills": [
+    "test_any_http_answer_counts_as_reachable[500]",
+    "test_any_http_answer_counts_as_reachable[401]"
+   ]
+  },
+  {
+   "name": "m2: redirects followed out of allowed_domains",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "if not host or not self.project.allows_domain(host) or time.monotonic() >= self.deadline:",
+   "new": "if not host or time.monotonic() >= self.deadline:",
+   "kills": [
+    "test_a_redirect_leaving_allowed_domains_is_not_followed"
+   ]
+  },
+  {
+   "name": "m3: host outside allowed_domains probed",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "or bad_scheme(url) or not host or not project.allows_domain(host):",
+   "new": "or bad_scheme(url) or not host:",
+   "kills": [
+    "test_a_host_outside_allowed_domains_is_refused_without_any_connection",
+    "test_no_allowed_domains_means_no_probe"
+   ]
+  },
+  {
+   "name": "m4: non-http schemes probed",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "if \"://\" not in url or bad_scheme(url) or not host or",
+   "new": "if \"://\" not in url or not host or",
+   "kills": [
+    "test_a_url_that_is_not_plain_http_is_not_probed[javascript://127.0.0.1/%0aalert(1)]"
+   ]
+  },
+  {
+   "name": "m5: no retry",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "    for _ in range(2):",
+   "new": "    for _ in range(1):",
+   "kills": [
+    "test_one_retry_rescues_a_first_attempt_that_fails"
+   ]
+  },
+  {
+   "name": "m6: probe bound is 11 s not 10 s",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "PROBE_TOTAL_S = 10.0",
+   "new": "PROBE_TOTAL_S = 11.0",
+   "kills": [
+    "test_a_target_that_accepts_and_never_answers_fails_within_the_bound"
+   ]
+  },
+  {
+   "name": "m7: probe carries cookies",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "urllib.request.ProxyHandler({}),",
+   "new": "urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(),",
+   "kills": [
+    "test_the_probe_sends_no_credential_no_cookie_no_body_and_follows_in_scope_redirects"
+   ]
+  },
+  {
+   "name": "m8: no redirect followed at all",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "        return super().redirect_request(req, fp, code, msg, headers, newurl)",
+   "new": "        return None",
+   "kills": [
+    "test_the_probe_sends_no_credential_no_cookie_no_body_and_follows_in_scope_redirects"
+   ]
+  },
+  {
+   "name": "m9: unreachable run keeps the EXECUTE span green",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "stage=StageName.EXECUTE, status=\"failed\", error=message,",
+   "new": "stage=StageName.EXECUTE, status=\"done\", error=message,",
+   "kills": [
+    "test_an_unreachable_target_ends_the_run_fast_with_one_message"
+   ]
+  },
+  {
+   "name": "m10: unreachable run records no stop_reason",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "stop_reason=TARGET_UNREACHABLE,",
+   "new": "stop_reason=None,",
+   "kills": [
+    "test_an_unreachable_target_ends_the_run_fast_with_one_message"
+   ]
+  },
+  {
+   "name": "m11: unreachable run records no warning",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "warnings=(message,))",
+   "new": "warnings=())",
+   "kills": [
+    "test_an_unreachable_target_ends_the_run_fast_with_one_message"
+   ]
+  },
+  {
+   "name": "m12: probe skipped by the launcher",
+   "file": "src/autotester/stages/run_launcher.py",
+   "old": "if down := seams.target_probe(project):",
+   "new": "if False and (down := seams.target_probe(project)):",
+   "kills": [
+    "test_an_unreachable_target_ends_the_run_fast_with_one_message"
+   ]
+  },
+  {
+   "name": "m13: launcher drops the stop reason from the Run",
+   "file": "src/autotester/stages/run_launcher.py",
+   "old": "excluded_s=plan.excluded_s, stop_reason=plan.stop_reason,",
+   "new": "excluded_s=plan.excluded_s,",
+   "kills": [
+    "test_a_run_whose_acting_time_reaches_the_bound_stops_and_names_the_reason"
+   ]
+  },
+  {
+   "name": "m14: unreachable run is NOT_RUN-less: cases not graded",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "        ctx.store.save_verdict(\n            ctx.run_id, grade_errored_result(case, result, judge, ctx.run_id, ctx.store))",
+   "new": "        pass",
+   "kills": [
+    "test_an_unreachable_target_ends_the_run_fast_with_one_message"
+   ]
+  },
+  {
+   "name": "m15: wall-clock bound not enforced",
+   "file": "src/autotester/stages/run_budget.py",
+   "old": "or self._browser_elapsed_locked() >= approval.wall_clock_s):",
+   "new": "or self._browser_elapsed_locked() >= approval.wall_clock_s * 1000):",
+   "kills": [
+    "test_a_run_whose_acting_time_reaches_the_bound_stops_and_names_the_reason"
+   ]
+  },
+  {
+   "name": "m16: acting seconds not recorded",
+   "file": "src/autotester/stages/run_budget.py",
+   "old": "\"acting\": max(0.0, self._browser_elapsed_locked()),",
+   "new": "\"acting\": 0.0,",
+   "kills": [
+    "test_the_run_records_the_acting_time_beside_what_was_held_off_the_clock"
+   ]
+  },
+  {
+   "name": "m17: page without a video is silent",
+   "file": "src/autotester/browser/video.py",
+   "old": "return self._video_lost(case_id, \"the page has no video recording\")",
+   "new": "return None",
+   "kills": [
+    "test_a_page_with_no_video_object_records_video_lost"
+   ]
+  },
+  {
+   "name": "m18: unwritten recording is silent",
+   "file": "src/autotester/browser/video.py",
+   "old": "return self._video_lost(case_id, \"the recording file was not written\")",
+   "new": "return None",
+   "kills": [
+    "test_a_recording_file_that_never_appeared_records_video_lost"
+   ]
+  },
+  {
+   "name": "m19: missing-after-move is silent",
+   "file": "src/autotester/browser/video.py",
+   "old": "return rel if final_path.exists() else self._video_lost(",
+   "new": "return rel if True else self._video_lost(",
+   "kills": [
+    "test_a_move_that_produced_no_final_file_records_video_lost"
+   ]
+  },
+  {
+   "name": "m20: recording-off now records a loss",
+   "file": "src/autotester/browser/video.py",
+   "old": "if not getattr(self, \"record_video\", False):\n            return None",
+   "new": "if False:\n            return None",
+   "kills": [
+    "test_recording_off_stays_silent_and_a_good_recording_is_unchanged"
+   ]
+  },
+  {
+   "name": "m21: PASS reason dropped",
+   "file": "src/autotester/browser/video.py",
+   "old": "    if passed:\n        return \"no video kept: the case passed",
+   "new": "    if False:\n        return \"no video kept: the case passed",
+   "kills": [
+    "test_a_passed_case_says_the_video_was_pruned_by_design",
+    "test_a_pass_case_section_reads_no_video_kept_the_case_passed"
+   ]
+  },
+  {
+   "name": "m22: recorded loss ignored",
+   "file": "src/autotester/browser/video.py",
+   "old": "    if lost is not None:\n        return lost",
+   "new": "    if False:\n        return lost",
+   "kills": [
+    "test_a_lost_video_carries_the_recorded_reason_even_on_a_pass",
+    "test_a_failed_case_with_a_lost_video_shows_the_recorded_reason"
+   ]
+  },
+  {
+   "name": "m23: kept video still explained",
+   "file": "src/autotester/browser/video.py",
+   "old": "    if any(e.kind is EvidenceKind.VIDEO for e in evidence):",
+   "new": "    if False:",
+   "kills": [
+    "test_a_kept_video_needs_no_explanation"
+   ]
+  },
+  {
+   "name": "m24: duration cap not named",
+   "file": "src/autotester/browser/video.py",
+   "old": "    if duration_s > MAX_VIDEO_DURATION_S:\n        return (f",
+   "new": "    if False:\n        return (f",
+   "kills": [
+    "test_a_case_over_the_duration_cap_says_so"
+   ]
+  },
+  {
+   "name": "m25: bounds card drops the clock arithmetic",
+   "file": "src/autotester/ui/preflight_view.py",
+   "old": "lines = [bounds_text(run), clock_text(run)]",
+   "new": "lines = [bounds_text(run)]",
+   "kills": [
+    "test_the_bounds_card_states_acting_time_judge_and_housekeeping_seconds_and_the_stop"
+   ]
+  },
+  {
+   "name": "m26: missing accounting shown as zero",
+   "file": "src/autotester/ui/preflight_view.py",
+   "old": "    if held is None:\n        return \"clock accounting NOT RECORDED",
+   "new": "    if held is None:\n        held = {\"acting\": 0.0, \"judging\": 0.0, \"housekeeping\": 0.0}\n    if False:\n        return \"clock accounting NOT RECORDED",
+   "kills": [
+    "test_a_run_from_before_d112_says_not_recorded_never_zero"
+   ]
+  },
+  {
+   "name": "m27: stop reason not shown",
+   "file": "src/autotester/ui/preflight_view.py",
+   "old": "    if run is not None and run.stop_reason:",
+   "new": "    if False:",
+   "kills": [
+    "test_the_bounds_card_states_acting_time_judge_and_housekeeping_seconds_and_the_stop"
+   ]
+  },
+  {
+   "name": "m28: stopped run still says every case ran",
+   "file": "src/autotester/ui/preflight_view.py",
+   "old": "            else \"Warnings only: every case below still ran.\")",
+   "new": "            else \"Warnings only: every case below still ran.\") if False else \"Warnings only: every case below still ran.\"",
+   "kills": [
+    "test_a_target_that_never_answered_is_not_described_as_cases_that_still_ran"
+   ]
+  }
+ ]
+}

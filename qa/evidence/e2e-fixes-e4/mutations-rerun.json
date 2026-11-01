@@ -1,0 +1,25 @@
+{
+ "tests": [
+  "tests/test_video_fate.py"
+ ],
+ "mutations": [
+  {
+   "name": "m17: page without a video is silent",
+   "file": "src/autotester/browser/video.py",
+   "old": "return self._video_lost(case_id, \"the page has no video recording\")",
+   "new": "return None",
+   "kills": [
+    "test_a_page_with_no_video_object_records_video_lost"
+   ]
+  },
+  {
+   "name": "m23: kept video still explained",
+   "file": "src/autotester/browser/video.py",
+   "old": "    if any(e.kind is EvidenceKind.VIDEO for e in evidence):",
+   "new": "    if False:",
+   "kills": [
+    "test_a_kept_video_needs_no_explanation"
+   ]
+  }
+ ]
+}

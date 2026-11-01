@@ -89,7 +89,7 @@ def test_a_launched_run_records_phase_totals_and_unaccounted_seconds(
     assert saved.unaccounted_s is not None and saved.unaccounted_s >= 0.0
     # D-112 / F2: the seconds held off the approval clock are in run.json, auditable
     assert saved.excluded_s is not None and set(saved.excluded_s) == {
-        "judging", "housekeeping", "total", "acted_during_exclusion"}
+        "judging", "housekeeping", "total", "acted_during_exclusion", "acting"}
     assert saved.excluded_s["housekeeping"] == WIPE_S  # exactly the slowed profile wipe
     assert saved.excluded_s["total"] == WIPE_S  # ...and that is what was held off the clock
     assert saved.excluded_s["judging"] == 0.0

@@ -54,7 +54,8 @@ def _launch(tmp_path, monkeypatch, *, paths=None, verdict_result=Result.FAIL):
         store.paths.run_trace("run-A").write_text(
             "\n".join(s.model_dump_json() for s in spans))
         original.update({p.name: p.read_bytes() for p in run_dir.glob("*.json")})
-        return SimpleNamespace(n=1, bound_by="config", excluded_s=None)
+        return SimpleNamespace(n=1, bound_by="config", excluded_s=None,
+                               stop_reason=None, warnings=())
 
     prepared = (store, project, [case], None, store.paths, None,
                 SimpleNamespace(id="approval", max_actions=1, max_probes=1, wall_clock_s=30),

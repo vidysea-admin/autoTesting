@@ -168,7 +168,16 @@ class Run(Artifact):
                     "`total` (their union, capped at the combined allowance, as actually "
                     "subtracted); `acted_during_exclusion` is a COUNT, not seconds: spends made "
                     "while a scope was open, when the shared clock was paused for every "
-                    "worker (0 = serial). None = NOT RECORDED (an older run), never zero",
+                    "worker (0 = serial); `acting` (E4.1) = seconds the browser acted on the "
+                    "target, the figure the approval's wall clock bounds (absent on a run from "
+                    "before it). None = NOT RECORDED (an older run), never zero",
+    )
+    stop_reason: str | None = Field(
+        default=None,
+        description="E4.1/E4.2: why the run did not start every case -- a budget bound "
+                    "(`wall_clock_s`, `max_actions`, `max_probes`) or `target_unreachable` (the "
+                    "preflight GET of base_url got no answer, so no case ran). None = it did "
+                    "not stop early, or the run predates this field",
     )
     bounds: RunBounds | None = Field(
         default=None,

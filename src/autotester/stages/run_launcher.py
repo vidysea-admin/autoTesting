@@ -51,7 +51,7 @@ from autotester.stages.parallel_run import (
     _free_ram_mb,
     plan_parallel_run,
 )
-from autotester.stages.reachability import latest_warnings
+from autotester.stages.reachability import check_target, latest_warnings, skip_run
 from autotester.stages.run_artifacts import assemble_run_bundles
 from autotester.stages.run_budget import RunBudget
 from autotester.stages.run_gates import (
@@ -89,6 +89,7 @@ class RunSeams(NamedTuple):
     planner: Callable[..., ParallelPlan] = plan_parallel_run
     free_ram_mb: Callable[[], float] = _free_ram_mb
     ledger: PlanningLedger | None = None
+    target_probe: Callable[[Project], str | None] = check_target  # E4.2: once per run
 
 
 DEFAULT_SEAMS = RunSeams()
@@ -207,6 +208,8 @@ def run_cases_traced(
         project, store.load_flowspec(), store)
     started = ctx.clock()
     snapshot = list(zip(cases, entry_flags, strict=True))
+    if down := seams.target_probe(project):  # E4.2: before any browser; skip, say why once
+        return skip_run(ctx, plan, budget.excluded_report(), cases, judge, down)
     pool = _entry_pool(project, secrets, run_dir, slug, judge, budget)  # D-115: one per run
     try:
         for tier in tiers_to_run(cat):
@@ -230,7 +233,8 @@ def run_cases_traced(
         error=f"run budget exhausted: {budget.stop_reason}" if budget.stop_reason else None,
         started=started, finished=ctx.clock(),
     ))
-    return dataclasses.replace(plan, excluded_s=budget.excluded_report())
+    return dataclasses.replace(plan, excluded_s=budget.excluded_report(),
+                               stop_reason=budget.stop_reason)
 
 
 def save_tracked_run(store: ProjectStore, **fields: Any) -> Run:
@@ -259,14 +263,15 @@ def launch_run(
     run = save_tracked_run(
         store, id=run_id, project=slug, case_ids=[c.id for c in cases], trigger=trigger,
         requested_by=requested_by, requested_by_id=requested_by_id, slot_key=slot_key,
-        via=via, requested_at=requested_at, preflight_warnings=latest_warnings(store, cases),
+        via=via, requested_at=requested_at,
+        preflight_warnings=[*plan.warnings, *latest_warnings(store, cases)],
         parallel_n=plan.n, parallel_bound_by=plan.bound_by,
         catalog_runnable_counts={tier.value: len(cat.runnable_in_tier(tier))
                                  for tier in tiers_to_run(cat)},
         # CN10: what it ran under, reported not capped -- a 19-year wall clock is visible.
         bounds=RunBounds(approval_id=approval.id, max_actions=approval.max_actions,
                          max_probes=approval.max_probes, wall_clock_s=approval.wall_clock_s),
-        excluded_s=plan.excluded_s,
+        excluded_s=plan.excluded_s, stop_reason=plan.stop_reason,
         **phase_fields(store, run_id, time.monotonic() - wall_started),
     )
     run_follow_ups(store, run_id, judge)

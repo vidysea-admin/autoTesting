@@ -60,6 +60,8 @@ class ParallelPlan:
     free_ram_mb: float
     cpu_count: int
     excluded_s: dict[str, float] | None = None  # D-112: set once the run ends; see RunBudget
+    stop_reason: str | None = None  # E4: why the run stopped early (a bound, or the target)
+    warnings: tuple[str, ...] = ()  # E4.2: preflight lines this run's own start produced
 
 
 def _free_ram_mb() -> float:
