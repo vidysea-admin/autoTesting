@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u6c
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A + B verdicts 0ec146a0)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md`, unit U6c (Mongo video shares, links, access requests, comments, `schedule_owner`, `intake_gate_auth`, audit rows). Criteria judged: M30 (CRITICAL, dual check requested by the brief), M29 for the fence changes. Folds in the two U6bf residuals: AT-1431 and AT-1432.
 **Authority:** D-120..D-123, D-126, D-129 (ACTIVE, `docs/DECISIONS.md:3080`) authorizes exactly two new src files, `auth/store_mongo_video.py` and `auth/store_mongo_fence.py`, and the regeneration of the generated sections of `docs/ARCHITECTURE.md` / `docs/MAP.md`. No other new src file.
