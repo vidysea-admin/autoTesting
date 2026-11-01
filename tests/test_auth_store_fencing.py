@@ -157,7 +157,7 @@ def test_a_stalled_holder_cannot_commit_while_its_journal_is_being_undone(
     assert not _journal_left(env)
 
 
-def test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear(
+def test_the_stalled_holders_late_insert_meets_a_hidden_slot_only_a_later_epoch_may_take(
         env: AuthEnv, monkeypatch: pytest.MonkeyPatch) -> None:
     _a, b, _c = _seed()
 
@@ -167,7 +167,7 @@ def test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_ma
     _at_call(monkeypatch, "insert_one", lambda c, a: c.name == "auth_grants", _successor(env, b))
     with pytest.raises(AuthStoreBusy, match="refused"):  # refused, not "a duplicate"
         stalled()
-    assert any(d.get("kind") == tx_mod.FENCE for d in env._coll("auth_grants").docs)
+    assert any(str(d.get("_e")).startswith("G:") for d in env._coll("auth_grants").docs)
     with auth_store().transaction() as tx:  # a legitimate later holder can grant the same thing
         tx.add_project_relation("proj", b, "viewer")
     with auth_store().reading() as tx:

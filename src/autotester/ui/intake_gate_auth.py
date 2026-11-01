@@ -15,10 +15,10 @@ from __future__ import annotations
 
 from fastapi import Request
 
-from autotester.auth import db
-from autotester.auth.access import authorize, resource_for
+from autotester.auth.access import authorize, principal_of, resource_for
 from autotester.auth.config import auth_disabled
 from autotester.auth.context import current_principal
+from autotester.auth.store import auth_store
 from autotester.schema.auth import PermissionKey, Principal
 from autotester.schema.intake import IntakeActor
 from autotester.ui.intake_gate import IntakeRefused
@@ -31,18 +31,11 @@ _NOT_ALLOWED = "You do not have the video.upload permission on this project."
 
 def principal_for_email(email: str) -> Principal | None:
     """The enabled account with this email and its permissions right now, or None."""
-    if not db.store_exists():
+    store = auth_store()
+    if not store.exists():
         return None
-    with db.reading() as conn:
-        row = conn.execute("SELECT id, email, display_name FROM users WHERE email = ? "
-                           "AND disabled = 0", (email,)).fetchone()
-        if row is None:
-            return None
-        perms = frozenset(r["permission"] for r in conn.execute(
-            "SELECT DISTINCT p.permission FROM memberships m JOIN group_permissions p "
-            "ON p.group_id = m.group_id WHERE m.user_id = ?", (row["id"],)))
-    return Principal(user_id=row["id"], email=row["email"],
-                     display_name=row["display_name"], permissions=perms)
+    with store.reading() as tx:
+        return principal_of(tx, email)
 
 
 def _decide(who: Principal | None, slug: str) -> None:

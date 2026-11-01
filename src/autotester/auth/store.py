@@ -13,8 +13,9 @@ contract without assuming multi-document transactions.
 from __future__ import annotations
 
 import os
-from contextlib import AbstractContextManager
-from typing import Protocol
+from collections.abc import Iterator
+from contextlib import AbstractContextManager, contextmanager
+from typing import Any, Protocol
 
 from autotester.schema.auth import Group, Principal, User
 
@@ -97,6 +98,21 @@ def _auth_on_mongo() -> bool:
     own = {k.strip(): v.strip() for k, _, v in
            (i.partition("=") for i in os.environ.get("AUTOTESTER_STORE_AREAS", "").split(","))}
     return store_selection()["auth"] == "mongo" and own.get("auth") == "mongo"
+
+
+def on_mongo() -> bool:
+    """True when the `auth` area is on Mongo: the video operations (shares, links, requests,
+    comments; U6c) exist only on the Mongo transaction, SQLite keeps their SQL in the stage
+    modules (`store_sqlite.py` is at the 300-line cap)."""
+    return _auth_on_mongo()
+
+
+@contextmanager
+def video_tx(write: bool = False) -> Iterator[Any]:
+    """The Mongo auth transaction (or read view) that carries the video operations."""
+    store = auth_store()
+    with (store.transaction() if write else store.reading()) as tx:
+        yield tx
 
 
 def auth_store() -> AuthStore:

@@ -1,0 +1,38 @@
+KILLED  v1: a request can be decided twice  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]
+    actually failed: tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]
+KILLED  v2: a second request makes a second pending row  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo], tests/test_video_store_backends.py::test_two_racing_requests_make_one_pending_request
+    actually failed: tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo], tests/test_video_store_backends.py::test_two_racing_requests_make_one_pending_request
+KILLED  v3: a new link does not revoke the earlier one  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_one_live_link_per_video_and_only_its_hash_is_stored[mongo]
+    actually failed: tests/test_video_store_backends.py::test_one_live_link_per_video_and_only_its_hash_is_stored[mongo]
+KILLED  v4: a revoked link still resolves  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_one_live_link_per_video_and_only_its_hash_is_stored[mongo]
+    actually failed: tests/test_video_store_backends.py::test_one_live_link_per_video_and_only_its_hash_is_stored[mongo]
+KILLED  v5: a purge leaves the shares  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_purge_removes_all_four_kinds_for_a_video_and_for_a_project[mongo]
+    actually failed: tests/test_video_store_backends.py::test_purge_removes_all_four_kinds_for_a_video_and_for_a_project[mongo]
+KILLED  v6: an approval does not add the share  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]
+    actually failed: tests/test_video_store_backends.py::test_a_refused_approval_is_undone_whole, tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]
+KILLED  v7: a share id carries the plain address  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_a_deleted_share_keeps_nothing_of_the_address_and_no_hash_is_in_a_video_collection
+    actually failed: tests/test_video_store_backends.py::test_a_deleted_share_keeps_nothing_of_the_address_and_no_hash_is_in_a_video_collection
+KILLED  v9: principal_of ignores a disabled account  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_principals_for_the_schedule_owner_and_the_intake_gate_come_from_the_seam[mongo]
+    actually failed: tests/test_video_store_backends.py::test_principals_for_the_schedule_owner_and_the_intake_gate_come_from_the_seam[mongo], tests/test_video_store_backends.py::test_principals_for_the_schedule_owner_and_the_intake_gate_come_from_the_seam[sqlite]
+KILLED  v10: the schedule owner fails open on an unreadable store  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_the_schedule_owner_is_nobody_while_the_store_is_unreachable
+    actually failed: tests/test_video_store_backends.py::test_the_schedule_owner_is_nobody_while_the_store_is_unreachable
+KILLED  v8: a comment of another video is reachable  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_comments_order_edit_promote_delete_and_video_scope[mongo]
+    actually failed: tests/test_video_store_backends.py::test_comments_order_edit_promote_delete_and_video_scope[mongo]
+KILLED  v11: a refused approval is not rolled back  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_a_refused_approval_is_undone_whole
+    actually failed: tests/test_video_store_backends.py::test_a_refused_approval_is_undone_whole
+KILLED  v12: a comment edit does not stamp the text  (pytest exit 1)
+    claims to kill : tests/test_video_store_backends.py::test_comments_order_edit_promote_delete_and_video_scope[mongo]
+    actually failed: tests/test_video_store_backends.py::test_comments_order_edit_promote_delete_and_video_scope[mongo]
+
+12/12 mutations killed

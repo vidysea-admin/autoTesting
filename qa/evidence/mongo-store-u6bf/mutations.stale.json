@@ -1,0 +1,10 @@
+{
+  "entries": [
+    {
+      "old_nodeid": "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear",
+      "moved_to": "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_hidden_slot_only_a_later_epoch_may_take",
+      "moved_by_unit": "mongo-store-u6c (AT-1431): a grant's undone insert now leaves a hidden slot, not a FENCE tombstone",
+      "note": "stale on purpose, test renamed and re-asserted; the same property is also covered by tests/test_auth_store_fence_slots.py"
+    }
+  ]
+}

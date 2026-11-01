@@ -1,0 +1,109 @@
+{
+ "mutations": [
+  {
+   "name": "s1: slot takeover ignores the stamp's epoch",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "stamp_epoch(cur[\"_e\"]) <= epoch and coll.update_one(",
+   "new": "True and coll.update_one(",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing"
+   ]
+  },
+  {
+   "name": "s2: a committed delete of a slotted document is physical again",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "elif entry.get(\"gone\") and entry[\"coll\"] not in SLOTTED:",
+   "new": "elif entry.get(\"gone\"):",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent",
+    "tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing"
+   ]
+  },
+  {
+   "name": "s3: a recoverer leaves an older hidden stamp",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "(gone(stamp) and stamp_epoch(stamp) < epoch)",
+   "new": "(gone(stamp) and False)",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch"
+   ]
+  },
+  {
+   "name": "s4: the committed sweep drops its _e condition",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": ".delete_one({\"_id\": entry[\"doc_id\"],\n                                                      \"_e\": f\"G:{entry['me']}\"})",
+   "new": ".delete_one({\"_id\": entry[\"doc_id\"]})",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_late_committed_sweep_does_not_delete_a_recreated_document"
+   ]
+  },
+  {
+   "name": "s5: marker read before the abort CAS",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "    meta.update_one({\"_id\": tx_id(epoch), \"state\": \"open\"}, {\"$set\": {\"state\": \"aborted\"}})\n    marker = meta.find_one({\"_id\": tx_id(epoch)})\n",
+   "new": "    marker = meta.find_one({\"_id\": tx_id(epoch)})\n    meta.update_one({\"_id\": tx_id(epoch), \"state\": \"open\"}, {\"$set\": {\"state\": \"aborted\"}})\n",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_commit_that_lands_between_the_abort_cas_and_the_marker_read_stands"
+   ]
+  },
+  {
+   "name": "s6: recover resolves epochs above its own",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "for e in seen if e < epoch)",
+   "new": "for e in seen if e != epoch)",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_recovery_resolves_only_earlier_epochs"
+   ]
+  },
+  {
+   "name": "s7: an undone slotted insert keeps its data",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "blank = {k: None for k in cur if k not in (\"_id\", \"_e\")}",
+   "new": "blank = {}",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data"
+   ]
+  },
+  {
+   "name": "s8: an undone slotted insert is not hidden when it landed",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "if not (stamp in mine[\"$in\"] or (gone",
+   "new": "if not (False or (gone",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data"
+   ]
+  },
+  {
+   "name": "s9: a slotted insert treats a hidden slot as a real duplicate",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "if name in SLOTTED and cur is not None and gone(cur.get(\"_e\")):",
+   "new": "if False:",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch",
+    "tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing"
+   ]
+  },
+  {
+   "name": "s10: a deleted slotted document keeps its fields",
+   "file": "src/autotester/auth/store_mongo_tx.py",
+   "old": "if gone and name in SLOTTED:",
+   "new": "if False:",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent"
+   ]
+  },
+  {
+   "name": "s11: stamp_epoch sorts an unparsable stamp first",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "else 2**62",
+   "new": "else 0",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_the_stamp_epoch_orders_every_stamp_the_fence_writes"
+   ]
+  }
+ ],
+ "tests": [
+  "tests/test_auth_store_fence_slots.py"
+ ],
+ "timeout_s": 900
+}

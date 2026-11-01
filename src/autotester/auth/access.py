@@ -45,6 +45,19 @@ def authorize(principal: Principal, key: PermissionKey,
                and _scope_holds(s, principal.email, resource) for s in scopes)
 
 
+def principal_of(tx: AuthTx, email: str) -> Principal | None:
+    """The enabled account with this email and its effective permissions right now, or None.
+    Through the store seam, so the same code reads SQLite and Mongo."""
+    user = tx.find_user(email)
+    if user is None or user.disabled:
+        return None
+    held: set[str] = set()
+    for group_id in tx.user_group_ids(user.id):
+        held |= tx.group_permissions(group_id)
+    return Principal(user_id=user.id, email=user.email, display_name=user.display_name,
+                     permissions=frozenset(held))
+
+
 def resource_for(slug: str) -> ResourceRef:
     """The project's owner, assignees and shared-with set, by email."""
     store = auth_store()

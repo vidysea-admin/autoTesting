@@ -1,0 +1,117 @@
+{
+ "mutations": [
+  {
+   "name": "v1: a request can be decided twice",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "if doc is None or doc[\"status\"] != PENDING:",
+   "new": "if doc is None:",
+   "kills": [
+    "tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]"
+   ]
+  },
+  {
+   "name": "v2: a second request makes a second pending row",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "        if pending:\n            return _row(pending[0]), False",
+   "new": "        if False:\n            return _row(pending[0]), False",
+   "kills": [
+    "tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]",
+    "tests/test_video_store_backends.py::test_two_racing_requests_make_one_pending_request"
+   ]
+  },
+  {
+   "name": "v3: a new link does not revoke the earlier one",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "        self.revoke_links(slug, video_id, now)\n        self._insert(LINKS",
+   "new": "        self._insert(LINKS",
+   "kills": [
+    "tests/test_video_store_backends.py::test_one_live_link_per_video_and_only_its_hash_is_stored[mongo]"
+   ]
+  },
+  {
+   "name": "v4: a revoked link still resolves",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "if doc is None or doc[\"revoked_at\"] is not None else",
+   "new": "if doc is None else",
+   "kills": [
+    "tests/test_video_store_backends.py::test_one_live_link_per_video_and_only_its_hash_is_stored[mongo]"
+   ]
+  },
+  {
+   "name": "v5: a purge leaves the shares",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "for name in (LINKS, SHARES, REQUESTS, COMMENTS):",
+   "new": "for name in (LINKS, REQUESTS, COMMENTS):",
+   "kills": [
+    "tests/test_video_store_backends.py::test_purge_removes_all_four_kinds_for_a_video_and_for_a_project[mongo]"
+   ]
+  },
+  {
+   "name": "v6: an approval does not add the share",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "        if share:\n            self.set_share(",
+   "new": "        if False:\n            self.set_share(",
+   "kills": [
+    "tests/test_video_store_backends.py::test_request_access_decide_once_and_share[mongo]"
+   ]
+  },
+  {
+   "name": "v7: a share id carries the plain address",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "hashlib.sha256(email.encode()).hexdigest()}\"",
+   "new": "email}\"",
+   "kills": [
+    "tests/test_video_store_backends.py::test_a_deleted_share_keeps_nothing_of_the_address_and_no_hash_is_in_a_video_collection"
+   ]
+  },
+  {
+   "name": "v9: principal_of ignores a disabled account",
+   "file": "src/autotester/auth/access.py",
+   "old": "if user is None or user.disabled:",
+   "new": "if user is None:",
+   "kills": [
+    "tests/test_video_store_backends.py::test_principals_for_the_schedule_owner_and_the_intake_gate_come_from_the_seam[mongo]"
+   ]
+  },
+  {
+   "name": "v10: the schedule owner fails open on an unreadable store",
+   "file": "src/autotester/stages/schedule_owner.py",
+   "old": "    except Exception:  # unreadable store: no owner can be proven, so the caller refuses\n        return None",
+   "new": "    except Exception:  # unreadable store\n        raise",
+   "kills": [
+    "tests/test_video_store_backends.py::test_the_schedule_owner_is_nobody_while_the_store_is_unreachable"
+   ]
+  },
+  {
+   "name": "v8: a comment of another video is reachable",
+   "file": "src/autotester/stages/video_comments.py",
+   "old": "mine = found is not None and (found[\"slug\"], found[\"video_id\"]) == (slug, video_id)",
+   "new": "mine = found is not None",
+   "kills": [
+    "tests/test_video_store_backends.py::test_comments_order_edit_promote_delete_and_video_scope[mongo]"
+   ]
+  },
+  {
+   "name": "v11: a refused approval is not rolled back",
+   "file": "src/autotester/auth/store_mongo_tx.py",
+   "old": "            if self._held is not None and self._held():\n                close_epoch(self._s, self._held.epoch, None)\n                self._open = False",
+   "new": "            self._open = False",
+   "kills": [
+    "tests/test_video_store_backends.py::test_a_refused_approval_is_undone_whole"
+   ]
+  },
+  {
+   "name": "v12: a comment edit does not stamp the text",
+   "file": "src/autotester/auth/store_mongo_video.py",
+   "old": "self._patch(COMMENTS, comment_id, text=text, edited_at=now)",
+   "new": "self._patch(COMMENTS, comment_id, edited_at=now)",
+   "kills": [
+    "tests/test_video_store_backends.py::test_comments_order_edit_promote_delete_and_video_scope[mongo]"
+   ]
+  }
+ ],
+ "tests": [
+  "tests/test_video_store_backends.py"
+ ],
+ "timeout_s": 900
+}

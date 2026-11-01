@@ -11,12 +11,12 @@ from __future__ import annotations
 
 import logging
 import os
-import sqlite3
 from collections.abc import Mapping
 from datetime import UTC, datetime
 
 from autotester.auth import db
-from autotester.auth.access import authorize
+from autotester.auth.access import authorize, principal_of
+from autotester.auth.store import auth_store, on_mongo, video_tx
 from autotester.core.paths import repo_root
 from autotester.delivery import email as mail
 from autotester.schema.auth import PermissionKey, Principal, ResourceRef
@@ -32,7 +32,7 @@ def _now() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def _row(row: sqlite3.Row) -> AccessRequest:
+def _row(row: Mapping[str, object]) -> AccessRequest:
     return AccessRequest(id=row["id"], slug=row["slug"], video_id=row["video_id"],
                          requester=row["requester"], status=Status(row["status"]),
                          created_at=row["created_at"], decided_by=row["decided_by"],
@@ -46,6 +46,10 @@ def request_access(slug: str, video_id: str, requester: str) -> tuple[AccessRequ
     if video_resource(slug, video_id) is None:
         return None, False
     who = clean_email(requester)
+    if on_mongo():
+        with video_tx(True) as tx:
+            made_row, was_made = tx.request_access(slug, video_id, who, _now())
+        return (None if made_row is None else _row(made_row)), was_made
     with db.transaction() as conn:
         made = conn.execute(
             "INSERT OR IGNORE INTO access_requests (slug, video_id, requester, status, "
@@ -58,8 +62,12 @@ def request_access(slug: str, video_id: str, requester: str) -> tuple[AccessRequ
 
 
 def latest_request(slug: str, video_id: str, requester: str) -> AccessRequest | None:
-    if not db.store_exists():
+    if not auth_store().exists():
         return None
+    if on_mongo():
+        with video_tx() as tx:
+            rows = tx.request_rows(slug=slug, video_id=video_id, requester=clean_email(requester))
+        return _row(rows[-1]) if rows else None
     with db.reading() as conn:
         row = conn.execute("SELECT * FROM access_requests WHERE slug = ? AND video_id = ? AND "
                            "requester = ? ORDER BY id DESC LIMIT 1",
@@ -69,8 +77,11 @@ def latest_request(slug: str, video_id: str, requester: str) -> AccessRequest | 
 
 def requests_by(requester: str) -> list[AccessRequest]:
     """Everything this person has asked for, newest first (they see the outcome here)."""
-    if not db.store_exists():
+    if not auth_store().exists():
         return []
+    if on_mongo():
+        with video_tx() as tx:
+            return [_row(r) for r in reversed(tx.request_rows(requester=clean_email(requester)))]
     with db.reading() as conn:
         return [_row(r) for r in conn.execute(
             "SELECT * FROM access_requests WHERE requester = ? ORDER BY id DESC",
@@ -87,17 +98,26 @@ def may_decide(who: Principal, req: AccessRequest, res: ResourceRef | None = Non
 
 def pending_for(who: Principal) -> list[AccessRequest]:
     """The pending requests `who` may act on and no others (absence, not 403, for the rest)."""
-    if not db.store_exists():
+    if not auth_store().exists():
         return []
-    with db.reading() as conn:
-        rows = [_row(r) for r in conn.execute(
-            "SELECT * FROM access_requests WHERE status = ? ORDER BY id", (Status.PENDING.value,))]
+    if on_mongo():
+        with video_tx() as tx:
+            rows = [_row(r) for r in tx.request_rows(status=Status.PENDING.value)]
+    else:
+        with db.reading() as conn:
+            rows = [_row(r) for r in conn.execute(
+                "SELECT * FROM access_requests WHERE status = ? ORDER BY id",
+                (Status.PENDING.value,))]
     return [r for r in rows if may_decide(who, r)]
 
 
 def get_request(request_id: int) -> AccessRequest | None:
-    if not db.store_exists():
+    if not auth_store().exists():
         return None
+    if on_mongo():
+        with video_tx() as tx:
+            found = tx.get_request(request_id)
+        return None if found is None else _row(found)
     with db.reading() as conn:
         row = conn.execute("SELECT * FROM access_requests WHERE id = ?", (request_id,)).fetchone()
     return None if row is None else _row(row)
@@ -111,6 +131,10 @@ def decide(who: Principal, request_id: int, approve: bool) -> AccessRequest | No
     if req is None or not may_decide(who, req):
         return None
     new = Status.APPROVED if approve else Status.DECLINED
+    if on_mongo():
+        with video_tx(True) as tx:
+            tx.decide_request(request_id, new.value, clean_email(who.email), _now(), approve)
+        return get_request(request_id)
     with db.transaction() as conn:
         won = conn.execute(
             "UPDATE access_requests SET status = ?, decided_by = ?, decided_at = ? "
@@ -123,27 +147,20 @@ def decide(who: Principal, request_id: int, approve: bool) -> AccessRequest | No
     return get_request(request_id)
 
 
-def _permissions(conn: sqlite3.Connection, email: str) -> frozenset[str]:
-    return frozenset(r["permission"] for r in conn.execute(
-        "SELECT DISTINCT p.permission FROM users u JOIN memberships m ON m.user_id = u.id "
-        "JOIN group_permissions p ON p.group_id = m.group_id WHERE u.email = ? AND u.disabled = 0",
-        (email,)))
-
-
 def approvers(res: ResourceRef, requester: str) -> list[str]:
     """Emails of everyone who may approve a request on `res`: the uploader, the project's
     sub-admins and any admin (each by `authorize`), never the requester."""
     candidates: set[str] = set(res.assignees) | ({res.owner_email} if res.owner_email else set())
-    with db.reading() as conn:
-        candidates |= {r["email"] for r in conn.execute(
-            "SELECT DISTINCT u.email FROM users u JOIN memberships m ON m.user_id = u.id "
-            "JOIN group_permissions p ON p.group_id = m.group_id "
-            "WHERE p.permission = ? AND u.disabled = 0",
-            (f"{PermissionKey.ACCESS_APPROVE.value}@all",))}
+    approve_all = f"{PermissionKey.ACCESS_APPROVE.value}@all"
+    with auth_store().reading() as tx:
+        for user in tx.list_users():
+            held = None if user.disabled else principal_of(tx, user.email)
+            if held is not None and approve_all in held.permissions:
+                candidates.add(user.email)
         out = []
         for email in sorted(candidates - {clean_email(requester)}):
-            person = Principal(user_id=1, email=email, permissions=_permissions(conn, email))
-            if authorize(person, PermissionKey.ACCESS_APPROVE, res):
+            person = principal_of(tx, email)
+            if person is not None and authorize(person, PermissionKey.ACCESS_APPROVE, res):
                 out.append(email)
     return out
 

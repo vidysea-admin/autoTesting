@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import math
 import re
-import sqlite3
+from collections.abc import Mapping
 from datetime import UTC, datetime
 
 from autotester.auth import db
+from autotester.auth.store import auth_store, on_mongo, video_tx
 from autotester.schema.video_share import MAX_COMMENT_CHARS, MIN_COMMENT_CHARS, VideoComment
 from autotester.stages.video_access import clean_email
 from autotester.stages.video_pointers import MAX_POINTER_NOTE_CHARS, parse_pointers
@@ -51,7 +52,7 @@ def clean_text(raw: object) -> str:
     return text
 
 
-def _row(row: sqlite3.Row) -> VideoComment:
+def _row(row: Mapping[str, object]) -> VideoComment:
     return VideoComment(id=row["id"], slug=row["slug"], video_id=row["video_id"],
                         author=row["author"], at_s=row["at_s"], text=row["text"],
                         created_at=row["created_at"], edited_at=row["edited_at"],
@@ -59,6 +60,9 @@ def _row(row: sqlite3.Row) -> VideoComment:
 
 
 def add_comment(slug: str, video_id: str, author: str, at_s: float, text: str) -> VideoComment:
+    if on_mongo():
+        with video_tx(True) as tx:
+            return _row(tx.add_comment(slug, video_id, clean_email(author), at_s, text, _now()))
     with db.transaction() as conn:
         new_id = conn.execute(
             "INSERT INTO video_comments (slug, video_id, author, at_s, text, created_at) "
@@ -70,8 +74,11 @@ def add_comment(slug: str, video_id: str, author: str, at_s: float, text: str) -
 
 def list_comments(slug: str, video_id: str) -> list[VideoComment]:
     """Oldest second first, then oldest comment first."""
-    if not db.store_exists():
+    if not auth_store().exists():
         return []
+    if on_mongo():
+        with video_tx() as tx:
+            return [_row(r) for r in tx.comment_rows(slug, video_id)]
     with db.reading() as conn:
         return [_row(r) for r in conn.execute(
             "SELECT * FROM video_comments WHERE slug = ? AND video_id = ? ORDER BY at_s, id",
@@ -80,8 +87,13 @@ def list_comments(slug: str, video_id: str) -> list[VideoComment]:
 
 def get_comment(slug: str, video_id: str, comment_id: int) -> VideoComment | None:
     """A comment of THIS video only: an id from another video is not found."""
-    if not db.store_exists():
+    if not auth_store().exists():
         return None
+    if on_mongo():
+        with video_tx() as tx:
+            found = tx.comment_row(comment_id)
+        mine = found is not None and (found["slug"], found["video_id"]) == (slug, video_id)
+        return _row(found) if mine and found is not None else None
     with db.reading() as conn:
         row = conn.execute("SELECT * FROM video_comments WHERE id = ? AND slug = ? AND "
                            "video_id = ?", (comment_id, slug, video_id)).fetchone()
@@ -90,6 +102,10 @@ def get_comment(slug: str, video_id: str, comment_id: int) -> VideoComment | Non
 
 def edit_comment(comment_id: int, text: str) -> VideoComment | None:
     """Replace the text and stamp `edited_at` (the marker the page shows)."""
+    if on_mongo():
+        with video_tx(True) as tx:
+            edited = tx.edit_comment(comment_id, text, _now())
+        return None if edited is None else _row(edited)
     with db.transaction() as conn:
         conn.execute("UPDATE video_comments SET text = ?, edited_at = ? WHERE id = ?",
                      (text, _now(), comment_id))
@@ -98,6 +114,10 @@ def edit_comment(comment_id: int, text: str) -> VideoComment | None:
 
 
 def delete_comment(comment_id: int) -> None:
+    if on_mongo():
+        with video_tx(True) as tx:
+            tx.delete_comment(comment_id)
+        return
     with db.transaction() as conn:
         conn.execute("DELETE FROM video_comments WHERE id = ?", (comment_id,))
 
@@ -127,6 +147,10 @@ def pointer_line(at_s: float, text: str, duration_s: float | None) -> str:
 
 def promote(comment_id: int, line: str) -> VideoComment | None:
     """Record the pointer line once (a second promotion is a no-op); the comment stays."""
+    if on_mongo():
+        with video_tx(True) as tx:
+            promoted = tx.promote_comment(comment_id, line)
+        return None if promoted is None else _row(promoted)
     with db.transaction() as conn:
         conn.execute("UPDATE video_comments SET pointer_line = ? WHERE id = ? AND "
                      "pointer_line IS NULL", (line, comment_id))

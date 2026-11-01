@@ -25,6 +25,7 @@ from autotester.auth import store as store_mod
 from autotester.auth import store_mongo as sm
 from autotester.auth import store_mongo_tx as tx_mod
 from autotester.auth.store import auth_store
+from autotester.auth.store_mongo_fence import SLOTTED
 from autotester.auth.store_sqlite import SqliteAuthStore
 from autotester.store.mongo_backend import reset_default_backend
 from autotester.store.mongo_guard import StoreDuplicateKey, StoreUnavailable
@@ -164,8 +165,15 @@ def test_the_lease_is_released_after_success_and_after_failure(env: AuthEnv) -> 
 def _state(env: AuthEnv) -> dict[str, list]:
     """Every collection but the lease/allocator one, each as documents sorted by `_id` (a
     document store promises no order, so a re-inserted document may land last)."""
-    return {n: sorted((dict(d) for d in c.docs), key=lambda d: str(d["_id"]))
+    return {n: sorted((dict(d) for d in c.docs if not _blank_slot(n, d)),
+                      key=lambda d: str(d["_id"]))
             for n, c in env.server.database(DATABASE).collections.items() if n != "auth_meta"}
+
+
+def _blank_slot(name: str, doc: dict) -> bool:
+    """A hidden, blank id slot of a re-creatable document (AT-1431): it holds no data, and an
+    undone insert leaves it by design."""
+    return name in SLOTTED and str(doc.get("_e", "")).startswith("G:") and doc.get("slug") is None
 
 
 def test_an_exception_rolls_every_write_back(env: AuthEnv) -> None:
