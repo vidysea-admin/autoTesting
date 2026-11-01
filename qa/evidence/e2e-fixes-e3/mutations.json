@@ -1,0 +1,125 @@
+{
+ "tests": [
+  "tests/test_ui_test_account_login.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: build_secret_ref no longer pre-checks the key shape (raw pydantic text returns)",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "    if len(name) > 64 or not re.fullmatch(SECRET_KEY_PATTERN, name):  # AT-1417: say it plainly",
+   "new": "    if False:  # AT-1417: say it plainly",
+   "kills": [
+    "test_bad_key_rerenders_the_form_with_a_plain_message[env/add-extra0]",
+    "test_bad_key_rerenders_the_form_with_a_plain_message[secrets-extra1]"
+   ]
+  },
+  {
+   "name": "m2: the /secrets refusal is not re-rendered with the typed key",
+   "file": "src/autotester/ui/routes_project_edit.py",
+   "old": "\"key\": redisplayable_key(key), \"domains\": domains,",
+   "new": "\"key\": \"\", \"domains\": domains,",
+   "kills": [
+    "test_bad_key_rerenders_the_form_with_a_plain_message[secrets-extra1]"
+   ]
+  },
+  {
+   "name": "m3: /env/add re-renders without the typed fields",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "    typed[\"key\"] = redisplayable_key(key)",
+   "new": "    typed[\"key\"] = \"\"",
+   "kills": [
+    "test_bad_key_rerenders_the_form_with_a_plain_message[env/add-extra0]"
+   ]
+  },
+  {
+   "name": "m4: a resubmit adds a second declaration instead of replacing",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "    kept = [r for r in project.secrets if r.key not in values]  # a resubmit replaces, never adds",
+   "new": "    kept = list(project.secrets)",
+   "kills": [
+    "test_resubmitting_updates_the_values_and_never_duplicates"
+   ]
+  },
+  {
+   "name": "m5: a blank scope no longer defaults to the URL host",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "scope.strip() or host_of(project.base_url)",
+   "new": "scope.strip() or \"evil.example\"",
+   "kills": [
+    "test_onboarding_through_the_block_declares_exactly_two_generated_keys"
+   ]
+  },
+  {
+   "name": "m6: the password is not masked in screenshots",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "                             mask_in_screenshot=True)",
+   "new": "                             mask_in_screenshot=False)",
+   "kills": [
+    "test_onboarding_through_the_block_declares_exactly_two_generated_keys"
+   ]
+  },
+  {
+   "name": "m7: a half-filled login is accepted",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "    if not email.strip() or not password.strip():",
+   "new": "    if False:",
+   "kills": [
+    "test_half_a_login_is_refused"
+   ]
+  },
+  {
+   "name": "m8: the generated login keys' boxes are prefilled for a credentials.view holder",
+   "file": "src/autotester/ui/role_accounts_view.py",
+   "old": "    blind = set(login_keys(project.slug))",
+   "new": "    blind: set[str] = set()",
+   "kills": [
+    "test_values_never_reach_a_response_or_a_log"
+   ]
+  },
+  {
+   "name": "m9: a pasted secret in a redisplayed field is no longer scanned",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "    refuse_pasted_secrets(project, scan, [value, login_email, login_password])",
+   "new": "    pass",
+   "kills": [
+    "test_pasted_secret_in_the_scope_box_is_still_refused"
+   ]
+  },
+  {
+   "name": "m10: onboarding refusal drops the typed fields",
+   "file": "src/autotester/ui/app.py",
+   "old": "HTMLResponse(_onboard_page(str(exc.detail), typed), status_code=400)",
+   "new": "HTMLResponse(_onboard_page(str(exc.detail)), status_code=400)",
+   "kills": [
+    "test_onboarding_with_a_foreign_scope_saves_nothing"
+   ]
+  },
+  {
+   "name": "m11: the Credentials page loses its Test account login block",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "        f\"{login}\"\n",
+   "new": "",
+   "kills": [
+    "test_both_pages_offer_the_test_account_login_block"
+   ]
+  },
+  {
+   "name": "m12: the credential table loses its narrow-screen Save cell class",
+   "file": "src/autotester/ui/role_accounts_view.py",
+   "old": "\"<td class='cred-save'><button",
+   "new": "\"<td><button",
+   "kills": [
+    "test_credential_table_stacks_on_a_narrow_screen"
+   ]
+  },
+  {
+   "name": "m13: a foreign scope is accepted for the login keys",
+   "file": "src/autotester/ui/routes_credentials.py",
+   "old": "    refs = [build_secret_ref(project, key, scope.strip() or host_of(project.base_url), note,",
+   "new": "    refs = [build_secret_ref(project.model_copy(update={\"allowed_domains\": [*project.allowed_domains, \"evil.example\"]}), key, scope.strip() or host_of(project.base_url), note,",
+   "kills": [
+    "test_scope_outside_allowed_domains_is_refused_inline"
+   ]
+  }
+ ]
+}

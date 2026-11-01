@@ -1,0 +1,41 @@
+KILLED  m1: build_secret_ref no longer pre-checks the key shape (raw pydantic text returns)  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[env/add-extra0], tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[secrets-extra1]
+    actually failed: tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[env/add-extra0], tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[secrets-extra1]
+KILLED  m2: the /secrets refusal is not re-rendered with the typed key  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[secrets-extra1]
+    actually failed: tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[secrets-extra1]
+KILLED  m3: /env/add re-renders without the typed fields  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[env/add-extra0]
+    actually failed: tests/test_ui_test_account_login.py::test_bad_key_rerenders_the_form_with_a_plain_message[env/add-extra0]
+KILLED  m4: a resubmit adds a second declaration instead of replacing  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_resubmitting_updates_the_values_and_never_duplicates
+    actually failed: tests/test_ui_test_account_login.py::test_resubmitting_updates_the_values_and_never_duplicates
+KILLED  m5: a blank scope no longer defaults to the URL host  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_onboarding_through_the_block_declares_exactly_two_generated_keys
+    actually failed: tests/test_ui_test_account_login.py::test_onboarding_through_the_block_declares_exactly_two_generated_keys
+KILLED  m6: the password is not masked in screenshots  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_onboarding_through_the_block_declares_exactly_two_generated_keys
+    actually failed: tests/test_ui_test_account_login.py::test_onboarding_through_the_block_declares_exactly_two_generated_keys
+KILLED  m7: a half-filled login is accepted  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_half_a_login_is_refused
+    actually failed: tests/test_ui_test_account_login.py::test_half_a_login_is_refused
+KILLED  m8: the generated login keys' boxes are prefilled for a credentials.view holder  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_values_never_reach_a_response_or_a_log
+    actually failed: tests/test_ui_test_account_login.py::test_onboarding_through_the_block_declares_exactly_two_generated_keys, tests/test_ui_test_account_login.py::test_values_never_reach_a_response_or_a_log
+KILLED  m9: a pasted secret in a redisplayed field is no longer scanned  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_pasted_secret_in_the_scope_box_is_still_refused
+    actually failed: tests/test_ui_test_account_login.py::test_pasted_secret_in_the_scope_box_is_still_refused
+KILLED  m10: onboarding refusal drops the typed fields  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_onboarding_with_a_foreign_scope_saves_nothing
+    actually failed: tests/test_ui_test_account_login.py::test_onboarding_with_a_foreign_scope_saves_nothing
+KILLED  m11: the Credentials page loses its Test account login block  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_both_pages_offer_the_test_account_login_block
+    actually failed: tests/test_ui_test_account_login.py::test_both_pages_offer_the_test_account_login_block
+KILLED  m12: the credential table loses its narrow-screen Save cell class  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_credential_table_stacks_on_a_narrow_screen
+    actually failed: tests/test_ui_test_account_login.py::test_credential_table_stacks_on_a_narrow_screen
+KILLED  m13: a foreign scope is accepted for the login keys  (pytest exit 1)
+    claims to kill : tests/test_ui_test_account_login.py::test_scope_outside_allowed_domains_is_refused_inline
+    actually failed: tests/test_ui_test_account_login.py::test_onboarding_with_a_foreign_scope_saves_nothing, tests/test_ui_test_account_login.py::test_scope_outside_allowed_domains_is_refused_inline
+
+13/13 mutations killed

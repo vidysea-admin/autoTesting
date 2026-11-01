@@ -282,5 +282,16 @@ PAGE_STYLE = """
   .crawl-node .thumb img { width: 7rem; border: 1px solid var(--border);
     border-radius: var(--radius); display: block; }
   .crawl-node-body { min-width: 0; overflow-wrap: anywhere; }
+  .form-error { background: var(--danger-bg); color: var(--danger); margin: 0 0 1rem;
+    border: 1px solid var(--danger); border-radius: var(--radius); padding: .6rem .8rem; }
+  .table-scroll { overflow-x: auto; }
+  .cred-table td { overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    .cred-table, .cred-table tbody { display: block; }
+    .cred-table tr { display: flex; flex-wrap: wrap; align-items: center; }
+    .cred-table .cred-head { display: none; }
+    .cred-table .cred-value { flex: 1 1 100%; order: 3; }
+    .cred-table .cred-save { order: 4; }
+  }
 </style>
 """

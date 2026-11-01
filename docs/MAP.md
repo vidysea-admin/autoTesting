@@ -457,7 +457,7 @@
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
 | `ui/preflight_view.py` | One job: render a run's preflight warnings as a card for the run report page. |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
-| `ui/role_accounts_view.py` | HTML for the role-account onboarding form and the saved-accounts listing (T-208, MP4). |
+| `ui/role_accounts_view.py` | HTML for the role-account onboarding form, the saved-accounts listing (T-208, MP4) and the |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |
 | `ui/routes_access_requests.py` | Share-link opening, request-access, and the approvers' list (T-198b / G9, TP3, TP5). |
 | `ui/routes_admin.py` | Admin routes: accounts (users.manage, AU8) and groups (groups.manage, AU10). |

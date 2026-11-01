@@ -12,6 +12,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from starlette.datastructures import FormData
 
 from autotester.auth.access import set_owner, visible_slugs
 from autotester.auth.config import check_startup
@@ -20,13 +21,14 @@ from autotester.browser.secrets import SecretStore, parse_env
 from autotester.core.env import load_repo_env, stored_secret_values
 from autotester.core.paths import ProjectPaths
 from autotester.schema.auth import PermissionKey
-from autotester.schema.project import Project, Source
+from autotester.schema.project import Project, SecretRef, Source
 from autotester.store.filestore import validate_store_env
 from autotester.store.project_store import ProjectStore
 from autotester.ui import (
     error_pages,
     project_view,
     routers,
+    routes_credentials,
     routes_project_edit,
     routes_runs,
     routes_sources,
@@ -106,8 +108,7 @@ def index() -> str:
     return theme.page("Projects", body)
 
 
-@app.get("/onboard", response_class=HTMLResponse)
-def onboard_form() -> str:
+def _onboard_page(error: str = "", typed: dict[str, str] | None = None) -> str:
     body = (
         theme.breadcrumb(("Projects", "/"), ("Onboard", None))
         + "<h1>Onboard a project</h1>"
@@ -115,9 +116,14 @@ def onboard_form() -> str:
         "know; otherwise it can learn by exploring after approval.</p>"
         "<p><a class='btn' href='/onboard/roles'>Several roles or platforms? Onboard with "
         "role accounts</a></p>"
-        f"{theme.card(project_view.intake_form())}"
+        f"{theme.card(project_view.intake_form(error, typed))}"
     )
     return theme.page("Onboard", body)
+
+
+@app.get("/onboard", response_class=HTMLResponse)
+def onboard_form() -> str:
+    return _onboard_page()
 
 
 def _guard_intake(project: Project, sources: list[Source], values: dict[str, str]) -> Path:
@@ -154,8 +160,28 @@ def _guard_intake(project: Project, sources: list[Source], values: dict[str, str
     return env_path
 
 
+def _intake_login(draft: Project, form: FormData) -> tuple[list[SecretRef], dict[str, str],
+                                                         HTMLResponse | None]:
+    """The "Test account login" block of the intake form. A refusal (half a login, a scope outside
+    the allowed domains) comes back as the form again, plain message and non-secret fields kept
+    (AT-1417/AT-1418); nothing is saved and no value is shown."""
+    typed = {"slug": draft.slug, "name": draft.name, "base_url": draft.base_url,
+             "allowed_domains": ", ".join(draft.allowed_domains),
+             "login_scope": str(form.get("login_scope", ""))}
+    email, password = str(form.get("login_email", "")), str(form.get("login_password", ""))
+    try:
+        return (*routes_credentials.login_submission(draft, email, password,
+                                                     typed["login_scope"]), None)
+    except HTTPException as exc:
+        if exc.status_code != 400:
+            raise
+        routes_credentials.refuse_pasted_secrets(
+            draft, [(f"the {k}", v) for k, v in typed.items()], [email, password])
+        return [], {}, HTMLResponse(_onboard_page(str(exc.detail), typed), status_code=400)
+
+
 @app.post("/onboard")
-async def onboard_submit(request: Request) -> RedirectResponse:
+async def onboard_submit(request: Request) -> Response:
     form = await request.form()
     slug, name = str(form.get("slug", "")), str(form.get("name", ""))
     base_url = str(form.get("base_url", ""))
@@ -167,6 +193,9 @@ async def onboard_submit(request: Request) -> RedirectResponse:
     refuse_reserved_slug(slug)  # AU21: its key prefix may not cover a setting the server has
     domains = [d.strip() for d in allowed_domains.split(",") if d.strip()]
     draft = Project(slug=slug, name=name, base_url=base_url, allowed_domains=domains)
+    login_refs, login_values, retry = _intake_login(draft, form)
+    if retry is not None:
+        return retry
     refs, values = routes_project_edit.parse_secret_rows(
         draft, *(
             [str(v) for v in form.getlist(field)] for field in (
@@ -175,6 +204,9 @@ async def onboard_submit(request: Request) -> RedirectResponse:
             )
         ),
     )
+    if {r.key for r in login_refs} & {r.key for r in refs}:
+        raise HTTPException(400, "the Test account login already uses that credential key")
+    refs, values = [*login_refs, *refs], {**login_values, **values}
     project = draft.model_copy(update={"secrets": refs})
     sources = routes_sources.parse_intake_sources(
         slug, str(form.get("evals", "")), str(form.get("conditions", "")),

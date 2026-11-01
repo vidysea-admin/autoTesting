@@ -1,18 +1,23 @@
-"""HTML for the role-account onboarding form and the saved-accounts listing (T-208, MP4).
+"""HTML for the role-account onboarding form, the saved-accounts listing (T-208, MP4) and the
+credential forms that sit beside them: the one "Test account login" block, the custom-credential
+card and the credentials table (E3, AT-1417/AT-1418).
 
-One job: render. It never reads a stored value: value inputs are always empty and write-only,
-and the listing shows account ids, roles, platforms, tenant labels and KEY names only. Every
-interpolated string is escaped.
+One job: render. It never reads a stored value except where `env_table` is handed one by a caller
+that holds `credentials.view`: value inputs of the forms are always empty and write-only, and the
+listings show account ids, roles, platforms, tenant labels and KEY names only. Every interpolated
+string is escaped.
 """
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from html import escape
 
 from autotester.schema.platform import Platform
 from autotester.schema.project import Project
 from autotester.schema.role_account import RoleAccount
+from autotester.stages.role_onboarding import login_keys
 from autotester.ui import theme
 
 _ADD_ROW = (
@@ -125,3 +130,108 @@ def platforms_card(project: Project) -> str:
         for p in project.effective_platforms())
     head = "<tr><th>Id</th><th>Name</th><th>URL</th><th>Domains</th><th>Subdomains</th></tr>"
     return theme.card(f"<table>{head}{rows}</table>", title="Platforms")
+
+
+def redisplayable_key(key: str) -> str:
+    """A refused key box's text, if it is safe to show again, else "" (AT-068 vs AT-1417): the
+    likeliest wrong entry in a Key box is the credential VALUE, so only a name-shaped entry
+    (words of letters, spaces, hyphens, underscores; no digit or symbol) is kept for retyping."""
+    return key.strip() if re.fullmatch(r"[A-Za-z][A-Za-z _-]{0,63}", key.strip()) else ""
+
+
+def login_fields(scope: str = "") -> str:
+    """The "Test account login" inputs (E3.2): email-or-username, password, and the host scope
+    (defaults to the project URL host, E3.4). Always empty: no stored value is rendered here."""
+    return (
+        "<div class='field'><label for='tl-email'>Email or username</label>"
+        "<input id='tl-email' name='login_email' type='text' autocomplete='off' "
+        "placeholder='the test account&#39;s email or username'></div>"
+        "<div class='field'><label for='tl-password'>Password</label>"
+        "<input id='tl-password' name='login_password' type='password' "
+        "autocomplete='new-password'></div>"
+        "<div class='field'><label for='tl-scope'>May be typed into</label>"
+        f"<input id='tl-scope' name='login_scope' value='{escape(scope, quote=True)}' "
+        "placeholder='defaults to the URL host'>"
+        "<span class='hint'>One host. It must stay inside the allowed domains.</span></div>")
+
+
+def account_login_card(slug: str, scope: str, declared: bool = False) -> str:
+    """The Credentials page's login block. The keys are generated (`login_keys`), never typed.
+    The `#login` on the action keeps this form distinct from the custom card's, which posts to the
+    same route (one handler, one permission row)."""
+    again = ("<p class='meta'>A login is saved already. Submit again to replace its email and "
+             "password.</p>" if declared else "")
+    return theme.card(
+        f"<form method='post' action='/projects/{escape(slug)}/env/add#login'>{again}"
+        "<input type='hidden' name='block' value='login'>"
+        f"{login_fields(scope)}<button class='btn btn-primary' type='submit'>Save login</button>"
+        "</form>", title="Test account login")
+
+
+def custom_credential_card(slug: str, scope: str, typed: dict[str, str] | None = None) -> str:
+    """Declare an EXTRA credential (beyond the test login) AND save its value in one submit.
+    `typed` holds a refused submit's non-secret fields; the value box is never refilled."""
+    typed = typed or {}
+
+    def field(name: str) -> str:
+        return escape(typed.get(name, ""), quote=True)
+
+    return theme.card(
+        f"<form method='post' action='/projects/{escape(slug)}/env/add'>"
+        "<div class='field'><label for='ac-key'>Key (UPPER_SNAKE_CASE)</label>"
+        f"<input id='ac-key' name='key' required placeholder='e.g. ERP_TENANT_ID' "
+        f"value='{field('key')}'></div>"
+        "<div class='field'><label for='ac-value'>Value</label>"
+        "<input id='ac-value' type='password' autocomplete='new-password' name='value' "
+        "required placeholder='the value to store'></div>"
+        "<div class='field'><label for='ac-domains'>Allowed domains (where it may be typed)</label>"
+        f"<input id='ac-domains' name='domains' value='{field('domains') or escape(scope)}' "
+        "required></div>"
+        "<div class='field'><label for='ac-description'>Description (optional)</label>"
+        f"<input id='ac-description' name='description' value='{field('description')}' "
+        "placeholder='what this key is for'></div>"
+        "<button class='btn' type='submit'>Add credential</button></form>",
+        title="Add a custom credential (extra keys only)")
+
+
+_EYE = ("<button type='button' class='btn btn-sm' tabindex='-1' "
+        "onclick=\"var i=this.parentNode.querySelector('input');"
+        "i.type=i.type==='password'?'text':'password';"
+        "this.textContent=i.type==='password'?'show':'hide';\">show</button>")
+
+
+def env_table(project: Project, present: dict[str, str], show_values: bool = False) -> str:
+    """The editable credentials table (U3, amended 2026-09-21). Without `credentials.view`
+    (`show_values` False) every box is write-only: no value, no length hint (AU21). With it the
+    stored value is prefilled and password-shaped keys keep a show/hide toggle, EXCEPT the two
+    generated test-login keys (E3.5): their boxes stay write-only whoever looks, so the login
+    block's email and password appear in no response. E3.6: the table scrolls inside its own box
+    and stacks (key, status, value, Save) on a narrow screen."""
+    if not project.secrets:
+        return theme.empty_state("🔑", "This project declares no credentials.")
+
+    blind = set(login_keys(project.slug))
+
+    def _row(ref: object) -> str:
+        key = ref.key  # type: ignore[attr-defined]
+        reveal = show_values and key not in blind
+        secret = "_PASSWORD" in key or "_KEY" in key or not reveal
+        shown = present.get(key, "") if reveal else ""
+        status = (theme.pill("● Set", "positive") if present.get(key)
+                  else theme.pill("○ Not set", "neutral"))
+        return (
+            f"<tr><td>{escape(key)}</td><td>{status}</td>"
+            f"<form method='post' action='/projects/{escape(project.slug)}/env'>"
+            f"<input type='hidden' name='key' value='{escape(key)}'>"
+            "<td class='cred-value' style='display:flex;gap:6px'>"
+            f"<input type='{'password' if secret else 'text'}' name='value' "
+            f"value='{escape(shown)}' aria-label='Value for {escape(key)}' "
+            "placeholder='new value' style='flex:1;min-width:0'>"
+            f"{_EYE if reveal and secret else ''}</td>"
+            "<td class='cred-save'><button class='btn btn-sm' type='submit'>Save</button></td>"
+            "</form></tr>")
+
+    head = ("<tr class='cred-head'><th>Key</th><th>Status</th><th>Value (edit and Save)</th>"
+            "<th></th></tr>")
+    rows = "".join(_row(ref) for ref in project.secrets)
+    return f"<div class='table-scroll'><table class='cred-table'>{head}{rows}</table></div>"

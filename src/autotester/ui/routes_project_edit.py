@@ -22,15 +22,18 @@ what makes that page usable; the VALUE still only ever lives in the repo-root
 
 from __future__ import annotations
 
+import re
 from html import escape
 
 from fastapi import APIRouter, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from pydantic import ValidationError
 
 from autotester.browser.profiles import forget_session
 from autotester.browser.secrets import SecretStore
+from autotester.core.env import key_namespace
 from autotester.core.paths import ProjectPaths
+from autotester.schema.mailbox_ref import SECRET_KEY_PATTERN
 from autotester.schema.project import Project, SecretRef
 from autotester.ui import theme
 from autotester.ui.credential_guard import refuse_foreign_key
@@ -41,6 +44,7 @@ from autotester.ui.helpers import (
     _require_project_name,
     _require_reachable_base_url,
 )
+from autotester.ui.role_accounts_view import redisplayable_key
 
 router = APIRouter()
 
@@ -51,6 +55,11 @@ def build_secret_ref(
 ) -> SecretRef:
     """Build one scoped reference without ever including its submitted value in errors.
     The key must be this project's own namespaced key (AU21, `refuse_foreign_key`)."""
+    name = key.strip()
+    if len(name) > 64 or not re.fullmatch(SECRET_KEY_PATTERN, name):  # AT-1417: say it plainly
+        ns = key_namespace(project.slug)
+        raise HTTPException(400, f"Key must be UPPER_SNAKE_CASE and start with {ns}, for example "
+                                 f"{ns}API_TOKEN. Use capital letters, digits, underscores.")
     scope = [domain.strip() for domain in domains.split(",") if domain.strip()]
     if not scope:
         raise HTTPException(400, "name at least one host this credential may be typed into")
@@ -58,7 +67,7 @@ def build_secret_ref(
         raise HTTPException(400, "credential scope must stay inside the project's allowed domains")
     try:
         ref = SecretRef(
-            key=key.strip(), description=description.strip() or None, domains=scope,
+            key=name, description=description.strip() or None, domains=scope,
             mask_in_screenshot=mask_in_screenshot,
         )
     except ValidationError as exc:
@@ -109,11 +118,12 @@ def _secret_row(safe_slug: str, ref: SecretRef) -> str:
     )
 
 
-def _secrets_card(safe_slug: str, project: Project) -> str:
+def _secrets_card(safe_slug: str, project: Project, typed: dict[str, str] | None = None) -> str:
     """Declare which credentials this project needs. Values are entered
     separately on the Credentials page and stored only in the repo-root
     `.env` — nothing here ever sees one."""
-    default_domains = escape(", ".join(project.allowed_domains))
+    typed = typed or {}  # a refused submit's NON-secret fields, so nothing has to be retyped
+    default_domains = escape(typed.get("domains") or ", ".join(project.allowed_domains))
     if project.secrets:
         rows = "".join(_secret_row(safe_slug, r) for r in project.secrets)
         table = (
@@ -129,12 +139,14 @@ def _secrets_card(safe_slug: str, project: Project) -> str:
     form = (
         f"<form method='post' action='/projects/{safe_slug}/secrets'>"
         "<div class='field'><label for='key'>Key</label>"
-        "<input id='key' name='key' placeholder='ERP_PASSWORD' required>"
+        "<input id='key' name='key' placeholder='ERP_PASSWORD' "
+        f"value='{escape(typed.get('key', ''))}' required>"
         "<span class='hint'>a NAME for the credential in CAPITALS, digits and underscores "
         "— e.g. ERP_PASSWORD. The value itself is entered later, on the Credentials "
         "page.</span></div>"
         "<div class='field'><label for='description'>What it is</label>"
         "<input id='description' name='description' "
+        f"value='{escape(typed.get('description', ''))}' "
         "placeholder='the test account's password'></div>"
         "<div class='field'><label for='domains'>May be typed into</label>"
         f"<input id='domains' name='domains' value='{default_domains}' required>"
@@ -155,9 +167,8 @@ def _secrets_card(safe_slug: str, project: Project) -> str:
     )
 
 
-@router.get("/projects/{slug}/edit", response_class=HTMLResponse)
-def edit_project_form(slug: str) -> str:
-    _store, project = _load_project_or_404(slug)
+def _edit_page(slug: str, project: Project, error: str = "",
+               typed: dict[str, str] | None = None) -> str:
     safe_slug = escape(slug)
     name = escape(project.name)
     fields = (
@@ -178,12 +189,18 @@ def edit_project_form(slug: str) -> str:
         theme.breadcrumb(("Projects", "/"), (name, f"/projects/{safe_slug}"),
                           ("Settings", None))
         + "<h1>Project settings</h1>"
-        "<p class='subtitle'>The slug never changes — every run, case and browser profile "
+        + (theme.form_error(error) if error else "")
+        + "<p class='subtitle'>The slug never changes — every run, case and browser profile "
         "is filed under it.</p>"
         f"{theme.card(form)}"
-        f"{_secrets_card(safe_slug, project)}"
+        f"{_secrets_card(safe_slug, project, typed)}"
     )
     return theme.page("Project settings", body, active_slug=slug)
+
+
+@router.get("/projects/{slug}/edit", response_class=HTMLResponse)
+def edit_project_form(slug: str) -> str:
+    return _edit_page(slug, _load_project_or_404(slug)[1])
 
 
 @router.post("/projects/{slug}/edit")
@@ -225,26 +242,31 @@ def declare_secret(
     domains: str = Form(...),
     description: str = Form(default=""),
     mask_in_screenshot: str = Form(default=""),
-) -> RedirectResponse:
+) -> Response:
     """Declare a credential this project needs. Stores the KEY and its scope on
     `project.json::secrets`; the value is entered separately and lives only in
     the repo-root `.env`. `SecretRef`'s own validators do the checking — this
     route only turns their ValidationError into a readable 400."""
     store, project = _load_project_or_404(slug)
-    # AT-073/AT-080: `key` is the FIRST box on this form and was never checked --
-    # an all-uppercase credential satisfies SecretRef's own key pattern, so only
-    # the description/scope boxes stood between a pasted value and a git-tracked
-    # project.json. Checked alongside them now, not just the ones beside it.
+    # AT-073/AT-080: `key` is the first box and an all-uppercase credential satisfies SecretRef's
+    # key pattern, so it is scanned alongside the description/scope (git-tracked project.json).
     _refuse_unsafe_submission(
         [("the key", key), ("the description", description), ("the scope", domains)],
         project, SecretStore.load(project, ProjectPaths(slug).env_file, strict=False),
         exempt={"the scope": ", ".join(project.allowed_domains)},
     )
-    ref = build_secret_ref(
-        project, key, domains, description, mask_in_screenshot=bool(mask_in_screenshot),
-    )
-    if project.secret(ref.key) is not None:
-        raise HTTPException(400, f"'{ref.key}' is already declared on this project")
+    try:  # AT-1417: a refusal here is a plain message on the form, not a dead-end error page
+        ref = build_secret_ref(
+            project, key, domains, description, mask_in_screenshot=bool(mask_in_screenshot),
+        )
+        if project.secret(ref.key) is not None:
+            raise HTTPException(400, f"'{ref.key}' is already declared on this project")
+    except HTTPException as exc:
+        if exc.status_code != 400:
+            raise
+        return HTMLResponse(_edit_page(slug, project, str(exc.detail), {
+            "key": redisplayable_key(key), "domains": domains,
+            "description": description}), status_code=400)
 
     store.save_project(project.model_copy(update={"secrets": [*project.secrets, ref]}))
     return RedirectResponse(f"/projects/{slug}/edit", status_code=303)

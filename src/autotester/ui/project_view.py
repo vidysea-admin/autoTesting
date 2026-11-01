@@ -17,6 +17,7 @@ from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.filestore import exists_path, list_children, mtime_path
 from autotester.store.project_store import ProjectStore
 from autotester.ui import team_run_view, theme
+from autotester.ui.role_accounts_view import login_fields
 from autotester.ui.routes_report import _run_counts
 
 
@@ -46,23 +47,40 @@ def _source_row() -> str:
     )
 
 
-def intake_form() -> str:
-    """The single operator entry point for both taught and URL/account-only modes."""
+_LOGIN_SCOPE_FOLLOWS_URL = (
+    "<script>(()=>{const u=document.getElementById('f-base-url'),"
+    "s=document.getElementById('tl-scope');let own=!!s.value;"
+    "s.addEventListener('input',()=>{own=true;});u.addEventListener('input',()=>{if(own)return;"
+    "try{s.value=new URL(u.value).hostname;}catch(e){s.value='';}});})();</script>"
+)
+
+
+def intake_form(error: str = "", typed: dict[str, str] | None = None) -> str:
+    """The single operator entry point for both taught and URL/account-only modes. `error`/`typed`
+    re-render a refused submit with a plain message and its NON-secret fields (AT-1417); the
+    login email and password are never refilled."""
+    typed = typed or {}
+
+    def val(name: str) -> str:
+        return f" value='{escape(typed.get(name, ''), quote=True)}'" if typed.get(name) else ""
+
     basics = (
         "<div class='field'><label for='f-slug'>Project slug</label><input id='f-slug' name='slug' "
-        "placeholder='my-product' required></div>"
+        f"placeholder='my-product'{val('slug')} required></div>"
         "<div class='field'>"
         "<label for='f-name'>Name</label>"
-        "<input id='f-name' name='name' required></div>"
+        f"<input id='f-name' name='name'{val('name')} required></div>"
         "<div class='field'>"
         "<label for='f-base-url'>URL</label>"
         "<input id='f-base-url' name='base_url' type='url' required "
-        "placeholder='https://app.example.com/signin'></div>"
+        f"placeholder='https://app.example.com/signin'{val('base_url')}></div>"
         "<div class='field'>"
         "<label for='f-allowed-domains'>Allowed domains</label>"
-        "<input id='f-allowed-domains' name='allowed_domains' "
+        f"<input id='f-allowed-domains' name='allowed_domains'{val('allowed_domains')} "
         "required placeholder='app.example.com'><span class='hint'>Comma-separated; the browser "
         "never leaves these hosts.</span></div>"
+        f"<h3>Test account login</h3>{login_fields(typed.get('login_scope', ''))}"
+        f"{_LOGIN_SCOPE_FOLLOWS_URL}"
     )
     teaching = (
         "<div class='field'><label for='f-evals'>Evals (one per line)</label>"
@@ -73,7 +91,7 @@ def intake_form() -> str:
         "<textarea id='f-use-cases' name='use_cases'></textarea></div>"
     )
     repeaters = (
-        f"<h3>Test-account credentials</h3><div id='credential-rows'>{_credential_row()}</div>"
+        f"<h3>Other credentials (optional)</h3><div id='credential-rows'>{_credential_row()}</div>"
         "<button type='button' data-add='credential'>Add another credential</button>"
         f"<h3>Optional sources</h3><div id='source-rows'>{_source_row()}</div>"
         "<button type='button' data-add='source'>Add another source</button>"
@@ -81,7 +99,8 @@ def intake_form() -> str:
         "const kind=b.dataset.add,box=document.getElementById(kind+'-rows');"
         "box.insertAdjacentHTML('beforeend',box.firstElementChild.outerHTML);});</script>"
     )
-    return (f"<form method='post' action='/onboard'>{basics}{repeaters}{teaching}"
+    return (f"{theme.form_error(error) if error else ''}"
+            f"<form method='post' action='/onboard'>{basics}{repeaters}{teaching}"
             "<button class='btn btn-primary' type='submit'>Create project</button></form>")
 
 

@@ -119,6 +119,12 @@ def card(body: str, title: str | None = None) -> str:
     return f"<div class='card'>{heading}{body}</div>"
 
 
+def form_error(message: str) -> str:
+    """A plain refusal shown above a form that was re-rendered (AT-1417). Escaped here, so a caller
+    passes the raw sentence; it names the rule and never a submitted value."""
+    return f"<p class='form-error' role='alert'>{escape(message)}</p>"
+
+
 def empty_state(icon: str, message: str, action_html: str = "") -> str:
     return (
         f"<div class='empty-state'><div class='icon'>{icon}</div>"

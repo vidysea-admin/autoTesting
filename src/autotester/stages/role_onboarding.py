@@ -23,6 +23,7 @@ from urllib.parse import urlsplit
 from fastapi import HTTPException
 from pydantic import ValidationError
 
+from autotester.core.env import key_namespace
 from autotester.schema.platform import Platform
 from autotester.schema.project import Project, SecretRef
 from autotester.schema.role_account import RoleAccount
@@ -83,6 +84,14 @@ def check_platforms(platforms: Sequence[Platform]) -> None:
         if not any(_admits(base, d, True) for d in plat.allowed_domains):
             raise OnboardingError(f"platform {plat.id!r}: its base URL host {base!r} is not "
                                   "covered by its allowed domains")
+
+
+def login_keys(slug: str) -> tuple[str, str]:
+    """The ONE test-account key pair (E3.3): `<NS>USER_EMAIL`, `<NS>USER_PASSWORD`, `<NS>` being
+    the project's own namespace. The "Test account login" block generates these, nobody types them;
+    a role account (`RoleAccount.username_key`/`password_key`) names its keys itself."""
+    ns = key_namespace(slug)
+    return f"{ns}USER_EMAIL", f"{ns}USER_PASSWORD"
 
 
 def _refs_for(acct: RoleAccount, plat: Platform, scope: Sequence[str]) -> list[SecretRef]:
