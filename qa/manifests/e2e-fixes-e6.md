@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e6
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 2; A c2 a4f92f34, B cycle 1 394c0c53)
 **Fix cycle:** 2
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E6 (AT-1419). **Criticality:** MEDIUM (a new network surface; the auth decision is HIGH-sensitivity, see judgement calls 1-3).
 **Authority:** E6.9 is SATISFIED: D-131 is ACTIVE on master (b3663ac3, `Approved-by` Umesh; `grep -n "AT-1419" docs/DECISIONS.md` hits `## D-131`), cited here. It authorizes the relay and states that an anonymous caller of a look-alike path gets the gate's 401/302 (judgement call 3). No new `src/` module (CLAUDE.md), no `qa/contracts/` edit.
