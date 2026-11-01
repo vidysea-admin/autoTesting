@@ -1,0 +1,19 @@
+pytest tests/test_mongo_deploy_u10.py tests/test_storage_warning.py ->
+======================= 44 passed, 2 warnings in 6.82s ========================
+pytest tests/test_hosting_deploy.py tests/test_container_entrypoint_behaviour.py ->
+================== 18 passed, 1 skipped, 2 warnings in 2.54s ==================
+pytest tests/test_auth_deploy_files.py tests/test_doctor.py ->
+======================= 43 passed, 3 warnings in 8.82s ========================
+ruff check src tests scripts ->
+All checks passed!
+doctor exit=0 : doctor: clean
+pytest tests/test_committed_fresh.py tests/test_container_ci_workflow.py ->
+======================= 33 passed, 2 warnings in 17.90s =======================
+pytest tests/test_container_redaction.py tests/test_container_supervision.py ->
+================= 81 passed, 1 skipped, 2 warnings in 41.15s ==================
+pytest tests/test_container_writable_root.py tests/test_env_loading.py ->
+======================= 15 passed, 7 warnings in 22.16s =======================
+pytest tests/test_hosting_config.py tests/test_hosting_gaps.py ->
+======================= 44 passed, 2 warnings in 14.10s =======================
+pytest tests/test_ledger.py tests/test_approval_signing.py ->
+======================= 42 passed, 2 warnings in 1.31s ========================

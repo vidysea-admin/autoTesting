@@ -110,5 +110,9 @@
  [
   "sweep",
   "The checker's append-only sweep log (qa/.last-sweep)."
+ ],
+ [
+  "store",
+  "Move the file-backed state into the Mongo store (mongo-store U8)."
  ]
 ]

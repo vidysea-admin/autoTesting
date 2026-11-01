@@ -54,16 +54,26 @@ expensive for agents to hold in context. The rules are cheap now and unaffordabl
 
 ## Credentials (hard boundary)
 
-- Values live only in **one gitignored `.env` at the REPO ROOT**, shared by every project
-  (`core/paths.py` `ProjectPaths.env_file`, Umesh 2026-09-03; `core/env.py::load_repo_env` is the
-  shipped loader). There is **no `projects/<slug>/.env`** — do not look for one or write one.
+- Values live in **one gitignored `.env` at the REPO ROOT** (the `file` backend, the local/test
+  default), shared by every project (`core/paths.py` `ProjectPaths.env_file`, Umesh 2026-09-03;
+  `core/env.py::load_repo_env` is the shipped loader). There is **no `projects/<slug>/.env`** — do
+  not look for one or write one. **With the `credentials` store area on `mongo`** (D-122, D-123;
+  `AUTOTESTER_STORE_AREAS=credentials=mongo`) the values entered through the UI and the Chromium
+  `storage_state` sessions live instead in the `secrets` / `browser_sessions` collections of the
+  `autotester` database, **stored plain, no application-level encryption** (D-123), with no second
+  copy in `.env`. Protection is the server IP allowlist, the write fence (`store/mongo_guard.py`),
+  `browser/db.py` refusing the store database, and the redaction rules below. The Mongo URI
+  (`PATHLYNKS_MONGO_URI`), `AUTOTESTER_APPROVAL_KEY` and provider API keys stay deployment
+  environment / `.env` and are never put in the store.
   Scoping is by **key namespacing**: keys are prefixed per project (`PATHLYNKS_*`) and a project can
   resolve **only** the keys it declares in its `SecretRef[]`. `SecretRef` holds the **key** and its
   domain scope — never a value.
 - Prompts carry `{{SECRET:KEY}}`; substitution happens at `page.fill()` time only, scoped to the
   project's `allowed_domains`. `core.redact.assert_no_raw_secrets` is the gate before any model call.
-  Note `browser/secrets.py::_host_matches` is a **suffix** match (`host == domain` or
-  `host.endswith("." + domain)`), so declaring `vidysea.com` also admits every subdomain of it.
+  Note `browser/secrets.py::_host_matches` is an **exact-host** match (AT-651, D-087; case-insensitive,
+  one trailing dot ignored): a secret scoped to `a.example.com` fills only on `a.example.com`, never on
+  a parent, sibling, child or lookalike host, so declaring `vidysea.com` does **not** admit its
+  subdomains — declare each host.
 - Screenshots mask secret inputs before capture; logs pass `Redactor.scrub`.
 - Testing against a real product requires a **test account** — never a live user's credentials.
 - `RunApproval` (D-018) is **enforced where the code enforces it, which is not everywhere.** A crawl /

@@ -102,8 +102,10 @@ Browser is **headed by default** (`Project.headed`), driven against a persistent
 
 ## Security (non-negotiable)
 
-1. Values live only in the **repo-root `.env`** (gitignored; one file, keys namespaced per project and
-   declared in each project's `SecretRef[]`). `SecretRef` holds the **key** and its domain scope, never the value.
+1. Values live in the **repo-root `.env`** (gitignored; keys namespaced per project, declared in each project's `SecretRef[]`;
+   it holds the **key** and domain scope, never the value). With the `credentials` store area on `mongo` (D-122), UI-entered
+   values and `storage_state` sessions live instead in `secrets` / `browser_sessions`, stored plain (D-123) behind the IP
+   allowlist, the write fence, `browser/db.py` refusing the store database and redaction. The Mongo URI, `AUTOTESTER_APPROVAL_KEY` and provider keys never enter it.
 2. Prompts carry `{{SECRET:KEY}}`. Substitution happens at `page.fill()` time only, scoped to the
    `SecretRef`'s `domains`; parser-ambiguous destinations fail closed. `core/redact.assert_no_raw_secrets`
    is the hard gate before any call; undeclared `.env` values are masked too, never usable.
@@ -112,17 +114,14 @@ Browser is **headed by default** (`Project.headed`), driven against a persistent
 
 ## Storage
 
-Artifacts are plain files a human can open, edit, or delete:
+Default (`file` backend): plain files under the data root that a human can open, edit, or delete: `.env`, `projects/<slug>/`
+(project.json, sources/, cases.jsonl, rubrics/, runs/<run_id>/, knowledge.md), `profiles/<slug>/` (browser profile, ignored), `.work/` (scratch).
 
-```
-.env              all credentials from intake/editor, repo root (ignored) — see `.env.example`
-projects/<slug>/  project.json · sources/ · sources.jsonl · flowspec.json
-                  cases.jsonl · rubrics/ · scripts/ · runs/<run_id>/ · requests.jsonl · knowledge.md
-profiles/<slug>/  persistent browser profile (ignored)
-.work/            scratch, logs, evidence in progress (ignored)
-```
-
-The UI is a viewer/editor over these files, not a second source of truth.
+`AUTOTESTER_STORE=mongo` and `AUTOTESTER_STORE_AREAS=<area>=<backend>,…` route a state area (`store/mongo_routes.py::AREAS`)
+to one MongoDB database named in `pyproject.toml` `[tool.autotester.store]` (D-120, D-121); `auth` moves only by its own
+`auth=mongo` entry. Only `store/mongo_guard.py` opens it (allowlist-of-one write fence, D-122); evidence blobs go to GridFS.
+An unreachable store fails closed with no file fallback. Flipping an area is a human gate (G1). The UI is a viewer/editor
+over this state, not a second source of truth.
 
 ## Design rules (enforced by `autotester doctor`)
 

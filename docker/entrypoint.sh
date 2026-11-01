@@ -35,13 +35,37 @@ if [ -n "${AUTOTESTER_ROOT:-}" ]; then
   [ -w "$AUTOTESTER_ROOT" ] || echo "WARNING: AUTOTESTER_ROOT=$AUTOTESTER_ROOT is not writable by uid $(id -u); runs and queue state will fail" >&2
 fi
 
+# True only when EVERY state area is on Mongo, so no state needs the /data volume (mongo-store M28):
+# the global AUTOTESTER_STORE=mongo, no AUTOTESTER_STORE_AREAS entry sending an area back to file,
+# and auth flipped by its OWN entry (auth/store.py::_auth_on_mongo ignores the global value).
+# Conservative on purpose: anything it cannot read as "all mongo" is "not all", which keeps the warning.
+all_state_on_mongo() {
+  [ "${AUTOTESTER_STORE:-}" = "mongo" ] || return 1
+  local items=() item area backend auth=""
+  IFS=, read -ra items <<< "${AUTOTESTER_STORE_AREAS:-}" || true
+  for item in "${items[@]}"; do
+    item="${item// /}"
+    [ -n "$item" ] || continue
+    area="${item%%=*}"
+    backend="${item#*=}"
+    [ "$backend" = "mongo" ] || return 1
+    [ "$area" = "auth" ] && auth=1
+  done
+  [ -n "$auth" ]
+}
+
 # One loud line when the data root is not a persistent volume: every deploy would then wipe the
 # accounts and projects (docker/DEPLOY.md, "Persistent storage"). Informational ONLY: it never
 # exits or fails, because DevOps may not have mounted the volume yet and a refused start would
 # take the live site down. Ephemeral = the root shares a device with / or has no /proc/mounts line
 # (a volume mounted at an ancestor counts). AUTOTESTER_EPHEMERAL_OK=1 silences it (local docker).
+# With every area on Mongo the data root holds only scratch, so it is silent (all_state_on_mongo).
 warn_if_ephemeral() {
   [ "${AUTOTESTER_EPHEMERAL_OK:-}" = "1" ] && return 0
+  if all_state_on_mongo; then
+    echo "entrypoint: every state area is on Mongo; the data root holds scratch only (docker/DEPLOY.md, State store on MongoDB)"
+    return 0
+  fi
   local root="${AUTOTESTER_ROOT:-/app}" mounts="${AUTOTESTER_MOUNTS_FILE:-/proc/mounts}"
   local root_dev slash_dev mp="$root" listed=""
   root_dev=$(stat -c %d "$root" 2>/dev/null) || return 0
