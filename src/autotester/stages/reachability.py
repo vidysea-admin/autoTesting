@@ -10,10 +10,12 @@ reads as an INCONCLUSIVE product bug. This is a WARNING: it never removes, skips
 case. Only URL targets are judged; a locator or `{{SECRET}}` first step cannot be matched to a
 screen, so it is left unwarned rather than guessed at.
 
-E4.2 / AT-1421 (`probe_target`, `record_unreachable`): one bounded GET of the project's
+E4.2 / AT-1421 (`probe_target`, `skip_run`): one bounded GET of the project's
 `base_url` before the first browser exists. If the host does not answer, every case is recorded
 INCONCLUSIVE with ONE message instead of N identical 30 s navigation timeouts. Any HTTP answer
-(a 401, a 500) is the product's own and counts as reachable.
+(a 401, a 500) is the product's own and counts as reachable. Only http/https is ever spoken: a
+redirect to any other scheme is itself the answer, and a probe bug (not a network failure) lets
+the run proceed with a warning rather than skip it.
 """
 
 from __future__ import annotations
@@ -49,6 +51,14 @@ PROBE_TOTAL_S = 10.0
 """Everything the probe may spend, the one retry included (each attempt gets half of it)."""
 
 _MAX_REDIRECTS = 3
+
+NO_CLOCK = {"judging": 0.0, "housekeeping": 0.0, "total": 0.0, "acted_during_exclusion": 0.0,
+            "acting": 0.0}
+"""`Run.excluded_s` of a run that stopped before any case: the clock never ran."""
+
+_NO_ANSWER = TimeoutError("no answer")
+_NETWORK_ERRORS = (OSError, http.client.HTTPException)
+"""What a dead or unreachable target raises. Anything else out of the probe is OUR bug."""
 
 
 def _first_route(case: Case) -> str | None:
@@ -92,8 +102,9 @@ class _InScopeRedirects(urllib.request.HTTPRedirectHandler):
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         host = host_of(newurl)
-        if not host or not self.project.allows_domain(host) or time.monotonic() >= self.deadline:
-            return None
+        if (bad_scheme(newurl) or not host or not self.project.allows_domain(host)
+                or time.monotonic() >= self.deadline):
+            return None  # the 3xx itself is the answer; nothing else is connected to
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
@@ -101,7 +112,7 @@ def _attempt(opener: urllib.request.OpenerDirector, url: str,
              timeout: float) -> BaseException | None:
     """One GET in a daemon thread (so a stuck DNS lookup cannot outlive the bound); None when
     the host answered with anything at all, else what went wrong."""
-    outcome: list[BaseException | None] = [TimeoutError("no answer")]
+    outcome: list[BaseException | None] = [_NO_ANSWER]  # still this if the worker outlives its join
 
     def go() -> None:
         try:
@@ -110,7 +121,7 @@ def _attempt(opener: urllib.request.OpenerDirector, url: str,
         except urllib.error.HTTPError as exc:  # a 4xx/5xx is an answer
             exc.close()
             outcome[0] = None
-        except (OSError, http.client.HTTPException, ValueError) as exc:
+        except Exception as exc:  # classified by the caller: `_NETWORK_ERRORS` or our own bug
             outcome[0] = exc
 
     worker = threading.Thread(target=go, daemon=True)
@@ -134,18 +145,31 @@ def _failure_message(host: str, exc: BaseException) -> str:
     return f"target {host} could not be reached from this server"
 
 
-def probe_target(project: Project) -> str | None:
+def _build_opener(project: Project, deadline: float) -> urllib.request.OpenerDirector:
+    """http and https only: no FTP, file or data handler exists to be redirected into, no cookie
+    processor, no proxy."""
+    opener = urllib.request.OpenerDirector()
+    for handler in (urllib.request.ProxyHandler({}), urllib.request.HTTPHandler(),
+                    urllib.request.HTTPSHandler(), urllib.request.UnknownHandler(),
+                    urllib.request.HTTPDefaultErrorHandler(), _InScopeRedirects(project, deadline),
+                    urllib.request.HTTPErrorProcessor()):
+        opener.add_handler(handler)
+    return opener
+
+
+def probe_target(project: Project, notes: list[str] | None = None) -> str | None:
     """None to proceed, or one sentence (host + failure class, never the path) to stop.
 
     One GET of `base_url`: no cookies, credentials or body, no proxy, redirects only inside
-    `allowed_domains`, at most two attempts inside `PROBE_TOTAL_S`. A host outside the allowed
-    domains (or a URL that is not plain http/https without userinfo) is not probed at all."""
+    `allowed_domains` over http(s), at most two attempts inside `PROBE_TOTAL_S`. A host outside the
+    allowed domains (or a URL that is not plain http/https without userinfo) is not probed at all.
+    A failure that is not a network failure is a bug in the probe: it fails open (None) and appends
+    one warning naming the exception class to `notes`, so a probe bug never skips a real run."""
     url, host = project.base_url, host_of(project.base_url)
     if "://" not in url or bad_scheme(url) or not host or not project.allows_domain(host):
         return None
     deadline = time.monotonic() + PROBE_TOTAL_S
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}),
-                                         _InScopeRedirects(project, deadline))
+    opener = _build_opener(project, deadline)
     failure: BaseException | None = None
     for _ in range(2):
         left = deadline - time.monotonic()
@@ -154,21 +178,27 @@ def probe_target(project: Project) -> str | None:
         failure = _attempt(opener, url, min(PROBE_TOTAL_S / 2, left))
         if failure is None:
             return None
-    return _failure_message(host, failure or TimeoutError("no answer"))
+        if failure is not _NO_ANSWER and not isinstance(failure, _NETWORK_ERRORS):
+            if notes is not None:
+                notes.append(f"the reachability check of {host} could not run "
+                             f"({type(failure).__name__}); the run went ahead without it")
+            return None
+    return _failure_message(host, failure or _NO_ANSWER)
 
 
-def check_target(project: Project) -> str | None:
+def check_target(project: Project, notes: list[str] | None = None) -> str | None:
     """`RunSeams.target_probe`'s default. `probe_target` is looked up at call time, so a test
     suite can switch the network off in one place (tests/conftest.py)."""
-    return probe_target(project)
+    return probe_target(project, notes)
 
 
-def skip_run(ctx: StageContext, plan: ParallelPlan, excluded: dict[str, float],
-             cases: list[Case], judge: Provider, message: str) -> ParallelPlan:
+def skip_run(ctx: StageContext, plan: ParallelPlan, cases: list[Case], judge: Provider,
+             message: str) -> ParallelPlan:
     """End a run whose target did not answer, before any case executes: every case gets one
     saved result and an INCONCLUSIVE verdict (`grade` settles an ERRORED outcome by rule, no
     model call) naming the one cause, and the EXECUTE span is failed with it. No screenshot or
-    video exists because no browser did. Returns the plan carrying the stop and the message."""
+    video exists because no browser did, and no second was spent acting (`NO_CLOCK`). Returns the
+    plan carrying the stop and the message."""
     started = ctx.clock()
     for case in cases:
         result = RawResult(case_id=case.id, outcome=Outcome.ERRORED, error=f"not run: {message}")
@@ -178,5 +208,5 @@ def skip_run(ctx: StageContext, plan: ParallelPlan, excluded: dict[str, float],
     ctx.trace.record_stage(StageCheckpoint(
         stage=StageName.EXECUTE, status="failed", error=message,
         started=started, finished=ctx.clock()))
-    return dataclasses.replace(plan, excluded_s=excluded, stop_reason=TARGET_UNREACHABLE,
+    return dataclasses.replace(plan, excluded_s=dict(NO_CLOCK), stop_reason=TARGET_UNREACHABLE,
                                warnings=(message,))

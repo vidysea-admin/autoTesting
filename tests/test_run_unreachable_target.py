@@ -61,12 +61,38 @@ def test_an_unreachable_target_ends_the_run_fast_with_one_message(
 def test_the_stopped_run_records_zero_acting_time_not_a_missing_measurement(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """The acting clock must not start before the probe: the 1 s the probe spends waiting is not
+    time acting on the target (the run page showed 'acting 1.0s' for a run that never acted)."""
+    from fastapi.testclient import TestClient
+
+    from autotester.ui.app import app
+
     monkeypatch.setattr(reachability, "PROBE_TOTAL_S", 1.0)
     _no_browser(monkeypatch)
     with silent() as stub:
         store_for(tmp_path, monkeypatch, stub.url)
         run = launch_run("demo", seams=seams(target_probe=probe_target))
-    assert run.excluded_s is not None and run.excluded_s["total"] == 0.0
+    assert run.excluded_s is not None
+    assert run.excluded_s["acting"] == 0.0 and run.excluded_s["total"] == 0.0
+    page = TestClient(app).get(f"/projects/demo/runs/{run.id}").text
+    assert "acting 0.0s" in page and "acting 1." not in page
+
+
+def test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import urllib.request
+
+    def boom(self, *args, **kwargs):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(urllib.request.OpenerDirector, "open", boom)
+    log = wire_browser(monkeypatch)
+    store = store_for(tmp_path, monkeypatch, "http://127.0.0.1:9/", cases=2)
+    run = launch_run("demo", seams=seams(target_probe=probe_target))
+    assert log.count("case") == 2 and run.stop_reason is None
+    assert len(run.preflight_warnings) == 1 and "RuntimeError" in run.preflight_warnings[0]
+    assert {v.result for v in store.load_verdicts(run.id)} == {Result.PASS}
 
 
 def test_a_target_answering_500_runs_the_cases_as_before(
@@ -100,5 +126,5 @@ def test_the_default_seam_reaches_the_probe_by_late_binding(
     from autotester.stages.run_launcher import DEFAULT_SEAMS
 
     project = Project(slug="demo", name="Demo", base_url="https://demo.test")
-    monkeypatch.setattr(reachability, "probe_target", lambda _project: "X")
-    assert DEFAULT_SEAMS.target_probe(project) == "X"
+    monkeypatch.setattr(reachability, "probe_target", lambda _project, _notes=None: "X")
+    assert DEFAULT_SEAMS.target_probe(project, []) == "X"

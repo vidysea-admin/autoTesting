@@ -89,7 +89,7 @@ class RunSeams(NamedTuple):
     planner: Callable[..., ParallelPlan] = plan_parallel_run
     free_ram_mb: Callable[[], float] = _free_ram_mb
     ledger: PlanningLedger | None = None
-    target_probe: Callable[[Project], str | None] = check_target  # E4.2: once per run
+    target_probe: Callable[[Project, list[str]], str | None] = check_target  # E4.2: once per run
 
 
 DEFAULT_SEAMS = RunSeams()
@@ -203,13 +203,15 @@ def run_cases_traced(
     ctx = StageContext(store=store, run_id=run_id, secrets=secrets)
     judge.trace = ctx.trace
     plan = plan_under_shared_budget(project, run_id, seams)
-    budget = RunBudget.for_cases(approval, cases)
     cat = catalog_snapshot if catalog_snapshot is not None else catalog(
         project, store.load_flowspec(), store)
     started = ctx.clock()
     snapshot = list(zip(cases, entry_flags, strict=True))
-    if down := seams.target_probe(project):  # E4.2: before any browser; skip, say why once
-        return skip_run(ctx, plan, budget.excluded_report(), cases, judge, down)
+    notes: list[str] = []
+    if down := seams.target_probe(project, notes):  # E4.2: before any browser and before the
+        return skip_run(ctx, plan, cases, judge, down)  # acting clock starts; say why once
+    plan = dataclasses.replace(plan, warnings=(*plan.warnings, *notes))
+    budget = RunBudget.for_cases(approval, cases)  # the acting clock starts here, after the probe
     pool = _entry_pool(project, secrets, run_dir, slug, judge, budget)  # D-115: one per run
     try:
         for tier in tiers_to_run(cat):

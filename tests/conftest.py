@@ -64,7 +64,7 @@ def _no_target_probe(monkeypatch: pytest.MonkeyPatch) -> None:
     `test_run_unreachable_target.py`) inject the real `probe_target` against local stubs."""
     from autotester.stages import reachability
 
-    monkeypatch.setattr(reachability, "probe_target", lambda _project: None)
+    monkeypatch.setattr(reachability, "probe_target", lambda _project, _notes=None: None)
 
 
 @pytest.fixture(scope="session", autouse=True)
