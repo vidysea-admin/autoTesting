@@ -1,0 +1,60 @@
+### mutations-chain.json
+KILLED  m1: ollama gated on OLLAMA_BASE_URL only (key alone adds nothing)  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_1_a_cloud_key_alone_adds_the_ollama_tier, tests/test_langchain_ollama_tier.py::test_e2_2_the_order_is_anthropic_ollama_gemini_chatgpt
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_1_a_cloud_key_alone_adds_the_ollama_tier, tests/test_langchain_ollama_tier.py::test_e2_1_ollama_model_overrides_the_default_model, tests/test_langchain_ollama_tier.py::test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm, tests/test_langchain_ollama_tier.py::test_e2_1_the_factory_is_not_invoked_while_building_the_chain, tests/test_langchain_ollama_tier.py::test_e2_2_ollama_precedes_gemini_without_anthropic, tests/test_langchain_ollama_tier.py::test_e2_2_the_order_is_anthropic_ollama_gemini_chatgpt
+KILLED  m2: gemini placed before ollama  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_2_ollama_precedes_gemini_without_anthropic, tests/test_langchain_ollama_tier.py::test_e2_2_the_order_is_anthropic_ollama_gemini_chatgpt
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_2_ollama_precedes_gemini_without_anthropic, tests/test_langchain_ollama_tier.py::test_e2_2_the_order_is_anthropic_ollama_gemini_chatgpt
+KILLED  m3: Bearer header never sent  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm
+KILLED  m4: default model is llama3 even with a key  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm
+KILLED  m5: OLLAMA_MODEL ignored  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_1_ollama_model_overrides_the_default_model
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_1_ollama_model_overrides_the_default_model
+KILLED  m6: base_url hard-coded to the cloud URL  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_1_a_local_daemon_keeps_its_url_default_model_and_sends_no_header
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_1_a_local_daemon_keeps_its_url_default_model_and_sends_no_header
+KILLED  m7: only ProviderError falls through (a 429 stops the chain)  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_3_a_capped_gemini_falls_through_to_ollama_and_ollama_is_named, tests/test_langchain_ollama_tier.py::test_e2_3_a_failing_ollama_first_falls_through_to_gemini
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_3_a_capped_gemini_falls_through_to_ollama_and_ollama_is_named, tests/test_langchain_ollama_tier.py::test_e2_3_a_failing_ollama_first_falls_through_to_gemini
+KILLED  m8: winner id not recorded  (pytest exit 1)
+    claims to kill : tests/test_langchain_ollama_tier.py::test_e2_3_a_capped_gemini_falls_through_to_ollama_and_ollama_is_named, tests/test_langchain_ollama_tier.py::test_e2_3_a_failing_ollama_first_falls_through_to_gemini
+    actually failed: tests/test_langchain_ollama_tier.py::test_e2_3_a_capped_gemini_falls_through_to_ollama_and_ollama_is_named, tests/test_langchain_ollama_tier.py::test_e2_3_a_failing_ollama_first_falls_through_to_gemini
+
+8/8 mutations killed
+### mutations-schema.json
+KILLED  s1: judge_required emptied (no required marking, no reply check)  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema, tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted]
+    actually failed: tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema, tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted, tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+>>> SURVIVED  s2: required list not extended  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+    actually failed: (nothing)
+    SURVIVING      : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema  <- INCONCLUSIVE: this mutation did not make them fail
+>>> SURVIVED  s3: null alternative kept  (pytest exit 4)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+    actually failed: (nothing)
+    SURVIVING      : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema  <- INCONCLUSIVE: this mutation did not make them fail
+    NOTE: pytest produced no test results — not a kill
+KILLED  s4: default kept  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean
+    actually failed: tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+KILLED  s5: reply check removed  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+    actually failed: tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted, tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+KILLED  s6: null answer accepted (absence only)  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]
+    actually failed: tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]
+KILLED  s7: repair retry skipped for the reply check  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted
+    actually failed: tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted, tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+KILLED  s8: defect_observed=True PASS no longer held  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_c_defect_observed_true_still_downgrades_a_pass
+    actually failed: tests/test_judge_defect_required.py::test_c_defect_observed_true_still_downgrades_a_pass
+
+6/8 mutations killed
+### mutations-notes.json
+MUTATION RUN INVALID: mutation "n2 (E2.5): expected-error cue accepts a bare 'rejected'": anchor matched 0 times in src/autotester/stages/grade_note_guard.py (need exactly 1)
+DONE

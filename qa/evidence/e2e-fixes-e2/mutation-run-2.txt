@@ -1,0 +1,54 @@
+### mutations-schema.json
+KILLED  s1: judge_required emptied (no required marking, no reply check)  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema, tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted]
+    actually failed: tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema, tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted, tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+KILLED  s2: required list not extended  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+    actually failed: tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+KILLED  s3: null alternative kept  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+    actually failed: tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+KILLED  s4: default kept  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean
+    actually failed: tests/test_judge_defect_required.py::test_a_the_json_mode_schema_requires_a_non_null_boolean, tests/test_judge_defect_required.py::test_a_the_ollama_judge_call_carries_the_required_schema, tests/test_judge_defect_required.py::test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema
+KILLED  s5: reply check removed  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+    actually failed: tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted, tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+KILLED  s6: null answer accepted (absence only)  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]
+    actually failed: tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]
+KILLED  s7: repair retry skipped for the reply check  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted
+    actually failed: tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null], tests/test_judge_defect_required.py::test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted], tests/test_judge_defect_required.py::test_b_a_repair_that_supplies_the_field_is_accepted, tests/test_judge_defect_required.py::test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note
+KILLED  s8: defect_observed=True PASS no longer held  (pytest exit 1)
+    claims to kill : tests/test_judge_defect_required.py::test_c_defect_observed_true_still_downgrades_a_pass
+    actually failed: tests/test_judge_defect_required.py::test_c_defect_observed_true_still_downgrades_a_pass
+
+8/8 mutations killed
+### mutations-notes.json
+>>> SURVIVED  n1 (E2.5): guard loosened, 'leak' no longer a defect term  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_a_reworded_note_plus_a_genuine_contrary_marker_is_held[The login with a wrong password was correctly rejected, but the password field leaked.], tests/test_grade_e2e_notes.py::test_the_cfa4_note_is_still_held_on_a_positive_case
+    actually failed: tests/test_grade_e2e_notes.py::test_the_cfa4_note_is_still_held_on_a_positive_case
+    SURVIVING      : tests/test_grade_e2e_notes.py::test_a_reworded_note_plus_a_genuine_contrary_marker_is_held[The login with a wrong password was correctly rejected, but the password field leaked.]  <- INCONCLUSIVE: this mutation did not make them fail
+>>> SURVIVED  n2 (E2.5): expected-error cue accepts a bare 'rejected'  (pytest exit 0)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_a5ea_note_is_still_held_on_a_negative_case
+    actually failed: (nothing)
+    SURVIVING      : tests/test_grade_e2e_notes.py::test_the_a5ea_note_is_still_held_on_a_negative_case  <- INCONCLUSIVE: this mutation did not make them fail
+KILLED  n3: SKILL.md loses the 'correctly rejected' instruction  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note
+    actually failed: tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n4: SKILL.md loses the negation instruction  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note
+    actually failed: tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n5: SKILL.md tells the judge to hide defects  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_wording_guidance_does_not_tell_the_judge_to_hide_a_real_defect
+    actually failed: tests/test_grade_e2e_notes.py::test_the_wording_guidance_does_not_tell_the_judge_to_hide_a_real_defect, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n6: SKILL.md loses the {{FORMAT}} placeholder  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_grade_prompt_keeps_its_placeholders_and_the_untrusted_evidence_paragraph
+    actually failed: tests/test_grade_e2e_notes.py::test_the_grade_prompt_keeps_its_placeholders_and_the_untrusted_evidence_paragraph, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n7: defect_observed=True no longer holds a reworded PASS  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_a_reworded_note_with_defect_observed_true_is_held[The login with a wrong password was correctly rejected: the 'Invalid credentials' assertion was met.-True]
+    actually failed: tests/test_grade_e2e_notes.py::test_a_reworded_note_with_defect_observed_true_is_held[The login with a wrong password was correctly rejected: the 'Invalid credentials' assertion was met.-True], tests/test_grade_e2e_notes.py::test_a_reworded_note_with_defect_observed_true_is_held[credential values stayed masked; the Dashboard and Logout assertions were met-False]
+
+5/7 mutations killed
+DONE

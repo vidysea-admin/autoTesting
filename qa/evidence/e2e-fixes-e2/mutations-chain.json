@@ -1,0 +1,83 @@
+{
+ "tests": [
+  "tests/test_langchain_ollama_tier.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: ollama gated on OLLAMA_BASE_URL only (key alone adds nothing)",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "if ollama_cloud.base_url():  # OLLAMA_BASE_URL",
+   "new": "if os.environ.get(\"OLLAMA_BASE_URL\"):  # OLLAMA_BASE_URL",
+   "kills": [
+    "test_e2_1_a_cloud_key_alone_adds_the_ollama_tier",
+    "test_e2_2_the_order_is_anthropic_ollama_gemini_chatgpt"
+   ]
+  },
+  {
+   "name": "m2: gemini placed before ollama",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "    if ollama_cloud.base_url():  # OLLAMA_BASE_URL, or the cloud URL when OLLAMA_API_KEY is set\n        chain.append((\"ollama\", _make_ollama))\n\n    if os.environ.get(\"GEMINI_API_KEY\") or os.environ.get(\"GOOGLE_API_KEY\"):\n        def make_gemini() -> Any:\n            from langchain_google_genai import ChatGoogleGenerativeAI\n\n            key = os.environ.get(\"GEMINI_API_KEY\") or os.environ.get(\"GOOGLE_API_KEY\")\n            return ChatGoogleGenerativeAI(model=\"gemini-3.6-flash\", google_api_key=key,\n                                          timeout=JUDGE_TIMEOUT_S, max_retries=JUDGE_MAX_RETRIES)\n\n        chain.append((\"gemini\", make_gemini))\n\n",
+   "new": "    if os.environ.get(\"GEMINI_API_KEY\") or os.environ.get(\"GOOGLE_API_KEY\"):\n        def make_gemini() -> Any:\n            from langchain_google_genai import ChatGoogleGenerativeAI\n\n            key = os.environ.get(\"GEMINI_API_KEY\") or os.environ.get(\"GOOGLE_API_KEY\")\n            return ChatGoogleGenerativeAI(model=\"gemini-3.6-flash\", google_api_key=key,\n                                          timeout=JUDGE_TIMEOUT_S, max_retries=JUDGE_MAX_RETRIES)\n\n        chain.append((\"gemini\", make_gemini))\n\n    if ollama_cloud.base_url():  # OLLAMA_BASE_URL, or the cloud URL when OLLAMA_API_KEY is set\n        chain.append((\"ollama\", _make_ollama))\n\n",
+   "kills": [
+    "test_e2_2_the_order_is_anthropic_ollama_gemini_chatgpt",
+    "test_e2_2_ollama_precedes_gemini_without_anthropic"
+   ]
+  },
+  {
+   "name": "m3: Bearer header never sent",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "    if key:\n        kwargs[\"headers\"]",
+   "new": "    if False:\n        kwargs[\"headers\"]",
+   "kills": [
+    "test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm"
+   ]
+  },
+  {
+   "name": "m4: default model is llama3 even with a key",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "ollama_cloud.GLM.split(\"/\", 1)[1] if key else \"llama3\"",
+   "new": "\"llama3\"",
+   "kills": [
+    "test_e2_1_the_cloud_tier_targets_the_cloud_url_with_a_bearer_header_and_glm"
+   ]
+  },
+  {
+   "name": "m5: OLLAMA_MODEL ignored",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "os.environ.get(\"OLLAMA_MODEL\") or default",
+   "new": "default",
+   "kills": [
+    "test_e2_1_ollama_model_overrides_the_default_model"
+   ]
+  },
+  {
+   "name": "m6: base_url hard-coded to the cloud URL",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "base_url=ollama_cloud.base_url(), client_kwargs",
+   "new": "base_url=ollama_cloud.OLLAMA_CLOUD_URL, client_kwargs",
+   "kills": [
+    "test_e2_1_a_local_daemon_keeps_its_url_default_model_and_sends_no_header"
+   ]
+  },
+  {
+   "name": "m7: only ProviderError falls through (a 429 stops the chain)",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "            except Exception as exc:  # deliberately broad",
+   "new": "            except ProviderError as exc:  # deliberately broad",
+   "kills": [
+    "test_e2_3_a_capped_gemini_falls_through_to_ollama_and_ollama_is_named",
+    "test_e2_3_a_failing_ollama_first_falls_through_to_gemini"
+   ]
+  },
+  {
+   "name": "m8: winner id not recorded",
+   "file": "src/autotester/providers/langchain_fallback.py",
+   "old": "        self.id = name\n",
+   "new": "",
+   "kills": [
+    "test_e2_3_a_capped_gemini_falls_through_to_ollama_and_ollama_is_named",
+    "test_e2_3_a_failing_ollama_first_falls_through_to_gemini"
+   ]
+  }
+ ]
+}

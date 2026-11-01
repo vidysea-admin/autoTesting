@@ -6,6 +6,8 @@ catch the shortcut. A PASS requires cited evidence.
 
 from __future__ import annotations
 
+from typing import Any, ClassVar
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from autotester.schema.base import Artifact
@@ -89,10 +91,33 @@ class Judgment(BaseModel):
     note: str | None = None
     defect_observed: bool | None = Field(
         default=None,
-        description="Did the evidence show a product defect? Authoritative over `note`; None = "
-                    "the judge omitted it (grade() then falls back to the note guard).")
+        description="Did the evidence show a product defect? REQUIRED: true or false. "
+                    "Authoritative over `note`.")
     defect_summary: str | None = Field(
         default=None, description="One sentence naming the defect when defect_observed is true")
+
+    judge_required: ClassVar[tuple[str, ...]] = ("defect_observed",)
+    """Fields a MODEL must answer with a non-null value (AT-1414, e2e-fixes E2.4). Constructing a
+    `Judgment` stays tolerant (mocks and stored judgments omit them; `grade()` then falls back to
+    the note guard); the judge providers enforce it on a model's reply via `litellm_schema`."""
+
+    @classmethod
+    def model_json_schema(cls, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        """The schema a judge model is given: `judge_required` fields are `required` and lose
+        their null alternative and default, so the schema says what `SKILL.md` says."""
+        schema = super().model_json_schema(*args, **kwargs)
+        props = schema.get("properties", {})
+        for name in cls.judge_required:
+            prop = props.get(name)
+            if prop is None:
+                continue
+            types = [a for a in prop.pop("anyOf", []) if a.get("type") != "null"]
+            if len(types) == 1:
+                prop.update(types[0])
+            prop.pop("default", None)
+            if name not in schema.setdefault("required", []):
+                schema["required"].append(name)
+        return schema
 
     @field_validator("defect_observed", mode="before")
     @classmethod

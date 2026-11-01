@@ -1,0 +1,24 @@
+KILLED  n1 (E2.5): guard loosened, 'leak' no longer a defect term  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_cfa4_note_is_still_held_on_a_positive_case
+    actually failed: tests/test_grade_e2e_notes.py::test_the_cfa4_note_is_still_held_on_a_positive_case
+KILLED  n2 (E2.5): expected-error cue accepts a bare 'rejected'  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_a_bare_rejection_note_with_no_expected_cue_stays_held
+    actually failed: tests/test_grade_e2e_notes.py::test_a_bare_rejection_note_with_no_expected_cue_stays_held
+KILLED  n3: SKILL.md loses the 'correctly rejected' instruction  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note
+    actually failed: tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n4: SKILL.md loses the negation instruction  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note
+    actually failed: tests/test_grade_e2e_notes.py::test_the_grade_prompt_tells_the_judge_how_to_word_a_no_defect_note, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n5: SKILL.md tells the judge to hide defects  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_wording_guidance_does_not_tell_the_judge_to_hide_a_real_defect
+    actually failed: tests/test_grade_e2e_notes.py::test_the_wording_guidance_does_not_tell_the_judge_to_hide_a_real_defect, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n6: SKILL.md loses the {{FORMAT}} placeholder  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_the_grade_prompt_keeps_its_placeholders_and_the_untrusted_evidence_paragraph
+    actually failed: tests/test_grade_e2e_notes.py::test_the_grade_prompt_keeps_its_placeholders_and_the_untrusted_evidence_paragraph, tests/test_prompt_skills.py::test_sk3_rendered_prompt_is_byte_identical_to_the_pre_migration_file[grade]
+KILLED  n7: defect_observed=True no longer holds a reworded PASS  (pytest exit 1)
+    claims to kill : tests/test_grade_e2e_notes.py::test_a_reworded_note_with_defect_observed_true_is_held[The login with a wrong password was correctly rejected: the 'Invalid credentials' assertion was met.-True]
+    actually failed: tests/test_grade_e2e_notes.py::test_a_reworded_note_with_defect_observed_true_is_held[The login with a wrong password was correctly rejected: the 'Invalid credentials' assertion was met.-True], tests/test_grade_e2e_notes.py::test_a_reworded_note_with_defect_observed_true_is_held[credential values stayed masked; the Dashboard and Logout assertions were met-False]
+
+7/7 mutations killed
+DONE

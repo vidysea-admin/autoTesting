@@ -113,3 +113,22 @@ usable authorized fallback, unsupported capability remains explicitly unavailabl
 All other boundaries remain: no fallback on privacy refusal, global budget or
 deadline exhaustion; finite physical requests, actual provider/reason/accounting,
 truthful unknown usage, and explicit configuration precedence are unchanged.
+
+## 2026-11-01 e2e-fixes E2 amendment (AT-1413; contract `e2e-fixes.md` E2.1/E2.2)
+
+Folded in by /checker at the E2 verdict (cycle 0). These clauses supersede LC2's stated order
+and its Ollama gate; the rest of LC2 and LC1/LC3-LC5 stand.
+
+### LC2a - Order: Anthropic -> Ollama -> Gemini -> ChatGPT
+`_default_chain` lists the tiers in that order (Anthropic keeps first place when its key is
+present, ChatGPT stays last). Ollama now sits ahead of Gemini so a Gemini spend cap does not leave
+every verdict INCONCLUSIVE, and the order agrees with `autotester providers` (GLM -> DeepSeek ->
+Gemini). Verified by `tests/test_langchain_ollama_tier.py::test_e2_2_*`.
+
+### LC2b - The Ollama gate is `OLLAMA_API_KEY` or `OLLAMA_BASE_URL`
+The tier enters when `providers/ollama_cloud.py::base_url()` is truthy: an explicit
+`OLLAMA_BASE_URL`, or the cloud URL when `OLLAMA_API_KEY` is set. With a key the tier sends
+`Authorization: Bearer <key>` and its model is `ollama_cloud.GLM` minus the `ollama_chat/` prefix
+unless `OLLAMA_MODEL` is set; a bare local `OLLAMA_BASE_URL` keeps its URL, `llama3` default and
+no header. With neither variable set no tier is added and no SDK is imported (the LC2 "costs
+nothing" rule stands). Verified by `test_e2_1_*`.

@@ -356,3 +356,15 @@ checker-taken screenshot. Evidence of a model answering (E2.1-E2.3) uses fakes o
   LC2 states the order Anthropic -> Gemini -> Ollama -> ChatGPT and gates Ollama on `OLLAMA_BASE_URL`
   alone; E2.1/E2.2 supersede both. The checker folds that into LC2 and its amendment log in the same
   cycle as E2's verdict. **Links:** AT-1412..AT-1421; D-112; grade.md G3/G6; run-video.md V2.
+
+- 2026-11-01 · E2 verdict (cycle 0) · /checker. (1) **E2.7 item 1 example corrected:** the literal
+  reworded a5ea note "The wrong-password login was correctly rejected: ..." is NOT a PASS under
+  the unchanged guard (checker-run: INCONCLUSIVE), because `_CONTRARY` holds `wrong` and
+  `_QUALIFIED_INPUT` (`stages/grade_note_guard.py:102-103`) strips only whitespace-separated
+  "wrong <input>". The pinned PASS example is the spaced form "The login with a wrong password was
+  correctly rejected: the 'Invalid credentials' assertion was met." The contract text was wrong,
+  not the maker; E2.5 forbids the guard change that would make the hyphen form pass. (2) **E2.4(b)
+  wording:** "`grade()` returns INCONCLUSIVE" is satisfied by the existing
+  `run_case_pipeline.py::run_and_grade_case_resilient` (`:271-276`), which converts a
+  `ProviderError` raised inside `grade()`; `grade()` itself propagates by design. (3) The
+  `langchain-fallback.md` LC2 amendment owed above is made (sections LC2a/LC2b there).
