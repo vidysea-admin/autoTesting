@@ -3076,3 +3076,17 @@ No `store/secret_box.py`, no `cryptography` dependency, no re-seal tool.
 **Changes-authorized:** qa/contracts/mongo-store.md M25 (checker amendment, CEO-bench clause only); U8 migrate/verify handling of `.work/ceo-bench/`.
 
 **Approved-by:** Umesh
+
+## D-129 | 2026-11-01 | type: decision | status: ACTIVE
+
+**What:** Approve two new modules for the Mongo auth store: `src/autotester/auth/store_mongo_video.py` (U6c: the Mongo implementation of video shares, links, access requests, comments and their audit rows, behind the `AuthTx` protocol in `auth/store.py`, reusing the existing journal/fence/CAS code) and `src/autotester/auth/store_mongo_fence.py` (the fence and tombstone half of `auth/store_mongo_tx.py`, i.e. `_insert` / `_replay` and their helpers, moved out so the AT-1431 fix has room).
+
+**Why:** `auth/store_mongo.py` is 299 lines and `auth/store_mongo_tx.py` is 300, so neither U6c nor the AT-1431 fix (a stalled holder's late insert of a deterministic grant id resurrecting a revoked grant) can land under the 300-line cap. The alternatives were putting Mongo code into `stages/video_*.py` by reaching into `MongoAuthTx` internals (breaks the module boundary and duplicates the fence code) or accepting AT-1431 as a residual and leaving video data on SQLite. Splitting is the in-place alternative to raising the cap; each new file takes code or a role from exactly one existing file. D-126 approved only `store_mongo_tx.py` for auth; the U6bf checker B verdict's "second module D-126 authorizes" was a misreading. Umesh approved both in chat on 2026-11-01 ("Approve both").
+
+**Result:** U6c builds on `store_mongo_video.py`, moves the fence/tombstone code into `store_mongo_fence.py`, fixes AT-1431 and the AT-1432 items, and goes to dual check. Generated ARCHITECTURE/MAP sections are refreshed by `autotester map`.
+
+**Links:** D-122, D-126, qa/contracts/mongo-store.md (M30), U6c, AT-1431, AT-1432
+
+**Approved-by:** Umesh
+
+**Changes-authorized:** new files `src/autotester/auth/store_mongo_video.py`, `src/autotester/auth/store_mongo_fence.py`; generated sections of `docs/ARCHITECTURE.md` and `docs/MAP.md` via `autotester map`.
