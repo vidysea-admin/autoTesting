@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e1
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, verdict 1c02bd22)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E1 (AT-1412), criteria E1.1-E1.3. **Criticality:** MEDIUM.
 **Branch:** `feat/e2e-e1`, cut from master `dccc65e9` (the contract commit). Not merged, not pushed.
