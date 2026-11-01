@@ -1,0 +1,146 @@
+{
+ "tests": [
+  "tests/test_storage_warning.py",
+  "tests/test_container_entrypoint_behaviour.py"
+ ],
+ "mutations": [
+  {
+   "name": "m1: on_cloud_run ignores a blank K_SERVICE",
+   "file": "src/autotester/core/env.py",
+   "old": "os.environ.get(\"K_SERVICE\", \"\").strip()",
+   "new": "os.environ.get(\"K_SERVICE\", \"\")",
+   "kills": ["test_on_cloud_run_is_one_non_blank_variable"]
+  },
+  {
+   "name": "m2: every-area-on-mongo test ignores store_selection (always true)",
+   "file": "src/autotester/core/env.py",
+   "old": "return set(store_selection().values()) == {\"mongo\"} and on_mongo()",
+   "new": "return True",
+   "kills": [
+    "test_cloud_run_with_one_area_on_mongo_and_the_rest_on_files_warns",
+    "test_cloud_run_with_any_area_on_files_still_warns[auth=file]",
+    "test_cloud_run_with_any_area_on_files_still_warns[queue=file,auth=mongo]"
+   ]
+  },
+  {
+   "name": "m3: auth needs no entry of its own (global mongo alone counts as all-mongo)",
+   "file": "src/autotester/core/env.py",
+   "old": "== {\"mongo\"} and on_mongo()",
+   "new": "== {\"mongo\"}",
+   "kills": ["test_cloud_run_with_any_area_on_files_still_warns[]"]
+  },
+  {
+   "name": "m4: the all-mongo exemption is removed",
+   "file": "src/autotester/core/env.py",
+   "old": " or (cloud and _all_areas_mongo()):",
+   "new": ":",
+   "kills": ["test_cloud_run_with_every_area_on_mongo_is_quiet_even_without_mounts"]
+  },
+  {
+   "name": "m5: an unreadable mount table stays silent on Cloud Run (the pre-E5 behaviour)",
+   "file": "src/autotester/core/env.py",
+   "old": "Mount a volume at {base}.\") if cloud else None",
+   "new": "Mount a volume at {base}.\") if False else None",
+   "kills": [
+    "test_cloud_run_with_no_mount_table_warns_instead_of_going_quiet",
+    "test_cloud_run_with_an_unreadable_mount_table_warns",
+    "test_an_invalid_store_selection_warns_and_never_raises"
+   ]
+  },
+  {
+   "name": "m6: a mount table with no / entry is silent on Cloud Run",
+   "file": "src/autotester/core/env.py",
+   "old": "            raise OSError(\"no / entry in the mount table\")",
+   "new": "            return None",
+   "kills": ["test_cloud_run_with_an_unreadable_mount_table_warns"]
+  },
+  {
+   "name": "m7: off Cloud Run an unverifiable root now warns",
+   "file": "src/autotester/core/env.py",
+   "old": "Mount a volume at {base}.\") if cloud else None",
+   "new": "Mount a volume at {base}.\")",
+   "kills": ["test_off_cloud_run_an_unknowable_root_stays_quiet"]
+  },
+  {
+   "name": "m8: the banner ignores Cloud Run",
+   "file": "src/autotester/ui/admin_view.py",
+   "old": "if hosted() or env.on_cloud_run() else None",
+   "new": "if hosted() else None",
+   "kills": ["test_banner_shows_on_cloud_run_without_the_hosted_flag"]
+  },
+  {
+   "name": "e1: auth=mongo dropped from the generated list",
+   "file": "docker/entrypoint.sh",
+   "old": "approvals=mongo,auth=mongo,credentials=mongo",
+   "new": "approvals=mongo,credentials=mongo",
+   "kills": [
+    "test_e5_uri_alone_selects_mongo_for_every_area",
+    "test_e5_the_generated_selection_is_one_the_store_accepts"
+   ]
+  },
+  {
+   "name": "e2: the 'operator has not set' guard is deleted",
+   "file": "docker/entrypoint.sh",
+   "old": "if [ -n \"${store//[[:space:]]/}\" ] || [ -n \"${areas//[[:space:]]/}\" ]; then",
+   "new": "if false; then",
+   "kills": [
+    "test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra0]",
+    "test_e5_an_operator_choice_wins_whole_and_is_not_half_merged[extra1]"
+   ]
+  },
+  {
+   "name": "e3: the guard tests 'set' instead of 'non-blank'",
+   "file": "docker/entrypoint.sh",
+   "old": "[ -n \"${uri//[[:space:]]/}\" ] || return 0",
+   "new": "[ -n \"$uri\" ] || return 0",
+   "kills": ["test_e5_no_uri_or_a_blank_one_selects_nothing[uri2]"]
+  },
+  {
+   "name": "e4: the URI is echoed",
+   "file": "docker/entrypoint.sh",
+   "old": "every state area selected on Mongo\"",
+   "new": "every state area selected on Mongo $uri\"",
+   "kills": [
+    "test_e5_the_uri_value_is_never_printed",
+    "test_e5_the_real_script_exports_the_selection_and_leaks_no_uri"
+   ]
+  },
+  {
+   "name": "e5: the existing-SQLite-store detection is removed (A-W1)",
+   "file": "docker/entrypoint.sh",
+   "old": "if [ -s \"$auth_db\" ]; then",
+   "new": "if false; then",
+   "kills": ["test_e5_an_existing_sqlite_user_store_is_not_locked_out"]
+  },
+  {
+   "name": "e6: the selection is never called",
+   "file": "docker/entrypoint.sh",
+   "old": "\nselect_mongo_store || true\n",
+   "new": "\n",
+   "kills": [
+    "test_e5_the_real_script_exports_the_selection_and_leaks_no_uri",
+    "test_e5_selection_function_cannot_exit_and_is_called_with_or_true"
+   ]
+  },
+  {
+   "name": "e7: AUTOTESTER_STORE is not exported (half selection)",
+   "file": "docker/entrypoint.sh",
+   "old": "  export AUTOTESTER_STORE=mongo\n",
+   "new": "",
+   "kills": [
+    "test_e5_uri_alone_selects_mongo_for_every_area",
+    "test_e5_the_real_script_exports_the_selection_and_leaks_no_uri"
+   ]
+  },
+  {
+   "name": "e8: the selection is made without any URI",
+   "file": "docker/entrypoint.sh",
+   "old": "  [ -n \"${uri//[[:space:]]/}\" ] || return 0\n",
+   "new": "",
+   "kills": [
+    "test_e5_no_uri_or_a_blank_one_selects_nothing[uri0]",
+    "test_e5_the_real_script_without_a_uri_selects_nothing"
+   ]
+  }
+ ]
+}

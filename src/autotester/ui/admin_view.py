@@ -16,10 +16,10 @@ from autotester.ui import theme
 
 
 def storage_banner() -> str:
-    """A visible banner when a hosted server's data root is not a persistent volume (every
-    deploy would wipe accounts and projects); empty on a laptop, on a volume, or when
-    AUTOTESTER_EPHEMERAL_OK=1. The text is the detector's own sentence."""
-    message = env.storage_warning() if hosted() else None
+    """A visible banner when a hosted server's (or a Cloud Run service's) data root is not a
+    persistent volume (every deploy would wipe accounts and projects); empty on a laptop, on a
+    volume, or when AUTOTESTER_EPHEMERAL_OK=1. The text is the detector's own sentence."""
+    message = env.storage_warning() if hosted() or env.on_cloud_run() else None
     if not message:
         return ""
     return f"<p class='error' role='alert'><strong>{escape(message)}</strong></p>"
