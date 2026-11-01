@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e5
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A 48149208, B ca720c59)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E5 (AT-1433). **Criticality:** MEDIUM-HIGH (a wrong selection 503-bricks the site; a wrong auth flip locks users out).
 **Authority:** Umesh 2026-11-01 (the Mongo URI is already in the live environment; live must persist without DevOps). D-122/D-123 and the write fence are not re-opened. No new `src/` module (CLAUDE.md: a new module needs an Umesh D-entry), no `qa/contracts/` edit.
