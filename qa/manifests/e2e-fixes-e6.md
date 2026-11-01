@@ -106,3 +106,21 @@ Root cause (checker A, confirmed): Starlette's `WebSocketTestSession.__exit__` s
 3. **Repeat proof**: `qa/evidence/e2e-fixes-e6/ws-repeat-cycle2.txt` (see results below).
 
 **Documented residual W3 (checker A):** the effective CLIENT-to-server frame cap behind uvicorn is uvicorn's default `--ws-max-size` of 16 MiB (the entrypoint passes no override, `docker/entrypoint.sh:127`), not the relay's 32 MiB `_MAX_FRAME`; a larger client frame closes 1009 from uvicorn first. The 32 MiB figure holds for the relay's own check and for the upstream-to-client direction (`websockets` `max_size`). Harmless for noVNC (client frames are small); `docker/` is not edited by this unit. The wording in D-131 ("capped at 32 MiB") overstates the client direction only.
+
+**Cycle 2 results** (one pytest at a time, `TMP`/`TEMP` and `--basetemp` under `.work`):
+
+```
+test_live_proxy_ws.py x12 consecutive runs   -> 12 of 12 clean (13 passed each); log qa/evidence/e2e-fixes-e6/ws-repeat-cycle2.txt
+test_live_proxy_http + test_live_default_url -> 39 passed
+test_live_proxy_ws + test_ui_auth_policy_table -> 15 passed
+test_hosting_gaps + test_ui_healthz          -> 42 passed
+test_routers_list + test_ui_auth_surface     -> 27 passed
+test_ui_auth_escalation + test_ui_auth_host_and_consent -> 34 passed
+test_hosting_config + test_ui_sidebar        -> 14 passed
+test_ui + test_ui_dashboard                  -> 29 passed
+ruff check src tests scripts                 -> All checks passed!
+autotester doctor > .work/doctor-e6.txt      -> exit 0, doctor: clean
+mutants touched (ws set, 8)                  -> 8/8 killed; mutation-run-ws-cycle2.txt
+```
+
+Not covered by a test: the new cancellation branch (`up.transport.abort()` on a cancelled handler). It is a safety net exercised only when the handler is cancelled mid-cleanup; the deterministic tests deliberately avoid that race. The cycle-1 http mutants are unchanged (no http code touched this cycle).
