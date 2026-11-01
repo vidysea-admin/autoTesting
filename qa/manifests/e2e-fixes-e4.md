@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e4
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, verdict 434f9fdf)
 **Fix cycle:** 1 (cycle 0: checker PASS `962bea0d`; a separate senior review `.work/e2e-2026-11-01/review-e4.md` found a reproduced scope escape, fixed in the section "Fix cycle 1" below)
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E4 (AT-1421, AT-1415). **Criticality:** HIGH (the consent clock, D-112).
 **Authority:** D-112 (the exclusion clock is not re-opened), run-video V2/V6/V8 (a PASS still keeps no video). No new `src/` module (CLAUDE.md: a new module needs an Umesh D-entry), no `qa/contracts/` edit.
