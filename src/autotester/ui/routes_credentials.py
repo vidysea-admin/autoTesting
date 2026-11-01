@@ -15,16 +15,25 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from autotester.auth.access import authorize
 from autotester.auth.context import current_principal
-from autotester.browser.secrets import SecretStore, parse_env
+from autotester.browser.secrets import SecretStore, host_of, parse_env
 from autotester.core.env import resolve_credentials
 from autotester.core.paths import ProjectPaths, repo_root
 from autotester.schema.auth import PermissionKey
 from autotester.schema.case import Case
+from autotester.schema.project import Project, SecretRef
+from autotester.stages.role_onboarding import login_keys
 from autotester.stages.run_gates import derive_live_case_grant, planned_cases
+from autotester.store.project_store import ProjectStore
 from autotester.ui import theme
 from autotester.ui.credential_guard import refuse_server_key
-from autotester.ui.env_editor import InvalidEnvValue, save_credentials
+from autotester.ui.env_editor import InvalidEnvValue, save_credentials, validate_env_values
 from autotester.ui.helpers import _load_project_or_404, _refuse_unsafe_submission
+from autotester.ui.role_accounts_view import (
+    account_login_card,
+    custom_credential_card,
+    env_table,
+    redisplayable_key,
+)
 from autotester.ui.routes_crawl_approval import _approvals_card, _crawl_approval_form
 from autotester.ui.routes_project_edit import build_secret_ref
 
@@ -39,49 +48,6 @@ def can_view_credentials() -> bool:
     return who is not None and authorize(who, PermissionKey.CREDENTIALS_VIEW)
 
 
-def _env_table(project: object, present: dict[str, str], show_values: bool = False) -> str:
-    """The editable credentials table. 2026-09-21 UX amendment (Umesh,
-    Approver): the write-only masked editor read as "everything wipes on
-    Save". The stored value is now shown IN the field (prefilled) so the
-    operator sees what is saved and can edit it; password-shaped keys stay
-    masked with a show/hide toggle. Owner-only display in the local UI — the
-    SecretStore boundary (values never reach a prompt, log, or screenshot)
-    is unchanged."""
-    if not project.secrets:  # type: ignore[attr-defined]
-        return theme.empty_state("🔑", "This project declares no credentials.")
-    _EYE = ("<button type='button' class='btn btn-sm' tabindex='-1' "
-            "onclick=\"var i=this.parentNode.querySelector('input');"
-            "i.type=i.type==='password'?'text':'password';"
-            "this.textContent=i.type==='password'?'show':'hide';\">show</button>")
-
-    def _status_cell(key: str) -> str:
-        return (theme.pill("● Set", "positive") if present.get(key)
-                else theme.pill("○ Not set", "neutral"))
-
-    def _row(ref: object) -> str:
-        key = ref.key  # type: ignore[attr-defined]
-        is_secret = "_PASSWORD" in key or "_KEY" in key
-        shown = present.get(key, '') if show_values else ''  # AU21: no value, no length hint
-        if not show_values:
-            is_secret = True  # a write-only box: nothing to show or hide
-        return (
-            f"<tr><td>{escape(key)}</td>"
-            f"<td>{_status_cell(key)}</td>"
-            f"<form method='post' action='env'>"
-            f"<input type='hidden' name='key' value='{escape(key)}'>"
-            f"<td style='display:flex;gap:6px'>"
-            f"<input type='{'password' if is_secret else 'text'}' name='value' "
-            f"value='{escape(shown)}' aria-label='Value for {escape(key)}' "
-            f"placeholder='new value' style='flex:1'>{_EYE if show_values and is_secret else ''}"
-            f"</td>"
-            f"<td><button class='btn btn-sm' type='submit'>Save</button></td></form></tr>"
-        )
-
-    rows = "".join(_row(ref) for ref in project.secrets)  # type: ignore[attr-defined]
-    header = "<tr><th>Key</th><th>Status</th><th>Value (edit and Save)</th><th></th></tr>"
-    return f"<table>{header}{rows}</table>"
-
-
 def _platform_url_card(slug: str, project: object) -> str:
     """Edit the platform's own URL (base_url) and allowed domains inline.
 
@@ -89,7 +55,7 @@ def _platform_url_card(slug: str, project: object) -> str:
     fixes on the same page as the values — no trip to the project settings
     form, which needs the name and every field re-entered."""
     safe = escape(slug)
-    domains = ", ".join(project.allowed_domains)  # type: ignore[attr-defined]
+    domains = ", ".join(project.allowed_domains)
     return theme.card(
         f"<form method='post' action='/projects/{safe}/env/url'>"
         f"<div class='field'><label for='pu-base-url'>Platform URL (base URL)</label>"
@@ -100,27 +66,6 @@ def _platform_url_card(slug: str, project: object) -> str:
         f"<input id='pu-domains' name='allowed_domains' value='{escape(domains)}' required></div>"
         "<button class='btn' type='submit'>Save URL</button></form>",
         title="Platform URL",
-    )
-
-
-def _custom_credential_card(slug: str, project: object) -> str:
-    """Declare a NEW custom credential AND save its value in one submit."""
-    safe = escape(slug)
-    scope = ", ".join(project.allowed_domains)  # type: ignore[attr-defined]
-    return theme.card(
-        f"<form method='post' action='/projects/{safe}/env/add'>"
-        f"<div class='field'><label for='ac-key'>Key (UPPER_SNAKE_CASE)</label>"
-        f"<input id='ac-key' name='key' required placeholder='e.g. ERP_TENANT_ID'></div>"
-        f"<div class='field'><label for='ac-value'>Value</label>"
-        f"<input id='ac-value' type='password' autocomplete='new-password' name='value' "
-        f"required placeholder='the value to store'></div>"
-        f"<div class='field'><label for='ac-domains'>"
-        f"Allowed domains (where it may be typed)</label>"
-        f"<input id='ac-domains' name='domains' value='{escape(scope)}' required></div>"
-        f"<div class='field'><label for='ac-description'>Description (optional)</label>"
-        f"<input id='ac-description' name='description' placeholder='what this key is for'></div>"
-        f"<button class='btn' type='submit'>Add credential</button></form>",
-        title="Add a custom credential",
     )
 
 
@@ -151,33 +96,100 @@ def env_url_submit(
     return RedirectResponse(f"/projects/{slug}/env", status_code=303)
 
 
-@router.post("/projects/{slug}/env/add")
-def env_add_credential(
-    slug: str, key: str = Form(...), value: str = Form(...),
-    domains: str = Form(...), description: str = Form(""),
-) -> Response:
-    """Declare a custom credential AND save its value in one step.
+def refuse_pasted_secrets(
+    project: Project, texts: list[tuple[str, str]], submitted: list[str],
+) -> None:
+    """Refuse a field that is about to be shown again if it holds a real credential: whatever
+    `.env` and the credential store hold, plus the values in this very submission (E3.5)."""
+    fresh = {f"SUBMITTED_{n}": v for n, v in enumerate(submitted) if v.strip()}
+    for held in (SecretStore.load(project, ProjectPaths(project.slug).env_file, strict=False),
+                 SecretStore(project, {}, fresh)):
+        _refuse_unsafe_submission(
+            texts, project, held, exempt={"the scope": ", ".join(project.allowed_domains)})
 
-    Declaration reuses `build_secret_ref` (the same validators the settings
-    page uses); the value goes through the one legitimate `.env` write path.
-    Refuses a key that is already declared, and a scope outside the project's
-    allowed domains — a SecretRef can never widen the browser's boundary."""
-    store, project = _load_project_or_404(slug)
-    ref = build_secret_ref(project, key, domains, description)
+
+def login_submission(
+    project: Project, email: str, password: str, scope: str,
+) -> tuple[list[SecretRef], dict[str, str]]:
+    """The "Test account login" block (E3.3/E3.4) -> its two generated declarations and values.
+    Scope defaults to the project URL host and goes through `build_secret_ref`, so it can never
+    leave the allowed domains. A wholly empty block means "no login" (onboarding may skip it)."""
+    if not email.strip() and not password.strip():
+        return [], {}
+    if not email.strip() or not password.strip():
+        raise HTTPException(400, "give both the email or username and the password")
+    keys = login_keys(project.slug)
+    what = ("test account email or username", "test account password")
+    refs = [build_secret_ref(project, key, scope.strip() or host_of(project.base_url), note,
+                             mask_in_screenshot=True)
+            for key, note in zip(keys, what, strict=True)]
+    return refs, dict(zip(keys, (email.strip(), password), strict=True))
+
+
+def _save_login(
+    slug: str, store: ProjectStore, project: Project, form: dict[str, str],
+) -> Response:
+    refs, values = login_submission(
+        project, form["login_email"], form["login_password"], form["login_scope"])
+    if not values:
+        raise HTTPException(400, "type the email or username and the password")
+    validate_env_values(values)
+    kept = [r for r in project.secrets if r.key not in values]  # a resubmit replaces, never adds
+    store.save_project(project.model_copy(update={"secrets": [*kept, *refs]}))
+    save_credentials(slug, repo_root() / ".env", values)
+    return RedirectResponse(f"/projects/{slug}/env", status_code=303)
+
+
+def _save_custom(
+    slug: str, store: ProjectStore, project: Project, form: dict[str, str],
+) -> Response:
+    ref = build_secret_ref(project, form["key"], form["domains"], form["description"])
     if project.secret(ref.key) is not None:
         raise HTTPException(400, f"'{ref.key}' is already declared on this project")
-    if not value.strip():
+    if not form["value"].strip():
         raise HTTPException(400, "a credential needs a value")
     _refuse_unsafe_submission(
-        [("the value", value)], project,
+        [("the value", form["value"])], project,
         SecretStore.load(project, ProjectPaths(slug).env_file, strict=False),
     )
+    validate_env_values({ref.key: form["value"]})
     store.save_project(project.model_copy(update={"secrets": [*project.secrets, ref]}))
-    try:
-        save_credentials(slug, repo_root() / ".env", {ref.key: value})
-    except InvalidEnvValue as exc:
-        raise HTTPException(400, str(exc)) from exc
+    save_credentials(slug, repo_root() / ".env", {ref.key: form["value"]})
     return RedirectResponse(f"/projects/{slug}/env", status_code=303)
+
+
+@router.post("/projects/{slug}/env/add")
+def env_add_credential(
+    slug: str, key: str = Form(""), value: str = Form(""), domains: str = Form(""),
+    description: str = Form(""), block: str = Form(""), login_email: str = Form(""),
+    login_password: str = Form(""), login_scope: str = Form(""),
+) -> Response:
+    """Save the "Test account login" block (`block=login`) or declare a custom credential AND
+    save its value in one step. Declaration reuses `build_secret_ref` (the same validators the
+    settings page uses); values go through the one legitimate `.env` write path. A refusal that
+    only concerns what was typed (bad key, scope outside the allowed domains, a half-filled login)
+    re-renders this page with a plain message and the NON-secret fields kept; a value is never
+    echoed (AT-1417, C5). A SecretRef can never widen the browser's boundary."""
+    store, project = _load_project_or_404(slug)
+    form = {"key": key, "value": value, "domains": domains, "description": description,
+            "login_email": login_email, "login_password": login_password,
+            "login_scope": login_scope}
+    scan = [("the scope", login_scope)] if block == "login" else [
+        ("the key", key), ("the description", description), ("the scope", domains)]
+    # a pasted secret in a field that is about to be shown again is refused BEFORE it is shown
+    refuse_pasted_secrets(project, scan, [value, login_email, login_password])
+    try:
+        return (_save_login if block == "login" else _save_custom)(slug, store, project, form)
+    except InvalidEnvValue as exc:
+        problem = HTTPException(400, str(exc))
+    except HTTPException as exc:
+        if exc.status_code != 400:
+            raise
+        problem = exc
+    typed = {k: form[k] for k in ("domains", "description", "login_scope")}
+    typed["key"] = redisplayable_key(key)
+    return HTMLResponse(env_editor_view(slug, error=str(problem.detail), typed=typed),
+                        status_code=400)
 
 
 _GRANT_SCRIPT = (
@@ -207,7 +219,11 @@ def _grant_prefill(cases: list[Case]) -> tuple[str, str]:
 
 
 @router.get("/projects/{slug}/env", response_class=HTMLResponse)
-def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
+def env_editor_view(slug: str, saved: str = "", existing: str = "", *, error: str = "",
+                    typed: dict[str, str] | None = None) -> str:
+    """The Credentials page. `error`/`typed` (AT-1417, passed by `env_add_credential`, never by
+    the query string) are a refused submit's plain message and its NON-secret fields; the page
+    never refills a value box."""
     store, project = _load_project_or_404(slug)
     paths = ProjectPaths(slug)
     on_disk = (
@@ -217,22 +233,27 @@ def env_editor_view(slug: str, saved: str = "", existing: str = "") -> str:
     name = escape(project.name)
     safe_slug = escape(slug)
     show = can_view_credentials()
-    table = _env_table(project, present, show)
+    typed = typed or {}
+    table = env_table(project, present, show)
     prefill = _grant_prefill(planned_cases(store))
     note = ("Saved values are shown here so you can verify and edit them. "
             "They stay masked as ●●● until you press show." if show else
             "Each key shows only whether it is set. Type a new value to replace it; "
             "saved values are visible only to accounts with credentials.view.")
+    login = account_login_card(slug, typed.get("login_scope") or host_of(project.base_url),
+                       all(project.secret(k) is not None for k in login_keys(slug)))
     body = (
         theme.breadcrumb(
             ("Projects", "/"), (name, f"/projects/{safe_slug}"), ("Credentials", None),
         )
         + "<h1>Credentials</h1>"
-        f"<p class='subtitle'>{note} They never leave this page — "
+        + (theme.form_error(error) if error else "")
+        + f"<p class='subtitle'>{note} They never leave this page — "
         "no prompt, log, or screenshot ever carries them.</p>"
+        f"{login}"
         f"{theme.card(table)}"
         f"{_platform_url_card(slug, project)}"
-        f"{_custom_credential_card(slug, project)}"
+        f"{custom_credential_card(slug, ', '.join(project.allowed_domains), typed)}"
         f"{_crawl_approval_form(slug, project.base_url, project.production, prefill)}"
         f"{_approvals_card(store.list_approvals(), slug, project.base_url, saved, bool(existing))}"
     )
