@@ -4,7 +4,7 @@
 **Fix cycle:** 0
 **Contract:** `qa/contracts/mongo-store.md`, unit U6c (Mongo video shares, links, access requests, comments, `schedule_owner`, `intake_gate_auth`, audit rows). Criteria judged: M30 (CRITICAL, dual check requested by the brief), M29 for the fence changes. Folds in the two U6bf residuals: AT-1431 and AT-1432.
 **Authority:** D-120..D-123, D-126, D-129 (ACTIVE, `docs/DECISIONS.md:3080`) authorizes exactly two new src files, `auth/store_mongo_video.py` and `auth/store_mongo_fence.py`, and the regeneration of the generated sections of `docs/ARCHITECTURE.md` / `docs/MAP.md`. No other new src file.
-**Branch:** `feat/mongo-store-u6c` (worktree `D:/autoTesting/.claude/worktrees/mongo-u6c`, cut at `7ae3bba5`). Not merged, not pushed (D-130).
+**Branch:** `feat/mongo-store-u6c` (worktree `D:/autoTesting/.claude/worktrees/mongo-u6c`, cut at `7ae3bba5`). Not merged, not pushed (pushes are on hold).
 **Base SHA:** `7ae3bba5`. **Code SHA:** the single commit this manifest lands in (`git log -1 -- qa/manifests/mongo-store-u6c.md`).
 **Not touched (sibling E4 owns them):** `stages/reachability.py`, `run_launcher.py`, `browser/video.py`, `ui/routes_video.py`.
 
