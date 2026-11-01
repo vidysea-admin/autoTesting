@@ -77,6 +77,10 @@ bytes-per-second, this bounds seconds. Enforced in
 `stages/run_case_pipeline.py::_finalize_video`, not here -- this module only
 records; the pipeline decides what survives (single choke point, V7)."""
 
+VIDEO_LOST_LABEL = "video-lost"
+"""`Evidence.label` of the session event recorded when a case's video could not be kept
+(`VideoMixin._video_lost`); `video_fate` reads it back for the run page."""
+
 VIDEO_OVERHEAD_MB = 128.0
 """Conservative resident-memory estimate for one Chromium page's video
 encoder buffer at `RECORD_VIDEO_SIZE`, on top of
@@ -220,8 +224,8 @@ class VideoMixin:
             self._page = self._context.new_page()  # AT-888: never close the context's last page
         with _ignore_close_errors():
             page.close()
-        if video is None:
-            return None
+        if video is None:  # AT-1415: recording was on, so a page without one is a loss, not silence
+            return self._video_lost(case_id, "the page has no video recording")
         try:
             temp_path = Path(video.path())
         except Exception as exc:
@@ -231,19 +235,39 @@ class VideoMixin:
         final_path = self.state.run_dir / rel
         try:  # runs in the caller's `finally`: a failed move must not replace the real result
             final_path.parent.mkdir(parents=True, exist_ok=True)
-            if temp_path.exists():
-                temp_path.replace(final_path)
+            if not temp_path.exists():
+                return self._video_lost(case_id, "the recording file was not written")
+            temp_path.replace(final_path)
         except OSError as exc:
             return self._video_lost(case_id, "recording could not be moved", exc)
-        return rel if final_path.exists() else None
+        return rel if final_path.exists() else self._video_lost(
+            case_id, "the recording is missing after the move")
 
-    def _video_lost(self, case_id: str, why: str, exc: BaseException) -> None:
+    def _video_lost(self, case_id: str, why: str, exc: BaseException | None = None) -> None:
         """AT-734: a lost video is a recorded event (`label="video-lost"`, drained with the
-        session events), never the same `None` as 'video off'."""
-        note = self._scrubbed(f"video for case {case_id} was lost: {why} ({_one_line(exc)})")
+        session events), never the same `None` as 'video off'. AT-1415: every path to `None`
+        that is not 'recording off' comes through here, with its reason."""
+        cause = f" ({_one_line(exc)})" if exc is not None else ""
+        note = self._scrubbed(f"video for case {case_id} was lost: {why}{cause}")
         events = getattr(self, "_session_events", [])
-        events.append(Evidence(kind=EvidenceKind.DOM, path=note, label="video-lost"))
+        events.append(Evidence(kind=EvidenceKind.DOM, path=note, label=VIDEO_LOST_LABEL))
         self._session_events = events
+
+
+def video_fate(evidence: list[Evidence], *, passed: bool, duration_s: float) -> str:
+    """AT-1415/E4.3: why a case has no kept video, as the one sentence its report section shows;
+    "" when a video was kept (the link says it). A recorded loss wins over every other reason."""
+    if any(e.kind is EvidenceKind.VIDEO for e in evidence):
+        return ""
+    lost = next((e.path for e in evidence if e.label == VIDEO_LOST_LABEL), None)
+    if lost is not None:
+        return lost
+    if passed:
+        return "no video kept: the case passed (run-video V2: a PASS keeps no video)"
+    if duration_s > MAX_VIDEO_DURATION_S:
+        return (f"no video kept: the case ran longer than {MAX_VIDEO_DURATION_S / 60:.0f} "
+                "minutes, the cap (run-video V6)")
+    return "no video: recording was off for this session, or the case never reached execution"
 
 
 def _one_line(exc: BaseException) -> str:

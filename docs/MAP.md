@@ -358,7 +358,7 @@
 | `stages/portal_persona.py` | PORTAL PERSONA: promote per-crawl knowledge into the durable, cross-run |
 | `stages/portal_persona_view.py` | Render a `PortalPersona` as `knowledge.md` — a human-readable VIEW of the |
 | `stages/product_map.py` | PRODUCT MAP: fold every recording analysis into one navigable screen map. |
-| `stages/reachability.py` | One job: warn, before a run, about cases aimed at screens the latest crawl never reached. |
+| `stages/reachability.py` | One job: tell a run, before it starts, what it is aimed at that it may not reach. |
 | `stages/read_context.py` | Read approved Markdown as metadata only, never a vault graph or body corpus. |
 | `stages/real_acceptance.py` | REAL-TARGET ACCEPTANCE DRIVER (T-169 GR1-GR4): approvals, evidence files, human checklist. |
 | `stages/reconcile.py` | RECONCILE: re-map what each video taught onto the product knowledge graph (D-070 part 2). |
@@ -455,7 +455,7 @@
 | `ui/intake_gate.py` | The one seam where sign-in and project permission plug into video intake. |
 | `ui/intake_gate_auth.py` | The real intake gate: sign-in and `video.upload` on that project (team-intake.md TI10, TI11). |
 | `ui/intake_upload.py` | The Add-videos upload door: one form field takes a recording or a zip of them. |
-| `ui/preflight_view.py` | One job: render a run's preflight warnings as a card for the run report page. |
+| `ui/preflight_view.py` | One job: the run page's cards about what bounded a run -- its preflight warnings and its |
 | `ui/project_view.py` | The project page's action card — the operator's control panel for one product. |
 | `ui/role_accounts_view.py` | HTML for the role-account onboarding form, the saved-accounts listing (T-208, MP4) and the |
 | `ui/routers.py` | The one ordered list of routers the UI app serves (T-204/T-205, TF3). |

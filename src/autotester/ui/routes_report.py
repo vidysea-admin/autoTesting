@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from html import escape
 from pathlib import Path
-from urllib.parse import quote
 
 from fastapi import APIRouter
 from fastapi.responses import FileResponse, HTMLResponse, Response
@@ -15,7 +14,6 @@ from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.trace import LLMSpan, StageSpan
 from autotester.stages.catalog import failures_first
 from autotester.stages.report_export import (
-    bounds_text,
     export_excel,
     export_html,
     png_base64,
@@ -25,6 +23,7 @@ from autotester.store.project_store import ProjectStore
 from autotester.ui import bench_inputs_view, preflight_view, run_queue_view, team_run_view, theme
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id, _reserved_temp_path
 from autotester.ui.routes_unified_report import router as unified_report_router
+from autotester.ui.routes_video import video_section
 
 router = APIRouter()
 router.include_router(unified_report_router)  # T-168: this module and app.py are at the cap
@@ -89,16 +88,6 @@ def _step_flow(run_dir: Path, evidence: list, case_index: int, trusted_root: Pat
         return "<p class='meta'>no screenshots captured</p>"
     arrow = "<span class='flow-arrow'>→</span>"
     return f"<div class='flow'>{arrow.join(steps)}</div>{''.join(lightboxes)}"
-
-
-def _video_section(slug: str, run_id: str, evidence: list) -> str:
-    """ISS-t191-run-video-2: surface kept VIDEO evidence as links, never embeds (RE3/D-050)."""
-    videos = [e for e in evidence if e.kind is EvidenceKind.VIDEO]
-    return "".join(
-        f"<p class='meta'>🎥 <a href='/projects/{escape(slug)}/runs/{escape(run_id)}/videos/"
-        f"{quote(v.path, safe='/')}'>video ({escape(v.path)})</a></p>"
-        for v in videos
-    )
 
 
 def _failure_list(failures: list) -> str:
@@ -190,7 +179,7 @@ def run_view(slug: str, run_id: str) -> Response:
         return (
             f"<div class='case-meta'>{''.join(meta)}</div>{scoreboard}{failures}{error}"
             f"{_step_flow(run_dir, r.evidence, case_index, store.paths.dir)}"
-            f"{_video_section(slug, run_id, r.evidence)}"
+            f"{video_section(slug, run_id, r, verdict)}"
         )
 
     sections = _sections(store.load_results(run_id), verdicts, cases, _case_body)
@@ -201,8 +190,7 @@ def run_view(slug: str, run_id: str) -> Response:
         )
         + f"<h1>Run <code>{safe_run_id}</code></h1>"
         + team_run_view.started_by(run)
-        + preflight_view.warnings_card(run.preflight_warnings if run else None)
-        + theme.card(f"<p>{escape(bounds_text(run))}</p>", title="Run bounds")
+        + preflight_view.run_cards(run)
         + _counts_stats(_run_counts(store, run_id), run.catalog_runnable_counts if run else None)
         + _trace_card(store, run_id) + bench_inputs_view.run_card(store, slug, run_id)
         + (sections or theme.empty_state("📭", "No case results in this run yet."))

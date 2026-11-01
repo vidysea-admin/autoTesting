@@ -1,0 +1,29 @@
+KILLED  c1: redirect scheme not checked  (pytest exit 1)
+    claims to kill : tests/test_target_probe.py::test_a_redirect_to_a_non_http_scheme_is_an_answer_and_makes_no_connection[ftp]
+    actually failed: tests/test_target_probe.py::test_a_redirect_to_a_non_http_scheme_is_an_answer_and_makes_no_connection[ftp]
+KILLED  c2: opener can speak FTP  (pytest exit 1)
+    claims to kill : tests/test_target_probe.py::test_the_probe_opener_speaks_only_http_and_https
+    actually failed: tests/test_target_probe.py::test_the_probe_opener_speaks_only_http_and_https
+KILLED  c3: only network exceptions caught in the worker  (pytest exit 1)
+    claims to kill : tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug1]
+    actually failed: tests/test_run_unreachable_target.py::test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run, tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug1], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug2], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug3]
+KILLED  c4: a probe bug skips the run (no fail-open)  (pytest exit 1)
+    claims to kill : tests/test_run_unreachable_target.py::test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run, tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0]
+    actually failed: tests/test_run_unreachable_target.py::test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run, tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug1], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug2], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug3]
+KILLED  c5: the fail-open warning dropped  (pytest exit 1)
+    claims to kill : tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug2]
+    actually failed: tests/test_run_unreachable_target.py::test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run, tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug1], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug2], tests/test_target_probe.py::test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug3]
+KILLED  c6: join fallback flipped to reachable  (pytest exit 1)
+    claims to kill : tests/test_target_probe.py::test_a_resolver_that_never_returns_is_unreachable_within_the_bound, tests/test_target_probe.py::test_attempt_reports_no_answer_when_the_worker_outlives_its_join
+    actually failed: tests/test_target_probe.py::test_a_resolver_that_never_returns_is_unreachable_within_the_bound, tests/test_target_probe.py::test_attempt_reports_no_answer_when_the_worker_outlives_its_join
+KILLED  c7: a network failure fails open too  (pytest exit 1)
+    claims to kill : tests/test_target_probe.py::test_a_network_failure_is_still_a_stop_and_adds_no_warning
+    actually failed: tests/test_run_unreachable_target.py::test_an_unreachable_target_ends_the_run_fast_with_one_message, tests/test_run_unreachable_target.py::test_the_stopped_run_records_zero_acting_time_not_a_missing_measurement, tests/test_target_probe.py::test_a_name_that_does_not_resolve_is_named, tests/test_target_probe.py::test_a_network_failure_is_still_a_stop_and_adds_no_warning, tests/test_target_probe.py::test_a_refused_connection_is_named, tests/test_target_probe.py::test_a_target_that_accepts_and_never_answers_fails_within_the_bound, tests/test_target_probe.py::test_one_retry_rescues_a_first_attempt_that_fails, tests/test_target_probe.py::test_the_total_bound_is_the_module_constant
+KILLED  c8: unreachable run reports acting seconds  (pytest exit 1)
+    claims to kill : tests/test_run_unreachable_target.py::test_the_stopped_run_records_zero_acting_time_not_a_missing_measurement
+    actually failed: tests/test_run_unreachable_target.py::test_the_stopped_run_records_zero_acting_time_not_a_missing_measurement
+KILLED  c9: the probe warning never reaches the Run  (pytest exit 1)
+    claims to kill : tests/test_run_unreachable_target.py::test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run
+    actually failed: tests/test_run_unreachable_target.py::test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run
+
+9/9 mutations killed

@@ -128,7 +128,7 @@ PINNED = {
     "prepare_run": {"slug", "seams", "priorities"},
     "require_live_case_approval": {"project", "store", "cases", "secrets", "account_keys"},
 }
-PINNED_SEAMS = {"judge_factory", "planner", "free_ram_mb", "ledger"}
+PINNED_SEAMS = {"judge_factory", "planner", "free_ram_mb", "ledger", "target_probe"}  # E4.2
 
 
 def test_the_gate_is_not_a_parameter() -> None:

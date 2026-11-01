@@ -5,16 +5,21 @@ verified path reached it: `download_report_html` writes its export to an
 OS-temp path so the relative `href` `report_export.py::_video_link_html`
 emits never resolves there, and `ui/routes_report.py::run_view`'s
 `_step_flow` renders `EvidenceKind.SCREENSHOT` only. This is the actual
-working path; `run_view` links to it (`ui/routes_report.py::_video_section`).
+working path; `run_view` links to it through `video_section` below, which also says why a
+case has NO kept video (AT-1415).
 """
 
 from __future__ import annotations
 
+from html import escape
 from pathlib import Path
+from urllib.parse import quote
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
+from autotester.browser.video import video_fate
+from autotester.schema.enums import EvidenceKind, Result
 from autotester.stages.report_export import valid_runs_newest_first
 from autotester.store.run_store import local_blob
 from autotester.ui.helpers import _load_project_or_404, _require_safe_id
@@ -71,3 +76,18 @@ def serve_run_video(slug: str, run_id: str, video_path: str) -> FileResponse:
     if candidate is None:
         raise HTTPException(404, "video not found")
     return FileResponse(candidate, media_type="video/webm")
+
+
+def video_section(slug: str, run_id: str, result, verdict) -> str:
+    """ISS-t191-run-video-2: a case's kept VIDEO evidence as links, never embeds (RE3/D-050).
+    AT-1415/E4.3: a case with no kept video says why (`video_fate`) instead of a silent gap."""
+    videos = [e for e in result.evidence if e.kind is EvidenceKind.VIDEO]
+    if not videos:
+        passed = bool(verdict and verdict.result is Result.PASS)
+        why = video_fate(result.evidence, passed=passed, duration_s=result.duration_s)
+        return f"<p class='meta'>🎥 {escape(why)}</p>"
+    return "".join(
+        f"<p class='meta'>🎥 <a href='/projects/{escape(slug)}/runs/{escape(run_id)}/videos/"
+        f"{quote(v.path, safe='/')}'>video ({escape(v.path)})</a></p>"
+        for v in videos
+    )

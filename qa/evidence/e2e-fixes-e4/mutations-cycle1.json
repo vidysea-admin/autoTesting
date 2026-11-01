@@ -1,0 +1,92 @@
+{
+ "tests": [
+  "tests/test_target_probe.py",
+  "tests/test_run_unreachable_target.py"
+ ],
+ "mutations": [
+  {
+   "name": "c1: redirect scheme not checked",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "(bad_scheme(newurl) or not host or not self.project.allows_domain(host)",
+   "new": "(not host or not self.project.allows_domain(host)",
+   "kills": [
+    "test_a_redirect_to_a_non_http_scheme_is_an_answer_and_makes_no_connection[ftp]"
+   ]
+  },
+  {
+   "name": "c2: opener can speak FTP",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "urllib.request.HTTPSHandler(), urllib.request.UnknownHandler(),",
+   "new": "urllib.request.HTTPSHandler(), urllib.request.FTPHandler(), urllib.request.UnknownHandler(),",
+   "kills": [
+    "test_the_probe_opener_speaks_only_http_and_https"
+   ]
+  },
+  {
+   "name": "c3: only network exceptions caught in the worker",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "        except Exception as exc:",
+   "new": "        except (OSError, http.client.HTTPException) as exc:",
+   "kills": [
+    "test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0]",
+    "test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug1]"
+   ]
+  },
+  {
+   "name": "c4: a probe bug skips the run (no fail-open)",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "if failure is not _NO_ANSWER and not isinstance(failure, _NETWORK_ERRORS):",
+   "new": "if False:",
+   "kills": [
+    "test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug0]",
+    "test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run"
+   ]
+  },
+  {
+   "name": "c5: the fail-open warning dropped",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "            if notes is not None:",
+   "new": "            if False:",
+   "kills": [
+    "test_a_bug_in_the_probe_fails_open_with_a_warning_naming_the_cause[bug2]"
+   ]
+  },
+  {
+   "name": "c6: join fallback flipped to reachable",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "= [_NO_ANSWER]  # still this if the worker outlives its join",
+   "new": "= [None]  # still this if the worker outlives its join",
+   "kills": [
+    "test_a_resolver_that_never_returns_is_unreachable_within_the_bound",
+    "test_attempt_reports_no_answer_when_the_worker_outlives_its_join"
+   ]
+  },
+  {
+   "name": "c7: a network failure fails open too",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "if failure is not _NO_ANSWER and not isinstance(failure, _NETWORK_ERRORS):",
+   "new": "if failure is not _NO_ANSWER:",
+   "kills": [
+    "test_a_network_failure_is_still_a_stop_and_adds_no_warning"
+   ]
+  },
+  {
+   "name": "c8: unreachable run reports acting seconds",
+   "file": "src/autotester/stages/reachability.py",
+   "old": "excluded_s=dict(NO_CLOCK),",
+   "new": "excluded_s={**NO_CLOCK, \"acting\": 1.0},",
+   "kills": [
+    "test_the_stopped_run_records_zero_acting_time_not_a_missing_measurement"
+   ]
+  },
+  {
+   "name": "c9: the probe warning never reaches the Run",
+   "file": "src/autotester/stages/run_launcher.py",
+   "old": "    plan = dataclasses.replace(plan, warnings=(*plan.warnings, *notes))\n",
+   "new": "    plan = plan\n",
+   "kills": [
+    "test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run"
+   ]
+  }
+ ]
+}

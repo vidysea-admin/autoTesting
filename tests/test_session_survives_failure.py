@@ -158,7 +158,8 @@ def test_a_restart_is_a_recorded_event_not_a_silent_retry(tmp_path: Path) -> Non
     _browser_dies_mid_case(session)
     session.end_case_video()
     session.begin_case_video("case-2")
-    events = session.take_session_events()
+    # the fake page has no `video` while recording is on: AT-1415 now records that loss too
+    events = [e for e in session.take_session_events() if e.label != "video-lost"]
     assert [e.label for e in events] == ["session-restart"]
     assert "restarted" in events[0].path and "Failed to open a new tab" in events[0].path
     assert session.take_session_events() == []  # drained: reported once, on the case it hit
