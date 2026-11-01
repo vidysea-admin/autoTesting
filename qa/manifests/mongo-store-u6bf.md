@@ -1,6 +1,6 @@
 # Manifest - mongo-store-u6bf
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 1, dual: A aed13ca1, B a7a65c12)
 **Fix cycle:** 1
 **Contract:** `qa/contracts/mongo-store.md`, unit U6b (dual-checked, security-critical) - this is the fix-up for the warnings both checkers left at cycle 2. Criteria judged: M29, M30.
 **Authority:** D-120..D-123; D-126 (ACTIVE) authorizes the second module `src/autotester/auth/store_mongo_tx.py`. No new src file in this unit.
