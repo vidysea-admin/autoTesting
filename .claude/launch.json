@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "autotester-e2e",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-NoProfile", "-Command", "$env:AUTOTESTER_ROOT='D:/autoTesting/.work/e2e-2026-11-01/root'; $env:AUTOTESTER_EPHEMERAL_OK='1'; Remove-Item Env:ANTHROPIC_BASE_URL -ErrorAction SilentlyContinue; uv run uvicorn autotester.ui.app:app --host 127.0.0.1 --port 8765"],
+      "port": 8765
+    }
+  ]
+}

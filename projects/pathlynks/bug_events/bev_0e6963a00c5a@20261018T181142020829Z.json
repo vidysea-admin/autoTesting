@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "event_id": "bev_0e6963a00c5a",
+  "bug_key": "bug_29300dd5e43d",
+  "kind": "fail",
+  "ref": "run-01M582T0GEWYH561PHSV8JANPX/case_efaed2c0eb91",
+  "at": "2026-10-18T18:11:42.020829Z",
+  "actor": "system:bug-loop",
+  "run_id": "run-01M582T0GEWYH561PHSV8JANPX",
+  "seed": {
+    "bug_key": "bug_29300dd5e43d",
+    "project": "pathlynks",
+    "case_id": "case_efaed2c0eb91",
+    "criterion_id": "c1",
+    "criterion_fp": "",
+    "title": "Login with correct credentials: criterion c1",
+    "severity": "S2"
+  }
+}

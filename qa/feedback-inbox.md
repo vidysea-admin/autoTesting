@@ -6087,3 +6087,164 @@ Authority: D-120, D-122, D-123 (storage in Mongo; credentials and sessions store
 Note for the amendment: the C6 Verify text "no database is the primary store" is true only for the file backend; the replacement above keeps it for the default.
 
 **Status:** unfolded
+- 2026-10-28 (maker session, observed on live runs; for /checker to file in qa/issues.jsonl):
+  1. `autotester run pathlynks-counsellor` printed "pathlynks-counsellor: passed" while its only case `case_1c358d234357` was `errored` / verdict INCONCLUSIVE ("run budget exhausted: wall_clock_s"), run-01M60XBV8HDS26BVFMS1R9G3FV. A run with zero judged cases must not report passed.
+  2. The approval-refusal "Grant one with:" hint prints `--target "[REDACTED]:PATHLYNKS_*_LOGIN_URL"` (redaction scrubs the .env LOGIN_URL value), so copying it grants the wrong target.
+  3. Live Cloud Run: duplicate signup of umesh@gmail.com succeeded after the 26b2ce58 deploy. Root cause: auth DB and projects/ live under /data, which is container-ephemeral unless DevOps mounted the GCS volume (docker/DEPLOY.md:226-232); entrypoint.sh:30-35 never checks /data is a real mount. Fix 1 = DevOps volume + --max-instances 1; code add-on = refuse hosted start when /data is not a mount.
+  4. Pathlynks (product finding, not AutoTester): /profile "View Combined Report" -> GET /api/assessment-management/get-this-combined-report returns 403 for the Premium student test account. Needs a screen check before filing as a Pathlynks bug.
+- 2026-10-28 (maker, live run run-01M611FSZTAPV75T5QG4CCT3EH): the approval-refusal hint asked for `--max-probes 34` for `autotester run pathlynks` (6 cases); an approval granted at exactly that bound was exhausted after 14 s, inside the login case's 4th step, and 5 of 6 cases never started (errored, RunBudgetExceeded max_probes). The probe estimate behind "Grant one with:" under-counts badly, so following the tool's own advice cannot produce a usable run.
+- 2026-10-28 (maker, run-01M612EXE791QF7802Y24KT75B): with two unexpired live_case approvals for the same target, `autotester run pathlynks` bound itself to the NARROWER one (appr_7138c0cd0f86: 430 s / 34 probes) instead of the wider one granted after it (200 actions / 400 probes / 1800 s); 5 of 6 cases then errored on wall_clock_s and the run still printed "pathlynks: passed" with 1 of 6 judged. Approval selection should prefer a grant that covers the planned run (or the widest), not the first match.
+
+## 2026-10-28 — from Pathlynks run3 analysis (run-01M613NEA9M29N8N7SKBR01FGT)
+- **Bundle manifest hashes get redacted (intermittent PartialBundleError).** `stages/failure_bundle.py:198` `_dump` scrubs the whole manifest, including `sha256` strings; a short `.env` value (3-char `AUTOTESTER_SMTP_PORT`) occurring inside a hex hash is replaced by `[REDACTED]:…`, so `load_bundle` (`:226-227`) fails the hash check. Seen on `bundles/fb_585c249bc002`. Fix: exempt hash fields from scrubbing (or never mask values that short inside hex).
+- **Unaccounted stalls between cases eat the wall-clock budget.** Run3: ~4 min, ~14 min, ~15 min gaps with no trace rows (trace.jsonl has only judge calls); cfa40 ran 503 s but its screenshots span 51 s. Run2 had a 9 min gap too. 1800 s could not finish 6 cases. Needs per-phase trace rows and a root cause.
+- **The login failure reason is only in a screenshot.** DOM evidence records the unmet assertions, not the visible error text ("Invalid credentials"); with image withholding (`mask_exceeds_limit`, limit 0.85) efaed2 became INCONCLUSIVE though the failure is real and reproducible. Capture visible alert/error text into evidence.
+- **Duplicate Pathlynks cases** (cfa40/efaed2, a5ea/093f, b1cb/7a97) double the budget cost; propose retiring one of each pair (needs Umesh yes).
+- 2026-10-28 (maker, Pathlynks crawl crawl_01M618QPC6B4YKB2XG609TSQP1 vs reference, .work/pathlynks-explore/comparison.md): (a) a same-URL UI toggle ("Collapse sidebar") is recorded as a new screen, so /dashboard got 5 screen records and /messages 4, which wastes the frontier; (b) the crawl records no per-screen inventory of successful API requests, so it cannot be compared with a reference endpoint map (reference: 35 named endpoints); (c) 6 edges ended `errored` (Take a tour, Explore Further Studies, Parent consent needed) with no recorded cause; (d) `Crawl.provider` defaults to "mock" (schema/crawl.py:255) although run_crawl uses no provider at all, so the record reads as if a mock judge ran — misleading on the report.
+- 2026-10-28 (checker, run-error-text-evidence cycle 1 PASS, non-blocking follow-ups; verdict on fix/run-error-text-evidence 9b284234): F6 error_text.js:62 textContent drops the space at <br>/block boundaries, so a multi-line typed value echoed via nl2br or <p> is not blanked; F7 one RegExp per typed value throws above ~60k chars and the page records no error text (fails safe, diagnostic lost); F8 only simple case folding (NFC/NFD, ß/SS not matched); F9 core/redact.py is case-sensitive for a .env secret echoed in a different case.
+
+## 2026-10-30 — checker B on mongo-store-u6a (cycle 0 PASS, non-blocking warnings, carry into U6b)
+- W1: surviving mutants R3/R4 — session deletion in `decline_waiting` (auth/accounts.py:239) and `bootstrap_admin` existing-account path (auth/accounts.py:254) is unpinned by any test.
+- W2: surviving mutant A4 — Admin/CEO `require_admin` in `update_group` (auth/groups.py:79-80) unpinned; existing test passes only via a second guard.
+- W3: `reading()` returns the same write-capable AuthTx as `transaction()` (auth/store.py:86); recommend a read-only Protocol in U6b.
+- W4: no scan for string-built SQL in auth/store_sqlite.py (two constant-only format sites today).
+
+## 2026-10-30 — checker A on mongo-store-u2 (cycle 0 PASS, non-blocking, carry into U3/U4)
+- F3: byte-identical only for canonical rows — master re-serialised surviving rows on upsert/delete; branch keeps them verbatim (store/filestore.py:155-166). Reads unaffected.
+- F4: rows matched by stringified stored JSON, not typed value (filestore.py:50-56, :292-299): int-key delete now succeeds; float/datetime key whose text differs from dump form appends a duplicate on upsert. Unreachable today (all keys str) — pin it before a non-str key appears.
+- F7: `_route` (filestore.py:212-219) sends any path outside repo_root() to a plain file regardless of AUTOTESTER_STORE — U3/U4 must decide whether that is allowed under Mongo.
+
+## 2026-10-30 — checker B on mongo-store-u2 (cycle 0 PASS; W1 and W3 MUST close before U4 ships)
+- W1: `safe_key` (core/safe_names.py:76-86) weaker than `safe_name`: on Windows `a/foo.`/`a/foo ` alias `a/foo`; device names (`a/prn`, `a/NUL.txt`) accepted; non-leading `:` not refused. Ubuntu vs Windows key identity differ.
+- W2 (latent, dangerous): `delete_prefix("")` (store/filestore.py:140) deletes every file in the root incl. `.env`; prefix is a plain string match (`projects/a` also deletes `projects/ab`). No callers yet — refuse empty prefix and match on segment boundary before any caller lands.
+- W3 (M9 URI leak): mongo_guard.py:125 `list(...)` over a lazy pymongo cursor runs outside `_translate`; a network error mid-iteration escapes as raw AutoReconnect carrying the URI. Fake driver raises eagerly and hides it. Fix: iterate inside `_translate`, add a lazy-cursor fake.
+- W4: invalid-URI branch has no chain test (survivor G5).
+- W5: `area_of` never returns approvals/auth/credentials/blobs/queue -> `credentials=mongo` accepted but routes nothing once U4 wires mongo; `create_exclusive` exposes an empty claim between create and write.
+
+## 2026-10-30 — checker on mongo-store-u3c (cycle 0 FAIL on scope; fix cycle 1 after U4 PASS)
+- F1 (blocking): trace (core/trace.py), audit (auth/audit.py), delivery inbox (delivery/inbox.py) untouched; 15 raw sites left in schedule_store.py; 25 rows baselined `U3c-deferred`. M16 exempts only scratch. Coordinator route: option A -- U4 adds public exists_path/list_children/mtime_path/append_path/delete_path; U3c cycle 1 sweeps the 25 sites on top of U4.
+- F2: checkpoint + heartbeat write through the store but still READ from disk (orchestrate_checkpoint.py:173,204; schedule_store.py:253) -- with a non-file backend the stale-instance guard always passes and the heartbeat reads absent. Close in cycle 1 (read via the store).
+- F3: rule lives in ledger/committed_fresh.py as a stopgap (doctor.py/checks.py/render.py full); move once a module is authorised; update docs/MAP.md:101.
+- F4 (recommendation): baseline keys on exact file:line; prefer file + kind + enclosing function.
+- F5 recall gaps: mkdir, touch, os.makedirs, `from shutil import copyfile` / `from os import remove` aliases, tuple-unpack assignment, scripts/ not scanned. Cheap fixes: mkdir/touch/makedirs + import-alias resolution -- do in cycle 1.
+
+## 2026-10-30 — checker on mongo-store-u3a (cycle 0 PASS; carry into U3d follow-up after U4)
+- F1: revert stages/real_acceptance.py:166 to raw write_text -- scripts/run_real_acceptance.py:112 passes the repo root, so these are checked-in evidence under qa/evidence/t169-real/, not run state; via filestore area_of routes them to `projects` and a Mongo run could swallow them. Add LEFT row in tests/test_sweep_u3a.py and a permanent allow-list row in U3c's rule.
+- M16 not closed: ~60 exists/glob/iterdir/stat/unlink and list-of-model read sites in stages/ + sources/ (manifest sections A-B) need U4's exists_path/list_children/mtime_path/append_path/delete_path -> unit U3d. No area flips to mongo before U3d PASS.
+- F2 contract gap: no unit owns source-media writers (intake_commit.py:128, drive_register.py:196, email_register.py:218); U5b lists only screenshot/video/crawl shot/frames -- checker to amend the unit table.
+- LEFT pin sees write calls by name only (misses Path.replace, .touch(), deletions); real_acceptance, portal_persona, acceptance_baseline covered only by the pin.
+
+## 2026-10-30 — checker on mongo-store-u5a (cycle 1 PASS, non-blocking)
+- W1 (M8 defence-in-depth): blob body scan is an allow-list of textual types; secret bodies under application/ndjson, jsonl, sql, toml, x-sh, csv, multipart/form-data, message/rfc822, rtf, empty/bare `text` are stored unscanned. Suggest: scan unless image/video/audio/octet-stream/pdf/zip, or whenever bytes decode as UTF-8. Owner: U5b.
+- I1 (M25): NTFS 8.3 short names (PROFIL~1) and ::$INDEX_ALLOCATION not folded; colon segments raise raw OSError in FileBlobStore on Windows.
+- I2: odd basenames (nul, foo:bar) raise OS errors inside .work/blob-cache/; nothing escapes.
+
+## 2026-10-31 — checker on mongo-store-u3c (cycle 1 PASS; M16 stays OPEN)
+- Contract needs a U3d row (62 baseline rows tagged U3d; ~45 movable now with exists_path/list_children/mtime_path/delete_path) and an owner for source-media writers (intake_commit.py:128, drive_register.py:196, email_register.py:218).
+- U7 blocked on a human D-entry: path-level create_exclusive/put_if/read/rename/delete-tree need a new module (filestore.py at 300 cap). Proposed with ledger/state_bypass.py and store/mongo_bucket.py; awaiting Umesh.
+- Rule recall gaps for U3d: work_dir() as a root, getattr/bound-method aliases, is_file/is_dir/read_text as existence/read verbs. READ-SIDE flip blockers add schedule_store.py:119 and :171-197.
+- UNOWNED row owners per verdict: U11 (ui/app.py, routes_settings .env checks), U5b (image_privacy stat), U9 (core/paths mkdir x2), U3d (providers/config_migration x2), permanent (vision_probe stat, upload-staging rmtree x2).
+
+*/checker 2026-10-31 (chk-mongo-amend-u3d): the 2026-10-30 u3a, 2026-10-30 u5a, 2026-10-30 u3c (cycle 0) and 2026-10-31 u3c entries above are **Status:** folded 2026-10-31 -> `qa/contracts/mongo-store.md` M49-M55, unit U3d, U5b/U7/G1 row edits. Map: u3a F1 -> M49; u3a M16-not-closed -> U3d row, M49; u3a F2 -> M51; u3a LEFT-pin gaps -> M50; u3c-c0 F1/F2/F4/F5 -> already delivered in cycle 1, residual recall -> M50, READ-SIDE -> M52; u5a W1 -> M54; u5a I1/I2 -> M55; u3c-c1 U3d row/owners -> M49, M51; U7 D-entry -> M53; recall gaps -> M50; READ-SIDE -> M52.
+
+## 2026-10-31 — mongo-store U5b cycle 0 checker (FAIL) follow-ups
+- U4 owner: tests/test_safe_names_windows.py:62 lists `lpt0` as an ordinary name, but LPT0/COM0 are reserved (Microsoft naming docs; U4's own tests/test_safe_key.py:18 and test_state_backend_contract.py:252 agree). Fix: move `lpt0` to the hostile list and keep `_DIGITS`. It has failed on master since U4 7a835857.
+- M52 readiness (blobs row): video_retention.py:81-90 prunes only the local file, so GridFS grows without bound (U5b W1). place_media holds the whole recording in memory, up to the 2 GiB upload cap (W2). Both need a streaming or prune follow-up before the blobs area flips.
+- M54 note (O1): with a declared binary content type plus one invalid leading byte, a secret is stored. This matches the deny-list wording; the contract owner should decide if that is acceptable.
+
+## 2026-10-31 — mongo-store U3d cycle 0 checker (FAIL) follow-ups
+- Contract gap: no unit owns M25 "file-only by design" routing. stages/bench_inputs.py writes .work/ceo-bench/... through filestore, and mongo_routes.py:90 routes it to server_state/settings. Assign an owner (U7 or U11) before the settings area flips.
+- M52/M16: the state-bypass rule exempts store/, so the raw reads inside store/ are invisible: project_store.py:186-199,213-217,246-249, crawl_store.py:37-49, run_store.py:85-88, bug_store.py:104,164. ProjectStore.load_results returned [] under the in-memory backend. Paths derived from function arguments are also unseen: ai_report.py:144-148, oracle_answer_key.py:80-84, role_port_network.py:83-85, source_material.py:104. These need owners; G1 must not trust the U3d readiness table alone.
+- Rule recall gaps (M50 follow-up): Path.read_text(p), functools.partial(p.write_text, x)(), getattr with a non-literal name, p.replace(target=q).
+- Possible flake: tests/test_ui_bench_inputs.py + tests/test_explore_consent.py failed one test once, then passed 7/7 re-runs under load. The test name was not captured.
+
+## 2026-10-31 — mongo-store U11 dual PASS (cycle 0) follow-ups
+- A-W1: two M34 redaction sites have no test (litellm_provider._env_secret_values and sources/adapters._sanitize_pdf_reading store values); 2 extra mutants survived.
+- A-W2: put_credentials does no shape check. Called directly, it stores a lowercase key, a newline value, or "autotester_approval_key", which slips the case-sensitive is_server_key. U8 will call it directly. Move _check_pair inside put_credentials and make is_server_key case-insensitive. save_credentials also stores the Mongo URI value under an innocent key name.
+- A-W3: check-then-replace race (the replace filter has no p); the secret gate only refreshes in the writing process. Harmless at max-instances 1, but must be fixed before scaling out.
+- A-W4: scripts/container_diagnose_lib.sh masks with .env values only, not store-held values. Needs an owner.
+- B-W1: undeclare_secret (ui/routes_project_edit.py:260-263) saves the project before drop_credentials. A store outage orphans the stored value, the 503 page says nothing changed, and re-declaring the key revives the old value. Drop first, or restore on failure.
+- B-W2: multi-key store writes are not atomic (env_editor.py:226-227); /onboard intake (ui/app.py:192-196) has no repair step.
+- B-A1: the contract should say any future role-account or project delete route must call drop_credentials.
+- B-A2: every credential write builds a new MongoClient, re-runs ensure_indexes and never closes the old client.
+- OUTSIDE U11, on master: store/run_store.py:132,134 reads mongo_backend.URI_ENV, which does not exist, so blob_store() raises AttributeError when blobs=mongo (U5b/U9 seam).
+
+## 2026-10-31 — mongo-store U11f dual PASS (cycle 0) follow-ups
+- A-F1: the URI-as-value check is exact equality after strip(). A changed-case URI, a dropped slash, added query params, the URI embedded in text, a zero-width/BOM variant, the bare password, or user:password@host are all stored. M36 is key-based and closed; this is hardening.
+- A-F2 (U8 MUST): put_credentials accepts any UPPER_SNAKE key; the namespace and declaration checks live only in ui/credential_guard.py. U8 must filter keys before it calls the door, or the door must enforce the project prefix.
+- A-F3: whitespace-only, zero-width, bidi, U+2028 and lone-surrogate values are accepted.
+- A-F4: the other-project guard is check-then-write (env_editor.py:240-245). Upsert with filter {_id, p}.
+- A-F5/B: a batch is not atomic on a mid-batch outage. It fails closed, but the first key stays stored.
+- B: if the save fails and the restore then also fails, the reply is a 503 but the value is dropped. Safe side; the "nothing changed" wording is not literal there.
+
+## U12 dual-PASS follow-ups (2026-10-31; merged 82b48c0a, fix-up U12f dispatched)
+- A-W1: `_put_session` rebuilt the client per save (reset_default_backend) — U12f.
+- B-W1: no test on manual_login.py:48 save or run_execution.py:178 restore (mutants B1-B3 survived) — U12f.
+- W2: sign-in state saved before the signed-in proof; failed login overwrites a good session — U12f.
+- W3: malformed state raises TypeError; repo_redactor AttributeError on bad localStorage; expires_at trusted on load — U12f.
+- W4: forget_session has no caller — U12f.
+- W5: restore into a persistent profile can overwrite fresher cookies (not tried on real Chromium) — open.
+- W6: orchestrate_execute._start_session does not restore — open, safe direction.
+- Docs: CLAUDE.md calls `_host_matches` a suffix match; it is exact-host since AT-651/D-087 (checker A). CLAUDE.md edit needs Umesh.
+- Accepted: masking floor <8 chars / cap 200 values; base64 forms not masked (same as .env values).
+
+## U7 cycle-0 follow-ups for the checker (2026-10-31; A FAIL bf9f37aa, B PASS ec2e8dff; fix cycle 1 dispatched for F1, purge-crash, weak test)
+- M25: CEO-bench list (`.work/ceo-bench`) is routed to Mongo server_state/settings, opposite of M25 "file-only"; U7 deleted the 3 bench_inputs baseline rows that said so. No unit owns M25 — needs an owner (U9 or U5b) or an issue row. Both checkers flagged it.
+- M52(a): purge leaves `.work/team/schedule/.p.jsonl.lock` sidecar on disk in all-Mongo mode; tests exempt `*.lock`. Contract needs one sentence ruling sidecar locks exempt (checker A W3).
+- U7 row wording: "purge as delete_many" → "purge on store verbs" (staged move gives all-or-none without transactions); M20 lists the heartbeat but it has one writer, CAS not needed — reword (both checkers accepted).
+- Scope note (checker B): ~14 of 65 rows moved into exempt store/ helpers (scratch_*, evidence_mkdir, touch_path, remove_*) rather than store verbs; D-126 names only create_exclusive/put_if/read/rename/delete-tree.
+- Observation: put_if cannot match text with raw `\r` on the file backend (pre-existing `get` property); no caller writes raw CR.
+- U12f cycle-0 (dual PASS 5a370f7b / 4ade61de): fix cycle 1 dispatched for NaN/inf age cap, forget_session outside restore try (credential orphan), skew rule deleting valid sessions, SKEW_S and non-dict-state tests.
+
+## U6b cycle-1 follow-ups (2026-10-31; A FAIL 15713323 B1 crash undo, B PASS 3419a12c; fix cycle 2 dispatched)
+- M29 wording: both checkers say the write lease (unique insert + CAS takeover) satisfies "no transactions assumed" and is stronger than the named create_exclusive + admin_guard CAS — contract owner to reword.
+- U9 `_CACHE` in mongo_backend.py:288-291 is unlocked: concurrent cold start makes >1 client (30/30). U9 owner.
+- AU16: add a U9/U10 test that an unauthenticated read on an initialised DB leaves the inventory identical (shared-client index/marker writes are outside the auth narrowing).
+- Existing auth UI tests on auth=mongo: 91 pass / 9 fail; 8 reach SQLite directly in the test, 1 unexplained (test_ui_auth_survivors.py:71, 401 vs 404).
+- G1 ordering: do not flip auth before U6c (schedule_owner, video_*, intake_gate_auth still query SQLite; fail closed).
+- A-W3: crashed holder's lease blocks all writes incl. sign-in up to 30 s; waiters give up at 15 s.
+
+## U12f cycle-1 dual-PASS follow-ups (2026-10-31; merged 2d4ebd73)
+- Test gaps (code correct): `_ahead` numeric guard (profiles.py:143) unpinned; no test with two accounts sharing an undeclared key (a `break` survives); undeclaring the USERNAME key untested (B9 survives).
+- saved_at = +inf or far-ahead is never loaded and never deleted by a load; cleared by next save/forget/project delete. Needs a write to browser_sessions.
+- Save failure then restore failure orphans the declaration (U11f no-transaction limit, unchanged).
+- W5 (restore overwrites fresher cookies), W6 (orchestrate_execute does not restore), live Chromium with the store on — still open.
+
+## U7 cycle-1 dual-PASS follow-ups (2026-10-31; merged 5c60255a)
+- BEFORE G1: purge recovery with a DIFFERING file back at a purged claim's key keeps both and leaves the stage (AT-943 tradeoff, schedule_store.py:190-191); a later purge of the newer claim then lets the next recovery restore the old one. Same on file backend (pre-existing). Fix: drop the manifest entry for a kept differing file.
+- M25 CEO-bench list still not file-only and now has no baseline marker — unowned (awaiting Umesh).
+- `.lock` sidecars under the data root in Mongo mode (carried, contract wording).
+- INFO: scratch_rmtree acting on the unresolved path only differs in a check-then-use race window; scratch_children returns unresolved children (follow-up verbs re-check).
+- schedule_store.py:3-7 module docstring is outdated.
+- Half-written-claim threaded test does not reliably catch the in-place mutant on Windows; the deterministic twin does.
+
+## U6b cycle-2 dual-PASS follow-ups (2026-10-31; merged 717aa180; U6bf dispatched for 1-4)
+- Stalled-holder residual (held() -> marker -> entry -> data write) can still yield zero admins; reproduced deterministically by both checkers. Gate: must close before auth flip or --max-instances > 1. U6bf (fencing epoch).
+- Readers do not recover; open session can resolve a refused grant until next writer. U6bf.
+- Login rehash on Mongo revokes other sessions; SQLite keeps them (parity). U6bf.
+- Failed post-commit sweep leaves journal entries (old hash / deleted user doc) in auth_users forever. U6bf.
+- Replaced lease-lost test asserts removal only after next holder (loosening, info).
+- M29 contract wording: lease + journal vs named create_exclusive + admin_guard CAS — amend.
+
+## M25 amendment for the checker (Umesh 2026-10-31, D-128)
+- Strike "the CEO-benchmark private answer list `.work/ceo-bench/` (file-only, private by design, `schema/ceo_inputs.py:57`)" from M25's not-moved list. Replace with: the list moves to Mongo; only its count and hash ever leave the store (schema/ceo_inputs.py AtomicList). Update the Q3/... defaults row (line 24) the same way. U8 migrates and verifies it.
+
+## 2026-10-31 — mongo-store U10 close-out (merged c3cee02c)
+- **M28 amendment (checker, non-gated):** M28 says U10 "drops the GCS-volume request"; D-125 keeps the `/data` GCS volume until G1. Use the replacement wording in `qa/verdicts/mongo-store-u10.md`.
+- **M48 stays partial:** `docs/ARCHITECTURE.md:20` still says "no new DB (D-036)", and the Concept-to-file "Persistence" and "Docker (local dev only)" rows are stale. No D-entry names those sections. Proposed text: `qa/evidence/mongo-store-u10/architecture-proposal.md`. Waiting on Umesh.
+- **G1 follow-ups:** the G1 packet needs a readiness table (33 state-bypass baseline rows remain). `core/env.py::storage_warning` still drives the "not persistent" admin banner after G1. Re-check the `autotester store migrate` name in `docker/DEPLOY.md` once U8 merges. Add an `authx=mongo` lookalike case to `tests/test_mongo_deploy_u10.py`.
+
+## 2026-11-01 — found by U8 maker: pre-existing red test on master
+- `tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve` fails on master; the unresolved sites are `auth/store_mongo_tx.py:109` (U6b) and `store/mongo_backend.py:73` (U4). Not U8's. Owner: U6bf maker (already in store_mongo_tx.py) for the first site; the second needs its own small fix before G1.
+- Fragility flag: `auth/migrate_auth.py` (U8) calls private `MongoAuthTx` helpers; a U6bf rename breaks it (tests would catch it). Re-run U8's two test files after U6bf merges.
+
+## 2026-11-01 — mongo-store U8 close-out (merged 468b3832, dual PASS A 9cb37094 / B 1d175892)
+- **M25 amendment (checker, owed):** cite D-128 in the CEO-bench clause; both checkers flagged it.
+- **Fix before G1:** `auth/migrate_auth.py:89-90` calls an account "unchanged" on id+email only, while `verify` (`:142-144`) also compares hash, generation and disabled — align `_import_users` with `auth_status` (nothing is overwritten today; verify catches it).
+- **Fix before G1:** a binary file under a migrated `.work/` root is classed as a blob but the blob store refuses it (`migrate_state.py:77-81` vs `store/blobs.py:40,108-109`) — exit 1 on every run. Today's CEO-bench inputs are JSON only.
+- **Flag for G1:** `_import_groups` (`migrate_auth.py:73-77`) can patch or drop seeded groups on a target with no accounts (inside the undo journal).
+- **Follow-up for the auth store:** add a public bulk-import method so `migrate_auth.py` stops calling private `MongoAuthTx` helpers.
+- Nits: `cli_store.py:7-8` docstring says no hash is shown (the CEO list hash is, per D-128); `_seed_allocator` writes outside the journal (burned id range only).
+
+## 2026-11-01 e2e-fixes-e10 checker B warning (fold into E11)
+Original share/grant is lost if the recovery itself dies after hiding the re-inserted slot (store_mongo_fence.py:131-132 replay accepts only the current recoverer's own hide stamp; recoverer epoch 5 hides at G:00000005.000000, dies; epoch 6 does not recognise it). 14 of 911 nested kill points, share and grant. Fails closed, not a regression. Fix: widen restore to any G:<n>.000000 hide stamp >= entry epoch (or record the stamp) and add a nested-kill sweep for the recreate scenario like tests/test_auth_store_double_fault.py. Probe: .work/probe/test_probe_double.py (worktree e2e-e10). Also: runbook line that a pending-request conflict makes migrate --apply write other rows but exit 1.
