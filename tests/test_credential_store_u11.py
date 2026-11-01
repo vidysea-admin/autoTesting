@@ -65,7 +65,10 @@ def test_the_door_stores_a_plain_document_in_secrets_and_nowhere_else(rig: CredR
 def test_only_the_door_writes_secrets_and_no_crypto_exists() -> None:
     users = {p.relative_to(SRC).as_posix() for p in SRC.rglob("*.py")
              if "credential_collection(" in p.read_text("utf-8")}
-    assert users == {"core/env.py", "ui/env_editor.py"}  # M31(b): the read side and the door
+    # M31(b): the read side and the door, plus M46: the `.env` importer writes declared values
+    # to `secrets` through the same door. An EQUALITY: a fourth user, or the importer leaving
+    # the door, fails.
+    assert users == {"core/env.py", "ui/env_editor.py", "store/migrate_creds.py"}
     assert 'collection("secrets")' in (SRC / "core/env.py").read_text("utf-8")
     door = (SRC / "ui/env_editor.py").read_text("utf-8")
     assert door.count(".replace_one(") == 1 and "insert_one" not in door  # `_put_doc` only

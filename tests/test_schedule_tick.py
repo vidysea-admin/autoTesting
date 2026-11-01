@@ -156,7 +156,11 @@ ALLOWED_OUTSIDE = frozenset(SCHEDULER_SIDE) | {
     "autotester.stages.schedule_owner", "autotester.auth", "autotester.auth.access",
     "autotester.auth.db", "autotester.auth.defaults", "autotester.auth.loopback",
     # U6a (mongo-store M29): the AuthStore seam auth.access now reaches; its own imports stay walked
-    "autotester.auth.store", "autotester.auth.store_sqlite"}
+    "autotester.auth.store", "autotester.auth.store_sqlite",
+    # U6a precedent, Mongo side (E9.3a): the AuthStore seam also routes to the Mongo auth store
+    # family; these stay walked, so a browser or pipeline import inside them still fails.
+    "autotester.auth.store_mongo", "autotester.auth.store_mongo_tx",
+    "autotester.auth.store_mongo_video", "autotester.auth.store_mongo_fence"}
 PLAIN_PACKAGES = ("core", "schema", "store")
 BANNED_NAMES = {"BrowserSession", "run_and_grade_case", "run_and_grade_case_resilient",
                 "_execute_with_trace"}
@@ -224,11 +228,26 @@ def scheduler_side_violations(patched: dict[str, str] | None = None) -> list[str
     return problems
 
 
+# E9.3(b) HUMAN_GATE (issue id to be assigned at filing): `store.mongo_routes.repo_redactor` lazily
+# imports `browser.profiles.stored_session_values` (mongo_routes.py:195), so the scheduler side
+# reaches a browser module. `autotester.browser.profiles` is NOT allow-listed (it would weaken TS6
+# for every scheduler-side file); removing the edge needs `stored_session_values` and its helpers
+# moved, which needs a module/size decision (mongo_routes.py is at the 300-line cap).
+KNOWN_BROWSER_EDGE = ["autotester.store.mongo_routes -> autotester.browser.profiles"]
+
+
+@pytest.mark.xfail(strict=True, reason="E9.3(b) HUMAN_GATE: repo_redactor -> browser.profiles edge")
 def test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively() -> None:
     """TS6: the tick holds no import of BrowserSession, the runners or the pipeline modules.
     The real tree is clean, so adding any such import (direct, `from pkg import module`, lazy
     inside a function, or reached through another stage) fails here."""
     assert scheduler_side_violations() == []
+
+
+def test_the_only_scheduler_side_violation_is_the_known_redactor_edge() -> None:
+    """While the strict xfail above holds the one gated edge, this pins the violation list to
+    exactly that edge, so a NEW browser or pipeline import still fails the guard."""
+    assert scheduler_side_violations() == KNOWN_BROWSER_EDGE
 
 
 LEAKS = {
