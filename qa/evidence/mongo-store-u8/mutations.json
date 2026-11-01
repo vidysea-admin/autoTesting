@@ -1,0 +1,340 @@
+{
+ "tests": [
+  "tests/test_cli_store_state.py",
+  "tests/test_cli_store_auth_creds.py"
+ ],
+ "timeout_s": 900,
+ "mutations": [
+  {
+   "name": "m1 dry run opens a connection",
+   "file": "src/autotester/cli_store.py",
+   "old": "tgt, blobs = _open() if remote else (None, None)",
+   "new": "tgt, blobs = _open()",
+   "kills": [
+    "test_dry_run_opens_no_connection_and_writes_nothing",
+    "test_dry_run_with_auth_opens_no_connection",
+    "test_a_dry_run_with_credentials_opens_no_connection"
+   ]
+  },
+  {
+   "name": "m2 documents before blobs",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "    if \"blobs\" in wanted:\n        bare = _unmasked(src, docs)\n        for key, kind in media.items():\n            _blob(src, key, kind, blobs, apply, bare, t)\n    for key in (k for k in docs if routes.route(k).area in wanted):\n        try:\n            text = src.get(key) or \"\"\n        except UnicodeDecodeError:\n            t.skipped[\"not-utf8\"] += 1\n            continue\n        if key.startswith(PRIVATE):\n            t.private.append(hashlib.sha256(text.encode()).hexdigest())\n        status = doc_status(text, tgt, key)\n        if apply and status == \"to_insert\":\n            status = _write(tgt, key, text)\n        route = routes.route(key)\n        t.note(route.collection, status, len(text.encode()), key, \"rows\" if route.rows else \"doc\")\n",
+   "new": "    bare = _unmasked(src, docs)\n    for key in (k for k in docs if routes.route(k).area in wanted):\n        try:\n            text = src.get(key) or \"\"\n        except UnicodeDecodeError:\n            t.skipped[\"not-utf8\"] += 1\n            continue\n        if key.startswith(PRIVATE):\n            t.private.append(hashlib.sha256(text.encode()).hexdigest())\n        status = doc_status(text, tgt, key)\n        if apply and status == \"to_insert\":\n            status = _write(tgt, key, text)\n        route = routes.route(key)\n        t.note(route.collection, status, len(text.encode()), key, \"rows\" if route.rows else \"doc\")\n    for key, kind in media.items():\n        _blob(src, key, kind, blobs, apply, bare, t)\n",
+   "kills": [
+    "test_blobs_are_written_before_the_documents"
+   ]
+  },
+  {
+   "name": "m3 an identical stored document reads as to_insert (not idempotent)",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "\"unchanged\" if norm(held) == norm(text) else \"conflicting-id\")",
+   "new": "\"to_insert\" if norm(held) == norm(text) else \"conflicting-id\")",
+   "kills": [
+    "test_apply_is_idempotent_and_never_touches_the_source",
+    "test_signed_rows_arrive_byte_identical_and_verify"
+   ]
+  },
+  {
+   "name": "m4 approvals compared by canonical JSON",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "    norm = (lambda s: s) if route.collection in EXACT else _canon",
+   "new": "    norm = _canon",
+   "kills": [
+    "test_a_reserialised_signed_row_is_a_conflict_not_the_same_row"
+   ]
+  },
+  {
+   "name": "m5 a differing stored document is overwritten",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "        if apply and status == \"to_insert\":\n            status = _write(tgt, key, text)",
+   "new": "        if apply and status in (\"to_insert\", \"conflicting-id\"):\n            status = _write(tgt, key, text)",
+   "kills": [
+    "test_a_differing_stored_document_is_a_conflict_never_overwritten"
+   ]
+  },
+  {
+   "name": "m6a profiles are not skipped",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "SKIP = frozenset({\"profiles\", ",
+   "new": "SKIP = frozenset({",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m6b chunks are not skipped",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "\"chunks\", \"exports\"",
+   "new": "\"exports\"",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m6c exports are not skipped",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "\"exports\", \"crawl_summaries\"",
+   "new": "\"crawl_summaries\"",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m6d crawl_summaries are not skipped",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "\"crawl_summaries\", \".blobmeta\"",
+   "new": "\".blobmeta\"",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m7 xlsx is not skipped",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "    if suffix == \".xlsx\":",
+   "new": "    if False:",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m8 .work scratch is not counted",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "        if not key.startswith(known):",
+   "new": "        if False:",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m8b the root .env is not counted",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "    if src.exists(\".env\"):",
+   "new": "    if False:",
+   "kills": [
+    "test_m25_families_are_reported_and_never_stored"
+   ]
+  },
+  {
+   "name": "m9 the CEO list name is shown in the report",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "        if kind != \"blob\" and not key.startswith(PRIVATE):",
+   "new": "        if kind != \"blob\":",
+   "kills": [
+    "test_ceo_bench_list_moves_but_only_its_count_and_hash_are_reported"
+   ]
+  },
+  {
+   "name": "m10 the CEO list hash is of nothing",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "        digest = hashlib.sha256(\"\".join(sorted(self.private)).encode()).hexdigest()",
+   "new": "        digest = hashlib.sha256(b\"\").hexdigest()",
+   "kills": [
+    "test_ceo_bench_list_moves_but_only_its_count_and_hash_are_reported"
+   ]
+  },
+  {
+   "name": "m10b the CEO list is not hashed when it is a document",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "        if key.startswith(PRIVATE):\n            t.private.append(hashlib.sha256(text.encode()).hexdigest())",
+   "new": "        pass",
+   "kills": [
+    "test_ceo_bench_list_moves_but_only_its_count_and_hash_are_reported"
+   ]
+  },
+  {
+   "name": "m11 unmasked screenshots are stored as masked",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "masked=key not in bare,",
+   "new": "masked=True,",
+   "kills": [
+    "test_a_screenshot_recorded_unmasked_stays_out"
+   ]
+  },
+  {
+   "name": "m12 approval intactness is not counted",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "out[\"not_intact\"] += not item.is_intact",
+   "new": "out[\"not_intact\"] += 0",
+   "kills": [
+    "test_verify_approvals_flags_forged_unsigned_and_unreadable_rows"
+   ]
+  },
+  {
+   "name": "m13 signature failure is not counted",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "out[\"signature_failed\"] += not ok",
+   "new": "out[\"signature_failed\"] += 0",
+   "kills": [
+    "test_verify_approvals_flags_forged_unsigned_and_unreadable_rows"
+   ]
+  },
+  {
+   "name": "m14 verify always exits 0",
+   "file": "src/autotester/cli_store.py",
+   "old": "    return int(bad > 0)",
+   "new": "    return 0",
+   "kills": [
+    "test_verify_catches_one_flipped_byte_in_a_signed_row",
+    "test_verify_catches_an_altered_document_and_a_changed_blob",
+    "test_verify_reports_an_altered_account"
+   ]
+  },
+  {
+   "name": "m15 a failure prints its message",
+   "file": "src/autotester/cli_store.py",
+   "old": "failed: {type(exc).__name__}",
+   "new": "failed: {exc}",
+   "kills": [
+    "test_a_raw_exception_carrying_the_uri_prints_only_its_class_name"
+   ]
+  },
+  {
+   "name": "m16 apply works without a URI",
+   "file": "src/autotester/cli_store.py",
+   "old": "    if apply:\n        _need_uri()\n",
+   "new": "    if False:\n        _need_uri()\n",
+   "kills": [
+    "test_apply_without_a_uri_refuses_and_writes_nothing"
+   ]
+  },
+  {
+   "name": "m17 sessions copied by default",
+   "file": "src/autotester/cli_store.py",
+   "old": "return import_auth(data, sessions)",
+   "new": "return import_auth(data, True)",
+   "kills": [
+    "test_sessions_are_excluded_by_default_and_expired_ones_never_copy"
+   ]
+  },
+  {
+   "name": "m18 expired sessions are copied",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "if until > db.now_iso() and uid in live and not tx.has_session(digest):",
+   "new": "if uid in live and not tx.has_session(digest):",
+   "kills": [
+    "test_sessions_are_excluded_by_default_and_expired_ones_never_copy"
+   ]
+  },
+  {
+   "name": "m19 allocator seeded at the top id",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "meta.insert_one({\"_id\": key, \"next\": top + 1})",
+   "new": "meta.insert_one({\"_id\": key, \"next\": top})",
+   "kills": [
+    "test_users_come_across_with_their_ids_hashes_generations_and_groups"
+   ]
+  },
+  {
+   "name": "m20 ids are re-allocated",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "tx._insert(USERS, {\"_id\": uid,",
+   "new": "tx._insert(USERS, {\"_id\": tx._allocate(USERS),",
+   "kills": [
+    "test_users_come_across_with_their_ids_hashes_generations_and_groups"
+   ]
+  },
+  {
+   "name": "m21 an existing account is overwritten",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "        elif held is not None or twin is not None:\n            out[\"conflicting-id\"] += 1",
+   "new": "        elif held is not None or twin is not None:\n            tx._patch(USERS, uid, email=email)\n            out[\"conflicting-id\"] += 1",
+   "kills": [
+    "test_an_existing_account_is_never_overwritten"
+   ]
+  },
+  {
+   "name": "m22 password hash is not carried",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "\"password_hash\": pw,",
+   "new": "\"password_hash\": \"\",",
+   "kills": [
+    "test_users_come_across_with_their_ids_hashes_generations_and_groups"
+   ]
+  },
+  {
+   "name": "m23 group links are not carried",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "\"group_ids\": sorted(member.get(uid, ()))",
+   "new": "\"group_ids\": []",
+   "kills": [
+    "test_users_come_across_with_their_ids_hashes_generations_and_groups"
+   ]
+  },
+  {
+   "name": "m23b allocator is never seeded",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "        for coll in (sm.USERS, sm.GROUPS):\n            if out[\"written\"]:",
+   "new": "        for coll in (sm.USERS, sm.GROUPS):\n            if False:",
+   "kills": [
+    "test_users_come_across_with_their_ids_hashes_generations_and_groups"
+   ]
+  },
+  {
+   "name": "m24 credentials are not filtered to declared keys",
+   "file": "src/autotester/store/migrate_creds.py",
+   "old": "for key in (k for k in _declared(src, slug) if k in env):",
+   "new": "for key in env:",
+   "kills": [
+    "test_only_declared_keys_reach_the_door_and_the_secrets_collection",
+    "test_pairs_are_filtered_to_declared_keys_before_anything_else"
+   ]
+  },
+  {
+   "name": "m25 deployment secrets are not dropped before the door",
+   "file": "src/autotester/store/migrate_creds.py",
+   "old": "            if key.upper() == MONGO_URI_ENV or is_server_key(key):",
+   "new": "            if False:",
+   "kills": [
+    "test_the_report_has_counts_never_a_value_a_key_or_a_deployment_secret",
+    "test_pairs_are_filtered_to_declared_keys_before_anything_else"
+   ]
+  },
+  {
+   "name": "m26 a differing stored credential is counted unchanged",
+   "file": "src/autotester/store/migrate_creds.py",
+   "old": "                    else \"conflicting-id\"] += 1",
+   "new": "                    else \"unchanged\"] += 1",
+   "kills": [
+    "test_a_stored_credential_is_never_replaced_and_a_rerun_writes_nothing"
+   ]
+  },
+  {
+   "name": "m27 the area flag is left on",
+   "file": "src/autotester/store/migrate_creds.py",
+   "old": "    finally:\n        if old is None:\n            os.environ.pop(AREAS_ENV, None)\n        else:\n            os.environ[AREAS_ENV] = old",
+   "new": "    finally:\n        pass",
+   "kills": [
+    "test_env_is_never_edited_and_the_area_flag_is_not_left_on"
+   ]
+  },
+  {
+   "name": "m28 credentials bypass the door",
+   "file": "src/autotester/store/migrate_creds.py",
+   "old": "                    put_credentials(slug, {key: value})",
+   "new": "                    coll.insert_one({\"_id\": key, \"p\": slug, \"value\": value})",
+   "kills": [
+    "test_only_declared_keys_reach_the_door_and_the_secrets_collection"
+   ]
+  },
+  {
+   "name": "m29 --only is ignored for documents",
+   "file": "src/autotester/store/migrate_state.py",
+   "old": "    for key in (k for k in docs if routes.route(k).area in wanted):",
+   "new": "    for key in docs:",
+   "kills": [
+    "test_part_filter_and_unknown_part"
+   ]
+  },
+  {
+   "name": "m30 verify skips the approval check",
+   "file": "src/autotester/cli_store.py",
+   "old": "    if \"approvals\" in wanted:\n        signed",
+   "new": "    if False:\n        signed",
+   "kills": [
+    "test_signed_rows_arrive_byte_identical_and_verify"
+   ]
+  }
+ ]
+}

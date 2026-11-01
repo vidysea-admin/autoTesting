@@ -28,6 +28,7 @@
 | `auth/defaults.py` | The four seeded groups and their default ticks (auth.md "Default groups", AU11). |
 | `auth/groups.py` | IAM-style groups: create, rename, tick permissions, set members, delete (AU10). |
 | `auth/loopback.py` | The AU17 loopback switch, kept import-free: whether login is OFF (single-user loopback only). |
+| `auth/migrate_auth.py` | Copy the SQLite auth store into the Mongo auth store (mongo-store U8, M45). |
 | `auth/passwords.py` | Password hashing: argon2id via argon2-cffi, behind one hash/verify pair (AU1). |
 | `auth/policy.py` | The central route policy (AU14, AU16, TF4): the rule table, its matcher, the unit merge. |
 | `auth/ratelimit.py` | Login rate limit (AU5): 5 failures per account or 20 per client address inside a |
@@ -65,6 +66,7 @@
 | `cli_revoke.py` | `autotester revoke`: withdraw a previously granted approval with a signed row. |
 | `cli_run.py` | `autotester run`, `run-report`, `catalog`, `mcp-serve`: the machine-facing commands (T-174). |
 | `cli_schedule.py` | `autotester schedule tick`: the stateless pass that makes scheduled tests run (T-200, TS7). |
+| `cli_store.py` | `autotester store`: copy the file-backed state into the one Mongo database, then prove it |
 | `cli_subapps.py` | The list of CLI sub-apps `autotester` registers (T-205/TF5, design rule). |
 | `cli_sweep.py` | `autotester sweep stamp`: the one append-only writer of the checker's sweep log (AT-699). |
 | `cli_video.py` | `autotester ingest` — register a recording and learn a FlowSpec from it. |
@@ -425,6 +427,8 @@
 | `store/crawl_store.py` | Crawl artifact persistence — split from `project_store.py` at the |
 | `store/filestore.py` | The one place any artifact is read from or written to disk. Contract: core-invariants.md C6. |
 | `store/filestore_paths.py` | Path-level coordination verbs over the state backends (mongo-store M19, M20, M52, M53; D-126). |
+| `store/migrate_creds.py` | Copy declared project credentials from the repo-root `.env` into the credential store (U8, M46). |
+| `store/migrate_state.py` | Copy the file-backed state into the Mongo state store, or compare the two (mongo-store U8). |
 | `store/mongo_backend.py` | `MongoBackend`: the `StateBackend` over the one configured Mongo database (mongo-store U4). |
 | `store/mongo_guard.py` | The only door to the AutoTester Mongo database (contract mongo-store M1-M12; D-120..D-122). |
 | `store/mongo_routes.py` | Which collection and which store area a state key belongs to (mongo-store M15, M21, M22; D-122). |

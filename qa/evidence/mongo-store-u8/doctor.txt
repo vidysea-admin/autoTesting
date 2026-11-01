@@ -1,0 +1,4 @@
+  decision-citation-known-disputed: docs/DECISIONS.md:80 — D-000 K1: recorded known-disputed historical claim (D-069), non-blocking
+  decision-citation-known-disputed: docs/DECISIONS.md:209 — D-005 K2: recorded known-disputed historical claim (D-069), non-blocking
+doctor: clean
+doctor exit 0 (non-blocking D-087 decision-citation advisories only); full output .work/doctor-u8.txt (not committed)
