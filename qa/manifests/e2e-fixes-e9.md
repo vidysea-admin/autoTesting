@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e9
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, verdict bbe9b824)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E9 (E9.1-E9.3). **Criticality:** MEDIUM, one hold (E9.3b).
 **Branch:** `feat/e2e-e9` (worktree `D:/autoTesting/.claude/worktrees/e2e-e9`), cut from master `6eb21a54`. Not merged, not pushed.
