@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e8
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, verdict b0f46b93)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E8 (E5 hardening). **Criticality:** HIGH.
 **Authority:** no new module, no `qa/contracts/` edit, no `src/` edit.
