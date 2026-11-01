@@ -1,7 +1,7 @@
 # Manifest - e2e-fixes-e6
 
 **Status:** ready-for-check
-**Fix cycle:** 1
+**Fix cycle:** 2
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E6 (AT-1419). **Criticality:** MEDIUM (a new network surface; the auth decision is HIGH-sensitivity, see judgement calls 1-3).
 **Authority:** E6.9 is SATISFIED: D-131 is ACTIVE on master (b3663ac3, `Approved-by` Umesh; `grep -n "AT-1419" docs/DECISIONS.md` hits `## D-131`), cited here. It authorizes the relay and states that an anonymous caller of a look-alike path gets the gate's 401/302 (judgement call 3). No new `src/` module (CLAUDE.md), no `qa/contracts/` edit.
 **Branch:** `feat/e2e-e6` (worktree `D:/autoTesting/.claude/worktrees/e2e-e6`), cut from master `70a7a486`. Not merged, not pushed (D-130).
@@ -96,3 +96,13 @@ mutations ws: mutation-run-ws-cycle1.txt                              -> 8/8 kil
 Honest notes on the cycle-1 run: (1) the machine was heavily loaded by sibling worktrees (fork failures in bash at 16:30); the a17 pytest run hung with no child process and I killed that one process, which the tool recorded as SURVIVED (exit 4294967295). The same mutant rerun alone is KILLED by the test it claims, so the total is 26/26 with that one rerun. (2) An earlier, concurrent run of the E5 pair `test_storage_warning` + `test_container_entrypoint_behaviour` showed 3 failed, 46 passed, 1 skipped in 280 s while two other test loops were running; alone the same pair passes (49 passed, 1 skipped). Not caused by E6 (no E6 file touches the entrypoint), but it is E5-owned and timing sensitive under load.
 
 The anonymous look-alike answer (judgement call 3) is as D-131 describes: the gate's 401/302 for an anonymous caller, 403 for a signed-in one, never relayed.
+
+## Cycle 2 (checker A FAIL F1: `tests/test_live_proxy_ws.py` flaky, ~3 in 9 runs)
+
+Root cause (checker A, confirmed): Starlette's `WebSocketTestSession.__exit__` sends the disconnect and cancels the app scope at once, so `_pump`'s cleanup lost the race (CancelledError at the `with` exit in `test_auth_matrix_websocket`; `closed.wait(2)` missed in `test_frames_relay_both_ways_and_close_propagates`).
+
+1. **Tests deterministic** (`tests/test_live_proxy_ws.py`): a `handled` fixture wraps `routes_live._relay_ws` and sets an event when the handler has fully returned; every accepted-connection test closes INSIDE the `with` (`_close_and_settle`: `ws.close(1000)` then `handled.wait(10)`), the stub's `closed.wait` is 5 s, and the 1011 and 1009 tests also wait for the handler.
+2. **`_pump` cancellation-safe** (`src/autotester/ui/routes_live.py`, 300 lines): the cleanup (gather the two tasks, `up.close()`, close the client) is an inner coroutine run under `asyncio.shield`; if the handler itself is cancelled the upstream transport is aborted synchronously (`up.transport.abort()`) and the cancellation re-raised, so the upstream is never left open. Two verbose docstrings/comments were shortened to stay at the 300-line cap.
+3. **Repeat proof**: `qa/evidence/e2e-fixes-e6/ws-repeat-cycle2.txt` (see results below).
+
+**Documented residual W3 (checker A):** the effective CLIENT-to-server frame cap behind uvicorn is uvicorn's default `--ws-max-size` of 16 MiB (the entrypoint passes no override, `docker/entrypoint.sh:127`), not the relay's 32 MiB `_MAX_FRAME`; a larger client frame closes 1009 from uvicorn first. The 32 MiB figure holds for the relay's own check and for the upstream-to-client direction (`websockets` `max_size`). Harmless for noVNC (client frames are small); `docker/` is not edited by this unit. The wording in D-131 ("capped at 32 MiB") overstates the client direction only.

@@ -33,12 +33,9 @@ from autotester.ui.routes_auth import live_access_refusal
 
 router = APIRouter()
 
-# AT-085: the container's uvicorn runs without `--reload` (docker/entrypoint.sh),
-# so a source edit made after this module was imported is silently NOT served --
-# a "verified live" claim can describe the previous build with nothing on the
-# surface to say so. Frozen once, at import time, which for a real `uv run
-# uvicorn` process (no reloader) happens exactly once, before the first request
-# -- the same "process start" a checker previously read off `ps -o lstart=`.
+# AT-085: uvicorn runs without `--reload` (docker/entrypoint.sh), so an edit made after import
+# is silently NOT served. Frozen once at import: the same "process start" a checker read off
+# `ps -o lstart=`.
 _PROCESS_STARTED_AT = datetime.now(UTC)
 
 
@@ -55,11 +52,10 @@ _CLOUD_RUN_NOVNC = "/novnc/vnc.html?autoconnect=true&resize=scale&path=novnc/web
 
 
 def novnc_url() -> str:
-    """Where the viewer iframe points. Local docker default is the published port; a server
-    sets `AUTOTESTER_NOVNC_URL` to a same-origin path (`/novnc/vnc.html?...`) served by the
-    reverse proxy, because an http iframe inside an https page is blocked. On Cloud Run
-    (`K_SERVICE`, no Caddy) the default is the app's own relay path (E6.6). Only an absolute
-    path or an http(s) URL on localhost is accepted: anything else falls back to the default."""
+    """Where the viewer iframe points: the local published port, or `AUTOTESTER_NOVNC_URL` (a
+    same-origin path, since an http iframe in an https page is blocked); on Cloud Run
+    (`K_SERVICE`, no Caddy) the app's own relay path (E6.6). Only an absolute path or an
+    http(s) localhost URL is accepted: anything else falls back to the default."""
     raw = os.environ.get(NOVNC_ENV, "").strip()
     same_origin = raw.startswith("/") and not raw.startswith("//")
     local = raw.startswith(("http://localhost:", "http://127.0.0.1:"))
@@ -69,10 +65,8 @@ def novnc_url() -> str:
 
 
 def view_only_url(url: str) -> str:
-    """The same viewer pointed at the VIEW-ONLY endpoint: `/novnc/...` becomes `/novnc-view/...`
-    (incl. the websocket `path=`), local `:6080` becomes `:6081`. The upstream behind that
-    endpoint is a VNC server started `-viewonly`, so input is dropped server-side whatever a
-    hand-built client sends (HO12)."""
+    """The viewer pointed at the VIEW-ONLY endpoint (`/novnc/` -> `/novnc-view/`, incl. the
+    websocket `path=`; `:6080` -> `:6081`): a `-viewonly` VNC server drops input (HO12)."""
     for host in ("localhost", "127.0.0.1"):
         url = url.replace(f"{host}:6080", f"{host}:6081")
     if url.startswith("/novnc/"):
@@ -81,8 +75,7 @@ def view_only_url(url: str) -> str:
 
 
 def viewer_url(can_control: bool) -> str:
-    """The iframe target. Without `live.control` the page uses the view-only endpoint, which the
-    proxy only forwards to a view-only VNC server (HO12); `view_only=1` is kept as a UI hint."""
+    """The iframe target; without `live.control` the view-only endpoint (HO12) plus a UI hint."""
     url = novnc_url()
     if can_control:
         return url
@@ -113,8 +106,7 @@ def live_view() -> str:
 
 
 # AT-1419 / E6: the in-app noVNC relay (Cloud Run has no Caddy; docker/Caddyfile is the model).
-# VNC_UPSTREAMS is the ONLY place an upstream is named: no request value and no environment
-# variable reaches it (E6.8); tests patch these two entries and nothing else.
+# VNC_UPSTREAMS is the ONLY place an upstream is named: no request value or env var (E6.8).
 VNC_UPSTREAMS: dict[str, tuple[str, int]] = {"/novnc": ("127.0.0.1", 6080),
                                              "/novnc-view": ("127.0.0.1", 6081)}
 _NEED = {"/novnc": "control", "/novnc-view": "view"}   # the Caddyfile's forward_auth `need=`
@@ -193,17 +185,26 @@ async def _pump(ws: WebSocket, up) -> None:
     """Frames both ways until either side ends; then both are closed (nothing left open)."""
     tasks = [asyncio.ensure_future(_client_to_upstream(ws, up)),
              asyncio.ensure_future(_upstream_to_client(ws, up))]
-    try:
-        await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
-    finally:
-        for task in tasks:
-            task.cancel()
+
+    async def cleanup() -> None:
         await asyncio.gather(*tasks, return_exceptions=True)
         with contextlib.suppress(Exception):
             await up.close()
         ended = up.close_code   # 1000/1001 normal, 1009 too big, anything else is an error
         with contextlib.suppress(Exception):   # the client may be gone already
             await ws.close(code=1000 if ended in (1000, 1001) else 1009 if ended == 1009 else 1011)
+
+    try:
+        await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+    finally:
+        for task in tasks:
+            task.cancel()
+        try:   # a cancelled handler (client vanished, server stopping) still closes the upstream
+            await asyncio.shield(asyncio.ensure_future(cleanup()))
+        except asyncio.CancelledError:
+            with contextlib.suppress(Exception):
+                up.transport.abort()
+            raise
 
 
 async def _relay_ws(ws: WebSocket, prefix: str) -> None:
