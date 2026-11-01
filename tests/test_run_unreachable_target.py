@@ -42,7 +42,7 @@ def test_an_unreachable_target_ends_the_run_fast_with_one_message(
         started = time.monotonic()
         run = launch_run("demo", seams=seams(target_probe=probe_target))
         assert time.monotonic() - started < 15
-    message = "target 127.0.0.1 did not answer within 1 s from this server"
+    message = "target 127.0.0.1 did not answer within 1 s from this server [stage=timeout]"
     assert launched == []
     assert run.preflight_warnings == [message]
     assert run.stop_reason == "target_unreachable"

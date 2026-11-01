@@ -30,7 +30,7 @@ def test_a_target_that_accepts_and_never_answers_fails_within_the_bound() -> Non
         started = time.monotonic()
         message = probe_target(_project(stub.url))
         elapsed = time.monotonic() - started
-    assert message == "target 127.0.0.1 did not answer within 10 s from this server"
+    assert message == "target 127.0.0.1 did not answer within 10 s from this server [stage=timeout]"
     assert elapsed <= 15
 
 
@@ -101,7 +101,7 @@ def test_the_total_bound_is_the_module_constant(monkeypatch: pytest.MonkeyPatch)
         started = time.monotonic()
         message = probe_target(_project(stub.url))
     assert time.monotonic() - started < 4
-    assert message == "target 127.0.0.1 did not answer within 1 s from this server"
+    assert message == "target 127.0.0.1 did not answer within 1 s from this server [stage=timeout]"
 
 
 def test_one_retry_rescues_a_first_attempt_that_fails(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -185,7 +185,7 @@ def test_a_resolver_that_never_returns_is_unreachable_within_the_bound(
         assert time.monotonic() - started < 4
     finally:
         release.set()
-    assert message == "target 127.0.0.1 did not answer within 1 s from this server"
+    assert message == "target 127.0.0.1 did not answer within 1 s from this server [stage=timeout]"
 
 
 def test_attempt_reports_no_answer_when_the_worker_outlives_its_join(

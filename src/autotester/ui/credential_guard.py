@@ -18,6 +18,7 @@ from fastapi import HTTPException
 
 from autotester.browser.secrets import SecretStore
 from autotester.core.env import (
+    MONGO_URI_ENV,
     PROVIDER_KEYS,
     SERVER_PREFIX,
     is_server_key,
@@ -40,9 +41,14 @@ def refuse_reserved_slug(slug: str) -> None:
     this process already holds (a shell export, or a `.env` key loaded at start) -- else its
     namespace would swallow it, because `load_repo_env` never exports a project namespace.
     Existing projects are unaffected; the `.env` file itself is not consulted, since an
-    operator fills `PATHLYNKS_*` there before onboarding `pathlynks`."""
+    operator fills `PATHLYNKS_*` there before onboarding `pathlynks`.
+
+    E7.1 (AT-1416): the server's own store URI (`MONGO_URI_ENV`, any letter case) is the one held
+    variable that does not count: it is the server's, not a project credential a namespace could
+    shadow, and `refuse_foreign_key` stops a project claiming it (E7.2c)."""
     ns = key_namespace(slug)
-    if (any(k.startswith(ns) for k in (*PROVIDER_KEYS, *os.environ))
+    held = (k for k in os.environ if k.upper() != MONGO_URI_ENV)
+    if (any(k.startswith(ns) for k in (*PROVIDER_KEYS, *held))
             or ns.startswith(SERVER_PREFIX) or SERVER_PREFIX.startswith(ns)):
         raise HTTPException(400, f"the key prefix {ns} of that slug is used by a setting on "
                                  "this server; choose a different slug")
@@ -59,6 +65,8 @@ def refuse_foreign_key(project: Project, key: str) -> None:
     project writes is never exported to the process either (`core.env.load_repo_env`)."""
     name = key.strip()
     refuse_server_key(name)
+    if name.upper() == MONGO_URI_ENV:  # E7.2c: inside the `pathlynks` namespace, yet the server's
+        raise HTTPException(403, "the store connection is set by the deployment, not in a project")
     ns = key_namespace(project.slug)
     if not name.startswith(ns):
         raise HTTPException(400, f"a credential key for this project must start with {ns}")
