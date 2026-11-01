@@ -1,78 +1,75 @@
-# Verdict - e2e-fixes-e4 (E4.1-E4.3; AT-1421, AT-1415)
+# Verdict - e2e-fixes-e4 (E4.1-E4.3; AT-1421, AT-1415), fix cycle 1
 
 **Verdict: PASS** (3 non-blocking warnings, W1-W3 below)
-**Cycle checked:** 0
-**Checked:** `feat/e2e-e4` head `efad4496` (base `dccc65e9`), worktree `D:/autoTesting/.claude/worktrees/e2e-e4`. Fresh context; read-only toward `src/` and `tests/` (mutants ran on the harness's private copy). Fakes and local 127.0.0.1 stubs only: no internet, no `.env` value read or printed (the approval key used by my scratch scripts was a dummy env value).
-**Contract:** `qa/contracts/e2e-fixes.md` unit E4. **Manifest:** `qa/manifests/e2e-fixes-e4.md`.
+**Cycle checked:** 1
+**Checked:** `feat/e2e-e4` head `15cb5df9` (base `dccc65e9`; cycle-0 PASS `962bea0d` sits below it), worktree `D:/autoTesting/.claude/worktrees/e2e-e4`. Fresh context, read-only toward `src/` and `tests/` (mutants ran on the harness's private copy). Fakes and local 127.0.0.1 stubs only: no internet, no `.env` value read or printed. `autotester.__file__` resolved to the worktree `src`.
+**Contract:** `qa/contracts/e2e-fixes.md` unit E4. **Manifest:** `qa/manifests/e2e-fixes-e4.md` (cycle 1). The cycle-0 findings W1-W3 and the senior review's two findings were taken as the issue list; every claim below was re-run.
 
-## Commands re-run by the checker (2 files per call, `env -u ANTHROPIC_BASE_URL uv run pytest <files> -o addopts= -q`, `PYTHONPATH=<worktree>/src`)
+## Commands re-run (2 files per call, `env -u ANTHROPIC_BASE_URL uv run pytest <files> -o addopts= -q`, `PYTHONPATH=<worktree>/src`)
 
 | Files | Result |
 |---|---|
-| test_target_probe + test_run_unreachable_target | 25 passed |
+| test_target_probe + test_run_unreachable_target | 37 passed |
 | test_run_bounds_stop + test_video_fate | 20 passed |
-| test_run_teardown_stall + test_run_teardown_stall_wiring | 26 passed |
-| test_teardown_residuals + test_run_launcher_approval | 26 passed |
-| test_session_survives_failure + test_ui_runs | 26 passed |
-| test_run_failure_artifacts + test_video_retention (V2/V6/V8) | 9 passed |
-| test_video_pointers + test_run_launcher | 35 passed |
+| test_run_launcher + test_run_launcher_approval | 24 passed |
+| test_reachability_warning + test_ui_runs | 15 passed |
 | `uv run ruff check src tests scripts` | All checks passed! |
-| `uv run autotester doctor` (to `.work/doctor-chk-e4.txt`) | rc 0, `doctor: clean` |
+| `uv run autotester doctor` (> `.work/doctor-chk-e4c1.txt`) | rc 0, `doctor: clean` |
 
-`autotester.__file__` resolved to the worktree `src` (checked). Full suite not run (machine low on memory, per the brief).
+Full suite not run (low-memory rule).
 
-**Known failure, confirmed pre-existing.** `tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively` fails identically on bare master `dccc65e9` (temporary detached worktree `.work/chk-master-dccc`, same venv with `PYTHONPATH` at that tree, removed afterwards): `store.mongo_routes -> browser.profiles` plus the two `auth.store*` edges. The sorted failure text diffs IDENTICAL between master and the branch. Not caused by E4; not a FAIL.
+**Known failure, edge list checked.** `tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively` still fails (the cycle-0 checker proved it identical on bare master `dccc65e9`). I called `scheduler_side_violations()` directly: exactly `store.mongo_routes -> browser.profiles`, `auth.store -> auth.store_mongo`, `auth.store_mongo -> auth.store_mongo_tx`. No E4 module (`reachability`, `run_launcher`, `parallel_run`, ...) appears. Not a FAIL of this unit.
 
-**Merge against moved master.** `git merge-tree --write-tree 2ffa1e60 efad4496` -> rc 0, tree `8b1acbb9`, **no conflicts** (the expected `routes_report.py` and `docs/MAP.md` collisions did not occur; E1 and E4 touch different hunks). Merged `run_launcher.py` is 296 lines, `routes_report.py` 288 (both under the 300 cap). I built a throwaway merge commit in `.work/chk-merged-e4` and ran there: test_run_bounds_stop + test_video_fate 20 passed; test_run_unreachable_target + test_ui_runs 13 passed; E1's test_ui_report_corrupt_trace + test_run_launcher 12 passed; `autotester doctor` rc 0 `doctor: clean`. Worktree removed. No merge or push done.
+**Merge.** `git merge-tree --write-tree master 15cb5df9` (master `bc284510`) -> tree `29ed36a4a4f6153183518f89068f71d2269dabd6`, no conflict output. No merge or push done.
 
-## Per-criterion findings
+## Cycle-1 findings
 
-1. **E4.1(a) PASS.** The bound is the existing mechanism (`stages/run_budget.py:187-189,221-225` unchanged). `test_run_bounds_stop.py:25` drives the real `RunBudget` with an injected clock (case 1 burns 200 s of a 170 s bound): exactly 1 case runs, 2 INCONCLUSIVE with `wall_clock_s` in the note, 0 FAIL, EXECUTE span `("failed", "run budget exhausted: wall_clock_s")`, and the new `Run.stop_reason == "wall_clock_s"` (`run_launcher.py:236-237,274`). Mutant m15 (bound not enforced) KILLED. The contract's wall-time invariant is not asserted as a number (it rests on the existing D-112 mechanism); acceptable, the contract says prove the behaviour, not rebuild it.
-2. **E4.1(b) PASS.** `ui/preflight_view.py:39-60` renders acting seconds, judging and housekeeping held off the clock, the bounds line and the stop reason; `excluded_s=None` -> "clock accounting NOT RECORDED" (never zero); a D-112 run without `acting` -> "acting time NOT RECORDED". Rendered the real unreachable-run page through `TestClient`: "Preflight warnings (1) / The run did not start: no case was run. / target 127.0.0.1 did not answer within 1 s from this server / Run bounds / clock (only time acting on the target counts): acting 1.0s; held off it: judging 0.0s, housekeeping 0.0s / stopped early: the target did not answer, so no case was run (each recorded INCONCLUSIVE)". Maker mutants m25, m26, m27, m28 were killed in the maker's run; m28 re-run by me KILLED.
-3. **E4.2 PASS.** Probe `stages/reachability.py:137-157`: one GET, `ProxyHandler({})`, no cookie processor, no body, scope test `:144` (`bad_scheme`, `host_of`, `allows_domain`), two attempts inside `PROBE_TOTAL_S = 10.0`, any `HTTPError` is an answer (`:110-112`). Launcher `run_launcher.py:211-212` calls it once, after `prepare_run` (so after every gate) and before `_entry_pool` (so before any `BrowserSession.start`). `skip_run` `:166-182` saves one ERRORED `RawResult` + INCONCLUSIVE verdict per case, fails the EXECUTE span, and returns the plan with `stop_reason="target_unreachable"` and the one message, which `launch_run` writes to `Run.preflight_warnings` and `Run.stop_reason`. Tests: blackhole with the REAL 10 s constant ends in <= 15 s with the exact message; launched run: 3 INCONCLUSIVE carrying the one cause, `BrowserSession.start` never called, no `.png`/`.webm` under the run dir; a 500 target runs the cases (5 status codes parametrised); out-of-scope host, no allowed domains, ftp/javascript/userinfo/bare-host URLs: no connection. Mutants m3 (host outside scope probed), m7 (cookies), m12 (probe skipped by launcher), m2 (redirects out of scope) KILLED by me; own3 (default seam never probes) and own4 (skipped cases carry no cause) KILLED.
-4. **E4.3 PASS.** `browser/video.py:228,239,243` route all three silent-`None` paths through `_video_lost` (event label `video-lost`, reason string, scrubbed); recording-off stays silent (m20 test). `video_fate :257-272` yields the one sentence per fate; `ui/routes_video.py:81-93` shows it and keeps the V8 link for a kept video. `_finalize_video` (`stages/run_case_pipeline.py`) is not in the diff, so V2 is unchanged; V2/V6/V8 tests (test_video_retention, test_video_pointers) pass unmodified. Rendered the unreachable run page: each unrun case shows "no video: recording was off for this session, or the case never reached execution". Mutants m17, m21, m23 KILLED; own2 (every case treated as PASS in `video_section`) KILLED.
-
-## Security probe (judgement call 5, ruled on with evidence)
-
-Own script `.work/chk_e4_redirect_probe.py` (allowed_domains = `["127.0.0.1"]`, a 302 server, a second listener standing for the foreign host, `HTTP_PROXY=http://127.0.0.1:9` set in the environment):
+1. **Senior review #1 (scope escape via a non-http redirect): FIXED, verified two ways.** `stages/reachability.py:105` refuses any redirect where `bad_scheme(newurl)` (the 3xx is then the answer); `_build_opener :148-158` builds an `OpenerDirector` with only proxy-off, HTTP, HTTPS, Unknown, DefaultError, `_InScopeRedirects` and ErrorProcessor handlers, so no FTP/file/data handler exists. My own script `.work/chk_e4c1_probe.py` (allowed_domains `127.0.0.1`, a 302 server whose `Location` points at a listener that records connects, `HTTP_PROXY`/`FTP_PROXY` set to a dead port to prove they are ignored):
 
 ```
-absolute foreign host        result=None foreign_connect=False requests=['/']
-protocol-relative foreign    result=None foreign_connect=False requests=['/']
-userinfo trick               result=None foreign_connect=False requests=['/']
-backslash trick              result=None foreign_connect=False requests=['/']
-lookalike suffix             result=None foreign_connect=False requests=['/']
+ftp on allowed host    result=None connect_at_target_port=False reqs=['/']
+FTP upper-case         result=None connect_at_target_port=False reqs=['/']
+file:                  result=None connect_at_target_port=False reqs=['/']
+file://allowed         result=None connect_at_target_port=False reqs=['/']
+data:                  result=None connect_at_target_port=False reqs=['/']
+gopher on allowed      result=None connect_at_target_port=False reqs=['/']
+javascript:            result=None connect_at_target_port=False reqs=['/']
+foreign host http      result=None connect_at_target_port=False reqs=['/']
+foreign host ftp       result=None connect_at_target_port=False reqs=['/']
+in-scope redirect followed: None ['/landed']
 ```
 
-The redirect to a foreign host is never followed (the 3xx is itself the answer, so the run proceeds), no request reaches the foreign listener, and the environment proxy is ignored (a proxy at port 9 would have made every row fail). In-scope redirects are followed and carry no cookie, authorization or content-length (test at `test_target_probe.py:80`; mutant m7 kills it). A stuck resolver is bounded: with `urllib.request.OpenerDirector.open` patched to sleep 30 s and `PROBE_TOTAL_S=2`, the probe returned in 2.5 s with the "did not answer" message (`.work/chk_e4_hang.py`).
+   Every non-http scheme and every foreign host: no connection, probe returns None (run proceeds), 0.3 s. The in-scope http redirect is still followed (positive control). Mutant c1 (scheme check removed) KILLED by the named `[ftp]` test.
+2. **Senior review #2 (a probe bug skipped runs with a false cause): FIXED and does not weaken real detection.** `_attempt :124` catches `Exception`; `probe_target :181-185` fails open only when the failure is neither `_NO_ANSWER` nor an instance of `_NETWORK_ERRORS = (OSError, http.client.HTTPException)` (`:60`), appending ONE warning naming the class and host. My script, same run:
 
-## Rulings on the maker's 12 judgement calls
+```
+refused: target 127.0.0.1 refused the connection from this server []
+dns: target nope.invalid could not be resolved (DNS) from this server []
+bug (RuntimeError): None ['the reachability check of 127.0.0.1 could not run (RuntimeError); the run went ahead without it']
+netfail(ConnectionResetError): target 127.0.0.1 closed the connection without an HTTP answer from this server []
+netfail(HTTPException BadStatusLine): target 127.0.0.1 closed the connection without an HTTP answer from this server []
+```
 
-1. **ERRORED raw outcome graded INCONCLUSIVE: ACCEPT.** The verdicts are INCONCLUSIVE with the one cause; no goto was attempted; same path as an exhausted budget (`grade_errored_result`). A new raw outcome would touch `schema/enums.py` and E2's verdict path, outside E4's files.
-2. **Host outside `allowed_domains` not probed, run proceeds: ACCEPT.** The contract text is "skipped for `base_url` hosts outside the project's allowed domains (refuse, do not probe)" and the falsifier is "refused, no connection attempted (assert the socket saw no connect)". What is refused is the probe's connection. Failing the whole run for a project whose `base_url` is declared outside its own scope is a separate decision the contract does not make; the gate and the browser already refuse an out-of-scope navigation per case.
-3. **`acting` inside `Run.excluded_s`: ACCEPT.** One source for the D-112 arithmetic; pre-D-112 runs are unambiguously NOT RECORDED. See W1 for a side effect.
-4. **`PINNED_SEAMS` gains `target_probe`, consulted only after the gate: ACCEPT.** `launch_run` calls `prepare_run` (which runs `require_live_case_approval`) before `run_cases_traced`; the probe can only END a run, never widen one. `routes_runs.py:58` and the queue path (`_run_queued` -> `launch_run`) use the default seam, so button, schedule and queue are guarded. Own3 shows the pin does not hide a dead default.
-5. **Probe resolves from the server, no proxy: ACCEPT** (verified above; the browser also verifies TLS by default and no `ignore_https_errors` exists in `src`, so a TLS failure is consistent between probe and browser).
-6. **Exact-key pins extended with `"acting"`: ACCEPT.** Diff read: each set grew by one key, no assertion weakened.
-7. **`test_session_survives_failure` filters `video-lost`: ACCEPT.** Its fake page has `video=None` with recording on, which is exactly the formerly silent path; the test's own subject (one `session-restart`) is unchanged and the new behaviour is pinned by `test_video_fate.py` (m17 KILLED).
-8. **Two `run_cases_traced` stubs gain `stop_reason=None, warnings=()`: ACCEPT** (additive).
-9. **HTML export unchanged: ACCEPT** (live page only; out of the contract's named files).
-10. **`_video_section` moved to `routes_video.py`: ACCEPT.** The merge dry-run shows no conflict with E1.
-11. **AT-1415 premise (PASS case, V2 prune by design): ACCEPT.** No V2 change; the page line and the loud paths are the deliverable.
-12. **Not run / not done: ACKNOWLEDGED.** The lifecycle review is this checker pass; no separate `senior-software-engineer` dispatch was made, per the brief. A real DNS/TLS failure on a public name is not exercised by the maker or by me (no internet by design); the classes are covered with the local stub and the `.invalid` name.
-
-**The autouse conftest fixture cannot mask a real failure: ACCEPT.** `tests/conftest.py:60-67` patches only the name `reachability.probe_target`. The probe tests import the real function by name at module import (before the fixture runs) and inject it through `RunSeams(target_probe=...)`; the launched tests pass against local stubs. The one thing the fixture could hide, the default seam being dead, is pinned by `test_the_default_seam_reaches_the_probe_by_late_binding`, and my own3 mutant (`check_target` returns None) is KILLED by it.
+   Real network failures (refused, DNS, reset, malformed HTTP) still stop the run with the named message and no warning; only a non-network exception fails open. The launcher copies the note into `Run.preflight_warnings` (`run_launcher.py:213`, `:269`); `test_a_probe_bug_lets_the_run_proceed_and_says_why_on_the_run` runs 2 cases through the real launcher. Mutants c3, c4, c7, c9 KILLED (c7, "a network failure fails open too", kills 8 tests, so it is well pinned).
+3. **Cycle-0 W1 (acting clock): FIXED for the unreachable run.** `skip_run` records `NO_CLOCK` (`reachability.py:55,211`, all zeros) and `RunBudget.for_cases` is now created after the probe (`run_launcher.py:214`). The test now asserts `excluded_s["acting"] == 0.0` and the rendered page text `acting 0.0s` (no `acting 1.`). See W1 below for what the budget move does and does not pin.
+4. **Cycle-0 W2 (join fallback untested): FIXED.** Mutant c6 (`_NO_ANSWER` default flipped to `None`) KILLED by both named tests (`test_a_resolver_that_never_returns_is_unreachable_within_the_bound`, `test_attempt_reports_no_answer_when_the_worker_outlives_its_join`).
+5. **Cycle-0 W3b (docstring): FIXED** (`reachability.py:13` now names `skip_run`). W3a (`orchestrate_downstream.py` unguarded) is recorded out of scope by the maker; I accept it as outside the contract's named files (the probe guards `launch_run`: button, schedule, queue); it remains an open follow-up, not a defect of E4.
+6. **Interfaces consistent.** `target_probe`'s only definition/call sites are `run_launcher.py:54,92,211` and the default `check_target`; `skip_run` has one caller (`:212`); `tests/conftest.py` autouse stub accepts the new `notes` argument and cannot mask the real function (the default-seam test passes). `plan.warnings` is only ever populated by E4 code, so `skip_run` replacing it with `(message,)` loses nothing today.
 
 ## Mutation evidence (C7, run by me)
 
-`scripts/mutation_check.py .work/chk-e4-mut.json` (private-copy harness, baseline green): **12/13 killed.** Maker mutants KILLED: m2, m3, m7, m12, m15, m17, m21, m23, m28 (9 of 9, including the two the maker had to re-run, m17 and m23). My own: own2, own3, own4 KILLED; own1 SURVIVED (see W2). Output in `.work/chk-e4-mut-out.txt`.
+`scripts/mutation_check.py .work/chk-e4c1-mut.json` (private-copy harness, baseline green; output `.work/chk-e4c1-mut-out.txt`): **6/9 killed.** Maker cycle-1 mutants re-run: **c1, c3, c4, c6, c7, c9 all KILLED** (6 of 6). My own three SURVIVED:
+
+- own-a: `ProxyHandler({})` -> `ProxyHandler()` (probe honours the environment proxy): SURVIVED.
+- own-b: acting budget created before the probe: SURVIVED (equivalent for the unreachable path, see W1).
+- own-c: redirect deadline check dropped from `_InScopeRedirects.redirect_request`: SURVIVED.
 
 ## Warnings (non-blocking; PASS stands)
 
-- **W1. "acting" on an unreachable run is the probe's duration, not zero.** The rendered page says `acting 1.0s` (would say about 10 s on a real blackhole) for a run in which no case acted, because `RunBudget`'s acting clock starts at budget creation, before the probe (`run_launcher.py:205,211`). Defensible (the probe is an action on the target, contract E4.2) but `test_the_stopped_run_records_zero_acting_time_not_a_missing_measurement` (`test_run_unreachable_target.py:61`) asserts only `excluded_s["total"] == 0.0`, the held-off union, not `acting`; its name overstates. The same early clock start means a slow-but-reachable probe consumes `wall_clock_s`. Suggest: rename the test, or a follow-up that stamps `acting` from case start.
-- **W2. The stuck-resolver guard is untested.** own1 (`outcome` default changed from `TimeoutError` to `None`) survives because every test lets the socket timeout fire first. I exercised the guard by hand (above: 2.5 s for a 2 s bound), so it works, but no test pins it. Worst case the probe can exceed `PROBE_TOTAL_S` by about 0.5 s per attempt (about 10.5 s against 10 s); the contract falsifier allows <= 15 s, so this is within contract.
-- **W3. Scope notes.** (a) The probe guards `launch_run` (button, schedule, queue); the staged pipeline in `stages/orchestrate_downstream.py` (`make_report_stage`, `save_tracked_run` at `:188`) builds its own `Run` and neither calls the probe nor carries `stop_reason`; contract E4 does not name that path, but a follow-up should decide whether it needs the same guard. (b) The `stages/reachability.py:13` docstring names `record_unreachable`, which does not exist (the function is `skip_run`). (c) After merge `docs/MAP.md` showed no conflict and `doctor` is clean on the merged tree, so no regeneration is owed.
+- **W1. The "budget after probe" move is not pinned.** own-b survives because `skip_run` ignores the budget and writes `NO_CLOCK` regardless, so the unreachable-run assertion (`acting == 0.0`) holds either way. The real effect of `run_launcher.py:214` is on a slow-but-reachable probe (it no longer consumes `wall_clock_s`), and no test observes that. The unreachable-run claim itself is pinned (maker mutant c8, `NO_CLOCK` with `acting: 1.0`, is in the maker's cycle-1 spec; I did not re-run c8). Suggest a launcher test with a probe seam that advances the injected clock and a tiny `wall_clock_s`.
+- **W2. "No proxy" is unpinned by any test.** own-a survives: nothing fails if the probe starts honouring `HTTP_PROXY`. Behaviourally correct today (my script ran with `HTTP_PROXY`/`FTP_PROXY` pointed at a dead port and every row still resolved correctly; handler list at `reachability.py:152`), and the manifest (judgement call 5) states the choice. A test setting `HTTP_PROXY` to a dead port with a working local target would pin it.
+- **W3. The redirect deadline clause is unpinned.** own-c survives: `time.monotonic() >= self.deadline` at `reachability.py:106` has no test. Harmless (each attempt is separately bounded by its socket timeout and the join in `_attempt`), so the total bound still holds; the clause is belt-and-braces.
 
 ## Close-out
 
-PASS. The maker may flip `qa/manifests/e2e-fixes-e4.md` to `checked-PASS`. Merge and push remain with the orchestrator (not done here). Unproven corners, both outside the contract's falsifiers: a fast-fail against a real public DNS/TLS failure, and the E4.1 wall-time invariant as a number.
+PASS at cycle 1. The maker may flip `qa/manifests/e2e-fixes-e4.md` to `checked-PASS`. Merge and push remain with the orchestrator (D-130 holds pushes to origin in any case). Still unproven, outside the contract's falsifiers: a fast-fail against a real public DNS/TLS failure, and the wall-time invariant as a number.
