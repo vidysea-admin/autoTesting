@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e2
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, verdict a25593cf)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E2 (E2.1-E2.7; AT-1413, AT-1414). **Criticality:** HIGH (the verdict path, core-invariants C12).
 **Branch:** `feat/e2e-e2`, cut from master `dccc65e9` (contract commit). Not merged, not pushed.
