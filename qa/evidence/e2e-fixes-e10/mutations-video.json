@@ -1,0 +1,55 @@
+{
+ "mutations": [
+  {
+   "name": "V1 (E10.1): the three keyed tables are written with a raw collection, not through VideoOps",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "tx._insert(table, want)",
+   "new": "tx._writer(table).insert_one(want)",
+   "kills": ["tests/test_cli_store_auth_video.py::test_the_video_rows_are_journalled"]
+  },
+  {
+   "name": "V2 (E10.1): the request and comment allocators are not seeded",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "_seed_allocator(tx, table)",
+   "new": "pass",
+   "kills": ["tests/test_cli_store_auth_video.py::test_the_allocators_start_above_every_imported_id"]
+  },
+  {
+   "name": "V3 (E10.1): a differing target row is called unchanged instead of conflicting-id",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "return \"unchanged\" if all(held.get(k) == v for k, v in want.items()) else \"conflicting-id\"",
+   "new": "return \"unchanged\"",
+   "kills": ["tests/test_cli_store_auth_video.py::test_a_differing_target_row_is_reported_and_verify_fails"]
+  },
+  {
+   "name": "V4 (E10.1): the import prints the source rows",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "counts = out[_row_name(table)]",
+   "new": "counts = out[_row_name(table)]; print(d[table])",
+   "kills": ["tests/test_cli_store_auth_video.py::test_the_report_and_logs_carry_counts_never_a_value"]
+  },
+  {
+   "name": "V5 (E10.1): a second pending request for the same person and video is inserted",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "return \"conflicting-id\" if tx._docs(REQUESTS, twin) else \"to_insert\"",
+   "new": "return \"to_insert\"",
+   "kills": ["tests/test_cli_store_auth_video.py::test_a_pending_request_for_the_same_person_and_video_is_not_duplicated"]
+  },
+  {
+   "name": "V6 (E10.1): the dry run opens the Mongo client",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "store = MongoAuthStore(default_store()) if remote else None",
+   "new": "store = MongoAuthStore(default_store())",
+   "kills": ["tests/test_cli_store_auth_video.py::test_a_dry_run_opens_no_client_and_counts_each_table"]
+  },
+  {
+   "name": "V7 (E10.1): the import forgets the share granted_at (stamped with a fixed date)",
+   "file": "src/autotester/auth/migrate_auth.py",
+   "old": "want[\"granted_by\"], want[\"granted_at\"])",
+   "new": "want[\"granted_by\"], \"1999-01-01\")",
+   "kills": ["tests/test_cli_store_auth_video.py::test_a_second_apply_writes_nothing_and_never_replaces"]
+  }
+ ],
+ "tests": ["tests/test_cli_store_auth_video.py"],
+ "timeout_s": 600
+}

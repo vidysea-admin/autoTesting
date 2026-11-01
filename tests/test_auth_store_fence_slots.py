@@ -5,6 +5,7 @@ compare-and-set comes before the marker read; a recovery resolves only EARLIER e
 
 from __future__ import annotations
 
+import contextlib
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,7 @@ from autotester.auth import accounts
 from autotester.auth import store_mongo_fence as fence
 from autotester.auth.store import auth_store
 from autotester.auth.store_mongo import AuthStoreBusy
+from autotester.store.mongo_guard import StoreDuplicateKey
 
 
 @pytest.fixture
@@ -185,3 +187,95 @@ def test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data(env: AuthEn
     assert len(docs) == 1 and str(docs[0]["_e"]).startswith("G:")
     assert all(v is None for k, v in docs[0].items() if k not in ("_id", "_e"))
     assert "person@example.test" not in env.dump()
+
+
+# -- E10.2: the takeover compare-and-set (insert_fenced) and its epoch comparison ---------------
+def _takeover_target(kind: str) -> tuple[str, Callable[[int], None], Callable[[int], None],
+                                         Callable[[], object], object]:
+    """(collection, grant, revoke, what the reader sees, what it sees when revoked)."""
+    if kind == "grant":
+        return ("auth_grants", _grant, _revoke, _people, {})
+
+    def share(on: bool) -> Callable[[int], None]:
+        def run(_b: int) -> None:
+            with auth_store().transaction() as tx:
+                tx.set_share("proj", "v1", "p@example.test", on, "admin", "2000-01-01")  # type: ignore[attr-defined]
+        return run
+
+    def seen() -> object:
+        with auth_store().reading() as tx:
+            return tx.share_emails("proj", "v1")  # type: ignore[attr-defined]
+    return ("video_shares", share(True), share(False), seen, frozenset())
+
+
+@pytest.mark.parametrize("kind", ["grant", "share"])
+def test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing(
+        env: AuthEnv, monkeypatch: pytest.MonkeyPatch, kind: str) -> None:
+    """E10.2 / O1: Z reads the hidden slot (`find_one`), is paused right before its `update_one`
+    compare-and-set; a successor epoch recovers Z and raises the slot to `G:<later>` by
+    committing an unrelated transaction. Z's blind-looking write must change nothing."""
+    _a, b, _c = _seed()
+    coll, grant, revoke, seen, revoked = _takeover_target(kind)
+    grant(b)
+    revoke(b)
+    assert seen() == revoked and fence.gone(_slots(env, coll)[0]["_e"])
+    old = _slots(env, coll)[0]["_e"]
+    _at_call(monkeypatch, "update_one", lambda c, a: c.name == coll and a[0].get("_e") == old,
+             _write(env, b, "successor"))
+    with pytest.raises(AuthStoreBusy):
+        grant(b)
+    assert seen() == revoked  # the revoked grant (share) stayed revoked
+    assert fence.stamp_epoch(_slots(env, coll)[0]["_e"]) > fence.stamp_epoch(old)
+    grant(b)  # a legitimate later holder can still take the slot
+    assert seen() != revoked
+    assert not _journal_left(env)
+
+
+def _hidden_doc(env: AuthEnv, epoch: int) -> Any:
+    from autotester.auth.store_mongo_fence import coll_of
+
+    coll = coll_of(auth_store()._s, "auth_grants")  # type: ignore[attr-defined]
+    coll.insert_one({"_id": "slot", "slug": None, "_e": fence.hide_stamp(epoch)})
+    return coll
+
+
+def test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one(
+        env: AuthEnv) -> None:
+    """E10.2 / OWN-B: the comparison is `<=`. Same epoch takes over (a delete then a re-create
+    in one transaction depends on it); an earlier epoch is refused and the slot is untouched."""
+    _seed()
+    coll = _hidden_doc(env, 5)
+    mine = {"_id": "slot", "slug": "s", "_e": "00000005.000001"}
+    with pytest.raises(AuthStoreBusy):
+        fence.insert_fenced(coll, "auth_grants", {**mine, "_e": "00000004.000001"}, 4)
+    assert coll.find_one({"_id": "slot"})["slug"] is None  # type: ignore[index]
+    fence.insert_fenced(coll, "auth_grants", mine, 5)
+    assert coll.find_one({"_id": "slot"}) == mine
+    with pytest.raises(StoreDuplicateKey):  # a live document is a real duplicate for anyone
+        fence.insert_fenced(coll, "auth_grants", {**mine, "_e": "00000006.000001"}, 6)
+
+
+def test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant(
+        env: AuthEnv, monkeypatch: pytest.MonkeyPatch) -> None:
+    """E10.2 / the `_hide_slot` compare-and-set: R recovers zombie Z, reads the hidden slot and is
+    paused right before its hiding `update_one`; L (a later epoch) recovers Z too and grants. R's
+    late write is conditional on the stamp it read, so it must leave L's live grant alone."""
+    _a, b, _c = _seed()
+    _grant(b)
+    _revoke(b)
+    old = _slots(env)[0]["_e"]
+
+    def l_grants() -> None:
+        _age_out_lease(env)
+        _grant(b)
+
+    def r_recovers() -> None:
+        _age_out_lease(env)
+        _at_call(monkeypatch, "update_one",
+                 lambda c, a: c.name == "auth_grants" and a[0].get("_e") == old, l_grants)
+        with contextlib.suppress(AuthStoreBusy):  # R's own lease was taken over: it must fail
+            accounts.set_display_name(b, "r")
+    _at_call(monkeypatch, "insert_one", _is("auth_grants"), r_recovers)
+    with pytest.raises((AuthStoreBusy, StoreDuplicateKey)):
+        _grant(b)  # Z, paused at its insert
+    assert _people() == {"viewer": {OTHER}}

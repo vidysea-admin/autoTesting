@@ -1,0 +1,24 @@
+KILLED  V1 (E10.1): the three keyed tables are written with a raw collection, not through VideoOps  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_the_video_rows_are_journalled
+    actually failed: tests/test_cli_store_auth_video.py::test_a_failure_after_the_video_rows_were_written_undoes_them_whole, tests/test_cli_store_auth_video.py::test_the_video_rows_are_journalled
+KILLED  V2 (E10.1): the request and comment allocators are not seeded  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_the_allocators_start_above_every_imported_id
+    actually failed: tests/test_cli_store_auth_video.py::test_the_allocators_start_above_every_imported_id
+KILLED  V3 (E10.1): a differing target row is called unchanged instead of conflicting-id  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_a_differing_target_row_is_reported_and_verify_fails
+    actually failed: tests/test_cli_store_auth_video.py::test_a_differing_target_row_is_reported_and_verify_fails
+KILLED  V4 (E10.1): the import prints the source rows  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_the_report_and_logs_carry_counts_never_a_value
+    actually failed: tests/test_cli_store_auth_video.py::test_the_report_and_logs_carry_counts_never_a_value
+KILLED  V5 (E10.1): a second pending request for the same person and video is inserted  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_a_pending_request_for_the_same_person_and_video_is_not_duplicated
+    actually failed: tests/test_cli_store_auth_video.py::test_a_pending_request_for_the_same_person_and_video_is_not_duplicated
+KILLED  V6 (E10.1): the dry run opens the Mongo client  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_a_dry_run_opens_no_client_and_counts_each_table
+    actually failed: tests/test_cli_store_auth_video.py::test_a_dry_run_opens_no_client_and_counts_each_table
+KILLED  V7 (E10.1): the import forgets the share granted_at (stamped with a fixed date)  (pytest exit 1)
+    claims to kill : tests/test_cli_store_auth_video.py::test_a_second_apply_writes_nothing_and_never_replaces
+    actually failed: tests/test_cli_store_auth_video.py::test_a_differing_target_row_is_reported_and_verify_fails, tests/test_cli_store_auth_video.py::test_a_second_apply_writes_nothing_and_never_replaces, tests/test_cli_store_auth_video.py::test_every_row_comes_across_and_the_application_reads_it_back
+
+7/7 mutations killed
+exit 0

@@ -1,0 +1,6 @@
+KILLED  OWN-B (E10.2): the takeover compares epochs with < instead of <=  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share, tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one
+    actually failed: tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_grant, tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share, tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one, tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant
+
+1/1 mutations killed
+exit 0

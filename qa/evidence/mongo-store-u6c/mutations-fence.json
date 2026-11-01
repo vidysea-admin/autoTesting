@@ -100,10 +100,60 @@
    "kills": [
     "tests/test_auth_store_fence_slots.py::test_the_stamp_epoch_orders_every_stamp_the_fence_writes"
    ]
+  },
+  {
+   "name": "O1 (E10.2): the takeover is blind, its filter drops the stamp it read",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "{\"_id\": doc[\"_id\"], \"_e\": cur[\"_e\"]},",
+   "new": "{\"_id\": doc[\"_id\"]},",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[grant]",
+    "tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[share]"
+   ]
+  },
+  {
+   "name": "OWN-B (E10.2): the takeover compares epochs with < instead of <=",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "stamp_epoch(cur[\"_e\"]) <= epoch and coll.update_one(",
+   "new": "stamp_epoch(cur[\"_e\"]) < epoch and coll.update_one(",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one",
+    "tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share"
+   ]
+  },
+  {
+   "name": "H1 (E10.2): the hiding update in _hide_slot drops its stamp condition",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "if coll.update_one({\"_id\": i, \"_e\": stamp}, {\"$set\": {**blank, \"_e\": to}}):",
+   "new": "if coll.update_one({\"_id\": i}, {\"$set\": {**blank, \"_e\": to}}):",
+   "kills": [
+    "tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant"
+   ]
+  },
+  {
+   "name": "A1 (E10.3): a rollback hides the re-inserted slot without putting the delete's stamp back",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "_took(store, entry) if by is None else None)",
+   "new": "None)",
+   "kills": [
+    "tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share",
+    "tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_grant"
+   ]
+  },
+  {
+   "name": "A2 (E10.3): a recoverer's restore of the delete does not look at the slot it hid",
+   "file": "src/autotester/auth/store_mongo_fence.py",
+   "old": "mine = {\"$in\": [*mine[\"$in\"], hide_stamp(by)]}",
+   "new": "pass",
+   "kills": [
+    "tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[share]",
+    "tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[grant]"
+   ]
   }
  ],
  "tests": [
-  "tests/test_auth_store_fence_slots.py"
+  "tests/test_auth_store_fence_slots.py",
+  "tests/test_auth_store_fence_recreate.py"
  ],
  "timeout_s": 900
 }

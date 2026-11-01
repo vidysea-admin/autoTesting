@@ -14,6 +14,10 @@ A stalled holder's LATE INSERT must never land (AT-1431). Two kinds of collectio
   epoch therefore finds a duplicate key and a stamp from a later epoch, and is refused, however
   many holders came and went in between (a tombstone that is cleared and re-created would leave
   the id absent for it to land in).
+- delete, then re-create, of one slotted id in ONE transaction (E10.3): undoing the re-insert puts
+  the slot back to the `G:` stamp of the same transaction's delete (a rollback), or leaves it
+  hidden at the recoverer's epoch where the delete's restore also looks (a recovery), so the
+  original document comes back whole either way.
 """
 
 from __future__ import annotations
@@ -83,9 +87,11 @@ def landed(ok: bool) -> None:
         raise AuthStoreBusy("the document changed under this writer; the change was refused")
 
 
-def _hide_slot(coll: GuardedCollection, i: Any, mine: Doc, epoch: int) -> None:
+def _hide_slot(coll: GuardedCollection, i: Any, mine: Doc, epoch: int,
+               back: str | None = None) -> None:
     """Make the slot `i` hidden at `epoch`: place the hidden document, or hide the landed one
-    that is mine, or raise an older hidden stamp. A live document of anyone else is left."""
+    that is mine, or raise an older hidden stamp. A live document of anyone else is left. With
+    `back` (E10.3), a landed document of mine goes back to the hidden stamp it took over."""
     hid = hide_stamp(epoch)
     for _ in range(4):  # a few races (the zombie landing, another recoverer) are tolerated
         try:
@@ -99,8 +105,20 @@ def _hide_slot(coll: GuardedCollection, i: Any, mine: Doc, epoch: int) -> None:
         if not (stamp in mine["$in"] or (gone(stamp) and stamp_epoch(stamp) < epoch)):
             return  # a live document of someone else, or already hidden at this epoch or later
         blank = {k: None for k in cur if k not in ("_id", "_e")}  # nothing of the write stays
-        if coll.update_one({"_id": i, "_e": stamp}, {"$set": {**blank, "_e": hid}}):
+        to = back if back is not None and stamp in mine["$in"] else hid
+        if coll.update_one({"_id": i, "_e": stamp}, {"$set": {**blank, "_e": to}}):
             return
+
+
+def _took(store: GuardedStore, entry: Doc) -> str | None:
+    """The hidden stamp an undone insert took over from THIS transaction's own earlier delete of
+    the same id (delete, then re-create): the earlier entry restores a slot stamped `G:<its me>`,
+    so the slot must go back to that stamp or the original document is lost (E10.3)."""
+    older = [d for d in coll_of(store, JOURNAL_COLL).find(
+        {"kind": UNDO, "epoch": entry["epoch"], "coll": entry["coll"], "doc_id": entry["doc_id"]})
+        if str(d["_id"]) < str(entry["_id"])]
+    last = max(older, key=lambda d: str(d["_id"]), default=None)
+    return f"G:{last['me']}" if last is not None and last["op"] == "set" and last["gone"] else None
 
 
 def replay(store: GuardedStore, entry: Doc, by: int | None) -> None:
@@ -111,8 +129,11 @@ def replay(store: GuardedStore, entry: Doc, by: int | None) -> None:
     ins, pre = entry["op"] == "ins", entry["pre"]
     mine = {"$in": [me, f"G:{me}", f"F:{me}"]}
     if ins and entry["coll"] in SLOTTED:
-        _hide_slot(coll, i, mine, entry["epoch"] if by is None else by)
+        _hide_slot(coll, i, mine, entry["epoch"] if by is None else by,
+                   _took(store, entry) if by is None else None)
         return
+    if by is not None and entry["coll"] in SLOTTED:  # a later undone insert hid the slot at `by`
+        mine = {"$in": [*mine["$in"], hide_stamp(by)]}
     stamp = pre if by is None else f"F:{pre}"  # a recoverer must not reopen the old stamp
     if by is not None and ins:
         key = f"{FENCE}:{entry['coll']}:{i}"  # a placeholder for every unique index
