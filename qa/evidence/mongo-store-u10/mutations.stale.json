@@ -1,0 +1,10 @@
+{
+  "entries": [
+    {
+      "old_nodeid": "tests/test_mongo_deploy_u10.py::test_guide_keeps_the_gcs_volume_required_until_g1_and_cites_d125",
+      "moved_to": "tests/test_mongo_deploy_u10.py::test_guide_keeps_the_gcs_volume_required_while_any_area_is_on_files_and_cites_d125",
+      "moved_by_unit": "e2e-fixes-e8",
+      "note": "stale on purpose, test renamed: E8.2 rewrote the 'stays required until G1 is complete' sentence to 'stays required while any area is on files' (D-125 unchanged); mutation D3's old text no longer exists in DEPLOY.md"
+    }
+  ]
+}

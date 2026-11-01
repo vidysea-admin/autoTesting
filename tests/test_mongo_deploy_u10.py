@@ -51,7 +51,47 @@ def test_guide_lists_every_store_area_the_code_routes_in_the_areas_row():
 
 def test_guide_says_auth_moves_only_with_its_own_entry():
     assert "`auth=mongo`" in MONGO
-    assert re.search(r"global `AUTOTESTER_STORE=mongo`[^.]*(auth|SQLite)", MONGO)
+    assert re.search(r"`auth` moves only with its own entry[^.]*global value", MONGO)
+
+
+def test_guide_says_the_entrypoint_sets_both_variables_for_every_area():  # E8.2 (a)
+    assert "The entrypoint selects Mongo when the URI is present" in MONGO
+    assert re.search(r"sets BOTH\s+`AUTOTESTER_STORE=mongo` and an `AUTOTESTER_STORE_AREAS` "
+                     r"entry for every area", MONGO)
+    assert "all nine" in MONGO and "`credentials=mongo`" in MONGO
+    assert "the operator does not set them" in MONGO
+
+
+def test_guide_says_the_selection_is_made_only_on_a_fresh_data_root():  # E8.2 (b)
+    assert "only on a fresh data root" in MONGO
+    flat = " ".join(MONGO.split())
+    for fact in ("set in the process environment", "SQLite auth file exists",
+                 "`projects/*/project.json` exists", "prints one line and keeps files",
+                 "`autotester store migrate`", "a dry run unless `--apply`"):
+        assert fact in flat, fact
+
+
+def test_guide_says_a_bad_uri_stops_start_up_and_the_old_revision_serves():  # E8.2 (c)
+    assert re.search(r"wrong or unreachable URI stops start-up", MONGO)
+    assert re.search(r"revision that fails to start does not take\s+traffic", MONGO)
+    assert "previous revision keeps serving" in MONGO
+
+
+def test_guide_gives_the_escape_hatch_in_the_process_environment():  # E8.2 (d)
+    assert re.search(r"`AUTOTESTER_STORE=file` in the PROCESS environment", MONGO)
+    assert "stays on files" in MONGO
+
+
+def test_guide_says_to_set_the_first_admin_before_the_first_start():  # E8.2 (e)
+    assert ("`AUTOTESTER_FIRST_ADMIN_EMAIL` before the first start on an empty Mongo auth store"
+            in MONGO)
+    assert "nobody becomes the first admin from a signup" in MONGO
+    assert "D-074" in MONGO and "`bootstrap-admin`" in MONGO
+
+
+def test_guide_says_a_data_root_env_store_choice_does_not_beat_the_platform_uri():  # E8.2 (f)
+    assert re.search(r"data-root `\.env` does not turn it off", MONGO)
+    assert "`load_repo_env` never replaces an already-set variable" in MONGO
 
 
 def test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when():
@@ -60,10 +100,12 @@ def test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when():
     assert "queue" in MONGO and "CAS" in MONGO
 
 
-def test_guide_keeps_the_gcs_volume_required_until_g1_and_cites_d125():
+def test_guide_keeps_the_gcs_volume_required_while_any_area_is_on_files_and_cites_d125():
     assert "D-125" in MONGO and "G1" in MONGO
-    assert re.search(r"(volume|bucket)[^.]*(stays|remains|still) required", MONGO)
+    assert re.search(r"`/data` GCS volume stays required while any area is on files", MONGO)
+    assert re.search(r"volume stays required while any state area is on files", CLOUD_RUN)
     assert "--add-volume name=data,type=cloud-storage" in CLOUD_RUN
+    assert "scratch only" in MONGO
 
 
 def test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value():

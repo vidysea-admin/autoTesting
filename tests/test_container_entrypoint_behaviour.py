@@ -225,3 +225,75 @@ def test_e5_selection_function_cannot_exit_and_is_called_with_or_true():
     assert "select_mongo_store || true" in _entrypoint_text()
     out = subprocess.run([BASH, "-n"], input=_select_fn(), text=True, capture_output=True)
     assert out.returncode == 0, out.stderr
+
+
+# --- E8.1: a prior file-store project blocks the automatic selection -------------------------
+
+NOT_SELECTED = "Mongo not auto-selected"
+NONE_SET = {"STORE": "UNSET", "AREAS": "UNSET"}
+SLUG = "zeta"  # must not occur in a test name, or tmp_path would print it
+
+
+def _touch(tmp_path: Path, rel: str) -> None:
+    f = tmp_path / rel
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text("{}", encoding="utf-8")
+
+
+def _no_leak(out: str, err: str) -> None:
+    both = (out + err).lower()
+    assert "canary" not in both and SLUG not in both
+
+
+@pytest.mark.parametrize("rel", [f"projects/{SLUG}/project.json",
+                                 "projects/with space/project.json"])
+def test_e8_a_project_file_blocks_the_selection_with_one_line(tmp_path, rel):
+    _touch(tmp_path, rel)
+    got, out, err = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    assert got == NONE_SET
+    assert out.count(NOT_SELECTED) == 1 and "file-store projects" in out
+    assert "docker/DEPLOY.md" in out
+    _no_leak(out, err)
+
+
+def test_e8_auth_file_and_project_together_print_exactly_one_line(tmp_path):
+    _touch(tmp_path, ".auth/auth.sqlite3")
+    _touch(tmp_path, f"projects/{SLUG}/project.json")
+    got, out, err = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    assert got == NONE_SET and out.count(NOT_SELECTED) == 1
+    assert "SQLite auth store" in out and "file-store projects" not in out
+    _no_leak(out, err)
+
+
+@pytest.mark.parametrize("setup", [
+    lambda p: (p / "projects").mkdir(),                              # empty projects/
+    lambda p: (p / "projects" / SLUG).mkdir(parents=True),           # slug dir, no project.json
+    lambda p: _touch(p, f"projects/{SLUG}/b/project.json"),          # too deep
+    lambda p: _touch(p, "project.json"),                             # not under projects/
+    lambda p: None,                                                  # no projects/ at all
+], ids=["empty-projects", "slug-dir-only", "too-deep", "wrong-level", "no-projects-dir"])
+def test_e8_only_a_direct_project_json_counts(tmp_path, setup):
+    from autotester.store.mongo_routes import AREAS
+    setup(tmp_path)
+    got, out, err = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    assert got["STORE"] == "mongo"
+    assert sorted(got["AREAS"].split(",")) == sorted(f"{a}=mongo" for a in AREAS)
+    assert NOT_SELECTED not in out
+    _no_leak(out, err)
+
+
+def test_e8_a_project_directory_named_project_json_does_not_count(tmp_path):
+    (tmp_path / "projects" / SLUG / "project.json").mkdir(parents=True)  # a directory, not a file
+    got, _, _ = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    assert got["STORE"] == "mongo"
+
+
+def test_e8_the_real_script_keeps_files_for_a_project_and_leaks_nothing(entry, tmp_path):
+    script, py = entry
+    make_stub(py, _stub_seeing("AUTOTESTER_STORE"))
+    _touch(tmp_path, f"projects/{SLUG}/project.json")
+    r = run(script, tmp_path, env={"PATHLYNKS_MONGO_URI": CANARY_URI,
+                                   "AUTOTESTER_ROOT": posix(tmp_path)})
+    assert r.returncode == 0, r.stderr
+    assert "SEEN=[]" in r.stdout and NOT_SELECTED in r.stdout
+    _no_leak(r.stdout, r.stderr)  # includes the stubbed exec's argv

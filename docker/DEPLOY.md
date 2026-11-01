@@ -238,7 +238,7 @@ gcloud run deploy autotester --image <region>-docker.pkg.dev/<project>/<repo>/au
   --startup-probe tcpSocket.port=8000,initialDelaySeconds=10,timeoutSeconds=5,periodSeconds=10,failureThreshold=18
 ```
 
-**Persistent storage:** without the `--add-volume`/`--add-volume-mount` pair above, auth, `projects/`, approvals and `.work` live on the container filesystem and every deploy wipes them. The entrypoint logs `WARNING: storage is not persistent` (and `/admin/users` and `/admin/groups` show a banner on a hosted server) when the data root is not a mounted volume; it never blocks start-up. `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately throwaway local container. The volume stays required until every state area is on MongoDB (next section, G1); the entrypoint stops warning only then.
+**Persistent storage:** without the `--add-volume`/`--add-volume-mount` pair above, auth, `projects/`, approvals and `.work` live on the container filesystem and every deploy wipes them. The entrypoint logs `WARNING: storage is not persistent` (and `/admin/users` and `/admin/groups` show a banner on a hosted server) when the data root is not a mounted volume; it never blocks start-up. `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately throwaway local container. The volume stays required while any state area is on files; once every area is on MongoDB (next section) the entrypoint stops warning.
 
 The container binds `$PORT` (default 8000): `--port` must match, or drop the flag and let Cloud
 Run inject `PORT=8080`. CPU must stay always allocated (`--no-cpu-throttling`); the app runs
@@ -258,25 +258,37 @@ data folder. It is configuration, one area at a time; with none of the names bel
 
 | Name | What it does |
 |---|---|
-| `PATHLYNKS_MONGO_URI` | The Mongo connection URI. Give it to Cloud Run as a secret (or `<data>/.env` on a VM); never in git, an image or a log. Cloud Run also needs network access to the Mongo server, which is IP allow-listed. |
+| `PATHLYNKS_MONGO_URI` | The Mongo connection URI. Give it to Cloud Run as a secret (or `<data>/.env` on a VM); never in git, an image or a log. Cloud Run also needs network access to the Mongo server, which is IP allow-listed. When it is present the entrypoint selects Mongo for you (below). |
 | `AUTOTESTER_STORE` | `file` (default) or `mongo`: the backend for every area. Any other value stops start-up. |
 | `AUTOTESTER_STORE_AREAS` | Per-area override, `area=backend,...`. Areas: `settings`, `projects`, `runs`, `crawls`, `approvals`, `auth`, `credentials`, `blobs`, `queue`. An unknown area or backend stops start-up. `credentials` covers the login values and the saved browser sessions. |
 | `AUTOTESTER_APPROVAL_KEY` | Signs approvals (D-018). It encrypts nothing and is never stored in Mongo. Keep it in `<data>/.env` or the service environment. |
 
-**`auth` moves only with its own entry.** The global `AUTOTESTER_STORE=mongo` leaves sign-in on SQLite; add the
-entry `auth=mongo` to `AUTOTESTER_STORE_AREAS` to move it, and only after its users are migrated. A fully flipped service sets both:
-`AUTOTESTER_STORE=mongo` and `AUTOTESTER_STORE_AREAS=auth=mongo`.
+**The entrypoint selects Mongo when the URI is present.** When `PATHLYNKS_MONGO_URI` is present, the entrypoint sets BOTH
+`AUTOTESTER_STORE=mongo` and an `AUTOTESTER_STORE_AREAS` entry for every area (all nine, `auth=mongo` and `credentials=mongo`
+included, because `auth` moves only with its own entry and ignores the global value); the operator does not set them.
 
-**Flipping is a human gate (G1).** Setting a name does not copy data: migrate first (`autotester store migrate`, a dry run
-unless `--apply`), then flip one area at a time in this order, each reversible until the data diverges: `settings`, `projects`,
-`runs` with `crawls`, `approvals`, `auth`, `credentials`, `blobs`, `queue`. The first `--apply` and every flip are Umesh's call.
+**The selection is made only on a fresh data root.** If either store variable is set in the process environment, if a SQLite auth
+file exists, or if any `projects/*/project.json` exists, the entrypoint prints one line and keeps files, so that state is never
+hidden behind an empty Mongo. The way to move that state is `autotester store migrate` (a dry run unless `--apply`), then the flip
+per area in this order, each reversible until the data diverges: `settings`, `projects`, `runs` with `crawls`, `approvals`, `auth`,
+`credentials`, `blobs`, `queue`. The first `--apply` and every flip of existing data are a human gate (G1): Umesh's call.
+
+**A wrong or unreachable URI stops start-up.** There is no file fallback. On Cloud Run a revision that fails to start does not take
+traffic, so the previous revision keeps serving.
+
+**Escape hatch.** Set `AUTOTESTER_STORE=file` in the PROCESS environment (the service's environment variables) and the automatic
+selection is off: everything stays on files. A store choice written in the data-root `.env` does not turn it off when the URI comes
+from the platform environment: the entrypoint reads the process environment, and `load_repo_env` never replaces an already-set variable.
+
+**Set `AUTOTESTER_FIRST_ADMIN_EMAIL` before the first start on an empty Mongo auth store.** Use the intended admin address. On a hosted
+(non-loopback) server with it unset nobody becomes the first admin from a signup (D-074 (d)); the CLI `bootstrap-admin` is the other way.
 
 **`--max-instances 1` stays until Mongo claims and compare-and-set (CAS) are switched on**, that is until `queue` (run queue,
 schedule claims, the orchestrator checkpoint) is on `mongo`. SQLite sign-in on a bucket mount and file locks are single-instance
 only, so lift the limit only when every area, `auth` included, is on Mongo.
 
-**The `/data` GCS volume stays required until G1 is complete (D-125).** D-120 had withdrawn the volume request; D-125 (2026-10-30)
-mounts the bucket now and keeps it until the Mongo build replaces it. While any area is on files, that area's state lives on the
+**The `/data` GCS volume stays required while any area is on files (D-125).** D-120 had withdrawn the volume request; D-125 (2026-10-30)
+mounts the bucket now and keeps it until the Mongo build replaces it. For each area still on files, that area's state lives on the
 volume. Once every area is on Mongo the data root holds scratch only (logs, the blob cache, `profiles/`), the volume is no longer
 needed and the entrypoint's "storage is not persistent" warning is replaced by a one-line notice.
 
