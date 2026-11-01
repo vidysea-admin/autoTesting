@@ -108,3 +108,120 @@ def test_diagnostics_wrapper_execs_entrypoint_and_propagates_rc(tmp_path):
             env={"PATH": f"{root}/bin:{os.environ['PATH']}"})
     assert "EXECUTING APPLICATION ENTRYPOINT" in r.stdout and "ENTRYPOINT-RAN" in r.stdout
     assert r.returncode == 5, r.stderr
+
+
+# --- E5 (AT-1433): the entrypoint selects the Mongo store when its URI is present ----------
+
+STORE_VARS = ("PATHLYNKS_MONGO_URI", "AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS",
+              "AUTOTESTER_AUTH_DIR", "AUTOTESTER_ROOT")
+CANARY_URI = "mongodb://canary-user:canary-pass@h/"
+SELECT_TAIL = ('select_mongo_store\necho rc=$?\n'
+               'echo "STORE=${AUTOTESTER_STORE-UNSET}"\n'
+               'echo "AREAS=${AUTOTESTER_STORE_AREAS-UNSET}"')
+
+
+def _entrypoint_text() -> str:
+    return (ROOT / "docker/entrypoint.sh").read_text(encoding="utf-8").replace("\r\n", "\n")
+
+
+def _select_fn() -> str:
+    text = _entrypoint_text()
+    start = text.index("select_mongo_store() {")
+    return text[start:text.index("\n}\n", start) + 3]
+
+
+def _select(tmp_path: Path, **extra: str) -> tuple[dict[str, str], str, str]:
+    """Run only the selection step; return (the two store variables after it, stdout, stderr)."""
+    full = {k: v for k, v in os.environ.items() if k not in STORE_VARS}
+    full.update(AUTOTESTER_ROOT=tmp_path.as_posix())
+    full.update(extra)
+    out = subprocess.run([BASH, "-c", f"{_select_fn()}\n{SELECT_TAIL}"], capture_output=True,
+                         text=True, env=full)
+    seen = dict(line.split("=", 1) for line in out.stdout.splitlines() if "=" in line)
+    assert seen.get("rc") == "0", out.stderr
+    return {"STORE": seen["STORE"], "AREAS": seen["AREAS"]}, out.stdout, out.stderr
+
+
+def test_e5_uri_alone_selects_mongo_for_every_area(tmp_path):
+    from autotester.store.mongo_routes import AREAS
+    got, _, _ = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    assert got["STORE"] == "mongo"
+    assert sorted(got["AREAS"].split(",")) == sorted(f"{a}=mongo" for a in AREAS)
+    assert "auth=mongo" in got["AREAS"] and "credentials=mongo" in got["AREAS"]
+
+
+def test_e5_the_generated_selection_is_one_the_store_accepts(tmp_path, monkeypatch):
+    from autotester.auth.store import on_mongo
+    from autotester.store.mongo_routes import AREAS, store_selection
+    got, _, _ = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    monkeypatch.setenv("AUTOTESTER_STORE", got["STORE"])
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", got["AREAS"])
+    assert store_selection() == dict.fromkeys(AREAS, "mongo") and on_mongo()
+
+
+@pytest.mark.parametrize("extra", [
+    {"AUTOTESTER_STORE": "file"}, {"AUTOTESTER_STORE_AREAS": "blobs=mongo"},
+    {"AUTOTESTER_STORE": "mongo"}, {"AUTOTESTER_STORE_AREAS": "auth=file"}])
+def test_e5_an_operator_choice_wins_whole_and_is_not_half_merged(tmp_path, extra):
+    got, out, _ = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI, **extra)
+    assert got["STORE"] == extra.get("AUTOTESTER_STORE", "UNSET")
+    assert got["AREAS"] == extra.get("AUTOTESTER_STORE_AREAS", "UNSET")
+    assert "operator store selection kept" in out
+
+
+@pytest.mark.parametrize("uri", [{}, {"PATHLYNKS_MONGO_URI": ""},
+                                 {"PATHLYNKS_MONGO_URI": "  \t "}])
+def test_e5_no_uri_or_a_blank_one_selects_nothing(tmp_path, uri):
+    got, out, err = _select(tmp_path, **uri)
+    assert got == {"STORE": "UNSET", "AREAS": "UNSET"} and "Mongo" not in out + err
+
+
+def test_e5_the_uri_value_is_never_printed(tmp_path):
+    for extra in ({}, {"AUTOTESTER_STORE": "file"}):
+        _, out, err = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI, **extra)
+        assert "canary" not in (out + err).lower()
+
+
+def _stub_seeing(var: str) -> str:
+    return PY_STUB.replace('echo "STUB-ARGS $*"', f'echo "STUB-ARGS $*"; echo "SEEN=[${var}]"')
+
+
+def test_e5_the_real_script_exports_the_selection_and_leaks_no_uri(entry, tmp_path):
+    script, py = entry
+    make_stub(py, _stub_seeing("AUTOTESTER_STORE"))
+    r = run(script, tmp_path, env={"PATHLYNKS_MONGO_URI": CANARY_URI,
+                                   "AUTOTESTER_ROOT": posix(tmp_path)})
+    assert r.returncode == 0, r.stderr
+    assert "SEEN=[mongo]" in r.stdout
+    assert "every state area is on Mongo" in r.stdout and "WARNING: storage" not in r.stderr
+    assert "canary" not in (r.stdout + r.stderr).lower()  # nor in the stubbed exec's argv
+
+
+def test_e5_the_real_script_without_a_uri_selects_nothing(entry, tmp_path):
+    script, py = entry
+    make_stub(py, _stub_seeing("AUTOTESTER_STORE"))
+    r = run(script, tmp_path, env={"AUTOTESTER_ROOT": posix(tmp_path), "PATHLYNKS_MONGO_URI": ""})
+    assert r.returncode == 0 and "SEEN=[]" in r.stdout
+
+
+def test_e5_an_existing_sqlite_user_store_is_not_locked_out(tmp_path, monkeypatch):
+    """A-W1: a container that already holds SQLite users and starts with the URI present keeps
+    sign-in on SQLite: the selection is skipped, so the user stays reachable."""
+    from autotester.auth import accounts
+    from autotester.auth.store import auth_store, on_mongo
+    from autotester.auth.store_sqlite import SqliteAuthStore
+    for name in ("AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS", "AUTOTESTER_AUTH_DIR"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("AUTOTESTER_ROOT", str(tmp_path))
+    accounts.bootstrap_admin("owner@example.test", "correct-horse-battery-1")
+    got, out, _ = _select(tmp_path, PATHLYNKS_MONGO_URI=CANARY_URI)
+    assert got == {"STORE": "UNSET", "AREAS": "UNSET"} and "existing SQLite auth store" in out
+    assert not on_mongo() and isinstance(auth_store(), SqliteAuthStore)
+    assert accounts.find_user("owner@example.test") is not None
+
+
+def test_e5_selection_function_cannot_exit_and_is_called_with_or_true():
+    assert "exit " not in _select_fn()
+    assert "select_mongo_store || true" in _entrypoint_text()
+    out = subprocess.run([BASH, "-n"], input=_select_fn(), text=True, capture_output=True)
+    assert out.returncode == 0, out.stderr

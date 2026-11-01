@@ -172,3 +172,97 @@ def test_entrypoint_quiet_with_opt_out_and_survives_missing_mounts(tmp_path):
     assert out == "rc=0" and "WARNING" not in err
     out, err = _run_fn(tmp_path, "x", same_dev=True, AUTOTESTER_MOUNTS_FILE=str(tmp_path / "nope"))
     assert out == "rc=0" and "WARNING" not in err
+
+
+# --- E5.4 (AT-1433): on Cloud Run silence is the failure -----------------------------------
+
+CLOUD = "K_SERVICE"
+
+
+@pytest.fixture(autouse=True)
+def _no_cloud_env(monkeypatch):
+    for name in (CLOUD, "AUTOTESTER_STORE", "AUTOTESTER_STORE_AREAS"):
+        monkeypatch.delenv(name, raising=False)
+
+
+def _all_mongo() -> str:
+    from autotester.store.mongo_routes import AREAS
+    return ",".join(f"{a}=mongo" for a in AREAS)
+
+
+def test_on_cloud_run_is_one_non_blank_variable(monkeypatch):
+    assert env.on_cloud_run() is False
+    monkeypatch.setenv(CLOUD, "   ")
+    assert env.on_cloud_run() is False
+    monkeypatch.setenv(CLOUD, "autotester")
+    assert env.on_cloud_run() is True
+
+
+def test_cloud_run_with_no_mount_table_warns_instead_of_going_quiet(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    msg = env.storage_warning(tmp_path, tmp_path / "absent")
+    assert msg and "Cannot verify that" in msg and str(tmp_path) in msg
+
+
+def test_cloud_run_with_an_unreadable_mount_table_warns(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    assert env.storage_warning(tmp_path, mounts_file(tmp_path, "garbage without a slash entry"))
+
+
+def test_cloud_run_on_a_verified_volume_is_quiet(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    devices = {str(tmp_path): 9}
+    monkeypatch.setattr(env, "_device", lambda p: devices.get(str(p), 7))
+    mounts = mounts_file(tmp_path, ROOTFS, f"gcsfuse {tmp_path.as_posix()} fuse rw 0 0")
+    assert env.storage_warning(tmp_path, mounts) is None
+
+
+def test_cloud_run_ephemeral_root_keeps_the_existing_sentence(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    monkeypatch.setattr(env, "_device", lambda p: 7)
+    assert env.storage_warning(tmp_path, mounts_file(tmp_path, ROOTFS)).startswith(
+        "Storage is not persistent")
+
+
+def test_cloud_run_with_every_area_on_mongo_is_quiet_even_without_mounts(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", _all_mongo())
+    assert env.storage_warning(tmp_path, tmp_path / "absent") is None
+
+
+@pytest.mark.parametrize("areas", ["", "auth=file", "queue=file,auth=mongo"])
+def test_cloud_run_with_any_area_on_files_still_warns(tmp_path, monkeypatch, areas):
+    monkeypatch.setenv(CLOUD, "x")
+    monkeypatch.setenv("AUTOTESTER_STORE", "mongo")
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", areas)  # "": auth stays on SQLite (A-W1)
+    assert env.storage_warning(tmp_path, tmp_path / "absent")
+
+
+def test_cloud_run_with_one_area_on_mongo_and_the_rest_on_files_warns(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "auth=mongo")
+    assert env.storage_warning(tmp_path, tmp_path / "absent")
+
+
+def test_cloud_run_opt_out_is_quiet(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    monkeypatch.setenv(OK, "1")
+    assert env.storage_warning(tmp_path, tmp_path / "absent") is None
+
+
+def test_off_cloud_run_an_unknowable_root_stays_quiet(tmp_path):
+    assert env.storage_warning(tmp_path, tmp_path / "absent") is None
+
+
+def test_an_invalid_store_selection_warns_and_never_raises(tmp_path, monkeypatch):
+    monkeypatch.setenv(CLOUD, "x")
+    monkeypatch.setenv("AUTOTESTER_STORE_AREAS", "nonsense=mongo")
+    assert env.storage_warning(tmp_path, tmp_path / "absent")
+
+
+def test_banner_shows_on_cloud_run_without_the_hosted_flag(monkeypatch):
+    monkeypatch.delenv(HOSTED, raising=False)
+    monkeypatch.setenv(CLOUD, "x")
+    _ephemeral(monkeypatch)
+    assert "Storage is not persistent" in admin_view.users_body([], [])

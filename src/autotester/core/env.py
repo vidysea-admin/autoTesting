@@ -1,25 +1,14 @@
 """Load the repo-root `.env` — one definition, used by every entry point.
 
 AT-228. `ui/app.py` loaded the repo-root `.env`; **no CLI entry point did**. So
-`autotester providers` answered `mock` while a working `GEMINI_API_KEY` sat on
-disk, and a HUMAN_GATE was filed against a blocker that did not exist. The user
-had already supplied the credential and was told the system was waiting on him.
+`autotester providers` answered `mock` while a working `GEMINI_API_KEY` sat on disk, and a
+HUMAN_GATE was filed against a blocker that did not exist. Whether this machine has credentials
+lives in one place (C3); parsing is delegated to `python-dotenv`. Secrets never pass through
+here as values; `core.redact` remains the gate before any model call.
 
-The lesson is not "the CLI forgot a line". It is that *whether this machine has
-credentials* was answered differently by two entry points reading the same disk,
-and the disagreement was invisible because each was internally consistent. So
-this lives in one place (C3) and both callers use it. Parsing is delegated to
-`python-dotenv` rather than hand-rolled: the UI already depended on it, and two
-parsers for one file format is the same duplication in a smaller costume.
-
-Secrets never pass through here as values — this only populates `os.environ`
-from a gitignored file, and `core.redact` remains the gate before any model call.
-
-**It refuses to run inside a test process, and that is load-bearing.** The first version did
-not: every `CliRunner` invocation ran the CLI callback, which loaded the real `.env` into the
-shared test process for good, and provider tests asserting "no key present" started passing a
-real key. A repo whose premise is that a secret never reaches a model, a log or an artifact
-cannot put real credentials into every test process as a side effect of testing a CLI.
+**It refuses to run inside a test process, and that is load-bearing.** The first version
+did not: every `CliRunner` invocation loaded the real `.env` into the shared test process
+for good, and provider tests asserting "no key present" started passing a real key.
 """
 
 from __future__ import annotations
@@ -143,27 +132,45 @@ def _holding_mount(base: Path, entries: list[tuple[str, str]]) -> tuple[str, str
     return max(held, key=lambda e: len(PurePosixPath(e[0]).parts), default=None)
 
 
+def on_cloud_run() -> bool:
+    """True when `K_SERVICE` (Cloud Run sets it) is non-blank: the one detector (E5.4, C3)."""
+    return bool(os.environ.get("K_SERVICE", "").strip())
+
+
+def _all_areas_mongo() -> bool:
+    """Every store area on Mongo, `auth` by its own entry too (A-W1); an invalid selection counts
+    as not (a diagnostic never raises)."""
+    from autotester.auth.store import on_mongo
+    from autotester.store.mongo_routes import store_selection  # lazy: it imports this module
+    try:
+        return set(store_selection().values()) == {"mongo"} and on_mongo()
+    except Exception:
+        return False
+
+
 def storage_warning(root: Path | None = None, mounts_path: Path = _MOUNTS) -> str | None:
     """One sentence when the data root is NOT on a persistent volume, else None.
 
-    Cloud Run (and any container) keeps `AUTOTESTER_ROOT` (auth SQLite, `projects/`, approvals,
-    `.work`) on its throwaway root filesystem unless a volume is mounted there, and every deploy
-    then wipes the accounts. Ephemeral = the deepest mount holding the root is `/`, is memory
-    backed, or shares `st_dev` with `/`. Anything that cannot be determined (no `/proc/mounts`,
-    a read error, no `/` entry) answers None: this check informs, it must never stop a start.
-    `AUTOTESTER_EPHEMERAL_OK=1` silences it for a deliberately ephemeral local container."""
+    A container keeps `AUTOTESTER_ROOT` (auth SQLite, `projects/`, approvals) on its throwaway
+    filesystem unless a volume is mounted there, and every deploy then wipes the accounts.
+    Ephemeral = the deepest mount holding the root is `/`, is memory backed, or shares `st_dev`
+    with `/`. What cannot be determined answers None (this check never stops a start), except on
+    Cloud Run (E5.4), where silence is the failure: it warns there, unless every store area is on
+    Mongo (the root is then scratch). `AUTOTESTER_EPHEMERAL_OK=1` silences it."""
+    cloud, base = on_cloud_run(), root or repo_root()
     try:
-        if os.environ.get(EPHEMERAL_OK_ENV, "").strip() == "1":
+        if os.environ.get(EPHEMERAL_OK_ENV, "").strip() == "1" or (cloud and _all_areas_mongo()):
             return None
-        base = (root or repo_root()).resolve()
+        base = base.resolve()
         entries = _mount_entries(mounts_path.read_text(encoding="utf-8", errors="replace"))
         if not any(point == "/" for point, _ in entries):
-            return None
+            raise OSError("no / entry in the mount table")
         held = _holding_mount(base, entries)
         ephemeral = (held is None or held[0] == "/" or held[1] in _MEMORY_FS
                      or _device(base) == _device(Path("/")))
     except Exception:  # a diagnostic must never break startup
-        return None
+        return (f"Cannot verify that {base} is a persistent volume: accounts and projects may "
+                f"be lost on every deploy. Mount a volume at {base}.") if cloud else None
     if not ephemeral:
         return None
     return (f"Storage is not persistent: accounts and projects are lost on every deploy. "
@@ -184,9 +191,8 @@ def load_repo_env(root: Path | None = None) -> list[str]:
     `env_file` copied from `.env.example` hands the container `KEY=""`), so it
     counts as unset and the file's value loads (AT-863).
 
-    Returning the key names makes "which credentials does this machine have" a
-    question a caller can answer and a test can assert, instead of something
-    each entry point decides for itself.
+    Returning the key names makes "which credentials does this machine have" a question a
+    caller can answer and a test can assert, not something each entry point decides alone.
 
     T-204 AU21: a PROJECT's credentials are not loaded. The file is shared and a project
     route writes into it under a prefix its creator chose (slug `http` + `HTTP_PROXY`,
@@ -283,18 +289,12 @@ def resolve_credentials(file_values: Mapping[str, str], slug: str,
 PUBLIC_ENV_KEYS: frozenset[str] = frozenset({
     "PATHLYNKS_USER_LOGIN_URL",
 })
-"""AT-086: `.env` keys whose value is explicitly declared NOT a credential (a
-public URL, not a secret) -- so `ui/helpers.py`'s submission guard can let a
-project's own base_url/allowed_domains match one without refusing it, even at
-onboarding, before anything is stored to make the AT-078 already-stored
-exemption apply.
+"""AT-086: `.env` keys whose value is declared NOT a credential (a public URL), so
+`ui/helpers.py`'s submission guard can let a project's own base_url/allowed_domains match one
+without refusing it, even at onboarding.
 
-Declared HERE, in source, on purpose: no HTTP route reads or writes this name
-(not a `Project` field, not a `Form`, not `project.json`), so no request can
-ever add a real secret's key to it and walk its value past the guard by
-calling it public. Widening this list is a code change, reviewed like any
-other -- never inferred from behaviour, never a runtime declaration. Every
-other masking path (`Redactor.scrub`, `SecretStore.guard_prompt`) still treats
-every `.env` value as secret regardless of this list (C5 unchanged) -- only
-the UI submission guard's `SecretStore.public_values()` consults it, and only
-for a value that appears under NO other, non-public key (see that method)."""
+Declared HERE, in source, on purpose: no HTTP route reads or writes this name (not a `Project`
+field, `Form` or `project.json`), so no request can add a real secret's key to it. Widening it
+is a reviewed code change. Every other masking path (`Redactor.scrub`, `SecretStore.guard_prompt`)
+still treats every `.env` value as secret (C5) -- only `SecretStore.public_values()` consults
+it, and only for a value that appears under NO other, non-public key."""
