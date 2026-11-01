@@ -1,4 +1,4 @@
-# Contract — E2E 2026-11-01 fixes (AT-1412..AT-1421, four units)
+# Contract — E2E 2026-11-01 fixes (AT-1412..AT-1421, ten units E1-E10)
 
 **Covers:** the issues filed by the end-to-end check of 2026-11-01 (`.work/e2e-2026-11-01/report.md`,
 `qa/issues.jsonl` rows AT-1412..AT-1421). **Owner:** /checker. **Criticality:** HIGH for E2 (the
@@ -27,6 +27,9 @@ checker judges against; the maker never edits it.
 | E5 | AT-1433 | `docker/entrypoint.sh`, `core/env.py`, `ui/admin_view.py`, `store/mongo_routes.py` (read-only), `auth/store.py` (read-only) |
 | E6 | AT-1419 | `ui/routes_live.py`, `ui/routes_auth.py`, `ui/app.py`, `auth/policy.py`, `core/env.py` (`on_cloud_run`) |
 | E7 | AT-1416, AT-1420 | `ui/credential_guard.py`, `core/env.py`, `stages/reachability.py`, `store/migrate_creds.py` (`:60` only) |
+| E8 | E5 hardening (issue ids assigned at filing) | `docker/entrypoint.sh`, `docker/DEPLOY.md`, `tests/test_container_entrypoint_behaviour.py`, `tests/test_storage_warning.py`, `tests/test_mongo_deploy_u10.py` |
+| E9 | test hygiene (issue ids assigned at filing) | `tests/test_credential_store_u11.py`, `store/mongo_backend.py` (`:73` only), `tests/test_schedule_tick.py`, `store/mongo_routes.py` + `browser/profiles.py` (the `stored_session_values` edge only) |
+| E10 | U6c follow-ups (`qa/verdicts/mongo-store-u6c.md` W1, `.b.md` findings 1-2) | `auth/migrate_auth.py`, `cli_store.py` (verify rows), `auth/store_mongo_fence.py` (E10.3 fix only), `auth/store_mongo_video.py` (read-only), `tests/test_auth_store_fence_slots.py`, `qa/evidence/mongo-store-u6c/mutations-fence.json` |
 
 ## Out of scope (do not build, do not raise as findings against these units)
 
@@ -624,6 +627,234 @@ the checker leaves the row `open` with a note pointing at the stage token.
 *Test seam:* the `qa/issues.jsonl` row AT-1420 is not `closed` by this unit's commits.
 *serves:* intent#O13. *judges:* E7.
 
+### E8 — The automatic Mongo selection never hides existing file state; DEPLOY.md says what the entrypoint now does (E5 hardening)
+
+**Criticality:** HIGH (a wrong auto-flip makes live projects invisible). **Premise (verified at master
+b3663ac3).** `docker/entrypoint.sh::select_mongo_store` (`:46-62`) already skips when an operator set a store
+variable (`:48-51`) and when a non-empty SQLite auth file exists (`:53-56`, A-W1, E5.5). It does NOT look at
+`projects/`: a data root that holds file-store projects, with no auth file, would be flipped to an empty Mongo and
+every project would vanish from the UI (the same silent hiding E5.5 closes for accounts). `docker/DEPLOY.md`
+(`## State store on MongoDB`) still describes the pre-E5 world: "A fully flipped service sets both" as an operator
+step (`:267`), "Flipping is a human gate (G1)" as the only path (`:270`), "The `/data` GCS volume stays required
+until G1" (`:278`, and `:241`), and no word about the automatic selection, its escape hatch or its failure mode.
+`tests/test_mongo_deploy_u10.py:37-72` pins DEPLOY.md phrases and is part of this unit.
+
+**E8.1 A prior file-store project blocks the automatic selection.** `select_mongo_store` additionally returns
+without exporting either variable when at least one `<root>/projects/<slug>/project.json` regular file exists,
+where `<root>` is the same expression the function already uses for the auth file (`${AUTOTESTER_ROOT:-/app}`).
+Only a `project.json` that is a direct child of a direct child of `projects/` counts: an empty `projects/`
+directory (the `mkdir -p` at `:34` creates it on every start), a slug directory without `project.json`, `.work/`,
+`profiles/` and a deeper `projects/a/b/project.json` do not. The check is presence only (no `cat`, no `ls`
+parsing, no value read), is safe on a root with no `projects/` directory and on slugs containing spaces, and the
+function still never exits (`|| true`, `return 0`). Order and output: the check runs after the blank-URI and
+operator-choice checks; when the auth file AND a project both exist exactly ONE line is printed (the first
+match), never two. The line names the reason and the data root path, says Mongo was not auto-selected and points
+at `docker/DEPLOY.md`; it contains no URI, no project slug and no file content.
+*Test seam:* extend `tests/test_container_entrypoint_behaviour.py` (the real script in the bash sandbox,
+`_run_fn`, `sandbox`, `PY_STUB`), canary URI `mongodb://canary-user:canary-pass@h/`. Cases, each printing the two
+variables afterwards: (a) `projects/alpha/project.json` present, no auth file -> neither variable exported, exactly
+one "not auto-selected" line; (b) both an auth file and a project -> neither exported, exactly one line; (c) empty
+`projects/` -> both exported (the E5.1 assertion against `store.mongo_routes.AREAS` still holds); (d)
+`projects/alpha/` with no `project.json` -> exported; (e) only `projects/a/b/project.json` -> exported; (f)
+`projects/with space/project.json` -> neither exported; (g) no `projects/` directory at all -> exported, rc 0; (h)
+the canary and the slug `alpha` are absent from stdout, stderr and the stub-recorded argv.
+*Mutation hint:* delete the project check -> (a), (b) and (f) fail; test `-d projects/*` instead of
+`projects/*/project.json` -> (c) and (d) fail; print the slug in the line -> (h) fails.
+*serves:* intent#O1, intent#O7, intent#O13 (core-invariants C12: unknown state is not "empty"). *judges:* E8.
+
+**E8.2 `docker/DEPLOY.md` is rewritten where it is stale.** In `## State store on MongoDB` (and the one
+cross-reference in `**Persistent storage:**`, `:241`) the guide states, each as a plain sentence the checker can
+point to: (a) the entrypoint now sets BOTH `AUTOTESTER_STORE=mongo` and an `AUTOTESTER_STORE_AREAS` entry for every
+area (all nine, `auth=mongo` and `credentials=mongo` included) when `PATHLYNKS_MONGO_URI` is present; the
+operator does not set them; (b) the selection is made only on a fresh data root: if either store variable is set
+in the process environment, if a SQLite auth file exists (E5.5), or if any `projects/*/project.json` exists (E8.1),
+the entrypoint prints one line and keeps files, and the migration path (`autotester store migrate`, a dry run
+unless `--apply`, then the flip per area; G1) is the way to move that state; (c) a wrong or unreachable URI stops
+start-up, there is no file fallback, and on Cloud Run a revision that fails to start does not take traffic, so
+the previous revision keeps serving; (d) the escape hatch: `AUTOTESTER_STORE=file` in the PROCESS environment (the
+service's environment variables) turns the automatic selection off and everything stays on files; (e) set
+`AUTOTESTER_FIRST_ADMIN_EMAIL` (`auth/config.py:23`) to the intended admin address BEFORE the first start on an
+empty Mongo auth store: on a hosted / non-loopback server with it unset nobody becomes the first admin from a
+signup (`auth/accounts.py:44-53`, D-074 (d)), the CLI `bootstrap-admin` being the other way; (f) an operator store
+choice written in the data-root `.env` is not honoured when the URI arrives from the platform environment,
+because the entrypoint reads the process environment and `core/env.py::load_repo_env` never replaces an
+already-set variable (`core/env.py:188-189`): the maker states in the manifest that (f) is true against that
+code, or changes the sentence to what is true. The sentences "A fully flipped service sets both" (as an operator
+instruction), "Flipping is a human gate (G1)" (as the only path) and "The volume stays required until G1 is
+complete" are reworded to match (a)-(b): the volume is still required while any area stays on files, and the
+`/data` scratch role after a flip is unchanged (D-125). No Mongo URI value or `mongodb://user:pass@` shape appears
+anywhere in the guide.
+*Test seam:* `tests/test_mongo_deploy_u10.py` is updated by the maker in the same cycle (the checker amends no
+test): the pins at `:52-54` (global `AUTOTESTER_STORE=mongo` ... auth/SQLite), `:63-66` (D-125, G1, volume
+stays required) and `:69-72` (no file fallback, D-123, no URI) are rewritten to pin the new sentences (a)-(f) by
+distinctive phrase, and they keep pinning what is still true: the `auth=mongo` entry, `--max-instances 1` until
+queue is on Mongo, D-125, G1 for the migration, fail-closed, "plain", and the `mongodb://...@` absence check
+(`:72`, kept verbatim). A phrase pin removed without a replacement for the same fact is a finding.
+*Mutation hint:* delete sentence (d) or (e) from the guide -> its pin fails; paste a `mongodb+srv://u:p@h` shape
+-> `:72` fails.
+*serves:* intent#O13, intent#O7. *judges:* E8.
+
+**E8.3 Nothing else in the entrypoint moves.** `all_state_on_mongo`, `warn_if_ephemeral`, E5.2 (no URI, no
+selection) and E5.3 (no value printed) behave as before; the existing `tests/test_storage_warning.py` and
+`tests/test_container_entrypoint_behaviour.py` cases pass with only additions.
+*Test seam:* `git diff` on those two test files shows added lines only (plus the E8.2 pin edits in
+`test_mongo_deploy_u10.py`); the unmodified E5.1-E5.3 cases pass.
+*serves:* intent#O4. *judges:* E8.
+
+### E9 — Test hygiene: three red guards go green for the honest reason (no filter widened to hide a real edge)
+
+**Criticality:** MEDIUM, with one hold (E9.3). **Premise (checker-run, master b3663ac3):** `uv run pytest
+tests/test_credential_store_u11.py tests/test_cli_advice_resolves.py tests/test_schedule_tick.py` gives
+`3 failed, 81 passed`. Each failure is a real, named drift, not flake. The rule for the whole unit: make the code
+or the allow-list tell the truth; do not loosen an assertion to a subset check, delete a guard, or add a
+catch-all.
+
+**E9.1 The credential allow-list admits `store/migrate_creds.py` and nothing else.**
+`tests/test_credential_store_u11.py::test_only_the_door_writes_secrets_and_no_crypto_exists` (`:68`) asserts
+`users == {"core/env.py", "ui/env_editor.py"}` and fails because `store/migrate_creds.py` also calls
+`credential_collection(` (the M46 importer writes declared `.env` values to `secrets` through the secret door,
+`qa/contracts/mongo-store.md` M46). The expected set becomes exactly those three files, with a comment naming
+M46 as the reason; it stays an EQUALITY, so a fourth file, or `migrate_creds.py` ceasing to use the door, still
+fails. Every other assertion in that test (no crypto import, the door being the only writer of `secrets`) is
+unchanged. No `src/` file changes for this criterion.
+*Test seam:* run the file: green. Mutation: add `credential_collection(` to a fourth `src/autotester/` file ->
+fails; delete the call from `migrate_creds.py` -> fails; changing `==` to `<=` is a finding.
+*serves:* intent#O7 (C5, M31). *judges:* E9.
+
+**E9.2 The one unresolved advice site is resolved at its source.**
+`tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve` (`:151`) fails with
+`[(store/mongo_backend.py, 73)]`: `raise routes.StoreDocTooLarge(f"{key!r} is {size} bytes; the limit is
+{MAX_DOC_BYTES}")` in the backend's `_guard`. The fix is in `store/mongo_backend.py` (edit in place), as the
+test's own docstring says ("resolve the name, not widen the filter"): the interpolation the collector cannot
+resolve is rewritten so the site resolves, while the message still tells the operator the key, the size and the
+limit. `tests/advice_scan.py` and `tests/test_cli_advice_resolves.py` are not modified; the other hole-report
+self-tests (`:129-143`) still pass.
+*Test seam:* run the file: green; `git diff --stat` shows no change in `tests/advice_scan.py` or
+`tests/test_cli_advice_resolves.py`; the existing `StoreDocTooLarge` tests pass unmodified.
+*Mutation hint:* reintroduce an unresolvable interpolation at any `raise` -> the same test fails (that is its
+job).
+*serves:* intent#O3. *judges:* E9.
+
+**E9.3 The scheduler-side import closure is honest about both edges (TS6).**
+`tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively`
+(`:231`) reports six edges from `scheduler_side_violations()` (checker-run, exact list):
+`autotester.store.mongo_routes -> autotester.browser.profiles`; `autotester.auth.store ->
+autotester.auth.store_mongo`; `autotester.auth.store_mongo -> autotester.auth.store_mongo_tx`;
+`autotester.auth.store_mongo -> autotester.auth.store_mongo_video`; `autotester.auth.store_mongo_video ->
+autotester.auth.store_mongo_tx`; `autotester.auth.store_mongo_tx -> autotester.auth.store_mongo_fence`.
+(a) The five `auth.*` edges are one family: the Mongo auth store the scheduler's owner guard now reaches through
+the AuthStore seam. `ALLOWED_OUTSIDE` (`tests/test_schedule_tick.py:152`) gains exactly
+`autotester.auth.store_mongo`, `autotester.auth.store_mongo_tx`, `autotester.auth.store_mongo_video` and
+`autotester.auth.store_mongo_fence`, with a comment citing the U6a precedent already on that set
+(`"autotester.auth.store", "autotester.auth.store_sqlite"`); the modules stay walked (they are followed, not
+skipped), so any browser or pipeline import inside them still fails the guard.
+(b) The `store.mongo_routes -> browser.profiles` edge is the lazy import in `repo_redactor`
+(`store/mongo_routes.py:195`, `stored_session_values`, defined at `browser/profiles.py:216`).
+`autotester.browser.profiles` is NOT added to `ALLOWED_OUTSIDE`: it is a browser module and admitting it would
+weaken TS6 for every scheduler-side file. The maker either (i) removes the edge by moving
+`stored_session_values` (and only it, with its helpers) to a module the scheduler side may reach, leaving ONE
+definition (C3) and every caller updated, which is allowed only if `repo_redactor()` returns the same values for
+the same fixtures (store off, and a stored-session fixture) and no secret that is masked today stops being masked
+(C5); or (ii) files a HUMAN_GATE with the evidence, leaves the edge, and the guard test stays red under an
+`xfail(strict=True)` carrying the issue id, not a widened set. A change to `browser/profiles.py` behaviour, or a
+new duplicate function, is out of scope.
+*Test seam:* the guard test green with `ALLOWED_OUTSIDE` containing the four new names and no
+`autotester.browser.*` addition; a `repo_redactor` equivalence test (before/after fixture, values compared by key
+set and by `assert_clean` on a canary session value); the TS6 self-tests (`LEAKS`, `:233`) pass unmodified.
+*Mutation hint:* add `from autotester.browser.session import BrowserSession` to `auth/store_mongo_tx.py` -> the
+guard fails (the module is still walked); drop the session values from `repo_redactor` -> the equivalence test
+fails.
+*serves:* intent#O4, intent#O7. *judges:* E9.
+
+### E10 — U6c follow-ups: the video tables are migrated, and the two untested fence hazards are pinned
+
+**Criticality:** HIGH (auth data and the fence that protects revocation). **Premise (verified at master
+b3663ac3; both findings are in `qa/verdicts/mongo-store-u6c.md` W1 and `qa/verdicts/mongo-store-u6c.b.md`
+findings 1-2).** `auth/migrate_auth.py` header says "the video tables are not here (U12, U6c)" and `COLUMNS`
+(`:20-25`) holds no video table, so `autotester store migrate` carries users and grants but leaves
+`video_shares`, `video_links`, `access_requests` and `video_comments` (SQLite, `auth/db.py:57-75`) behind; a flip
+of `auth` then loses every share, link, pending request and comment. The Mongo side already exists
+(`auth/store_mongo_video.py`, `VideoOps`).
+
+**E10.1 The U8 importer copies the four video tables, idempotently, with a dry-run count and a verify row.**
+`auth/migrate_auth.py` (edit in place; `read_auth`, `import_auth`, `auth_status` extended, no new module) reads
+the four tables and writes them inside the same `MongoAuthStore.transaction()` as the users, through `VideoOps`
+(journal and fence), never raw collections. Fidelity: every SQLite column comes across verbatim
+(`granted_by`, `granted_at`, `token_hash`, `revoked_at`, `requester`, `status`, `decided_by`, `decided_at`,
+`at_s`, `text`, `created_at`, `edited_at`, `pointer_line`); the numeric ids of requests and comments are
+preserved and their allocators are seeded above the highest imported id (as `_seed_allocator` does for users,
+`:40`, M45); a share keeps its deterministic slot id (sha256 of the address, never the address in an id,
+`store_mongo_video.py` header). Idempotent and non-destructive (M42): a second `--apply` reports `written: 0`;
+an existing row is never overwritten, and one that differs is reported `conflicting-id`, not replaced; the SQLite
+file is not modified. Counts only, never a value: no email address, token hash, comment text or requester
+appears in stdout, stderr, a log or the report (the same rule as `import_auth`). Dry run (M41): without
+`--apply` and with `remote=False`, `auth_status` opens no Mongo client and reports a per-table `to_insert` count
+for the four tables beside `auth_users`; with `remote=True` it reports per table `unchanged / to_insert /
+conflicting-id`. `store verify` (`cli_store.py:158-159`, the `auth_users` row) gains one row per video table
+through the same `auth_status` path, exits with the same rule as the `auth_users` row, and a deliberately altered
+target row (a changed `granted_by`, a flipped `revoked_at`, a changed comment `text`) is reported, not
+`unchanged` (M44 falsifier). The module header's "not here" sentence is corrected.
+*Test seam:* extend `tests/test_cli_store_auth_creds.py` (or the nearest existing migrate_auth test) using the
+fake Mongo the auth tests already use: a SQLite fixture with 2 shares, 2 links (one revoked), 3 requests
+(pending, approved, denied), 3 comments (one edited, one with `pointer_line`); apply -> `VideoOps` reads return
+the same rows (`share_emails`, `link_target`, `request_rows`, `comment_rows`); `written` equals the row count;
+second apply -> `written: 0`; allocators: the store hands out `max(id)+1`, never a taken id, for both a new
+request and a new comment; a canary email and token-hash string are absent from `capsys`/`caplog`; dry run with a
+spy on the Mongo client -> not constructed, counts present; altered-row case -> `conflicting-id` and verify
+non-zero; a source pending request for the same (slug, video, requester) as an existing pending Mongo row ->
+reported, not duplicated (one pending request per person per video holds).
+*Mutation hint:* write with raw collections instead of `VideoOps` -> the fence/journal assertion (a stalled
+holder lands nothing) fails; skip the allocator seed -> the new-id case collides; overwrite on conflict -> the
+conflict case fails; print the email in the report -> the canary assertion fails.
+*serves:* intent#O7, intent#O12. *judges:* E10.
+
+**E10.2 The takeover compare-and-set is pinned by a test that kills its mutants.**
+`auth/store_mongo_fence.py::insert_fenced` (`:158-172`): on a duplicate id in a SLOTTED collection
+(`auth_grants`, `video_shares`, `:54`) the takeover reads the hidden slot (`coll.find_one`, `:167`) and then
+`update_one({"_id": ..., "_e": cur["_e"]}, ...)` (`:169-171`). A new test in
+`tests/test_auth_store_fence_slots.py` stalls a zombie holder BETWEEN the `find_one` and the `update_one` of a
+`G:` slot (grant, revoke, then pause the zombie's `update_one`; a successor epoch recovers and raises the slot to
+`G:<later>`, here by committing an unrelated transaction), then releases it: the zombie's write lands nothing,
+the transaction raises `AuthStoreBusy`, and the revoked grant (or share) stays revoked (the principal or
+`share_emails` result stays empty). A second test pins the epoch comparison: a slot hidden at epoch `e` is taken
+over by a writer of the same epoch `e` (`<=`) and refused for an earlier-epoch writer. The new tests, with the
+existing zombie test, must fail on the mutants, and the maker adds both mutants to
+`qa/evidence/mongo-store-u6c/mutations-fence.json`: O1 (drop `"_e": cur["_e"]` from the takeover filter, the blind
+takeover) and OWN-B (`stamp_epoch(cur["_e"]) <= epoch` changed to `<`).
+*Test seam:* run the new tests on shipped code (pass) and on each mutant in a scratch copy of `src/` (fail), with
+the harness output saved under `qa/evidence/mongo-store-u6c/`; the checker re-runs the two mutants itself.
+*Mutation hint:* the two mutants named above are the criterion; also mutate the CAS in `_hide_slot`
+(`store_mongo_fence.py:102`, `{"_id": i, "_e": stamp}` without `_e`) and either kill it with the same
+stall-after-read shape or record it as an equivalent mutant with the reasoning.
+*serves:* intent#O7 (revocation holds), core-invariants C12 (a stalled writer lands nothing). *judges:* E10.
+
+**E10.3 Delete-then-recreate of one slotted id in a single transaction is undone whole, or its fail-closed result
+is pinned as an accepted residual.** Reproduced by the u6c checker B (finding 1): `set_share(False)` then
+`set_share(True)` for the same address in one transaction, then a refusal or a holder crash before commit.
+Newest-first replay (`store_mongo_fence.py:106-127`) hides the re-inserted slot as `G:<epoch>.000000`
+(`_hide_slot`, `:86-103`) and the earlier entry's restore then matches nothing (`_e` is now the hidden stamp), so
+the original share is lost (direction: fail-closed; no caller does this today, per the u6c checker's grep of
+`access.py`, `video_access.py`, `routes_video_portal.py`). The maker chooses ONE of two outcomes and the criterion
+for each is exact:
+(A) **Fix.** The `ins` replay restores a slot it took over from a hidden predecessor (for example the
+predecessor stamp is recorded in the entry and `_hide_slot` puts the earlier entry's restore target back). Tests:
+rollback of the refused transaction AND recovery after a holder that died before commit both leave the ORIGINAL
+share present (`share_emails` equals the pre-transaction set, same for a grant); the existing zombie, slot and
+journal tests pass unmodified; E10.2's two mutants are still killed.
+(B) **Accepted residual.** The manifest names it as an accepted residual with a pointer to this criterion, a
+one-line guard refuses a re-insert of a slot deleted earlier in the same transaction (raising a named error, not
+silently succeeding), and a test pins the result: the sequence raises that error, the transaction is undone whole
+(the original share still present) and nothing is written. Outcome (B) additionally needs a decisions-log entry
+(`docs/DECISIONS.md` via `scripts/append_decision.ps1`) because it narrows the "undone whole" promise in
+`store_mongo_video.py:5-6`; without it the checker files a HUMAN_GATE and does not pass the criterion.
+Silently keeping today's behaviour (the original share lost and no guard) fails the criterion in either case.
+*Test seam:* a `tests/` module (name chosen by the maker) using the same fake store and stall helpers as
+`test_auth_store_fence_slots.py`; for (A) the two end states above; for (B) the raise, the undo, and a grep for
+the guard's error name.
+*Mutation hint:* (A) revert the restore fix -> the share-present assertions fail; (B) remove the guard -> the
+sequence succeeds and the test fails.
+*serves:* intent#O7, core-invariants C12. *judges:* E10.
+
 ## Verification the checker runs itself (never the maker's word)
 
 ```
@@ -646,6 +877,9 @@ checker-taken screenshot. Evidence of a model answering (E2.1-E2.3) uses fakes o
 - Changing V2 retention (a PASS keeps no video), D-112's definition of the clock, or the
   `RunApproval` bounds model.
 - Visual polish of the credentials page beyond E3.6.
+- E8-E10: the first real `--apply` of `store migrate` and every area flip stay G1 human gates; E8 makes the
+  guide accurate, it does not authorize a flip. E9.3(b) does not authorize admitting `browser.*` to the scheduler
+  side. E10 does not change the lease/epoch design (D-129), only tests it and, in E10.3(A), the replay restore.
 
 ## Amendment log (append-only; git history is the version)
 
@@ -697,3 +931,22 @@ checker-taken screenshot. Evidence of a model answering (E2.1-E2.3) uses fakes o
   possible but does not itself declare. The AT-1416/AT-1419 "needs a D-entry" gate is carried by E6.9; E7 is
   not an enforcement path. **Links:** AT-1416, AT-1419, AT-1420, AT-1433; D-122/D-123; D-130; HO12;
   core-invariants C3/C5/C12.
+
+- 2026-11-01 · amendment E8-E10 · /checker, contract-authoring mode, at the orchestrator's instruction (task
+  c8910-contract). Every file:line read against master b3663ac3; the three red guards of E9 were run by the
+  checker (`3 failed, 81 passed`) and the six TS6 edges were printed with `scheduler_side_violations()`. Added E8
+  (E5 hardening: the automatic selection also yields to existing `projects/*/project.json`, one line, no URI;
+  `docker/DEPLOY.md` rewritten where stale, with the pins of `tests/test_mongo_deploy_u10.py` moved to the new
+  sentences), E9 (test hygiene: honest allow-list entry for `store/migrate_creds.py`; the one unresolved advice
+  site `store/mongo_backend.py:73`; the five `auth.store_mongo*` edges added to `ALLOWED_OUTSIDE` on the U6a
+  precedent, and the `store.mongo_routes -> browser.profiles` edge removed by an unchanged-behaviour move or held
+  as a HUMAN_GATE, never admitted), E10 (U6c follow-ups: importer for the four video tables, tests for the
+  takeover CAS find/update race with mutants O1 and OWN-B, and delete-then-recreate of one slotted id fixed or
+  recorded as an accepted residual with a pinned fail-closed result and a decision entry). Findings recorded so
+  they are not rediscovered: (1) E8.1: `select_mongo_store` already yields to a SQLite auth file
+  (`entrypoint.sh:53-56`); a project-only data root was the remaining way to hide file state. (2) E8.2(e): on a
+  hosted server a signup does not become admin when `AUTOTESTER_FIRST_ADMIN_EMAIL` is unset
+  (`auth/accounts.py:44-53`), so the guide must say set it first or use `bootstrap-admin`. (3) E9.3: the six
+  edges are one real browser edge and five that the U6a precedent already covers for `auth.store*`. **Links:**
+  E5.5; mongo-store.md M41-M46; qa/verdicts/mongo-store-u6c.md W1; qa/verdicts/mongo-store-u6c.b.md findings 1-2;
+  D-125; D-129; D-074.
