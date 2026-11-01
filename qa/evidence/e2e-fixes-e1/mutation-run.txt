@@ -1,0 +1,26 @@
+KILLED  E1.1: _trace_card no longer catches TraceParseError (page 500s)  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_1_a_corrupt_trace_line_still_renders_the_run_page, tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_1_a_corrupt_trace_line_still_renders_the_run_page, tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content
+KILLED  E1.2: degraded card dropped (corrupt trace looks clean)  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content
+KILLED  E1.2: raw line content leaks into the card (JSONDecodeError.doc)  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content
+KILLED  E1.2: a run with no trace now shows an empty Trace card  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_2_a_run_with_no_trace_file_shows_no_trace_card
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_2_a_run_with_no_trace_file_shows_no_trace_card
+KILLED  E1.2: clean trace rows no longer rendered  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_2_a_clean_trace_still_renders_its_rows
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_2_a_clean_trace_still_renders_its_rows
+KILLED  E1.3: read_spans stops raising on a bad line (detection weakened)  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_3_read_spans_still_raises_on_a_bad_line
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_2_the_trace_card_states_the_failure_and_leaks_no_line_content, tests/test_ui_report_corrupt_trace.py::test_e1_3_a_corrupt_trace_does_not_lose_the_saved_run, tests/test_ui_report_corrupt_trace.py::test_e1_3_read_spans_still_raises_on_a_bad_line
+KILLED  E1.3: phase_fields no longer catches TraceParseError (run lost)  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_3_a_corrupt_trace_does_not_lose_the_saved_run
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_3_a_corrupt_trace_does_not_lose_the_saved_run
+KILLED  E1.3: corrupt trace recorded as a fabricated zero, not NOT RECORDED  (pytest exit 1)
+    claims to kill : tests/test_ui_report_corrupt_trace.py::test_e1_3_a_corrupt_trace_does_not_lose_the_saved_run
+    actually failed: tests/test_ui_report_corrupt_trace.py::test_e1_3_a_corrupt_trace_does_not_lose_the_saved_run
+
+8/8 mutations killed

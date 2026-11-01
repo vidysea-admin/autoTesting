@@ -30,7 +30,7 @@ from autotester.browser.video import VIDEO_OVERHEAD_MB
 from autotester.core.ids import ulid
 from autotester.core.paths import ProjectPaths
 from autotester.core.safe_names import SLUG_PATTERN
-from autotester.core.trace import phase_summary
+from autotester.core.trace import TraceParseError, phase_summary
 from autotester.providers import for_role, why_unavailable
 from autotester.providers.base import Provider, ProviderError
 from autotester.schema.approval import RunApproval
@@ -169,7 +169,10 @@ def warn_if_memory_starved(seams: RunSeams = DEFAULT_SEAMS) -> bool:
 
 def phase_fields(store: ProjectStore, run_id: str, wall_s: float) -> dict[str, Any]:
     """`Run` fields from this run's trace: seconds per phase and the unaccounted remainder."""
-    totals, unaccounted = phase_summary(store.paths.run_trace(run_id), wall_s)
+    try:
+        totals, unaccounted = phase_summary(store.paths.run_trace(run_id), wall_s)
+    except TraceParseError:  # E1.3: a corrupt trace must not lose the saved Run; NOT RECORDED
+        return {"phase_totals_s": None, "unaccounted_s": None}
     return {"phase_totals_s": totals or None, "unaccounted_s": unaccounted}
 
 
