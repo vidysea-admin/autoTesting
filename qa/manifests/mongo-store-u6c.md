@@ -39,7 +39,7 @@ The u6bf tombstone was a document that a later holder CLEARS before re-creating 
 
 | Criterion | Where | Test(s) |
 |---|---|---|
-| M30 video data on Mongo, no address/hash leak | `store_mongo_video.py` (whole); share id hash :47; `store_mongo_tx.py:137`; `_hide_slot` blanking fence.py:98 | `test_video_store_backends.py::test_a_deleted_share_keeps_nothing_of_the_address_and_no_hash_is_in_a_video_collection`; `test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data` |
+| M30 video data on Mongo, no address/hash leak | `store_mongo_video.py` (whole); share id hash :47; `store_mongo_tx.py:137`; `_hide_slot` blanking fence.py:101 | `test_video_store_backends.py::test_a_deleted_share_keeps_nothing_of_the_address_and_no_hash_is_in_a_video_collection`; `test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data` |
 | U6c shares / links / purge | `store_mongo_video.py:42-82` | `test_shares_are_idempotent_and_removable[sqlite/mongo]`, `test_one_live_link_per_video_and_only_its_hash_is_stored[...]`, `test_purge_removes_all_four_kinds_for_a_video_and_for_a_project[...]` |
 | U6c requests: one pending per person, decide once, approval adds one share | `store_mongo_video.py:85-115` | `test_request_access_decide_once_and_share[...]`, `test_approvers_are_the_admins_and_the_uploader_never_the_requester[...]`, `test_two_racing_requests_make_one_pending_request` |
 | U6c comments, scoped to their video | `store_mongo_video.py:118-145`, `video_comments.py:88-96` | `test_comments_order_edit_promote_delete_and_video_scope[...]` |
