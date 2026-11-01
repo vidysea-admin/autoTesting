@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e3
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A 5df1f4b9, B 18e45d2f)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E3 (AT-1417 + AT-1418), criteria E3.1-E3.6.
 **Branch:** `feat/e2e-e3` (cut from master `dccc65e9`). Not merged to master, not pushed.
