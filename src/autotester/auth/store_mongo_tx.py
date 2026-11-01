@@ -5,13 +5,15 @@ interrupted change undoable, and the never-reused id counter. Mongo promises one
 time, so these are what make first-admin, claim and the last-admin check see one writer.
 
 Every write by a holder of epoch e is fenced three ways: (1) its undo entry (in `auth_users`, M30)
-is durable BEFORE the write and the lease is re-checked after the entry and before the write;
-(2) the write is conditional on the document's stamp `_e` as read, and every write re-stamps; (3)
-whoever takes the lease next first resolves every other epoch's journal: it aborts the marker
-`auth_meta/tx:<e>` (commit is a compare-and-set on it, so a stalled holder cannot commit later),
-re-stamps the documents the entries name (so a stalled holder's late write fails its condition,
-and an insert finds a tombstone) and replays the entries newest first. No auth rule lives here
-and no database name (M2/M5)."""
+is durable BEFORE the write, the lease re-checked after the entry and before the write; (2) the
+write is conditional on the document's stamp `_e` as read, and re-stamps; (3) whoever takes the
+lease next first resolves every other epoch's journal: it aborts the marker `auth_meta/tx:<e>`
+(commit is a compare-and-set on it, so a stalled holder cannot commit later), re-stamps the
+documents the entries name (a stalled holder's late write then fails its condition, an insert
+finds a tombstone) and replays the entries newest first. EVERY replay write, a recoverer's or a
+rollback's, is a compare-and-set on the stamp, so a stalled one changes nothing once anyone else
+moved the document; a delete only stamps `G:<stamp>` (hidden) and is made physical at commit, so
+nothing is re-inserted unconditionally. No auth rule or database name lives here (M2/M5)."""
 
 from __future__ import annotations
 
@@ -50,6 +52,7 @@ def coll_of(store: GuardedStore, name: str) -> GuardedCollection:
 
 
 def tx_id(epoch: int) -> str: return f"{TX}:{epoch:08d}"
+def hidden(d: Doc) -> bool: return d.get("kind") in HIDDEN or str(d.get("_e")).startswith("G:")
 
 
 class Lease:
@@ -63,27 +66,24 @@ class Lease:
 
 
 def _replay(store: GuardedStore, entry: Doc, by: int | None) -> None:
-    """Undo one journalled write. A dead holder's (`by` = the epoch doing the recovery) is first
-    fenced: the document is re-stamped if it is still as the write found it, so a late write
-    fails its condition; an insert leaves a tombstone only a later epoch may remove. The undo
-    applies only to a document still stamped by that write (or by the fence)."""
-    coll, i, op = coll_of(store, entry["coll"]), entry["doc_id"], entry["op"]
-    fence = None if by is None else f"F:{by:08d}"
-    mine = {"$in": [entry["me"], *([fence] if fence else [])]}
-    if fence and op == "ins":
-        key = f"{FENCE}:{entry['coll']}:{i}"
+    """Undo one journalled write, only on a document still stamped by it (`me`, `G:me`, or `F:me`
+    left by undoing the next entry on it). A dead holder's (`by` = the recovering epoch) is fenced
+    first: re-stamped if as the write found it, an insert leaves a tombstone for later epochs."""
+    coll, i, me = coll_of(store, entry["coll"]), entry["doc_id"], entry["me"]
+    ins, pre = entry["op"] == "ins", entry["pre"]
+    stamp = pre if by is None else f"F:{pre}"  # a recoverer must not reopen the old stamp
+    if by is not None and ins:
+        key = f"{FENCE}:{entry['coll']}:{i}"  # a placeholder for every unique index
         with suppress(StoreDuplicateKey):  # the id is taken (landed, or fenced): fine
-            coll.insert_one({"_id": i, "kind": FENCE, "f": by, "email": key, "generation": key})
-    elif fence:
-        coll.update_one({"_id": i, "_e": entry["pre"]}, {"$set": {"_e": fence}})
-    stamp = fence or entry["pre"]
-    if op == "ins":
+            coll.insert_one({"_id": i, "kind": FENCE, "f": by, "email": key, "generation": key,
+                             "name": key})
+    elif by is not None:
+        coll.update_one({"_id": i, "_e": pre}, {"$set": {"_e": stamp}})
+    mine = {"$in": [me, f"G:{me}", f"F:{me}"]}
+    if ins:
         coll.delete_one({"_id": i, "_e": mine})
-    elif op == "set":
-        coll.update_one({"_id": i, "_e": mine}, {"$set": {**entry["prior"], "_e": stamp}})
     else:
-        with suppress(StoreDuplicateKey):  # already back
-            coll.insert_one({**entry["doc"], "_e": stamp})
+        coll.update_one({"_id": i, "_e": mine}, {"$set": {**entry["prior"], "_e": stamp}})
 
 
 def _resolve(store: GuardedStore, epoch: int, by: int | None) -> None:
@@ -97,6 +97,9 @@ def _resolve(store: GuardedStore, epoch: int, by: int | None) -> None:
                         reverse=True):
         if not committed:
             _replay(store, entry, by)
+        elif entry.get("gone"):  # a committed delete becomes physical
+            coll_of(store, entry["coll"]).delete_one({"_id": entry["doc_id"],
+                                                      "_e": f"G:{entry['me']}"})
         users.delete_one({"_id": entry["_id"]})  # one at a time: a crash resumes where it was
     meta.delete_one({"_id": tx_id(epoch)})
 
@@ -123,17 +126,17 @@ def dead_marker(store: GuardedStore) -> bool:
 class MongoTxBase:
     def __init__(self, store: GuardedStore, writable: bool, held: Lease | None = None) -> None:
         self._s, self._writable, self._held = store, writable, held
-        self._keys: list[str] = []  # journal entries this transaction wrote
+        self._n = 0  # journal entries this transaction wrote
         self._open = False
 
     def _docs(self, name: str, flt: Doc | None = None) -> list[Doc]:
-        return [d for d in coll_of(self._s, name).find(flt) if d.get("kind") not in HIDDEN]
+        return [d for d in coll_of(self._s, name).find(flt) if not hidden(d)]
 
-    def _one(self, name: str, flt: Doc) -> Doc | None: return coll_of(self._s, name).find_one(flt)
+    def _one(self, name: str, flt: Doc) -> Doc | None:
+        doc = coll_of(self._s, name).find_one(flt)
+        return None if doc is None or hidden(doc) else doc
 
-    def _get(self, name: str, doc_id: Any) -> Doc | None:
-        doc = self._one(name, {"_id": doc_id})
-        return None if doc is None or doc.get("kind") in HIDDEN else doc
+    def _get(self, name: str, doc_id: Any) -> Doc | None: return self._one(name, {"_id": doc_id})
 
     def _writer(self, name: str) -> GuardedCollection:
         if not self._writable:
@@ -157,12 +160,12 @@ class MongoTxBase:
                 "_id": tx_id(held.epoch), "kind": TX, "state": "open",
                 "epoch": held.epoch, "owner": held.owner})
             self._open = True
-        stamp = f"{held.epoch:08d}.{len(self._keys) + 1:06d}"
+        self._n += 1
+        stamp = f"{held.epoch:08d}.{self._n:06d}"
         key = f"{UNDO}:{stamp}"  # `email`/`generation` carry it so the users' unique indexes agree
         coll_of(self._s, JOURNAL_COLL).insert_one({
             "_id": key, "email": key, "generation": key, "kind": UNDO, "epoch": held.epoch,
             "owner": held.owner, "me": stamp, **step})
-        self._keys.append(key)
         if not self._alive():
             raise AuthStoreBusy("the auth store lease was lost")
         return stamp
@@ -181,26 +184,25 @@ class MongoTxBase:
         except StoreDuplicateKey:  # a tombstone of an undone insert may sit on this id
             held = self._held
             if held is None or not coll.delete_one(
-                    {"_id": doc["_id"], "kind": FENCE, "f": {"$lt": held.epoch}}):
+                    {"_id": doc["_id"], "kind": FENCE, "f": {"$lte": held.epoch}}):
                 self._landed(coll.find_one({"_id": doc["_id"], "kind": FENCE}) is None)
                 raise  # fenced by a later epoch -> refused above; else a real duplicate
             coll.insert_one(doc)
 
     def _patch(self, name: str, doc_id: Any, /, **fields: Any) -> bool:
+        return self._write(name, doc_id, fields, False)
+
+    def _drop(self, name: str, doc_id: Any) -> bool: return self._write(name, doc_id, {}, True)
+
+    def _write(self, name: str, doc_id: Any, fields: Doc, gone: bool) -> bool:
+        """One conditional, journalled update; a delete only stamps `G:` (physical at commit)."""
         coll, old = self._writer(name), self._get(name, doc_id)
         if old is not None:
             stamp = self._log({"op": "set", "coll": name, "doc_id": doc_id, "pre": old.get("_e"),
-                               "prior": {key: old.get(key) for key in fields}})
+                               "prior": {key: old.get(key) for key in fields}, "gone": gone})
+            new = f"G:{stamp}" if gone else stamp
             self._landed(coll.update_one({"_id": doc_id, "_e": old.get("_e")},
-                                         {"$set": {**fields, "_e": stamp}}))
-        return old is not None
-
-    def _drop(self, name: str, doc_id: Any) -> bool:
-        coll, old = self._writer(name), self._get(name, doc_id)
-        if old is not None:
-            self._log({"op": "del", "coll": name, "doc_id": doc_id, "pre": old.get("_e"),
-                       "doc": old})
-            self._landed(coll.delete_one({"_id": doc_id, "_e": old.get("_e")}))
+                                         {"$set": {**fields, "_e": new}}))
         return old is not None
 
     def _drop_where(self, name: str, flt: Doc) -> None:
@@ -219,9 +221,7 @@ class MongoTxBase:
             raise AuthStoreBusy("the auth store lease was lost; the change was undone")
         self._open = False
         try:
-            for key in self._keys:
-                coll_of(self._s, JOURNAL_COLL).delete_one({"_id": key})
-            coll_of(self._s, META).delete_one({"_id": tx_id(held.epoch)})
+            _resolve(self._s, held.epoch, None)  # committed: sweeps the entries, deletes the gone
         except Exception as exc:  # committed leftovers: the next lease holder sweeps them
             LOG.error("auth journal not swept (%s)", type(exc).__name__)
 

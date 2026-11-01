@@ -187,7 +187,8 @@ def test_sessions_are_revoked_before_the_new_hash_is_written(env: AuthEnv,
 
         def check() -> None:  # no recovery has run: the raw state, right after the death
             user = next(d for d in env._coll("auth_users").docs if d.get("_id") == a)
-            live = [d for d in env._coll("auth_sessions").docs if d["user_id"] == a]
+            live = [d for d in env._coll("auth_sessions").docs
+                    if d["user_id"] == a and not str(d.get("_e")).startswith("G:")]
             assert user["password_hash"] == HASH or not live, "new hash, old sessions still valid"
         return change, check
     assert _sweep(env, scenario, age_out=False) >= 5
@@ -226,6 +227,7 @@ def test_a_stalled_holder_writes_nothing_once_the_lease_is_gone(env: AuthEnv) ->
         _age_out_lease(env)
         accounts.set_display_name(b, "successor")
         tx.set_display_name(b, "zombie")  # refused before it writes
+    assert not _journal_left(env)  # raw, before any read recovers it: no marker or entry at all
     assert accounts.get_user(b).display_name == "successor"
 
 
@@ -290,4 +292,7 @@ def test_the_journal_holds_hashes_only_beside_the_users(env: AuthEnv) -> None:
         holders = {n for n, c in env.server.database("autotester").collections.items()
                    if "$argon2" in repr(c.docs)}
         assert holders == {"auth_users"}  # the entry that can undo it sits there too (M30)
+        tx.insert_user("ghost@team.test", "$argon2id$ghost")
+        assert all("doc" not in d for d in env._coll("auth_users").docs
+                   if d.get("kind") == tx_mod.UNDO)  # an entry names a document, never holds one
         raise RuntimeError("boom")

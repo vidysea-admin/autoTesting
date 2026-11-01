@@ -78,6 +78,16 @@ def _nth_entry(n: int) -> Predicate:
     return when
 
 
+def _nth_write(n: int) -> Predicate:
+    seen = [0]
+
+    def when(coll: FakeCollection, args: tuple[Any, ...]) -> bool:
+        if coll.name == "auth_users" and "display_name" in args[1]["$set"]:
+            seen[0] += 1
+        return seen[0] == n
+    return when
+
+
 def _two_names(a: int) -> None:
     with auth_store().transaction() as tx:
         tx.set_display_name(a, "one")
@@ -95,11 +105,12 @@ CASES = {  # where the stalled holder resumes: (operation, FakeCollection method
     "before-its-entry": (lambda a: accounts.set_user_groups(a, []), "insert_one",
                          _is("auth_users", kind="undo")),
     "before-its-second-entry": (_two_names, "insert_one", _nth_entry(2)),
+    "before-its-second-write": (_two_names, "update_one", _nth_write(2)),
     "before-a-patch": (lambda a: accounts.set_user_groups(a, []), "update_one",
                        lambda c, a: c.name == "auth_users" and "group_ids" in a[1]["$set"]),
-    "before-a-delete": (lambda a: accounts.delete_user(a), "delete_one",
-                        lambda c, a: c.name == "auth_users" and "_e" in a[0]
-                        and a[0].get("_id") == 1),
+    "before-a-delete": (lambda a: accounts.delete_user(a), "update_one",
+                        lambda c, a: c.name == "auth_users" and a[0].get("_id") == 1
+                        and str(a[1]["$set"].get("_e")).startswith("G:")),
     "before-an-insert": (lambda a: _late_user(), "insert_one",
                          _is("auth_users", email="late@team.test")),
 }
@@ -207,8 +218,9 @@ def test_a_committed_journal_whose_sweep_failed_is_swept_by_the_next_holder(
     real, failing = FakeCollection.delete_one, [True]
 
     def flaky(self: FakeCollection, flt: dict[str, Any], *args: Any, **kwargs: Any) -> Any:
-        if failing[0] and self.name == "auth_users" and str(flt.get("_id", "")).startswith("undo:"):
-            raise AutoReconnect("down")  # the post-commit sweep cannot reach the entries
+        if failing[0] and self.name == "auth_users" and (
+                str(flt.get("_id", "")).startswith("undo:") or "_e" in flt):
+            raise AutoReconnect("down")  # the post-commit sweep cannot reach entries or gone docs
         return real(self, flt, *args, **kwargs)
     monkeypatch.setattr(FakeCollection, "delete_one", flaky)
     if what == "reset":
@@ -216,8 +228,10 @@ def test_a_committed_journal_whose_sweep_failed_is_swept_by_the_next_holder(
     else:
         accounts.delete_user(c)
     failing[0] = False
-    leftovers = repr([d for d in env._coll("auth_users").docs if d.get("kind") == tx_mod.UNDO])
+    leftovers = repr([d for d in env._coll("auth_users").docs
+                      if d.get("kind") == tx_mod.UNDO or str(d.get("_e")).startswith("G:")])
     assert (HASH if what == "reset" else THIRD) in leftovers  # the old hash / the deleted account
+    assert what == "reset" or accounts.find_user(THIRD) is None  # hidden before it is swept
     accounts.set_display_name(b, "next")  # the next lease holder sweeps them
     assert not _journal_left(env)
     assert not any(str(d["_id"]).startswith("undo:") for d in env._coll("auth_users").docs)

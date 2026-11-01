@@ -3,7 +3,9 @@
     "tests/test_auth_store_mongo.py",
     "tests/test_auth_store_contract.py",
     "tests/test_auth_store_recovery.py",
-    "tests/test_auth_store_fencing.py"
+    "tests/test_auth_store_fencing.py",
+    "tests/test_auth_store_double_fault.py",
+    "tests/test_cli_store_auth_creds.py"
   ],
   "timeout_s": 900,
   "mutations": [
@@ -24,7 +26,6 @@
       "old": "            except BaseException:\n                tx.rollback()\n                raise",
       "new": "            except BaseException:\n                raise",
       "kills": [
-        "tests/test_auth_store_contract.py::test_a_refused_change_is_rolled_back_whole[mongo]",
         "tests/test_auth_store_mongo.py::test_an_exception_rolls_every_write_back"
       ]
     },
@@ -199,8 +200,8 @@
     {
       "name": "f4: no lease re-check after the entry (C2)",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "        self._keys.append(key)\n        if not self._alive():\n            raise AuthStoreBusy(\"the auth store lease was lost\")\n",
-      "new": "        self._keys.append(key)\n",
+      "old": "        if not self._alive():\n            raise AuthStoreBusy(\"the auth store lease was lost\")\n        return stamp",
+      "new": "        return stamp",
       "kills": [
         "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-entry]",
         "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-marker]"
@@ -209,17 +210,18 @@
     {
       "name": "f5: a patch is not conditional on its stamp",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "            self._landed(coll.update_one({\"_id\": doc_id, \"_e\": old.get(\"_e\")},\n                                         {\"$set\": {**fields, \"_e\": stamp}}))",
-      "new": "            self._landed(coll.update_one({\"_id\": doc_id}, {\"$set\": {**fields, \"_e\": stamp}}))",
+      "old": "            self._landed(coll.update_one({\"_id\": doc_id, \"_e\": old.get(\"_e\")},\n                                         {\"$set\": {**fields, \"_e\": new}}))",
+      "new": "            self._landed(coll.update_one(\n                {\"_id\": doc_id, **({\"_e\": old.get(\"_e\")} if gone else {})},\n                {\"$set\": {**fields, \"_e\": new}}))",
       "kills": [
-        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-patch]"
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-patch]",
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-second-write]"
       ]
     },
     {
       "name": "f6: a delete is not conditional on its stamp",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "self._landed(coll.delete_one({\"_id\": doc_id, \"_e\": old.get(\"_e\")}))",
-      "new": "self._landed(coll.delete_one({\"_id\": doc_id}))",
+      "old": "            self._landed(coll.update_one({\"_id\": doc_id, \"_e\": old.get(\"_e\")},\n                                         {\"$set\": {**fields, \"_e\": new}}))",
+      "new": "            self._landed(coll.update_one(\n                {\"_id\": doc_id, **({} if gone else {\"_e\": old.get(\"_e\")})},\n                {\"$set\": {**fields, \"_e\": new}}))",
       "kills": [
         "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-delete]"
       ]
@@ -227,8 +229,8 @@
     {
       "name": "f7: an undone insert leaves no tombstone",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "    if fence and op == \"ins\":",
-      "new": "    if False and op == \"ins\":",
+      "old": "    if by is not None and ins:",
+      "new": "    if False and ins:",
       "kills": [
         "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear",
         "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-an-insert]"
@@ -258,14 +260,14 @@
       "old": "key=lambda d: str(d[\"_id\"]),\n                        reverse=True)",
       "new": "key=lambda d: str(d[\"_id\"]),\n                        reverse=False)",
       "kills": [
-        "tests/test_auth_store_recovery.py::test_several_writes_to_one_document_are_undone_newest_first"
+        "tests/test_auth_store_double_fault.py::test_an_insert_then_a_patch_of_one_document_is_recovered_whole_or_absent"
       ]
     },
     {
       "name": "f11: a dead holder's document is not fenced",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "    elif fence:\n        coll.update_one({\"_id\": i, \"_e\": entry[\"pre\"]}, {\"$set\": {\"_e\": fence}})",
-      "new": "    elif fence:\n        pass",
+      "old": "    elif by is not None:\n        coll.update_one({\"_id\": i, \"_e\": pre}, {\"$set\": {\"_e\": stamp}})",
+      "new": "    elif by is not None:\n        pass",
       "kills": [
         "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-patch]",
         "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-a-delete]"
@@ -274,16 +276,16 @@
     {
       "name": "f12: the undo ignores the fence stamp",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "    mine = {\"$in\": [entry[\"me\"], *([fence] if fence else [])]}",
-      "new": "    mine = entry[\"me\"]",
+      "old": "    mine = {\"$in\": [me, f\"G:{me}\", f\"F:{me}\"]}",
+      "new": "    mine = {\"$in\": [me, f\"G:{me}\"]}",
       "kills": [
-        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-second-entry]"
+        "tests/test_auth_store_fencing.py::test_a_stalled_holder_lands_no_write_once_a_successor_ran[before-its-second-write]"
       ]
     },
     {
       "name": "f13: a stale epoch may clear a tombstone",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "{\"_id\": doc[\"_id\"], \"kind\": FENCE, \"f\": {\"$lt\": held.epoch}}",
+      "old": "{\"_id\": doc[\"_id\"], \"kind\": FENCE, \"f\": {\"$lte\": held.epoch}}",
       "new": "{\"_id\": doc[\"_id\"], \"kind\": FENCE}",
       "kills": [
         "tests/test_auth_store_fencing.py::test_the_stalled_holders_late_insert_meets_a_tombstone_only_a_later_epoch_may_clear"
@@ -378,7 +380,7 @@
       "old": "            if self._held is not None and self._held():\n                _resolve(self._s, self._held.epoch, None)",
       "new": "            if self._held is not None:\n                _resolve(self._s, self._held.epoch, None)",
       "kills": [
-        "tests/test_auth_store_recovery.py::test_a_stalled_holders_rollback_leaves_a_live_successor_alone"
+        "tests/test_auth_store_double_fault.py::test_a_rollback_that_lost_its_lease_writes_nothing"
       ]
     },
     {
@@ -411,19 +413,74 @@
     {
       "name": "f27: recovery does not put a deleted document back",
       "file": "src/autotester/auth/store_mongo_tx.py",
-      "old": "            coll.insert_one({**entry[\"doc\"], \"_e\": stamp})",
-      "new": "            pass",
+      "old": "    if ins:\n        coll.delete_one({\"_id\": i, \"_e\": mine})\n    else:\n        coll.update_one({\"_id\": i, \"_e\": mine}, {\"$set\": {**entry[\"prior\"], \"_e\": stamp}})",
+      "new": "    if ins:\n        coll.delete_one({\"_id\": i, \"_e\": mine})\n    elif not entry.get(\"gone\"):\n        coll.update_one({\"_id\": i, \"_e\": mine}, {\"$set\": {**entry[\"prior\"], \"_e\": stamp}})",
       "kills": [
         "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[delete_user]"
       ]
     },
     {
-      "name": "f28: every inserted document is journalled with its hash",
+      "name": "f28: every inserted document is journalled with its body",
       "file": "src/autotester/auth/store_mongo_tx.py",
       "old": "        doc = {**doc, \"_e\": self._log({\"op\": \"ins\", \"coll\": name, \"doc_id\": doc[\"_id\"],\n                                       \"pre\": None})}",
       "new": "        doc = {**doc, \"_e\": self._log({\"op\": \"ins\", \"coll\": name, \"doc_id\": doc[\"_id\"],\n                                       \"pre\": None, \"doc\": doc})}",
       "kills": [
         "tests/test_auth_store_recovery.py::test_the_journal_holds_hashes_only_beside_the_users"
+      ]
+    },
+    {
+      "name": "b1: a second recoverer matches only its own stamp (cycle 0)",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    stamp = pre if by is None else f\"F:{pre}\"  # a recoverer must not reopen the old stamp\n",
+      "new": "    stamp = pre if by is None else f\"F:{by:08d}\"\n",
+      "kills": [
+        "tests/test_auth_store_double_fault.py::test_a_recovery_killed_at_any_call_is_finished_by_the_next_one"
+      ]
+    },
+    {
+      "name": "b2a: a replay of a delete re-inserts an empty slot",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "    if ins:\n        coll.delete_one({\"_id\": i, \"_e\": mine})\n    else:\n        coll.update_one({\"_id\": i, \"_e\": mine}, {\"$set\": {**entry[\"prior\"], \"_e\": stamp}})",
+      "new": "    if ins:\n        coll.delete_one({\"_id\": i, \"_e\": mine})\n    else:\n        coll.update_one({\"_id\": i, \"_e\": mine}, {\"$set\": {**entry[\"prior\"], \"_e\": stamp}})\n        if entry.get(\"gone\"):\n            with suppress(StoreDuplicateKey):\n                coll.insert_one({\"_id\": i, \"email\": f\"x{i}\", \"generation\": f\"x{i}\",\n                                 \"name\": f\"x{i}\", \"_e\": stamp})",
+      "kills": [
+        "tests/test_auth_store_double_fault.py::test_a_replay_that_resumes_late_does_not_bring_back_an_account_deleted_since[recovery]",
+        "tests/test_auth_store_double_fault.py::test_a_replay_that_resumes_late_does_not_bring_back_an_account_deleted_since[rollback]"
+      ]
+    },
+    {
+      "name": "b2b: a committed delete is never made physical",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "        elif entry.get(\"gone\"):  # a committed delete becomes physical\n",
+      "new": "        elif False:  # a committed delete becomes physical\n",
+      "kills": [
+        "tests/test_auth_store_fencing.py::test_a_committed_journal_whose_sweep_failed_is_swept_by_the_next_holder[delete]"
+      ]
+    },
+    {
+      "name": "b2c: a deleted document stays readable",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": " or str(d.get(\"_e\")).startswith(\"G:\")",
+      "new": "",
+      "kills": [
+        "tests/test_auth_store_recovery.py::test_a_refused_change_survives_a_kill_at_every_call_point[delete_user]"
+      ]
+    },
+    {
+      "name": "a3: a tombstone carries no unique name",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "\"generation\": key,\n                             \"name\": key})",
+      "new": "\"generation\": key})",
+      "kills": [
+        "tests/test_auth_store_double_fault.py::test_two_stalled_creations_in_one_collection_are_both_refused"
+      ]
+    },
+    {
+      "name": "a3b: the recoverer's own tombstone blocks its own insert",
+      "file": "src/autotester/auth/store_mongo_tx.py",
+      "old": "\"f\": {\"$lte\": held.epoch}}",
+      "new": "\"f\": {\"$lt\": held.epoch}}",
+      "kills": [
+        "tests/test_auth_store_double_fault.py::test_a_holder_that_fenced_an_undone_insert_may_make_the_same_insert_itself"
       ]
     }
   ]

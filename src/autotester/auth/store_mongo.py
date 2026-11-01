@@ -221,8 +221,8 @@ class MongoAuthTx(MongoTxBase):
                 "relation": relation}
 
     def replace_project_owner(self, slug: str, user_id: int) -> None:
-        self._drop_where(GRANTS, {"slug": slug, "relation": "owner"})
-        self._insert(GRANTS, self._grant(slug, user_id, "owner"))
+        self._drop_where(GRANTS, {"slug": slug, "relation": "owner", "user_id": {"$ne": user_id}})
+        self.add_project_relation(slug, user_id, "owner")
 
     def add_project_relation(self, slug: str, user_id: int, relation: str) -> None:
         grant = self._grant(slug, user_id, relation)
