@@ -1,6 +1,6 @@
 # Manifest - e2e-fixes-e10
 
-**Status:** ready-for-check
+**Status:** checked-PASS (cycle 0, dual: A 405bd202, B 04250cbe)
 **Fix cycle:** 0
 **Contract:** `qa/contracts/e2e-fixes.md`, unit E10 (E10.1, E10.2, E10.3). **Criticality:** HIGH (auth data and the revocation fence).
 **Authority:** no new `src/` module, no `qa/contracts/` edit, no DECISIONS entry needed (E10.3 outcome A, a fix, not an accepted residual).
