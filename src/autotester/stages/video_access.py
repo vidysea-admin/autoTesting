@@ -18,6 +18,7 @@ from pathlib import Path
 
 from autotester.auth import db
 from autotester.auth.access import authorize, resource_for
+from autotester.auth.store import auth_store, on_mongo, video_tx
 from autotester.core.paths import SLUG_PATTERN
 from autotester.schema.auth import PermissionKey, Principal, ResourceRef
 from autotester.schema.enums import SourceKind
@@ -50,8 +51,11 @@ def find_video(slug: str, video_id: str) -> Source | None:
 
 
 def shared_emails(slug: str, video_id: str) -> frozenset[str]:
-    if not db.store_exists():
+    if not auth_store().exists():
         return frozenset()
+    if on_mongo():
+        with video_tx() as tx:
+            return frozenset(tx.share_emails(slug, video_id))
     with db.reading() as conn:
         return frozenset(r["email"] for r in conn.execute(
             "SELECT email FROM video_shares WHERE slug = ? AND video_id = ?", (slug, video_id)))
@@ -84,6 +88,10 @@ def viewable_videos(who: Principal, slugs: list[str]) -> list[tuple[str, Source]
 def set_share(slug: str, video_id: str, email: str, present: bool, granted_by: str) -> None:
     """Add (idempotent) or remove one person on one video's `shared_with`."""
     who = clean_email(email)
+    if on_mongo():
+        with video_tx(True) as tx:
+            tx.set_share(slug, video_id, who, present, clean_email(granted_by), _now())
+        return
     with db.transaction() as conn:
         if present:
             conn.execute("INSERT OR IGNORE INTO video_shares (slug, video_id, email, granted_by, "
@@ -102,6 +110,10 @@ def create_link(slug: str, video_id: str, created_by: str) -> str:
     """A new share-link token (the only time it exists in the clear); any earlier link for this
     video is revoked, so a video has at most one live link."""
     token = secrets.token_urlsafe(TOKEN_BYTES)
+    if on_mongo():
+        with video_tx(True) as tx:
+            tx.create_link(_digest(token), slug, video_id, clean_email(created_by), _now())
+        return token
     with db.transaction() as conn:
         conn.execute("UPDATE video_links SET revoked_at = ? WHERE slug = ? AND video_id = ? "
                      "AND revoked_at IS NULL", (_now(), slug, video_id))
@@ -112,6 +124,9 @@ def create_link(slug: str, video_id: str, created_by: str) -> str:
 
 
 def revoke_links(slug: str, video_id: str) -> int:
+    if on_mongo():
+        with video_tx(True) as tx:
+            return int(tx.revoke_links(slug, video_id, _now()))
     with db.transaction() as conn:
         return conn.execute("UPDATE video_links SET revoked_at = ? WHERE slug = ? AND "
                             "video_id = ? AND revoked_at IS NULL",
@@ -120,8 +135,12 @@ def revoke_links(slug: str, video_id: str) -> int:
 
 def live_link_since(slug: str, video_id: str) -> str | None:
     """When this video's live link was made (ISO), or None. Never the token."""
-    if not db.store_exists():
+    if not auth_store().exists():
         return None
+    if on_mongo():
+        with video_tx() as tx:
+            since = tx.link_since(slug, video_id)
+        return None if since is None else str(since)
     with db.reading() as conn:
         row = conn.execute("SELECT created_at FROM video_links WHERE slug = ? AND video_id = ? "
                            "AND revoked_at IS NULL", (slug, video_id)).fetchone()
@@ -133,9 +152,13 @@ def resolve_link(token: str) -> tuple[str, str] | None:
     malformed token all give the same None; the compare is constant time."""
     if not token or len(token) > MAX_TOKEN_CHARS or not _TOKEN.fullmatch(token):
         return None
-    if not db.store_exists():
+    if not auth_store().exists():
         return None
     digest = _digest(token)
+    if on_mongo():
+        with video_tx() as tx:
+            found = tx.link_target(digest)
+        return None if found is None else (str(found[0]), str(found[1]))
     with db.reading() as conn:
         row = conn.execute("SELECT token_hash, slug, video_id FROM video_links "
                            "WHERE token_hash = ? AND revoked_at IS NULL", (digest,)).fetchone()
@@ -146,6 +169,10 @@ def resolve_link(token: str) -> tuple[str, str] | None:
 
 def purge_video(slug: str, video_id: str) -> None:
     """The video is gone: its links, shares, requests and comments go with it (TP3)."""
+    if on_mongo():
+        with video_tx(True) as tx:
+            tx.purge_video_data(slug, video_id)
+        return
     with db.transaction() as conn:
         for table in ("video_links", "video_shares", "access_requests", "video_comments"):
             conn.execute(f"DELETE FROM {table} WHERE slug = ? AND video_id = ?", (slug, video_id))
@@ -153,6 +180,10 @@ def purge_video(slug: str, video_id: str) -> None:
 
 def purge_project_videos(slug: str) -> None:
     """The project is gone: every video's links, shares, requests and comments go with it."""
+    if on_mongo():
+        with video_tx(True) as tx:
+            tx.purge_video_data(slug)
+        return
     with db.transaction() as conn:
         for table in ("video_links", "video_shares", "access_requests", "video_comments"):
             conn.execute(f"DELETE FROM {table} WHERE slug = ?", (slug,))

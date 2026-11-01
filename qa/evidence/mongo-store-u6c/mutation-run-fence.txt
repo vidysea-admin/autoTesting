@@ -1,0 +1,35 @@
+KILLED  s1: slot takeover ignores the stamp's epoch  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+KILLED  s2: a committed delete of a slotted document is physical again  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent, tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+KILLED  s3: a recoverer leaves an older hidden stamp  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch
+KILLED  s4: the committed sweep drops its _e condition  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_late_committed_sweep_does_not_delete_a_recreated_document
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_late_committed_sweep_does_not_delete_a_recreated_document
+KILLED  s5: marker read before the abort CAS  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_commit_that_lands_between_the_abort_cas_and_the_marker_read_stands
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_commit_that_lands_between_the_abort_cas_and_the_marker_read_stands
+KILLED  s6: recover resolves epochs above its own  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_recovery_resolves_only_earlier_epochs
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recovery_resolves_only_earlier_epochs
+KILLED  s7: an undone slotted insert keeps its data  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+    actually failed: tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+KILLED  s8: an undone slotted insert is not hidden when it landed  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+    actually failed: tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+KILLED  s9: a slotted insert treats a hidden slot as a real duplicate  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+KILLED  s10: a deleted slotted document keeps its fields  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent
+KILLED  s11: stamp_epoch sorts an unparsable stamp first  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_the_stamp_epoch_orders_every_stamp_the_fence_writes
+    actually failed: tests/test_auth_store_fence_slots.py::test_the_stamp_epoch_orders_every_stamp_the_fence_writes
+
+11/11 mutations killed

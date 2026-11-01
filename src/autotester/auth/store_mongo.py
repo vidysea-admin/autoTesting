@@ -19,7 +19,8 @@ from typing import Any
 from autotester.auth import db
 from autotester.auth import store_mongo_tx as txm
 from autotester.auth.defaults import ADMIN_SEED, DEFAULT_GROUPS
-from autotester.auth.store_mongo_tx import META, AuthStoreBusy, Doc, MongoTxBase, coll_of, lease
+from autotester.auth.store_mongo_tx import META, AuthStoreBusy, Doc, coll_of, lease
+from autotester.auth.store_mongo_video import VIDEO_INDEXES, VideoOps
 from autotester.schema.auth import Group, PermissionKey, Principal, User
 from autotester.store.mongo_backend import default_store
 from autotester.store.mongo_guard import GuardedStore, StoreDuplicateKey
@@ -34,7 +35,7 @@ INDEXES: tuple[tuple[str, str, bool], ...] = (
     (SESSIONS, "user_id", False), (GRANTS, "slug", False), (GRANTS, "user_id", False))
 
 
-class MongoAuthTx(MongoTxBase):
+class MongoAuthTx(VideoOps):
     def _names(self) -> dict[int, str]: return {g["_id"]: g["name"] for g in self._docs(GROUPS)}
 
     def _perms(self, group_ids: list[int]) -> set[str]:
@@ -247,7 +248,7 @@ class MongoAuthStore:
         with self._once:
             if self._prepared:
                 return
-            for name, field, unique in INDEXES:
+            for name, field, unique in INDEXES + VIDEO_INDEXES:
                 coll_of(self._s, name).create_index([(field, 1)], unique=unique, name=field)
             meta = coll_of(self._s, META)
             with lease(self._s) as held:

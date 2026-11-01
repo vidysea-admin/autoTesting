@@ -12,9 +12,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from autotester.auth import db
-from autotester.auth.access import authorize, resource_for
+from autotester.auth.access import authorize, principal_of, resource_for
 from autotester.auth.loopback import auth_disabled
+from autotester.auth.store import auth_store
 from autotester.schema.auth import PermissionKey, Principal
 from autotester.stages.scheduler import Slot
 from autotester.store.project_store import ProjectStore
@@ -22,25 +22,16 @@ from autotester.store.project_store import ProjectStore
 
 def owner_principal(email: str | None) -> Principal | None:
     """The owner's live principal, or None when missing or disabled."""
-    if not email or not db.store_exists():
+    if not email:
         return None
     try:
-        return _read_principal(email)
+        store = auth_store()
+        if not store.exists():
+            return None
+        with store.reading() as tx:
+            return principal_of(tx, email)
     except Exception:  # unreadable store: no owner can be proven, so the caller refuses
         return None
-
-
-def _read_principal(email: str) -> Principal | None:
-    with db.reading() as conn:
-        row = conn.execute("SELECT id, email, display_name FROM users "
-                           "WHERE email = ? AND disabled = 0", (email,)).fetchone()
-        if row is None:
-            return None
-        perms = frozenset(r["permission"] for r in conn.execute(
-            "SELECT DISTINCT p.permission FROM memberships m JOIN group_permissions p "
-            "ON p.group_id = m.group_id WHERE m.user_id = ?", (row["id"],)))
-    return Principal(user_id=row["id"], email=row["email"],
-                     display_name=row["display_name"], permissions=perms)
 
 
 def owner_refusal(slug: str, owner: str | None) -> str | None:
