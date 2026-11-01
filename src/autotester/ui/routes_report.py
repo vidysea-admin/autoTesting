@@ -10,7 +10,7 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from starlette.background import BackgroundTask
 
-from autotester.core.trace import read_spans
+from autotester.core.trace import TraceParseError, read_spans
 from autotester.schema.enums import EvidenceKind, Result
 from autotester.schema.trace import LLMSpan, StageSpan
 from autotester.stages.catalog import failures_first
@@ -114,7 +114,10 @@ def _failure_list(failures: list) -> str:
 
 def _trace_card(store: ProjectStore, run_id: str) -> str:
     """RT7: read-only VIEW over `trace.jsonl` (C6: never a second source); no trace -> nothing."""
-    spans = read_spans(store.paths.run_trace(run_id))
+    try:
+        spans = read_spans(store.paths.run_trace(run_id))
+    except TraceParseError as exc:  # E1.2: an unreadable measurement is not a clean one (C12)
+        return theme.card(f"<p>The trace could not be read: {escape(str(exc))}</p>", title="Trace")
     stage_rows = "".join(
         f"<tr><td>{escape(s.stage.value)}</td><td>{escape(s.status)}</td>"
         f"<td>{s.duration_s:.2f}s</td></tr>"
@@ -126,16 +129,13 @@ def _trace_card(store: ProjectStore, run_id: str) -> str:
         + ("unknown" if s.cost is None else f"${s.cost:.4f}") + "</td></tr>"
         for s in spans if isinstance(s, LLMSpan)
     )
-    if not stage_rows and not llm_rows:
-        return ""
-    body = ""
-    if stage_rows:
-        body += ("<table><tr><th>Stage</th><th>Status</th><th>Duration</th></tr>"
-                  f"{stage_rows}</table>")
-    if llm_rows:
-        body += ("<table><tr><th>Role</th><th>Model</th><th>Latency</th><th>Cost</th></tr>"
-                  f"{llm_rows}</table>")
-    return theme.card(body, title="Trace")
+    tables = [
+        f"<table><tr>{heads}</tr>{rows}</table>"
+        for heads, rows in (("<th>Stage</th><th>Status</th><th>Duration</th>", stage_rows),
+                            ("<th>Role</th><th>Model</th><th>Latency</th><th>Cost</th>", llm_rows))
+        if rows
+    ]
+    return theme.card("".join(tables), title="Trace") if tables else ""
 
 
 def _unknown_run_page(slug: str, run_id: str) -> HTMLResponse:
