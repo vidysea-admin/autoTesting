@@ -1,0 +1,28 @@
+Mutation runs, e2e-fixes-e8 (worktree D:/autoTesting/.claude/worktrees/e2e-e8, base 6eb21a54).
+Each: one edit to the shipped file, run `-k e8` (entrypoint) or `-k guide` (DEPLOY pins), restore from a byte copy, cmp.
+Command: env -u ANTHROPIC_BASE_URL uv run pytest <file> -o addopts= -q -k <k>
+
+M1 delete the project check (entrypoint.sh)           -> 3 failed, 7 passed
+   FAILED test_e8_a_project_file_blocks_the_selection_with_one_line[projects/zeta/project.json]
+   FAILED test_e8_a_project_file_blocks_the_selection_with_one_line[projects/with space/project.json]
+   FAILED test_e8_the_real_script_keeps_files_for_a_project_and_leaks_nothing
+   (the auth+project case (b) still passes: the auth branch returns first, so one line either way; (b) is killed by M4)
+M2 test -d projects/* instead of projects/*/project.json -> 3 failed, 7 passed
+   FAILED test_e8_only_a_direct_project_json_counts[slug-dir-only]
+   FAILED test_e8_only_a_direct_project_json_counts[too-deep]
+   FAILED test_e8_a_project_directory_named_project_json_does_not_count
+   (empty projects/ stays a literal glob and -d is false, so it passes under M2: not a hole, the glob does not expand)
+M3 print the matched path (slug) in the line           -> 3 failed, 7 passed
+   FAILED ...[projects/zeta/project.json]  FAILED ...[projects/with space/project.json]
+   FAILED test_e8_the_real_script_keeps_files_for_a_project_and_leaks_nothing
+M4 auth branch no longer returns (two lines printed)   -> 1 failed, 9 passed
+   FAILED test_e8_auth_file_and_project_together_print_exactly_one_line
+D1 delete DEPLOY.md sentence (d) escape hatch          -> 2 failed
+   FAILED test_guide_gives_the_escape_hatch_in_the_process_environment
+   FAILED test_guide_says_a_data_root_env_store_choice_does_not_beat_the_platform_uri
+D2 delete DEPLOY.md sentence (e) first admin (the slice also removed the --max-instances paragraph) -> 2 failed
+   FAILED test_guide_says_to_set_the_first_admin_before_the_first_start
+   FAILED test_cloud_run_command_pins_one_instance_and_the_guide_says_until_when
+D3 append "mongodb+srv://u:p@h/db" to DEPLOY.md          -> 1 failed
+   FAILED test_guide_states_fail_closed_and_plain_storage_and_never_a_uri_value
+After each: cmp .work/entry.good docker/entrypoint.sh && cmp .work/deploy.good docker/DEPLOY.md  -> restored

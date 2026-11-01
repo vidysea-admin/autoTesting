@@ -41,6 +41,8 @@ fi
 # The operator's AUTOTESTER_STORE / AUTOTESTER_STORE_AREAS win whole, even `file`; no half-merge.
 # An existing SQLite auth store also wins (A-W1): flipping `auth` onto an empty Mongo collection
 # would lock its users out, so migrate first (`autotester store migrate`, docker/DEPLOY.md).
+# Likewise any <root>/projects/<slug>/project.json (E8.1): flipping would hide every file-store
+# project behind an empty Mongo. Presence only (a glob and -f); the slug is never read or printed.
 # Presence is tested without echoing the URI; it appears in no message and on no command line.
 # The area list must equal store/mongo_routes.py::AREAS (a test pins it). Never exits.
 select_mongo_store() {
@@ -55,6 +57,13 @@ select_mongo_store() {
     echo "entrypoint: existing SQLite auth store at $auth_db; Mongo not auto-selected (migrate it first, docker/DEPLOY.md)"
     return 0
   fi
+  local root="${AUTOTESTER_ROOT:-/app}" proj
+  for proj in "$root"/projects/*/project.json; do
+    if [ -f "$proj" ]; then
+      echo "entrypoint: existing file-store projects under $root/projects; Mongo not auto-selected (migrate them first, docker/DEPLOY.md)"
+      return 0
+    fi
+  done
   export AUTOTESTER_STORE=mongo
   export AUTOTESTER_STORE_AREAS="settings=mongo,projects=mongo,runs=mongo,crawls=mongo,approvals=mongo,auth=mongo,credentials=mongo,blobs=mongo,queue=mongo"
   echo "entrypoint: Mongo URI present and no store selection set; every state area selected on Mongo"
