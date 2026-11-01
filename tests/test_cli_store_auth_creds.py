@@ -114,6 +114,7 @@ def test_an_existing_account_is_never_overwritten(rig: Rig) -> None:
     done = rig.invoke("migrate", "--apply", "--only", "auth")
     assert done.exit_code == 1 and "conflicting-id=1" in done.output
     assert _users(rig)[ids["a"]]["password_hash"] == "changed-in-mongo" != kept
+    assert _users(rig)[ids["c"]]["email"] == "someone-else@team.test"
 
 
 def test_verify_reports_an_altered_account(rig: Rig) -> None:

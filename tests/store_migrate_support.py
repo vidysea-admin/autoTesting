@@ -104,6 +104,7 @@ def seed_state(rig: Rig) -> list[str]:
                 "projects/demo/chunks/c1.json", "projects/demo/crawl_summaries/s.json",
                 ".work/scratch/log.txt"):
         rig.write(key, "private" if key.endswith(".json") else b"\x00\x01")
+    rig.write("projects/demo/loose.xlsx", b"sheet")
     rig.write(PRIVATE_KEY, f'{{"items": [{{"text": "{CEO_CANARY}"}}]}}')
     rig.write(".env", f"DEMO_USER={USER_VALUE}\nDEMO_PASS={PASS_VALUE}\nSTRAY_KEY={STRAY_VALUE}\n"
                       "AUTOTESTER_APPROVAL_KEY=test-only-signing-key-never-a-real-secret\n")

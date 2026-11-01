@@ -1,0 +1,7 @@
+$ pytest tests/test_cli_store_state.py tests/test_cli_store_auth_creds.py -o addopts=
+======================= 33 passed, 2 warnings in 8.79s ========================
+$ pytest tests/test_cli_subapp_hook.py tests/test_cli_advice_resolves.py -o addopts=
+FAILED tests/test_cli_advice_resolves.py::test_the_collector_reports_what_it_could_not_resolve
+================= 1 failed, 44 passed, 21 warnings in 21.03s ==================
+$ pytest tests/test_doctor.py tests/test_cli_store_state.py -o addopts=
+======================= 58 passed, 3 warnings in 20.76s =======================

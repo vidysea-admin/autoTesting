@@ -66,13 +66,13 @@ def test_m25_families_are_reported_and_never_stored(rig: Rig) -> None:
     seed_state(rig)
     report = rig.invoke("migrate").output
     for family in ("profiles=1", "chunks=1", "exports=1", ".work-scratch=1",
-                   ".env=1", "crawl_summaries=1"):
+                   ".env=1", "crawl_summaries=1", ".xlsx=1"):
         assert family in report
     assert "to_insert" in report
     assert rig.invoke("migrate", "--apply").exit_code == 0
     stored = rig.everywhere()
     for banned in ("private", "profiles", "chunks", "report.xlsx", "scratch",
-                   "crawl_summaries/s.json"):
+                   "crawl_summaries/s.json", "loose.xlsx"):
         assert banned not in stored
 
 
@@ -165,6 +165,23 @@ def test_a_failing_migrate_prints_the_class_name_and_never_the_uri(
         assert done.exit_code == 1 and " failed: " in done.output
         assert CANARY not in done.output and CANARY not in capsys.readouterr().out
     assert CANARY not in caplog.text
+
+
+def test_a_raw_exception_carrying_the_uri_prints_only_its_class_name(
+        rig: Rig, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The fake driver already sanitises its errors; this one is raw, as a driver's may be."""
+    from autotester import cli_store
+
+    seed_state(rig)
+
+    def boom(*_a: object, **_k: object) -> None:
+        raise RuntimeError(f"cannot reach {URI}")
+
+    monkeypatch.setattr(cli_store, "migrate_state", boom)
+    for args in (("migrate",), ("migrate", "--apply"), ("verify",)):
+        done = rig.invoke(*args)
+        assert done.exit_code == 1 and "failed: RuntimeError" in done.output
+        assert CANARY not in done.output and URI not in done.output
 
 
 def test_a_screenshot_recorded_unmasked_stays_out(rig: Rig) -> None:
