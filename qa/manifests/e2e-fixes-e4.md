@@ -77,7 +77,7 @@ pytest tests/test_run_launcher_approval.py tests/test_teardown_residuals.py     
 pytest tests/test_run_budget_judge_time.py tests/test_team_run_launcher.py tests/test_run_record.py tests/test_run_summary_inconclusive.py tests/test_video_report_export.py tests/test_bug_wiring.py tests/test_cli_mcp.py tests/test_cli_schedule.py tests/test_hosting_gaps.py tests/test_mcp_declared.py tests/test_run_launcher_priorities_approval.py tests/test_team_run_queue_seam.py tests/test_ui_runs_serial_entry_order.py tests/test_ux_advisory_wiring.py tests/test_parallel_run_evidence_namespace.py tests/test_provider_attempts.py tests/test_run_trace.py  -> all passed (run as pairs)
 ruff check src tests scripts                                                      -> All checks passed!
 autotester map                                                                    -> docs/MAP.md regenerated
-autotester doctor (> .work/doctor-e4.txt)                                         -> see the doctor line below
+autotester doctor (> .work/doctor-e4.txt)                                         -> "doctor: clean" (exit 0, after the MAP.md commit)
 ```
 
 **Known failure NOT caused by E4**: `tests/test_schedule_tick.py::test_the_scheduler_side_reaches_no_browser_or_pipeline_module_even_transitively` fails on this branch with `store.mongo_routes -> browser.profiles`, `auth.store -> auth.store_mongo`, `auth.store_mongo -> auth.store_mongo_tx` (the mongo-store units' import edges; none of those files, and none of `reachability.py`, is touched here). I did not check it against bare master `dccc65e9` in a second tree (memory), so the checker should confirm it fails there too.
