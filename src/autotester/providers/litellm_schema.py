@@ -12,7 +12,7 @@ import json
 import re
 from typing import Any, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from autotester.providers.gemini_schema import gemini_schema
 
@@ -87,4 +87,19 @@ def parse_answer(message: Any, strategy: str, schema: type[ModelT], *,
     """Validate the model's answer against `schema`; ValueError (incl. pydantic's)
     on anything that is not exactly that shape."""
     data = loads_json(answer_text(message, strategy))
+    _require_answered(schema, data)
     return schema.model_validate_json(json.dumps(data), strict=strict)
+
+
+def _require_answered(schema: type[BaseModel], data: Any) -> None:
+    """A model must answer every field the schema it was given calls `judge_required` (AT-1414):
+    absent or null raises a pydantic `ValidationError` (field path only, never the input), which
+    takes the one repair retry and then a `ProviderError`. The model stays tolerant to build."""
+    names = getattr(schema, "judge_required", ())
+    if not isinstance(data, dict):
+        return
+    errors: list[Any] = [
+        {"type": "missing" if name not in data else "bool_type", "loc": (name,), "input": None}
+        for name in names if data.get(name) is None]
+    if errors:
+        raise ValidationError.from_exception_data(schema.__name__, errors)

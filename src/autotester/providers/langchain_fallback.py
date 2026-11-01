@@ -1,10 +1,13 @@
 """LangChain-backed provider with automatic fallback across configured vendors.
 
 Umesh, 2026-09-03: no dependency on any single model vendor. If Anthropic
-isn't reachable (no key, outage, rate limit) fall through to Gemini, then
-Ollama, then ChatGPT, in that order -- each tier only enters the chain when
+isn't reachable (no key, outage, rate limit) fall through to Ollama, then
+Gemini, then ChatGPT, in that order -- each tier only enters the chain when
 its credential/service is actually configured, so an unused tier costs
-nothing and needs no SDK installed until someone configures it.
+nothing and needs no SDK installed until someone configures it. Ollama sits
+ahead of Gemini (AT-1413, e2e-fixes E2.2: the order `autotester providers`
+reports; a Gemini spend cap otherwise left every verdict INCONCLUSIVE) and
+enters on `OLLAMA_API_KEY` alone, at the cloud URL, or on `OLLAMA_BASE_URL`.
 
 Built on LangChain's `ChatModel` + `with_structured_output` abstractions for
 the actual model calls, but the fallback loop itself is explicit rather than
@@ -26,6 +29,7 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
+from autotester.providers import ollama_cloud
 from autotester.providers.base import Provider, ProviderError
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
@@ -38,6 +42,20 @@ SDK's default policy and a hung tier stalled a run for minutes with no trace row
 2026-10-28, 7.2 item 5)."""
 JUDGE_MAX_RETRIES = 2
 """The SDK's own retries per tier; the chain then falls through to the next tier."""
+
+
+def _make_ollama() -> Any:
+    """The Ollama tier: cloud URL + Bearer header when `OLLAMA_API_KEY` is set (the same
+    construction as providers/agent_model.py::_build_tiers), else the local daemon."""
+    from langchain_ollama import ChatOllama
+
+    key = os.environ.get(ollama_cloud.KEY_ENV)
+    kwargs: dict[str, Any] = {"timeout": JUDGE_TIMEOUT_S}
+    if key:
+        kwargs["headers"] = {"Authorization": f"Bearer {key}"}
+    default = ollama_cloud.GLM.split("/", 1)[1] if key else "llama3"
+    return ChatOllama(model=os.environ.get("OLLAMA_MODEL") or default,
+                      base_url=ollama_cloud.base_url(), client_kwargs=kwargs)
 
 
 def _default_chain() -> list[ChainEntry]:
@@ -55,6 +73,9 @@ def _default_chain() -> list[ChainEntry]:
 
         chain.append(("anthropic", make_anthropic))
 
+    if ollama_cloud.base_url():  # OLLAMA_BASE_URL, or the cloud URL when OLLAMA_API_KEY is set
+        chain.append(("ollama", _make_ollama))
+
     if os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"):
         def make_gemini() -> Any:
             from langchain_google_genai import ChatGoogleGenerativeAI
@@ -64,18 +85,6 @@ def _default_chain() -> list[ChainEntry]:
                                           timeout=JUDGE_TIMEOUT_S, max_retries=JUDGE_MAX_RETRIES)
 
         chain.append(("gemini", make_gemini))
-
-    if os.environ.get("OLLAMA_BASE_URL"):
-        def make_ollama() -> Any:
-            from langchain_ollama import ChatOllama
-
-            return ChatOllama(
-                model=os.environ.get("OLLAMA_MODEL", "llama3"),
-                base_url=os.environ["OLLAMA_BASE_URL"],
-                client_kwargs={"timeout": JUDGE_TIMEOUT_S},
-            )
-
-        chain.append(("ollama", make_ollama))
 
     if os.environ.get("OPENAI_API_KEY"):
         def make_openai() -> Any:

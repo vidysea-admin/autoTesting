@@ -1,0 +1,90 @@
+{
+ "tests": [
+  "tests/test_judge_defect_required.py"
+ ],
+ "mutations": [
+  {
+   "name": "s1: judge_required emptied (no required marking, no reply check)",
+   "file": "src/autotester/schema/verdict.py",
+   "old": "judge_required: ClassVar[tuple[str, ...]] = (\"defect_observed\",)",
+   "new": "judge_required: ClassVar[tuple[str, ...]] = ()",
+   "kills": [
+    "test_a_the_json_mode_schema_requires_a_non_null_boolean",
+    "test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema",
+    "test_a_the_ollama_judge_call_carries_the_required_schema",
+    "test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted]",
+    "test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]"
+   ]
+  },
+  {
+   "name": "s2: required list not extended",
+   "file": "src/autotester/schema/verdict.py",
+   "old": "schema[\"required\"].append(name)",
+   "new": "schema[\"required\"]",
+   "kills": [
+    "test_a_the_json_mode_schema_requires_a_non_null_boolean",
+    "test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema",
+    "test_a_the_ollama_judge_call_carries_the_required_schema"
+   ]
+  },
+  {
+   "name": "s3: null alternative kept",
+   "file": "src/autotester/schema/verdict.py",
+   "old": "if a.get(\"type\") != \"null\"]",
+   "new": "if True]",
+   "kills": [
+    "test_a_the_json_mode_schema_requires_a_non_null_boolean",
+    "test_a_the_schema_and_tool_strategies_send_the_same_tightened_schema",
+    "test_a_the_ollama_judge_call_carries_the_required_schema"
+   ]
+  },
+  {
+   "name": "s4: default kept",
+   "file": "src/autotester/schema/verdict.py",
+   "old": "            prop.pop(\"default\", None)\n",
+   "new": "",
+   "kills": [
+    "test_a_the_json_mode_schema_requires_a_non_null_boolean"
+   ]
+  },
+  {
+   "name": "s5: reply check removed",
+   "file": "src/autotester/providers/litellm_schema.py",
+   "old": "    _require_answered(schema, data)\n",
+   "new": "",
+   "kills": [
+    "test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted]",
+    "test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]",
+    "test_b_the_unanswered_field_grades_inconclusive_with_the_reason_in_the_note"
+   ]
+  },
+  {
+   "name": "s6: null answer accepted (absence only)",
+   "file": "src/autotester/providers/litellm_schema.py",
+   "old": "for name in names if data.get(name) is None]",
+   "new": "for name in names if name not in data]",
+   "kills": [
+    "test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[null]"
+   ]
+  },
+  {
+   "name": "s7: repair retry skipped for the reply check",
+   "file": "src/autotester/providers/litellm_schema.py",
+   "old": "raise ValidationError.from_exception_data(schema.__name__, errors)",
+   "new": "raise RuntimeError(\"x\")",
+   "kills": [
+    "test_b_a_missing_or_null_answer_gets_one_repair_prompt_then_provider_error[omitted]",
+    "test_b_a_repair_that_supplies_the_field_is_accepted"
+   ]
+  },
+  {
+   "name": "s8: defect_observed=True PASS no longer held",
+   "file": "src/autotester/stages/grade.py",
+   "old": "    if judgment.defect_observed:\n        return Result.INCONCLUSIVE",
+   "new": "    if judgment.defect_observed and False:\n        return Result.INCONCLUSIVE",
+   "kills": [
+    "test_c_defect_observed_true_still_downgrades_a_pass"
+   ]
+  }
+ ]
+}
