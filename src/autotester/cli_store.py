@@ -87,13 +87,14 @@ def render(t: Tally, extra: dict[str, Counter[str]], mode: str, notes: list[str]
     out(f"written: {written}")
 
 
-def _auth_part(apply: bool, remote: bool, sessions: bool, notes: list[str]) -> Counter[str]:
+def _auth_part(apply: bool, remote: bool, sessions: bool,
+               notes: list[str]) -> dict[str, Counter[str]]:
     from autotester.auth.migrate_auth import auth_status, import_auth, read_auth
 
     data = read_auth()
     if data is None:
         notes.append("auth: no SQLite auth file found; nothing to import")
-        return Counter()
+        return {}
     notes.append(f"auth sessions: {len(data['sessions'])} in the file, " + (
         "copied (unexpired only)" if sessions else "NOT copied (use --include-sessions)"))
     if apply:
@@ -134,7 +135,7 @@ def _migrate(apply: bool, project: str | None, only: str | None, sessions: bool,
     extra: dict[str, Counter[str]] = {}
     notes = ["browser sessions are never migrated: role logins are re-established by the human"]
     if "auth" in wanted and not project:
-        extra["auth_users"] = _auth_part(apply, remote, sessions, notes)
+        extra.update(_auth_part(apply, remote, sessions, notes))
     if "credentials" in wanted:
         extra["secrets"] = _creds_part(project, apply, remote, notes)
     render(t, extra, "APPLY" if apply else "DRY RUN" + (
@@ -156,7 +157,7 @@ def _verify(project: str | None, only: str | None) -> int:
         notes.append("approvals: " + ", ".join(f"{k}={v}" for k, v in sorted(signed.items())))
         bad += signed["not_intact"] + signed["signature_failed"] + signed["unreadable"]
     if "auth" in wanted and not project:
-        extra["auth_users"] = _auth_part(False, True, False, notes)
+        extra.update(_auth_part(False, True, False, notes))
     if "credentials" in wanted:
         extra["secrets"] = _creds_part(project, False, True, notes)
     bad += sum(c["to_insert"] + c["conflicting-id"] for c in extra.values())

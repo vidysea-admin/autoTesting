@@ -1,0 +1,52 @@
+KILLED  s1: slot takeover ignores the stamp's epoch  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+KILLED  s2: a committed delete of a slotted document is physical again  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent, tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing, tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[grant], tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[share]
+KILLED  s3: a recoverer leaves an older hidden stamp  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[grant], tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[share]
+KILLED  s4: the committed sweep drops its _e condition  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_late_committed_sweep_does_not_delete_a_recreated_document
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_late_committed_sweep_does_not_delete_a_recreated_document
+KILLED  s5: marker read before the abort CAS  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_commit_that_lands_between_the_abort_cas_and_the_marker_read_stands
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_commit_that_lands_between_the_abort_cas_and_the_marker_read_stands
+KILLED  s6: recover resolves epochs above its own  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_recovery_resolves_only_earlier_epochs
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_recovery_resolves_only_earlier_epochs
+KILLED  s7: an undone slotted insert keeps its data  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+    actually failed: tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+KILLED  s8: an undone slotted insert is not hidden when it landed  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+    actually failed: tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[share], tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share, tests/test_auth_store_fence_slots.py::test_an_undone_insert_leaves_a_hidden_slot_with_none_of_its_data
+KILLED  s9: a slotted insert treats a hidden slot as a real duplicate  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing
+    actually failed: tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[grant], tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[share], tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_grant, tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share, tests/test_auth_store_fence_slots.py::test_a_recoverer_raises_an_older_hidden_stamp_past_the_dead_holders_epoch, tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one, tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant, tests/test_auth_store_fence_slots.py::test_a_zombie_insert_after_the_slot_was_re_granted_and_revoked_lands_nothing, tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[grant], tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[share]
+KILLED  s10: a deleted slotted document keeps its fields  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent
+    actually failed: tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[grant], tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[share], tests/test_auth_store_fence_recreate.py::test_a_kill_at_every_call_point_never_loses_the_document[grant], tests/test_auth_store_fence_recreate.py::test_a_kill_at_every_call_point_never_loses_the_document[share], tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_grant, tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share, tests/test_auth_store_fence_slots.py::test_a_committed_delete_leaves_the_slot_hidden_and_blank_not_absent
+KILLED  s11: stamp_epoch sorts an unparsable stamp first  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_the_stamp_epoch_orders_every_stamp_the_fence_writes
+    actually failed: tests/test_auth_store_fence_slots.py::test_the_stamp_epoch_orders_every_stamp_the_fence_writes
+KILLED  O1 (E10.2): the takeover is blind, its filter drops the stamp it read  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[grant], tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[share]
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[grant], tests/test_auth_store_fence_slots.py::test_a_zombie_stalled_between_the_slot_read_and_the_takeover_lands_nothing[share]
+>>> SURVIVED  OWN-B (E10.2): the takeover compares epochs with < instead of <=  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share, tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_slot_hidden_at_epoch_e_is_taken_by_a_writer_of_epoch_e_not_by_an_earlier_one, tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant
+    SURVIVING      : tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share  <- INCONCLUSIVE: this mutation did not make them fail
+KILLED  H1 (E10.2): the hiding update in _hide_slot drops its stamp condition  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant
+    actually failed: tests/test_auth_store_fence_slots.py::test_a_stalled_recoverer_does_not_hide_a_later_holders_live_grant
+KILLED  A1 (E10.3): a rollback hides the re-inserted slot without putting the delete's stamp back  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_grant, tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share
+    actually failed: tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_grant, tests/test_auth_store_fence_recreate.py::test_a_refused_transaction_restores_the_original_share
+KILLED  A2 (E10.3): a recoverer's restore of the delete does not look at the slot it hid  (pytest exit 1)
+    claims to kill : tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[grant], tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[share]
+    actually failed: tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[grant], tests/test_auth_store_fence_recreate.py::test_a_holder_that_died_before_committing_leaves_the_original_present[share], tests/test_auth_store_fence_recreate.py::test_a_kill_at_every_call_point_never_loses_the_document[grant], tests/test_auth_store_fence_recreate.py::test_a_kill_at_every_call_point_never_loses_the_document[share]
+
+15/16 mutations killed
+done
