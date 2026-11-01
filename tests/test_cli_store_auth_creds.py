@@ -23,7 +23,7 @@ from store_migrate_support import (
 
 from autotester.auth import accounts, db
 from autotester.auth import migrate_auth as ma
-from autotester.auth.store_mongo_tx import JOURNAL_COLL, JOURNAL_ID, META
+from autotester.auth.store_mongo_tx import EPOCH_ID, JOURNAL_COLL, META, MongoTxBase
 from autotester.store import migrate_creds as mc
 
 
@@ -74,19 +74,40 @@ def test_sessions_are_excluded_by_default_and_expired_ones_never_copy(rig: Rig) 
     assert digests == live and len(live) == 2
 
 
+def _epoch(rig: Rig) -> int:
+    return next(d["n"] for d in rig.docs(META) if d["_id"] == EPOCH_ID)
+
+
+def _without_the_epoch(rig: Rig) -> str:
+    """Everything the importer wrote, minus the fencing counter: `auth_meta/epoch` advances at
+    every lease acquire BY DESIGN (a no-op import cannot know it is one before it holds the
+    lease), and it is the only thing an import that writes nothing changes."""
+    return repr([(d.name, n, [x for x in c.docs if not (n == META and x["_id"] == EPOCH_ID)])
+                 for d in rig.server.databases.values() for n, c in d.collections.items()])
+
+
 def test_a_second_apply_writes_nothing_and_keeps_the_allocator(rig: Rig) -> None:
     seed_auth(rig)
     rig.invoke("migrate", "--apply", "--only", "auth")
-    before = rig.everywhere()
+    before, epoch = _without_the_epoch(rig), _epoch(rig)
     again = rig.invoke("migrate", "--apply", "--only", "auth")
     assert again.exit_code == 0 and "written: 0" in again.output
-    assert rig.everywhere() == before
+    assert _without_the_epoch(rig) == before
+    assert _epoch(rig) > epoch  # the one difference, and it is the design
 
 
-def test_the_import_goes_through_the_lease_and_leaves_no_journal(rig: Rig) -> None:
+def test_the_import_goes_through_the_lease_and_leaves_no_journal(
+        rig: Rig, monkeypatch: pytest.MonkeyPatch) -> None:
     seed_auth(rig)
+    real, open_at_commit = MongoTxBase.commit, []
+
+    def spy(self: MongoTxBase) -> None:  # the journal marker must exist while the import runs
+        open_at_commit.append([d["state"] for d in rig.docs(META) if d.get("kind") == "tx"])
+        real(self)
+    monkeypatch.setattr(MongoTxBase, "commit", spy)
     rig.invoke("migrate", "--apply", "--only", "auth")
-    assert not any(d["_id"] == JOURNAL_ID for d in rig.docs(META))
+    assert ["open"] in open_at_commit  # not vacuous: the import was journalled
+    assert not any(d.get("kind") == "tx" for d in rig.docs(META))
     assert [d for d in rig.docs(JOURNAL_COLL) if d.get("kind") == "undo"] == []
     assert ("autotester", META) in rig.server.log  # the lease is taken in auth_meta
 

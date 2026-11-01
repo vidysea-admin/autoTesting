@@ -66,7 +66,7 @@ class FakeCollection:
             raise DuplicateKeyError("E11000 duplicate key _id")
         for keys, unique in self.indexes.values():
             fields = [k for k, _ in keys]
-            if unique and any(f in doc for f in fields) and any(
+            if unique and any(  # a missing field is null, and null is a value (non-sparse)
                     all(d.get(f) == doc.get(f) for f in fields)
                     for d in self.docs if d is not skip):
                 raise DuplicateKeyError("E11000 duplicate key index")

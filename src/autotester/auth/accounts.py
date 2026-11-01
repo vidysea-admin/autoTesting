@@ -184,8 +184,11 @@ def reset_password(user_id: int, password: str, actor: Principal | None = None) 
     """Admin reset: a new hash and every existing session of that user revoked (AU8).
     Only an Admin/CEO member may reset an admin's password (P5)."""
     new_hash = hash_password(password)
-    _update(lambda tx: tx.set_password_hash(user_id, new_hash), user_id,
-            end_sessions=True, actor=actor)
+
+    def change(tx: AuthTx) -> bool:
+        tx.delete_user_sessions(user_id)  # revoke FIRST: a stop between the two steps never
+        return tx.set_password_hash(user_id, new_hash)  # leaves an old session beside a new hash
+    _update(change, user_id, end_sessions=False, actor=actor)
 
 
 def set_display_name(user_id: int, name: str) -> None:
@@ -250,8 +253,8 @@ def bootstrap_admin(email: str, password: str) -> tuple[User, bool]:
             user_id = tx.insert_user(address, password_hash)
         else:
             user_id = existing.id
+            tx.delete_user_sessions(user_id)  # revoke first, then write the hash
             tx.enable_with_password_hash(user_id, password_hash)
-            tx.delete_user_sessions(user_id)
         admin = tx.admin_group_id()
         if admin is None:
             raise AccountError("the Admin/CEO group was deleted; restore it before bootstrap")
